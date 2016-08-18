@@ -13,8 +13,7 @@
 * parameters
 * options	@ datasource	:datasource
 *							.data is json
-*							.text is key for display text
-*							.value is key for value
+*							.text is key for display text (array)
 *			@ searches		:search condition elements
 *							.id is elements id
 *							.label is elements label text
@@ -26,20 +25,22 @@
 *			@ buttons		:button elements
 *							.id is elements id
 *							.text is display text
+*							.callback is callback of button clicked
+*			@ callback		:callback of list clicked
 * -------------------------------------------------------------------
 */
 var Referer=function(options){
 	var options=$.extend({
 		datasource:{
 			data:null,
-			text:'',
-			value:'',
+			text:''
 		},
 		searches:[],
 		buttons:[]
 	},options);
 	/* valiable */
 	this.datasource=options.datasource;
+	this.callback=options.callback;
 	/* create elements */
 	var block=$('<div>').css({
 		'box-sizing':'border-box'
@@ -51,13 +52,6 @@ var Referer=function(options){
 		'box-sizing':'border-box',
 		'height':'30px',
 		'lint-height':'30px'
-	});
-	var text=$('<input type="text">').css({
-		'box-sizing':'border-box',
-		'height':'30px',
-		'lint-height':'30px',
-		'padding-left':'100px',
-		'width':'100%'
 	});
 	var label=$('<label>').css({
 		'box-sizing':'border-box',
@@ -84,6 +78,17 @@ var Referer=function(options){
 		'top':'0px',
 		'width':'100px',
 		'z-index':'99'
+	});
+	var table=$('<table>').css({
+		'min-width':'100%',
+		'position':'relative',
+	});
+	var text=$('<input type="text">').css({
+		'box-sizing':'border-box',
+		'height':'30px',
+		'lint-height':'30px',
+		'padding-left':'100px',
+		'width':'100%'
 	});
 	this.container=block.clone().css({
 		'background-color':'rgba(0,0,0,0.5)',
@@ -112,20 +117,6 @@ var Referer=function(options){
 		'top':'0',
 		'width':'900px'
 	});
-	this.listblock=block.clone().css({
-		'position':'relative',
-		'width':'100%'
-	});
-	this.searchblock=block.clone().css({
-		'background-color':'rgba(0,0,0,0.5)',
-		'left':'0px',
-		'padding':'5px',
-		'position':'absolute',
-		'text-align':'center',
-		'top':'0px',
-		'width':'100%',
-		'z-index':'888'
-	});
 	this.buttonblock=block.clone().css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'bottom':'0px',
@@ -136,39 +127,50 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'999'
 	});
-	for (var i=0;i<options.searches.length;i++)
-	{
+	this.listblock=table.clone().append('<tbody>');
+	this.searchblock=block.clone().css({
+		'background-color':'rgba(0,0,0,0.5)',
+		'left':'0px',
+		'padding':'5px',
+		'position':'absolute',
+		'text-align':'center',
+		'top':'0px',
+		'width':'100%',
+		'z-index':'888'
+	});
+	this.buttons=[];
+	$.each(options.buttons,function(index){
+		this.buttons.push(
+			button.clone()
+			.attr('id',options.buttons[index].id.toString())
+			.text(options.buttons[index].text.toString())
+			.on('click',function(){if (options.buttons[index].callback!=null) options.buttons[index].callback();})
+		);
+		this.buttonblock.append(this.buttons[index]);
+	});
+	$.each(options.searches,function(index){
+		var search=options.searches[index];
 		var searchfield=null;
-		switch (options.searches[i].type)
+		switch (search.type)
 		{
 			case 'select':
 				searchfield=select.clone();
-				$.each(options.searches[i].data,function(index){
+				$.each(search.data,function(index){
 					searchfield.append(
 						option.clone()
-						.attr('value',options.searches[i].data[index][options.searches[i].value].value.toString())
-						.text(options.searches[i].data[index][options.searches[i].text].value.toString())
+						.attr('value',search.data[index][search.value].value.toString())
+						.text(search.data[index][search.text].value.toString())
 					);
 				});
 				break;
 			case 'input':
 				searchfield=text.clone().css({
-					'text-align':(options.searches[i].align!=null)?options.searches[i].align.toString():'left'
+					'text-align':(search.align!=null)?search.align.toString():'left'
 				});
 				break;
 		}
-		this.searchblock.append(label.clone().append(span.clone().text(options.searches[i].label)).append(searchfield));
-	}
-	this.buttons=[];
-	for (var i=0;i<options.buttons.length;i++)
-	{
-		this.buttons.push(
-			button.clone()
-			.attr('id',options.buttons[i].id.toString())
-			.text(options.buttons[i].text.toString())
-		);
-		this.buttonblock.append(this.buttons[i]);
-	}
+		this.searchblock.append(label.clone().append(span.clone().text(search.label)).append(searchfield));
+	});
 	/* append elements */
 	this.contents.append(this.listblock);
 	if (options.searches.length!=0) this.contents.append(this.searchblock);
@@ -182,63 +184,59 @@ var Referer=function(options){
 	});
 };
 Referer.prototype={
+	/* reload referer */
+	search:function(){
+		var callback=this.callback;
+		var lists=this.listblock.find('tbody').find('tr').find('td');
+		var filters=$.grep(this.datasource.data,function(item,index){return item.workdate.toString()==workdate;});
+		/* lists callback */
+		$.each(lists,function(index){
+			$(this).off('click');
+		});
+		/* create lists */
+		this.listblock.find('tbody').empty();
+		$.each(filters,function(index){
+			var filter=filters[index];
+			var list=$('<tr>');
+			$.each(filter,function(key,values){
+				list.append('<input type="hidden" id="'+key.toString()+'" value="'+values.value.toString()+'">');
+			});
+			$.each(this.datasource.text,function(index){
+				list.append($('<td>')
+				.text(filter[this.datasource.text[index]]))
+				.on('click',function(){if (callback!=null) callback(list);});
+			});
+			this.listblock.find('tbody').append(list);
+		});
+	},
 	/* display referer */
 	show:function(options){
 		var options=$.extend({
-			datasource:{
-				data:null,
-				text:'',
-				value:'',
-			},
-			buttons:'',
-			okcallback:null,
-			buttonscallback:null
+			buttons:{},
+			callback:null
 		},options);
-		var back=this.back;
-		var contents=this.contents;
-		/* コンテンツ初期化 */
-		this.contents.children('div').on('click',null);
-		this.contents.empty();
-		/* データ配置 */
-		$.each(options.datasource.data,function(index){
-			contents.append($('<div>').css({
-					'box-sizing':'border-box',
-					'width':'100%'
-				})
-				.on('click',function(){
-					back.hide();
-					if (options.okcallback!=null) options.okcallback($(this).children('p').text(),$(this).children('input[type=hidden]').val());
-				})
-				.append('<p>'+options.datasource.data[index][options.datasource.text].value.toString()+'</p>')
-				.append('<input type="hidden" value="'+options.datasource.data[index][options.datasource.value].value.toString()+'">')
-			);
-		});
-		/* ボタン初期化 */
-		this.buttons.children('button').on('click',null);
-		this.buttons.empty();
-		/* ボタン */
-		if (options.buttons.length!=0) this.buttons.append(options.buttons);
-		/* ボタンスタイルシート */
-		$.each(this.buttons.children('button'),function(){
-			$(this).css({
-				'cursor':'pointer',
-				'margin':'5px'
+		var buttons=this.buttons;
+		var lists=this.listblock.find('tbody').find('tr').find('td');
+		/* buttons callback */
+		$.each(options.buttons,function(key,values){
+			$.each(buttons,function(index){
+				if ($(this).attr('id')==key)
+				{
+					$(this).off('click');
+					$(this).on('click',function(){if (values!=null) values();});
+				}
 			});
 		});
-		/* ボタンイベント */
-		if (options.buttonscallback!=null)
-		{
-			this.buttons.children('button').on('click',function(){
-				back.hide();
-				options.buttonscallback($(this).attr('id'));
-			})
-			.show();
-		}
-		else this.buttons.children('button:not(#cancel)').hide();
-		this.back.show();
+		/* lists callback */
+		$.each(lists,function(index){
+			$(this).off('click');
+			$(this).on('click',function(){if (options.callback!=null) options.callback($(this).closest('tr'));});
+		});
+		this.callback=options.callback;
+		this.container.show();
 	},
 	/* hide referer */
 	hide:function(){
-		this.back.hide();
+		this.container.hide();
 	}
 };

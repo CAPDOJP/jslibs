@@ -83,7 +83,7 @@ jQuery.fn.fields=function(name){
 	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
 		if (values.var==name)
 		{
-			$.each($('[id*='+key+'],[name*='+key+']',target),function(){
+			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
 				if ($(this).prop('tagName')!='undefined')
 					if ($.inArray(this,fields)==-1) fields.push(this);
 			});
@@ -93,7 +93,7 @@ jQuery.fn.fields=function(name){
 };
 /*
 *--------------------------------------------------------------------
-* stylesheets
+* set stylesheets
 *--------------------------------------------------------------------
 * parameters
 * options	@ height	:height
