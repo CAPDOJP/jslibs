@@ -22,10 +22,40 @@
 *							.text is key for display text (<select> only)
 *							.value is key for value (<select> only)
 *							.align is text alignment (<input> only)
+*							-example-
+*							searches[
+*								{
+*									id:'users',
+*									label:'choose user',
+*									type:'select',
+*									data:resp.records,
+*									text:'username',
+*									value:userid''
+*								},
+*								{
+*									id:'companyname',
+*									label:'input companyname',
+*									type:'input',
+*									align:'left'
+*								}
+*							]
 *			@ buttons		:button elements
 *							.id is elements id
 *							.text is display text
 *							.callback is callback of button clicked
+*							-example-
+*							buttons[
+*								{
+*									id:'ok',
+*									text:'ok',
+*									callback:function(){alert('ok clicked');}
+*								},
+*								{
+*									id:'cancel',
+*									text:'cancel',
+*									callback:function(){alert('cancel clicked');}
+*								}
+*							]
 *			@ callback		:callback of list clicked
 * -------------------------------------------------------------------
 */
@@ -188,7 +218,18 @@ Referer.prototype={
 	search:function(){
 		var callback=this.callback;
 		var lists=this.listblock.find('tbody').find('tr').find('td');
-		var filters=$.grep(this.datasource.data,function(item,index){return item.workdate.toString()==workdate;});
+		var searches=this.searchblock.find('input,select');
+		var filters=$.grep(this.datasource.data,function(item,index){
+			var exists=0;
+			$.each(searches,function(index){
+				if (searches.val().toString()=='') exists++;
+				else
+				{
+					if (item[$(this).attr('id')].value.toString()==searches.val()) exists++;
+				}
+			});
+			return searches.length==exists;
+		});
 		/* lists callback */
 		$.each(lists,function(index){
 			$(this).off('click');

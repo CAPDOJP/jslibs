@@ -84,7 +84,7 @@ jQuery.fn.fields=function(name){
 		if (values.var==name)
 		{
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
-				if ($(this).prop('tagName')!='undefined')
+				if ($(this).prop('tagName').toLowerCase()!='undefined')
 					if ($.inArray(this,fields)==-1) fields.push(this);
 			});
 		}
