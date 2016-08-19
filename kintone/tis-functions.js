@@ -71,6 +71,60 @@ Date.prototype.format=function(pattern){
 }
 /*
 *--------------------------------------------------------------------
+* extension lookup
+*--------------------------------------------------------------------
+* parameters
+* options	@ recordcode	:target record code
+*			@ datasource	:json
+*			@ fields		:value change elements
+*							.fieldcode is field code
+*							.relation is array
+*							.relation.data is json
+*							.relation.basekey is base key
+*							.relation.refererkey is referernce key
+*							.relation.recordcode is record code
+* -------------------------------------------------------------------
+*/
+jQuery.fn.crosslookup=function(options){
+	var options=$.extend({
+		recordcode:'',
+		datasource:null,
+		fields:[]
+	},options);
+	return $(this).each(function(){
+		var target=$(this);
+		$.data(target[0],'value','');
+		/* check field value */
+		setInterval(function(){
+			var targetvalue=(target.val()!=null)?target.val().toString():'';
+			if ($.data(target[0],'value')==targetvalue) return;
+			$.data(target[0],'value',targetvalue);
+			/* set fields value */
+			$.each(options.fields,function(index){
+				var fieldvalues=$.extend({
+					fieldcode:'',
+					relation:{
+						data:null,
+						basekey:'',
+						refererkey:'',
+						recordcode:''
+					},
+				},options.fields[index]);
+				if (targetvalue.length!=0)
+				{
+					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==target.val();});
+					if (filterbase.length!=0)
+					{
+						var filterreferer=$.grep(fieldvalues.relation.data,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
+						$.each($('body').fields(fieldvalues.fieldcode),function(){$(this).val(filterreferer[0][fieldvalues.relation.recordcode].value);});
+					}
+				}
+			});
+		},500);
+	});
+}
+/*
+*--------------------------------------------------------------------
 * get elements
 *--------------------------------------------------------------------
 * parameters
@@ -197,56 +251,34 @@ jQuery.fn.fieldscss=function(options){
 }
 /*
 *--------------------------------------------------------------------
-* extension lookup
+* setup lists
 *--------------------------------------------------------------------
 * parameters
-* options	@ recordcode	:target record code
-*			@ datasource	:json
-*			@ fields		:value change elements
-*							.fieldcode is field code
-*							.relation is array
-*							.relation.data is json
-*							.relation.basekey is base key
-*							.relation.refererkey is referernce key
-*							.relation.recordcode is record code
+* options	@ param	:api parameter
+*			@ value	:selected value
+*			@ text	:display text
 * -------------------------------------------------------------------
 */
-jQuery.fn.crosslookup=function(options){
+jQuery.fn.listitems=function(options){
 	var options=$.extend({
-		recordcode:'',
-		datasource:null,
-		fields:[]
+		param:{},
+		value:'',
+		text:'',
+		callback:null
 	},options);
 	return $(this).each(function(){
 		var target=$(this);
-		$.data(target[0],'value','');
-		/* check field value */
-		setInterval(function(){
-			var targetvalue=(target.val()!=null)?target.val().toString():'';
-			if ($.data(target[0],'value')==targetvalue) return;
-			$.data(target[0],'value',targetvalue);
-			/* set fields value */
-			$.each(options.fields,function(index){
-				var fieldvalues=$.extend({
-					fieldcode:'',
-					relation:{
-						data:null,
-						basekey:'',
-						refererkey:'',
-						recordcode:''
-					},
-				},options.fields[index]);
-				if (targetvalue.length!=0)
-				{
-					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==target.val();});
-					if (filterbase.length!=0)
-					{
-						var filterreferer=$.grep(fieldvalues.relation.data,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
-						$.each($('body').fields(fieldvalues.fieldcode),function(){$(this).val(filterreferer[0][fieldvalues.relation.recordcode].value);});
-					}
-				}
+		target.empty();
+		kintone.api(kintone.api.url('/k/v1/records',true),'GET',options.param,function(resp){
+			$.each(resp.records,function(index){
+				target.append(
+					$('<option>')
+					.attr('value',resp.records[index][options.value].value)
+					.text(resp.records[index][options.text].value)
+				);
 			});
-		},500);
+			if (options.callback!=null) options.callback();
+		},function(error){});
 	});
 }
 })(jQuery);

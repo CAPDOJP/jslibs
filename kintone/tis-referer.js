@@ -18,7 +18,7 @@
 *							.id is elements id
 *							.label is elements label text
 *							.type is elements type
-*							.data is json (<select> only)
+*							.param is api parameter (<select> only)
 *							.text is key for display text (<select> only)
 *							.value is key for value (<select> only)
 *							.align is text alignment (<input> only)
@@ -89,7 +89,6 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'11'
 	});
-	var option=$('<option>');
 	var select=$('<select>').css({
 		'box-sizing':'border-box',
 		'height':'30px',
@@ -177,8 +176,8 @@ var Referer=function(options){
 		},options.buttons[index]);
 		this.buttons.push(
 			button.clone()
-			.attr('id',buttonvalue.id.toString())
-			.text(buttonvalue.text.toString())
+			.attr('id',buttonvalue.id)
+			.text(buttonvalue.text)
 			.on('click',function(){if (buttonvalue.callback!=null) buttonvalue.callback();})
 		);
 		this.buttonblock.append(this.buttons[index]);
@@ -188,7 +187,7 @@ var Referer=function(options){
 			id:'',
 			label:'',
 			type:'',
-			data:null,
+			param:{},
 			text:'',
 			value:'',
 			align:'left'
@@ -198,17 +197,15 @@ var Referer=function(options){
 		{
 			case 'select':
 				searchfield=select.clone();
-				$.each(searchvalue.data,function(index){
-					searchfield.append(
-						option.clone()
-						.attr('value',searchvalue.data[index][searchvalue.value].value.toString())
-						.text(searchvalue.data[index][searchvalue.text].value.toString())
-					);
+				searchfield.listitems({
+					param:searchvalue.param,
+					value:searchvalue.value,
+					text:searchvalue.text
 				});
 				break;
 			case 'input':
 				searchfield=text.clone().css({
-					'text-align':searchvalue.align.toString()
+					'text-align':searchvalue.align
 				});
 				break;
 		}
@@ -238,7 +235,7 @@ Referer.prototype={
 				if (searches.val().toString()=='') exists++;
 				else
 				{
-					if (item[$(this).attr('id')].value.toString()==searches.val()) exists++;
+					if (item[$(this).attr('id')].value.toString()==searches.val().toString()) exists++;
 				}
 			});
 			return searches.length==exists;
@@ -257,7 +254,7 @@ Referer.prototype={
 			});
 			$.each(this.datasource.text,function(index){
 				list.append($('<td>')
-				.text(filter[this.datasource.text[index]]))
+				.text(filter[this.datasource.text[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);});
 			});
 			this.listblock.find('tbody').append(list);
