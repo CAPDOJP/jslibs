@@ -85,9 +85,8 @@ jQuery.fn.fields=function(fieldcode){
 		{
 			if (fieldcode=='employee')
 			{
-				$.each(target.find('input'),function(index){
-					alert('key:'+key+' id:'+$(this).attr('id')+' name:'+$(this).attr('name'));
-					alert('key:'+key+' parent tag:'+$(this).parent().prop('tagName')+' parent id:'+$(this).parent().attr('id')+' parent name:'+$(this).parent().attr('name'));
+				$.each(target.find('*'),function(index){
+					alert('key:'+key+' tag:'+$(this).prop('tagName')+' id:'+$(this).attr('id')+' name:'+$(this).attr('name'));
 				});
 			}
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
@@ -96,7 +95,6 @@ jQuery.fn.fields=function(fieldcode){
 			});
 		}
 	});
-	if (fieldcode=='employee') alert(fields.length);
 	return fields;
 }
 /*
