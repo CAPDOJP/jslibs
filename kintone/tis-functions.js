@@ -216,6 +216,35 @@ jQuery.fn.crosslookup=function(options){
 		fields:[]
 	},options);
 	return $(this).each(function(){
+		var target=$(this);
+		var targetvalue=(target.val()!=null)?target.val().toString():'';
+		$.data(target[0],'value',targetvalue);
+		/* check field value */
+		setInterval(function(){
+			if ($.data(target[0],'value')==targetvalue) return;
+			$.data(target[0],'value',targetvalue);
+			/* set fields value */
+			$.each(options.fields,function(index){
+				var fieldvalues=$.extend({
+					fieldcode:'',
+					relation:{
+						data:null,
+						basekey:'',
+						refererkey:'',
+						recordcode:''
+					},
+				},options.fields[index]);
+				if (targetvalue.length!=0)
+				{
+					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==target.val();});
+					if (filterbase.length!=0)
+					{
+						var filterreferer=$.grep(fieldvalues.relation.data,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
+						$.each($('body').fields(fieldvalues.fieldcode),function(){$(this).val(filterreferer[0][fieldvalues.relation.recordcode].value);});
+					}
+				}
+			});
+		},500);
 	});
 }
 })(jQuery);
