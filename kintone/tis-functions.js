@@ -87,6 +87,8 @@ jQuery.fn.fields=function(fieldcode){
 			{
 				$.each(target.find('input'),function(index){
 					alert('key:'+key+' tag:'+$(this).prop('tagName')+' id:'+$(this).attr('id')+' name:'+$(this).attr('name'));
+					alert('key:'+key+' parent tag:'+$(this).parent().prop('tagName')+' parent id:'+$(this).parent().attr('id')+' parent name:'+$(this).parent().attr('name'));
+					alert('key:'+key+' parent parent tag:'+$(this).parent().parent().prop('tagName')+' parent parent id:'+$(this).parent().parent().attr('id')+' parent parent name:'+$(this).parent().parent().attr('name'));
 				});
 			}
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
