@@ -87,6 +87,7 @@ jQuery.fn.fields=function(fieldcode){
 				if ($(this).prop('tagName').toLowerCase()!='undefined')
 					if ($.inArray($(this),fields)==-1) fields.push($(this));
 			});
+			if (fieldcode='employee') alert('fieldcode:'+fieldcode+' key:'+key);
 		}
 	});
 	return fields;
