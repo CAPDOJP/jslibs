@@ -217,10 +217,10 @@ jQuery.fn.crosslookup=function(options){
 	},options);
 	return $(this).each(function(){
 		var target=$(this);
-		var targetvalue=(target.val()!=null)?target.val().toString():'';
-		$.data(target[0],'value',targetvalue);
+		$.data(target[0],'value','');
 		/* check field value */
 		setInterval(function(){
+			var targetvalue=(target.val()!=null)?target.val().toString():'';
 			if ($.data(target[0],'value')==targetvalue) return;
 			$.data(target[0],'value',targetvalue);
 			/* set fields value */
