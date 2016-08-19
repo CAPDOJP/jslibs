@@ -213,15 +213,16 @@ jQuery.fn.crosslookup=function(options){
 	var options=$.extend({
 		recordcode:'',
 		datasource:null,
-		fields:[],
+		fields:[]
 	},options);
 	return $(this).each(function(){
 		var target=$(this);
-		$.data(target[0],'value',target.val().toString());
+		var targetvalue=(target.val()!=null)?target.val().toString():'';
+		$.data(target[0],'value',targetvalue);
 		/* check field value */
 		setInterval(function(){
-			if ($.data(target[0],'value')==target.val().toString()) return;
-			$.data(target[0],'value',target.val().toString());
+			if ($.data(target[0],'value')==targetvalue) return;
+			$.data(target[0],'value',targetvalue);
 			/* set fields value */
 			$.each(options.fields,function(index){
 				var fieldvalues=$.extend({
@@ -233,11 +234,14 @@ jQuery.fn.crosslookup=function(options){
 						recordcode:''
 					},
 				},options.fields[index]);
-				if (target.val().toString().length!=0)
+				if (targetvalue.length!=0)
 				{
 					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==target.val();});
-					var filterreferer=$.grep(fieldvalues.relation.data,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
-					$.each($('body').fields(fieldvalues.fieldcode),function(){$(this).val(filterreferer[0][fieldvalues.relation.fieldcode].value);});
+					if (filterbase.length!=0)
+					{
+						var filterreferer=$.grep(fieldvalues.relation.data,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
+						$.each($('body').fields(fieldvalues.fieldcode),function(){$(this).val(filterreferer[0][fieldvalues.relation.recordcode].value);});
+					}
 				}
 			});
 		},500);
