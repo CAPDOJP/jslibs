@@ -81,6 +81,7 @@ jQuery.fn.fields=function(fieldcode){
 	var fields=[];
 	var target=$(this);
 	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
+		alert(values.var+key);
 		if (values.var==fieldcode)
 		{
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
@@ -218,7 +219,6 @@ jQuery.fn.crosslookup=function(options){
 	return $(this).each(function(){
 		var target=$(this);
 		$.data(target[0],'value','');
-		alert('aaaa');
 		/* check field value */
 		setInterval(function(){
 			var targetvalue=(target.val()!=null)?target.val().toString():'';
