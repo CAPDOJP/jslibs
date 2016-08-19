@@ -83,8 +83,14 @@ jQuery.fn.fields=function(fieldcode){
 	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
 		if (values.var==fieldcode)
 		{
+			if (fieldcode=='employee')
+			{
+				$.each(target.find('input'),function(index){
+					alert('key:'+key+' id:'+$(this).attr('id')+' name:'+$(this).attr('name'));
+					alert('key:'+key+' parent tag:'+$(this).parent().prop('tagName')+' parent id:'+$(this).parent().attr('id')+' parent name:'+$(this).parent().attr('name'));
+				});
+			}
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
-				if (fieldcode=='employee') alert($(this).prop('tagName'));
 				if ($(this).prop('tagName').toLowerCase()!='undefined')
 					if ($.inArray($(this),fields)==-1) fields.push($(this));
 			});
