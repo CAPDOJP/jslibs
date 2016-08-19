@@ -75,6 +75,8 @@ Date.prototype.format=function(pattern){
 *--------------------------------------------------------------------
 * parameters
 * code:field code
+* -caution-
+* lookup field in mobile is disable
 * -------------------------------------------------------------------
 */
 jQuery.fn.fields=function(fieldcode){
@@ -83,19 +85,6 @@ jQuery.fn.fields=function(fieldcode){
 	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
 		if (values.var==fieldcode)
 		{
-			if (fieldcode=='employee')
-			{
-				$.each(target.find('*'),function(index){
-					alert($(this).prop('tagName'));
-					var attrs = $(this)[0].attributes;
-					var attr;
-					for (var i = 0, len = attrs.length; i < len; i++)
-					{
-						attr = attrs[i];
-						alert(attr.name+':'+attr.value);
-					}
-				});
-			}
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
 				if ($(this).prop('tagName').toLowerCase()!='undefined')
 					if ($.inArray($(this),fields)==-1) fields.push($(this));
