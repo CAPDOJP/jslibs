@@ -87,7 +87,6 @@ jQuery.fn.fields=function(fieldcode){
 			{
 				$.each(target.find('*'),function(index){
 					alert($(this).prop('tagName'));
-					alert($(this).data().length);
 					var attrs = $(this)[0].attributes;
 					var attr;
 					for (var i = 0, len = attrs.length; i < len; i++)
