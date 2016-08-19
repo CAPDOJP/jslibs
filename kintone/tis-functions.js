@@ -275,6 +275,7 @@ jQuery.fn.listitems=function(options){
 					$('<option>')
 					.attr('value',resp.records[index][options.value].value)
 					.text(resp.records[index][options.text].value)
+					.fieldscss()
 				);
 			});
 			if (options.callback!=null) options.callback();
