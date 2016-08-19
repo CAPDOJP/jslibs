@@ -218,6 +218,7 @@ jQuery.fn.crosslookup=function(options){
 	return $(this).each(function(){
 		var target=$(this);
 		$.data(target[0],'value','');
+		alert('aaaa');
 		/* check field value */
 		setInterval(function(){
 			var targetvalue=(target.val()!=null)?target.val().toString():'';
