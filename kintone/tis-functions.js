@@ -273,9 +273,9 @@ jQuery.fn.listitems=function(options){
 			$.each(resp.records,function(index){
 				target.append(
 					$('<option>')
+					.fieldscss()
 					.attr('value',resp.records[index][options.value].value)
 					.text(resp.records[index][options.text].value)
-					.fieldscss()
 				);
 			});
 			if (options.callback!=null) options.callback();

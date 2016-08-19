@@ -25,7 +25,7 @@ var Table=function(options){
 		template:null,
 		merge:false,
 		mergeexclude:[],
-		mergecolor:'#ffdab9',
+		mergeclass:'merge',
 		mergecallback:null,
 		unmergecallback:null
 	},options);
@@ -34,7 +34,7 @@ var Table=function(options){
 	this.head=$('<thead>').fieldscss();
 	this.contents=$('<tbody>').fieldscss();
 	this.template=options.template;
-	this.mergecolor=options.mergecolor;
+	this.mergeclass=options.mergeclass;
 	/* append elements */
 	this.container.append(this.head);
 	this.container.append(this.contents);
@@ -66,15 +66,15 @@ var Table=function(options){
 			mergeto=cellindex;
 			for (var i=cellindex;i>-1;i--)
 			{
-				if (row.find('td').eq(i).css('background-color')==this.mergecolor) break;
+				if (row.find('td').eq(i).hasClass(this.mergeclass)) break;
 				mergelimitfrom=i;
 			}
 			for (var i=cellindex;i<row.find('td').length-1;i++)
 			{
-				if (row.find('td').eq(i).css('background-color')==this.mergecolor) break;
+				if (row.find('td').eq(i).hasClass(this.mergeclass)) break;
 				mergelimitto=i;
 			}
-			if ($(this).css('background-color')!=this.mergecolor) $(this).css({'background-color':this.mergecolor});
+			if (!$(this).hasClass(this.mergeclass)) $(this).addClass(this.mergeclass);
 			else merged=true;
 			e.preventDefault();
 		}
@@ -106,8 +106,8 @@ var Table=function(options){
 		for (var i=mergelimitfrom;i<mergelimitto+1;i++)
 		{
 			var cell=contents.find('tr').eq(mergerow).find('td').eq(i);
-			if (i>mergefrom-1 && i<mergeto+1) cell.css({'background-color':this.mergecolor});
-			else cell.css({'background-color':'transparent'});
+			if (i>mergefrom-1 && i<mergeto+1) cell.addClass(this.mergeclass);
+			else cell.removeClass(this.mergeclass);
 		}
 		e.preventDefault();
 	});
@@ -177,13 +177,13 @@ Table.prototype={
 	merge:function(cell,from,to){
         cell.attr('colspan',to-from+1);
         for (var i=from;i<to;i++) cell.parent().find('td').eq(from+1).remove();
-		cell.css({'background-color':this.mergecolor});
+		cell.addClass(this.mergeclass);
 	},
 	/* unmearge cell */
 	unmerge:function(cell){
 		var colspan=parseInt('0'+cell.attr('colspan'));
         cell.removeAttr('colspan');
         for (var i=0;i<colspan-1;i++) $('<td>').fieldscss().insertAfter(cell);
-		cell.css({'background-color':'transparent'});
+		cell.removeClass(this.mergeclass);
 	}
 };

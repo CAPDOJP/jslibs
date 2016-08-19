@@ -56,21 +56,20 @@
 *									callback:function(){alert('cancel clicked');}
 *								}
 *							]
-*			@ callback		:callback of list clicked
 * -------------------------------------------------------------------
 */
 var Referer=function(options){
 	var options=$.extend({
 		datasource:{
 			data:null,
-			text:''
+			text:[]
 		},
 		searches:[],
 		buttons:[]
 	},options);
 	/* property */
 	this.datasource=options.datasource;
-	this.callback=options.callback;
+	this.callback=null;
 	/* create elements */
 	var block=$('<div>').css({
 		'box-sizing':'border-box'
@@ -254,8 +253,8 @@ Referer.prototype={
 			});
 			$.each(this.datasource.text,function(index){
 				list.append($('<td>')
-				.text(filter[this.datasource.text[index]].value))
 				.fieldscss()
+				.text(filter[this.datasource.text[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);});
 			});
 			this.listblock.find('tbody').append(list);
