@@ -85,7 +85,7 @@ jQuery.fn.fields=function(fieldcode){
 		{
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
 				if ($(this).prop('tagName').toLowerCase()!='undefined')
-					if ($.inArray(this,fields)==-1) fields.push(this);
+					if ($.inArray($(this),fields)==-1) fields.push($(this));
 			});
 		}
 	});
