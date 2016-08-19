@@ -85,7 +85,7 @@ jQuery.fn.fields=function(fieldcode){
 		{
 			if (fieldcode=='employee')
 			{
-				$.each(target.find('*'),function(index){
+				$.each(target.find('input'),function(index){
 					alert('key:'+key+' tag:'+$(this).prop('tagName')+' id:'+$(this).attr('id')+' name:'+$(this).attr('name'));
 				});
 			}
