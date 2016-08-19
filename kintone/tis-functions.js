@@ -84,11 +84,13 @@ jQuery.fn.fields=function(fieldcode){
 		if (values.var==fieldcode)
 		{
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
+				if (fieldcode=='employee') alert($(this).prop('tagName'));
 				if ($(this).prop('tagName').toLowerCase()!='undefined')
 					if ($.inArray($(this),fields)==-1) fields.push($(this));
 			});
 		}
 	});
+	if (fieldcode=='employee') alert(fields.length);
 	return fields;
 }
 /*
