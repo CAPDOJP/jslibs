@@ -9,7 +9,6 @@
 * -------------------------------------------------------------------
 */
 (function($){
-"use strict";
 /*
 *--------------------------------------------------------------------
 * date calc
@@ -49,7 +48,7 @@ Date.prototype.calc=function(pattern){
 	if (month<1){year--;month=12;}
 	if (month>12){year++;month=1;}
 	return new Date(year.toString(),(month-1).toString(),day.toString());
-};
+}
 /*
 *--------------------------------------------------------------------
 * date format
@@ -69,7 +68,7 @@ Date.prototype.format=function(pattern){
 	//year-month-day
 	if (pattern.match(/^Y-m-d$/g)!=null) return year+'-'+month+'-'+day;
 	return '';
-};
+}
 /*
 *--------------------------------------------------------------------
 * get elements
@@ -91,7 +90,7 @@ jQuery.fn.fields=function(fieldcode){
 		}
 	});
 	return fields;
-};
+}
 /*
 *--------------------------------------------------------------------
 * set stylesheets
@@ -193,7 +192,7 @@ jQuery.fn.fieldscss=function(options){
 				break;
 		}
 	});
-};
+}
 /*
 *--------------------------------------------------------------------
 * extension lookup
@@ -243,5 +242,5 @@ jQuery.fn.crosslookup=function(options){
 			});
 		},500);
 	});
-};
+}
 })(jQuery);
