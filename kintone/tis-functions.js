@@ -86,6 +86,7 @@ jQuery.fn.fields=function(fieldcode){
 			if (fieldcode=='employee')
 			{
 				$.each(target.find('*'),function(index){
+					alert($(this).prop('tagName'));
 					alert($(this).data().length);
 					var attrs = $(this)[0].attributes;
 					var attr;
