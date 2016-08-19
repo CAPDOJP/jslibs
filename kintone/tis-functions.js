@@ -9,6 +9,7 @@
 * -------------------------------------------------------------------
 */
 (function($){
+"use strict";
 /*
 *--------------------------------------------------------------------
 * date calc
@@ -74,14 +75,14 @@ Date.prototype.format=function(pattern){
 * get elements
 *--------------------------------------------------------------------
 * parameters
-* name:elements keyword
+* code:field code
 * -------------------------------------------------------------------
 */
-jQuery.fn.fields=function(name){
+jQuery.fn.fields=function(fieldcode){
 	var fields=[];
 	var target=$(this);
 	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
-		if (values.var==name)
+		if (values.var==fieldcode)
 		{
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
 				if ($(this).prop('tagName').toLowerCase()!='undefined')
@@ -106,7 +107,7 @@ jQuery.fn.fieldscss=function(options){
 		width:'100%'
 	},options);
 	return $(this).each(function(){
-		var target=$(this);
+		var target=$(this).css({'box-sizing':'border-box'});
 		switch (target.prop('tagName').toLowerCase())
 		{
 			case 'button':
@@ -114,7 +115,6 @@ jQuery.fn.fieldscss=function(options){
 					'background-color':'transparent',
 					'border':'1px solid #a9a9a9',
 					'border-radius':'5px',
-					'box-sizing':'border-box',
 					'height':options.height,
 					'lint-height':options.height,
 					'width':options.width
@@ -122,7 +122,6 @@ jQuery.fn.fieldscss=function(options){
 				break;
 			case 'div':
 				target.css({
-					'box-sizing':'border-box',
 					'padding':'5px',
 					'position':'relative',
 					'text-align':'center',
@@ -136,7 +135,6 @@ jQuery.fn.fieldscss=function(options){
 					'background-color':'transparent',
 					'border':'1px solid #a9a9a9',
 					'border-radius':'5px',
-					'box-sizing':'border-box',
 					'display':'block',
 					'height':options.height,
 					'lint-height':options.height,
@@ -150,7 +148,6 @@ jQuery.fn.fieldscss=function(options){
 					'background-color':'transparent',
 					'border':'1px solid #a9a9a9',
 					'border-radius':'5px',
-					'box-sizing':'border-box',
 					'display':'block',
 					'height':options.height,
 					'lint-height':options.height,
@@ -161,7 +158,6 @@ jQuery.fn.fieldscss=function(options){
 				break;
 			case 'span':
 				target.css({
-					'box-sizing':'border-box',
 					'lint-height':options.height,
 					'padding':'0px 15px'
 				});
@@ -177,7 +173,6 @@ jQuery.fn.fieldscss=function(options){
 					'background-color':'transparent',
 					'border':'1px solid #a9a9a9',
 					'border-radius':'5px',
-					'box-sizing':'border-box',
 					'display':'block',
 					'height':options.height,
 					'margin':'15px 0px',
@@ -197,6 +192,56 @@ jQuery.fn.fieldscss=function(options){
 				});
 				break;
 		}
+	});
+};
+/*
+*--------------------------------------------------------------------
+* extension lookup
+*--------------------------------------------------------------------
+* parameters
+* options	@ recordcode	:target record code
+*			@ datasource	:json
+*			@ fields		:value change elements
+*							.fieldcode is field code
+*							.relation is array
+*							.relation.data is json
+*							.relation.basekey is base key
+*							.relation.refererkey is referernce key
+*							.relation.recordcode is record code
+* -------------------------------------------------------------------
+*/
+jQuery.fn.crosslookup=function(options){
+	var options=$.extend({
+		recordcode:'',
+		datasource:null,
+		fields:[],
+	},options);
+	return $(this).each(function(){
+		var target=$(this);
+		$.data(target[0],'value',target.val().toString());
+		/* check field value */
+		setInterval(function(){
+			if ($.data(target[0],'value')==target.val().toString()) return;
+			$.data(target[0],'value',target.val().toString());
+			/* set fields value */
+			$.each(options.fields,function(index){
+				var fieldvalues=$.extend({
+					fieldcode:'',
+					relation:{
+						data:null,
+						basekey:'',
+						refererkey:'',
+						recordcode:''
+					},
+				},options.fields[index]);
+				if (target.val().toString().length!=0)
+				{
+					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==target.val();});
+					var filterreferer=$.grep(fieldvalues.relation.data,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
+					$.each($('body').fields(fieldvalues.fieldcode),function(){$(this).val(filterreferer[0][fieldvalues.relation.fieldcode].value);});
+				}
+			});
+		},500);
 	});
 };
 })(jQuery);

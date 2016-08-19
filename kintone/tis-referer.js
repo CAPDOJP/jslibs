@@ -30,7 +30,7 @@
 *									type:'select',
 *									data:resp.records,
 *									text:'username',
-*									value:userid''
+*									value:'userid
 *								},
 *								{
 *									id:'companyname',
@@ -170,36 +170,49 @@ var Referer=function(options){
 	});
 	this.buttons=[];
 	$.each(options.buttons,function(index){
+		var buttonvalue=$.extend({
+			id:'',
+			text:'',
+			callback:null
+		},options.buttons[index]);
 		this.buttons.push(
 			button.clone()
-			.attr('id',options.buttons[index].id.toString())
-			.text(options.buttons[index].text.toString())
-			.on('click',function(){if (options.buttons[index].callback!=null) options.buttons[index].callback();})
+			.attr('id',buttonvalue.id.toString())
+			.text(buttonvalue.text.toString())
+			.on('click',function(){if (buttonvalue.callback!=null) buttonvalue.callback();})
 		);
 		this.buttonblock.append(this.buttons[index]);
 	});
 	$.each(options.searches,function(index){
-		var search=options.searches[index];
+		var searchvalue=$.extend({
+			id:'',
+			label:'',
+			type:'',
+			data:null,
+			text:'',
+			value:'',
+			align:'left'
+		},options.searches[index]);
 		var searchfield=null;
-		switch (search.type)
+		switch (searchvalue.type)
 		{
 			case 'select':
 				searchfield=select.clone();
-				$.each(search.data,function(index){
+				$.each(searchvalue.data,function(index){
 					searchfield.append(
 						option.clone()
-						.attr('value',search.data[index][search.value].value.toString())
-						.text(search.data[index][search.text].value.toString())
+						.attr('value',searchvalue.data[index][searchvalue.value].value.toString())
+						.text(searchvalue.data[index][searchvalue.text].value.toString())
 					);
 				});
 				break;
 			case 'input':
 				searchfield=text.clone().css({
-					'text-align':(search.align!=null)?search.align.toString():'left'
+					'text-align':searchvalue.align.toString()
 				});
 				break;
 		}
-		this.searchblock.append(label.clone().append(span.clone().text(search.label)).append(searchfield));
+		this.searchblock.append(label.clone().append(span.clone().text(searchvalue.label)).append(searchfield));
 	});
 	/* append elements */
 	this.contents.append(this.listblock);
