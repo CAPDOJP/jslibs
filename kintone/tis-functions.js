@@ -86,13 +86,15 @@ jQuery.fn.fields=function(fieldcode){
 			if (fieldcode=='employee')
 			{
 				$.each(target.find('*'),function(index){
-					var attrs = $(this).data();
-					var attr;
-					for (var i = 0, len = attrs.length; i < len; i++)
-					{
-						attr = attrs[i];
-						alert(attr.name+':'+attr.value);
-					}
+					$.each($(this).attr(),function(key,values){
+						alert(key+':'+values);
+					});
+					$.each($(this).prop(),function(key,values){
+						alert(key+':'+values);
+					});
+					$.each($(this).data(),function(key,values){
+						alert(key+':'+values);
+					});
 				});
 			}
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
