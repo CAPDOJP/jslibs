@@ -93,6 +93,12 @@ jQuery.fn.fields=function(fieldcode){
 						attr = attrs[i];
 						alert(attr.name+':'+attr.value);
 					}
+					attrs = $(this).parent()[0].attributes;
+					for (var i = 0, len = attrs.length; i < len; i++)
+					{
+						attr = attrs[i];
+						alert(attr.name+':'+attr.value);
+					}
 				});
 			}
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
