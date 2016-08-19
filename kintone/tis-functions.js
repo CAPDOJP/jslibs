@@ -85,15 +85,9 @@ jQuery.fn.fields=function(fieldcode){
 		{
 			if (fieldcode=='employee')
 			{
-				$.each(target.find('input'),function(index){
+				$.each(target.find('*'),function(index){
 					var attrs = $(this)[0].attributes;
 					var attr;
-					for (var i = 0, len = attrs.length; i < len; i++)
-					{
-						attr = attrs[i];
-						alert(attr.name+':'+attr.value);
-					}
-					attrs = $(this).parent()[0].attributes;
 					for (var i = 0, len = attrs.length; i < len; i++)
 					{
 						attr = attrs[i];
