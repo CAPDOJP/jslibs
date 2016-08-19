@@ -82,7 +82,7 @@ jQuery.fn.fields=function(fieldcode){
 	var target=$(this);
 	alert(fieldcode);
 	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
-		alert('fieldcode'+fieldcode+' values.var'+values.var);
+		alert('fieldcode:'+fieldcode+' values.var:'+values.var);
 		if (values.var==fieldcode)
 		{
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
