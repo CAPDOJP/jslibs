@@ -88,7 +88,8 @@ jQuery.fn.fields=function(fieldcode){
 				$.each(target.find('input'),function(index){
 					var attrs = this.get(0).attributes;
 					var attr;
-					for (var i = 0, len = attrs.length; i < len; i++) {
+					for (var i = 0, len = attrs.length; i < len; i++)
+					{
 						attr = attrs[i];
 						alert(attr.name+':'+attr.value);
 					}
