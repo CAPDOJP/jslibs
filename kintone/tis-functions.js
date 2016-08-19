@@ -86,9 +86,12 @@ jQuery.fn.fields=function(fieldcode){
 			if (fieldcode=='employee')
 			{
 				$.each(target.find('input'),function(index){
-					alert('key:'+key+' tag:'+$(this).prop('tagName')+' id:'+$(this).attr('id')+' name:'+$(this).attr('name'));
-					alert('key:'+key+' parent tag:'+$(this).parent().prop('tagName')+' parent id:'+$(this).parent().attr('id')+' parent name:'+$(this).parent().attr('name'));
-					alert('key:'+key+' parent parent tag:'+$(this).parent().parent().prop('tagName')+' parent parent id:'+$(this).parent().parent().attr('id')+' parent parent name:'+$(this).parent().parent().attr('name'));
+					var attrs = this.get(0).attributes;
+					var attr;
+					for (var i = 0, len = attrs.length; i < len; i++) {
+						attr = attrs[i];
+						alert(attr.name+':'+attr.value);
+					}
 				});
 			}
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
