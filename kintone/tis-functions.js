@@ -201,6 +201,12 @@ jQuery.fn.style=function(addition){
 	style+='	box-sizing:border-box;';
 	style+='	position:relative;';
 	style+='}';
+	style+='table{';
+	style+='	width:100%;';
+	style+='}';
+	style+='table th{';
+	style+='	font-wieght:normal;';
+	style+='}';
 	style+=(addition!=null)?addition:'';
 	style+='</style>';
 	$(this).append(style);
