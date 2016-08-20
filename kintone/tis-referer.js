@@ -188,11 +188,6 @@ var Referer=function(options){
 	if (options.searches.length!=0) this.contents.append(this.searchblock);
 	this.container.append(this.contents);
 	$('body').append(this.container);
-	/* adjust contents paddings */
-	this.contents.css({
-		'padding-top':(this.searchblock.outerHeight(true))+'px',
-		'padding-bottom':(this.buttonblock.outerHeight(true))+'px',
-	});
 };
 Referer.prototype={
 	/* reload referer */
@@ -259,6 +254,11 @@ Referer.prototype={
 		});
 		this.callback=options.callback;
 		this.container.show();
+		/* adjust contents paddings */
+		this.contents.css({
+			'padding-top':(this.searchblock.outerHeight(true))+'px',
+			'padding-bottom':(this.buttonblock.outerHeight(true))+'px',
+		});
 	},
 	/* hide referer */
 	hide:function(){
