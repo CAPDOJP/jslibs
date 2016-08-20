@@ -214,8 +214,9 @@ Referer.prototype={
 		});
 		/* create lists */
 		listblock.find('tbody').empty();
-		$.each(filters,function(index){
-			var filter=filters[index];
+		for (var i=0;i<filter.length;i++)
+		{
+			var filter=filters[i];
 			var list=$('<tr>');
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
@@ -226,7 +227,7 @@ Referer.prototype={
 				.on('click',function(){if (callback!=null) callback(list);});
 			});
 			listblock.find('tbody').append(list);
-		});
+		}
 	},
 	/* display referer */
 	show:function(options){
