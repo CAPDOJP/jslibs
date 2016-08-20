@@ -155,7 +155,7 @@ var Referer=function(options){
 		switch (searchvalue.type)
 		{
 			case 'select':
-				searchfield=select.clone();
+				searchfield=select.clone().attr('id',searchvalue.id);
 				searchfield.listitems({
 					param:searchvalue.param,
 					value:searchvalue.value,
@@ -163,7 +163,7 @@ var Referer=function(options){
 				});
 				break;
 			case 'input':
-				searchfield=text.clone().css({
+				searchfield=text.clone().attr('id',searchvalue.id).css({
 					'text-align':searchvalue.align
 				});
 				break;
