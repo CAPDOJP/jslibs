@@ -191,6 +191,17 @@ var Referer=function(options){
 			.append(searchfield)
 		);
 	});
+	if (options.searches.length!=0)
+	{
+		searchblock.append(
+			button.clone(true)
+			.text('再検索')
+			.on('click',function(){
+				/* reload referer */
+				my.search();
+			})
+		);
+	}
 	this.contants.append(this.listblock);
 	if (options.buttons.length!=0) this.container.append(this.buttonblock);
 	if (options.searches.length!=0) this.container.append(this.searchblock);
