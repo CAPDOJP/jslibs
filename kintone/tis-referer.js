@@ -78,7 +78,7 @@ var Referer=function(options){
 	var table=$('<table>');
 	var text=$('<input type="text">');
 	/* append elements */
-	this.container=div.clone(true).css({
+	this.cover=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'display':'none',
 		'height':'100%',
@@ -88,22 +88,30 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'999999'
 	});
-	this.contents=div.clone(true).css({
+	this.container=div.clone(true).css({
 		'background-color':'#ffffff',
 		'bottom':'0',
 		'border-radius':'5px',
+		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
 		'height':'700px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
 		'max-width':'100%',
-		'overflow-x':'hidden',
-		'overflow-y':'auto',
 		'padding':'5px',
 		'position':'absolute',
 		'right':'0',
 		'top':'0',
 		'width':'900px'
+	});
+	this.contants=div.clone(true).css({
+		'height':'100%',
+		'min-height':'100%',
+		'min-width':'100%',
+		'overflow-x':'hidden',
+		'overflow-y':'auto',
+		'position':'relative',
+		'width':'100%'
 	});
 	this.buttonblock=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
@@ -183,11 +191,11 @@ var Referer=function(options){
 			.append(searchfield)
 		);
 	});
-	this.contents.append(this.listblock);
-	if (options.buttons.length!=0) this.contents.append(this.buttonblock);
-	if (options.searches.length!=0) this.contents.append(this.searchblock);
-	this.container.append(this.contents);
-	$('body').append(this.container);
+	this.contants.append(this.listblock);
+	if (options.buttons.length!=0) this.container.append(this.buttonblock);
+	if (options.searches.length!=0) this.container.append(this.searchblock);
+	this.cover.append(this.container);
+	$('body').append(this.cover);
 };
 Referer.prototype={
 	/* reload referer */
@@ -253,15 +261,15 @@ Referer.prototype={
 			$(this).on('click',function(){if (options.callback!=null) options.callback($(this).closest('tr'));});
 		});
 		this.callback=options.callback;
-		this.container.show();
-		/* adjust contents paddings */
-		this.contents.css({
+		this.cover.show();
+		/* adjust container paddings */
+		this.container.css({
 			'padding-top':(this.searchblock.outerHeight(true))+'px',
 			'padding-bottom':(this.buttonblock.outerHeight(true))+'px',
 		});
 	},
 	/* hide referer */
 	hide:function(){
-		this.container.hide();
+		this.cover.hide();
 	}
 };
