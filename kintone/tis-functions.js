@@ -205,7 +205,11 @@ jQuery.fn.style=function(addition){
 	style+='	width:100%;';
 	style+='}';
 	style+='table th{';
-	style+='	font-wieght:normal;';
+	style+='	font-weight:normal;';
+	style+='}';
+	style+='table button{';
+	style+='	margin:0px;';
+	style+='	width:100%;';
 	style+='}';
 	style+=(addition!=null)?addition:'';
 	style+='</style>';
