@@ -125,6 +125,7 @@ var Referer=function(options){
 		'z-index':'888'
 	});
 	this.buttons=[];
+	var buttonblock=this.buttonblock;
 	$.each(options.buttons,function(index){
 		var buttonvalue=$.extend({
 			id:'',
@@ -137,8 +138,9 @@ var Referer=function(options){
 			.text(buttonvalue.text)
 			.on('click',function(){if (buttonvalue.callback!=null) buttonvalue.callback();})
 		);
-		this.buttonblock.append(this.buttons[index]);
+		buttonblock.append(this.buttons[index]);
 	});
+	var searchblock=this.searchblock;
 	$.each(options.searches,function(index){
 		var searchvalue=$.extend({
 			id:'',
@@ -166,7 +168,7 @@ var Referer=function(options){
 				});
 				break;
 		}
-		this.searchblock.append(
+		searchblock.append(
 			label.clone()
 			.append(span.clone().text(searchvalue.label))
 			.append(searchfield)
