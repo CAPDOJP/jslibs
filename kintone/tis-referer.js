@@ -73,7 +73,7 @@ var Referer=function(options){
 	/* create elements */
 	var block=$('<div>').css({
 		'box-sizing':'border-box'
-	}).fieldscss();
+	}).style();
 	var button=$('<button>').css({
 		'background-color':'transparent',
 		'border':'1px solid #a9a9a9',
@@ -81,13 +81,13 @@ var Referer=function(options){
 		'box-sizing':'border-box',
 		'height':'30px',
 		'lint-height':'30px'
-	}).fieldscss();
+	}).style();
 	var label=$('<label>').css({
 		'box-sizing':'border-box',
 		'padding-bottom':'5px',
 		'width':'100%',
 		'z-index':'11'
-	}).fieldscss();
+	}).style();
 	var select=$('<select>').css({
 		'box-sizing':'border-box',
 		'height':'30px',
@@ -95,7 +95,7 @@ var Referer=function(options){
 		'padding-left':'100px',
 		'width':'100%',
 		'z-index':'11'
-	}).fieldscss();
+	}).style();
 	var span=$('<span>').css({
 		'box-sizing':'border-box',
 		'height':'30px',
@@ -106,18 +106,18 @@ var Referer=function(options){
 		'top':'0px',
 		'width':'100px',
 		'z-index':'99'
-	}).fieldscss();
+	}).style();
 	var table=$('<table>').css({
 		'min-width':'100%',
 		'position':'relative',
-	}).fieldscss();
+	}).style();
 	var text=$('<input type="text">').css({
 		'box-sizing':'border-box',
 		'height':'30px',
 		'lint-height':'30px',
 		'padding-left':'100px',
 		'width':'100%'
-	}).fieldscss();
+	}).style();
 	this.container=block.clone().css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'display':'none',
@@ -247,13 +247,13 @@ Referer.prototype={
 		this.listblock.find('tbody').empty();
 		$.each(filters,function(index){
 			var filter=filters[index];
-			var list=$('<tr>').fieldscss();
+			var list=$('<tr>').style();
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key.toString()+'" value="'+values.value.toString()+'">');
 			});
 			$.each(this.datasource.text,function(index){
 				list.append($('<td>')
-				.fieldscss()
+				.style()
 				.text(filter[this.datasource.text[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);});
 			});

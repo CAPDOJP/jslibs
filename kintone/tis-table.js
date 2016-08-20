@@ -11,10 +11,15 @@
 /*
 *--------------------------------------------------------------------
 * parameters
-* options	@ id	        :element id
-*			@ container		:elements of container
-*			@ header		:elements of head
-*			@ template		:elements of row
+* options	@ id	        	:element id
+*			@ container			:elements of container
+*			@ header			:elements of head
+*			@ template			:elements of row
+*			@ merge				:merge flag
+*			@ mergeexclude		:merge exclude column index (array)
+*			@ mergeclass		:merged classname
+*			@ mergetrigger		:merge trigger
+*			@ unmergetrigger	:unmerge trigger
 * -------------------------------------------------------------------
 */
 var Table=function(options){
@@ -26,13 +31,13 @@ var Table=function(options){
 		merge:false,
 		mergeexclude:[],
 		mergeclass:'merge',
-		mergecallback:null,
-		unmergecallback:null
+		mergetrigger:null,
+		unmergetrigger:null
 	},options);
 	/* property */
-	this.container=$('<table id="'+options.id+'">').fieldscss();
-	this.head=$('<thead>').fieldscss();
-	this.contents=$('<tbody>').fieldscss();
+	this.container=$('<table id="'+options.id+'">').style();
+	this.head=$('<thead>').style();
+	this.contents=$('<tbody>').style();
 	this.template=options.template;
 	this.mergeclass=options.mergeclass;
 	/* append elements */
@@ -50,7 +55,7 @@ var Table=function(options){
 	var mergeto=-1;
 	var mergelimitfrom=-1;
 	var mergelimitto=-1;
-	/* events od merge */
+	/* events of merge */
 	container.on('mousedown touchstart','td',function(e){
 		if (!options.merge) return;
 		var row=$(this).parent();
@@ -183,7 +188,7 @@ Table.prototype={
 	unmergecell:function(cell){
 		var colspan=parseInt('0'+cell.attr('colspan'));
         cell.removeAttr('colspan');
-        for (var i=0;i<colspan-1;i++) $('<td>').fieldscss().insertAfter(cell);
+        for (var i=0;i<colspan-1;i++) $('<td>').style().insertAfter(cell);
 		cell.removeClass(this.mergeclass);
 	}
 };

@@ -14,7 +14,7 @@
 * date calc
 *--------------------------------------------------------------------
 * parameters
-* pattern:calculation pattern
+* pattern	:calculation pattern
 * -------------------------------------------------------------------
 */
 Date.prototype.calc=function(pattern){
@@ -54,7 +54,7 @@ Date.prototype.calc=function(pattern){
 * date format
 *--------------------------------------------------------------------
 * parameters
-* pattern:format pattern
+* pattern	:format pattern
 * -------------------------------------------------------------------
 */
 Date.prototype.format=function(pattern){
@@ -71,7 +71,65 @@ Date.prototype.format=function(pattern){
 }
 /*
 *--------------------------------------------------------------------
-* extension lookup
+* get elements
+*--------------------------------------------------------------------
+* parameters
+* fieldcode	:field code
+* -caution-
+* lookup field in mobile is disable
+* -------------------------------------------------------------------
+*/
+jQuery.fn.fields=function(fieldcode){
+	var fields=[];
+	var target=$(this);
+	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
+		if (values.var==fieldcode)
+		{
+			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
+				if ($(this).prop('tagName').toLowerCase()!='undefined')
+					if ($.inArray($(this),fields)==-1) fields.push($(this));
+			});
+		}
+	});
+	return fields;
+}
+/*
+*--------------------------------------------------------------------
+* setup lists
+*--------------------------------------------------------------------
+* parameters
+* options	@ param		:api parameter
+*			@ value		:selected value
+*			@ text		:display text
+*			@ callback	:callback function
+* -------------------------------------------------------------------
+*/
+jQuery.fn.listitems=function(options){
+	var options=$.extend({
+		param:{},
+		value:'',
+		text:'',
+		callback:null
+	},options);
+	return $(this).each(function(){
+		var target=$(this);
+		target.empty();
+		kintone.api(kintone.api.url('/k/v1/records',true),'GET',options.param,function(resp){
+			$.each(resp.records,function(index){
+				target.append(
+					$('<option>')
+					.style()
+					.attr('value',resp.records[index][options.value].value)
+					.text(resp.records[index][options.text].value)
+				);
+			});
+			if (options.callback!=null) options.callback();
+		},function(error){});
+	});
+}
+/*
+*--------------------------------------------------------------------
+* related data acquisition
 *--------------------------------------------------------------------
 * parameters
 * options	@ recordcode	:target record code
@@ -85,7 +143,7 @@ Date.prototype.format=function(pattern){
 *							.relation.recordcode is record code
 * -------------------------------------------------------------------
 */
-jQuery.fn.crosslookup=function(options){
+jQuery.fn.relations=function(options){
 	var options=$.extend({
 		recordcode:'',
 		datasource:null,
@@ -112,40 +170,21 @@ jQuery.fn.crosslookup=function(options){
 				},options.fields[index]);
 				if (targetvalue.length!=0)
 				{
-					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==target.val();});
+					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==targetvalue;});
 					if (filterbase.length!=0)
 					{
-						var filterreferer=$.grep(fieldvalues.relation.datasource,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
-						$.each($('body').fields(fieldvalues.fieldcode),function(){$(this).val(filterreferer[0][fieldvalues.relation.recordcode].value);});
+						var filterreferer=$.grep(fieldvalues.relation.datasource,function(item,index){
+							return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;
+						});
+						if (filterreferer.length!=0)
+							$.each($('body').fields(fieldvalues.fieldcode),function(){
+								$(this).val(filterreferer[0][fieldvalues.relation.recordcode].value);
+							});
 					}
 				}
 			});
 		},500);
 	});
-}
-/*
-*--------------------------------------------------------------------
-* get elements
-*--------------------------------------------------------------------
-* parameters
-* code:field code
-* -caution-
-* lookup field in mobile is disable
-* -------------------------------------------------------------------
-*/
-jQuery.fn.fields=function(fieldcode){
-	var fields=[];
-	var target=$(this);
-	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
-		if (values.var==fieldcode)
-		{
-			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
-				if ($(this).prop('tagName').toLowerCase()!='undefined')
-					if ($.inArray($(this),fields)==-1) fields.push($(this));
-			});
-		}
-	});
-	return fields;
 }
 /*
 *--------------------------------------------------------------------
@@ -156,130 +195,37 @@ jQuery.fn.fields=function(fieldcode){
 *			@ width		:width
 * -------------------------------------------------------------------
 */
-jQuery.fn.fieldscss=function(options){
+jQuery.fn.style=function(options){
 	var options=$.extend({
 		height:'100%',
 		width:'100%'
 	},options);
 	return $(this).each(function(){
-		var target=$(this).css({'box-sizing':'border-box'});
+		var target=$(this).css({
+			'box-sizing':'border-box',
+			'position':'relative',
+		});
 		switch (target.prop('tagName').toLowerCase())
 		{
 			case 'button':
-				target.css({
-					'background-color':'transparent',
-					'border':'1px solid #a9a9a9',
-					'border-radius':'5px',
-					'height':options.height,
-					'lint-height':options.height,
-					'width':options.width
-				});
 				break;
 			case 'div':
-				target.css({
-					'padding':'5px',
-					'position':'relative',
-					'text-align':'center',
-					'width':options.width
-				});
 				break;
 			case 'input':
-				if (target.prop('type').toLowerCase()=='password' ||
-					target.prop('type').toLowerCase()=='text')
-				target.css({
-					'background-color':'transparent',
-					'border':'1px solid #a9a9a9',
-					'border-radius':'5px',
-					'display':'block',
-					'height':options.height,
-					'lint-height':options.height,
-					'margin':'15px 0px',
-					'padding':'0px',
-					'width':options.width
-				});
 				break;
 			case 'select':
-				target.css({
-					'background-color':'transparent',
-					'border':'1px solid #a9a9a9',
-					'border-radius':'5px',
-					'display':'block',
-					'height':options.height,
-					'lint-height':options.height,
-					'margin':'15px 0px',
-					'padding':'0px',
-					'width':options.width
-				});
 				break;
 			case 'span':
-				target.css({
-					'lint-height':options.height,
-					'padding':'0px 15px'
-				});
 				break;
 			case 'table':
-				target.css({
-					'margin':'15px 0px',
-					'width':options.width
-				});
 				break;
 			case 'textarea':
-				target.css({
-					'background-color':'transparent',
-					'border':'1px solid #a9a9a9',
-					'border-radius':'5px',
-					'display':'block',
-					'height':options.height,
-					'margin':'15px 0px',
-					'padding':'0px',
-					'width':options.width
-				});
 				break;
 			case 'td':
-				target.css({
-					'padding':'5px',
-					'width':options.width
-				});
 				break;
 			case 'th':
-				target.css({
-					'font-weight':'normal'
-				});
 				break;
 		}
-	});
-}
-/*
-*--------------------------------------------------------------------
-* setup lists
-*--------------------------------------------------------------------
-* parameters
-* options	@ param	:api parameter
-*			@ value	:selected value
-*			@ text	:display text
-* -------------------------------------------------------------------
-*/
-jQuery.fn.listitems=function(options){
-	var options=$.extend({
-		param:{},
-		value:'',
-		text:'',
-		callback:null
-	},options);
-	return $(this).each(function(){
-		var target=$(this);
-		target.empty();
-		kintone.api(kintone.api.url('/k/v1/records',true),'GET',options.param,function(resp){
-			$.each(resp.records,function(index){
-				target.append(
-					$('<option>')
-					.fieldscss()
-					.attr('value',resp.records[index][options.value].value)
-					.text(resp.records[index][options.text].value)
-				);
-			});
-			if (options.callback!=null) options.callback();
-		},function(error){});
 	});
 }
 })(jQuery);
