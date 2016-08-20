@@ -69,7 +69,7 @@ var Referer=function(options){
 	this.displaytext=options.displaytext;
 	this.buttons=[];
 	this.callback=null;
-	/* create elements */
+	/* valiable */
 	var div=$('<div>');
 	var button=$('<button>');
 	var label=$('<label>');
@@ -77,6 +77,7 @@ var Referer=function(options){
 	var span=$('<span>');
 	var table=$('<table>');
 	var text=$('<input type="text">');
+	/* append elements */
 	this.container=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'display':'none',
@@ -125,8 +126,12 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'888'
 	});
+	/* valiable */
+	var my=this;
 	var buttons=this.buttons;
 	var buttonblock=this.buttonblock;
+	var searchblock=this.searchblock;
+	/* append elements */
 	$.each(options.buttons,function(index){
 		var buttonvalue=$.extend({
 			id:'',
@@ -141,7 +146,6 @@ var Referer=function(options){
 		);
 		buttonblock.append(buttons[index]);
 	});
-	var searchblock=this.searchblock;
 	$.each(options.searches,function(index){
 		var searchvalue=$.extend({
 			id:'',
@@ -160,7 +164,11 @@ var Referer=function(options){
 				searchfield.listitems({
 					param:searchvalue.param,
 					value:searchvalue.value,
-					text:searchvalue.text
+					text:searchvalue.text,
+					callback:function(){
+						/* reload referer */
+						this.search();
+					}
 				});
 				break;
 			case 'input':
@@ -175,7 +183,6 @@ var Referer=function(options){
 			.append(searchfield)
 		);
 	});
-	/* append elements */
 	this.contents.append(this.listblock);
 	if (options.buttons.length!=0) this.contents.append(this.buttonblock);
 	if (options.searches.length!=0) this.contents.append(this.searchblock);
@@ -186,8 +193,6 @@ var Referer=function(options){
 		'padding-top':(this.searchblock.outerHeight(true))+'px',
 		'padding-bottom':(this.buttonblock.outerHeight(true))+'px',
 	});
-	/* reload referer */
-	this.search();
 };
 Referer.prototype={
 	/* reload referer */
