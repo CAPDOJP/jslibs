@@ -188,7 +188,7 @@ jQuery.fn.relations=function(options){
 }
 /*
 *--------------------------------------------------------------------
-* set stylesheets
+* setup stylesheets
 *--------------------------------------------------------------------
 * parameters
 * addition	:additional style sheet
