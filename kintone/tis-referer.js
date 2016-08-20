@@ -69,13 +69,13 @@ var Referer=function(options){
 	this.displaytext=options.displaytext;
 	this.callback=null;
 	/* create elements */
-	var div=$('<div>').style();
-	var button=$('<button>').style();
-	var label=$('<label>').style();
-	var select=$('<select>').style();
-	var span=$('<span>').style();
-	var table=$('<table>').style();
-	var text=$('<input type="text">').style();
+	var div=$('<div>');
+	var button=$('<button>');
+	var label=$('<label>');
+	var select=$('<select>');
+	var span=$('<span>');
+	var table=$('<table>');
+	var text=$('<input type="text">');
 	this.container=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'display':'none',
@@ -213,13 +213,12 @@ Referer.prototype={
 		this.listblock.find('tbody').empty();
 		$.each(filters,function(index){
 			var filter=filters[index];
-			var list=$('<tr>').style();
+			var list=$('<tr>');
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
 			$.each(this.displaytext,function(index){
 				list.append($('<td>')
-				.style()
 				.text(filter[this.displaytext[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);});
 			});

@@ -35,9 +35,9 @@ var Table=function(options){
 		unmergetrigger:null
 	},options);
 	/* property */
-	this.container=$('<table id="'+options.id+'">').style();
-	this.head=$('<thead>').style().append(options.head);
-	this.contents=$('<tbody>').style();
+	this.container=$('<table id="'+options.id+'">');
+	this.head=$('<thead>').append(options.head);
+	this.contents=$('<tbody>');
 	this.template=options.template;
 	this.mergeclass=options.mergeclass;
 	/* append elements */
@@ -61,8 +61,10 @@ var Table=function(options){
 		var row=$(this).parent();
 		var cellindex=row.find('td').index($(this));
 		var rowindex=contents.find('tr').index(row);
+		alert('aaaa');
 		if (options.mergeexclude.indexOf(my.cellindex(row,cellindex))==-1)
 		{
+			alert('bbbb');
 			/* merge start */
 			merged=false;
 			mergerow=rowindex;
@@ -188,7 +190,7 @@ Table.prototype={
 	unmergecell:function(cell){
 		var colspan=parseInt('0'+cell.attr('colspan'));
         cell.removeAttr('colspan');
-        for (var i=0;i<colspan-1;i++) $('<td>').style().insertAfter(cell);
+        for (var i=0;i<colspan-1;i++) $('<td>').insertAfter(cell);
 		cell.removeClass(this.mergeclass);
 	}
 };

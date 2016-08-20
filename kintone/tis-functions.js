@@ -119,7 +119,6 @@ jQuery.fn.listitems=function(options){
 			$.each(resp.records,function(index){
 				target.append(
 					$('<option>')
-					.style()
 					.attr('value',resp.records[index][options.value].value)
 					.text(resp.records[index][options.text].value)
 				);
@@ -192,41 +191,18 @@ jQuery.fn.relations=function(options){
 * set stylesheets
 *--------------------------------------------------------------------
 * parameters
-* options	@ height	:height
-*			@ width		:width
+* addition	:additional style sheet
 * -------------------------------------------------------------------
 */
-jQuery.fn.style=function(options){
-	var options=$.extend({
-		height:'100%',
-		width:'100%'
-	},options);
-	return $(this).each(function(){
-		var target=$(this).css({
-			'box-sizing':'border-box',
-			'position':'relative',
-		});
-		switch (target.prop('tagName').toLowerCase())
-		{
-			case 'button':
-				break;
-			case 'div':
-				break;
-			case 'input':
-				break;
-			case 'select':
-				break;
-			case 'span':
-				break;
-			case 'table':
-				break;
-			case 'textarea':
-				break;
-			case 'td':
-				break;
-			case 'th':
-				break;
-		}
-	});
+jQuery.fn.style=function(addition){
+	var style='';
+	style+='<style type="text/css">';
+	style+='body *{';
+	style+='	box-sizing:border-box;';
+	style+='	position:relative;';
+	style+='}';
+	style+=(addition!=null)?addition:'';
+	style+='</style>';
+	$(this).append(style);
 }
 })(jQuery);
