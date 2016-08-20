@@ -11,34 +11,8 @@
 /*
 *--------------------------------------------------------------------
 * parameters
-* options	@ datasource	:datasource
-*							.data is json
-*							.text is key for display text (array)
-*			@ searches		:search condition elements
-*							.id is elements id
-*							.label is elements label text
-*							.type is elements type
-*							.param is api parameter (<select> only)
-*							.text is key for display text (<select> only)
-*							.value is key for value (<select> only)
-*							.align is text alignment (<input> only)
-*							-example-
-*							searches[
-*								{
-*									id:'users',
-*									label:'choose user',
-*									type:'select',
-*									data:resp.records,
-*									text:'username',
-*									value:'userid
-*								},
-*								{
-*									id:'companyname',
-*									label:'input companyname',
-*									type:'input',
-*									align:'left'
-*								}
-*							]
+* options	@ datasource	:json
+*			@ displaytext	:display text (array)
 *			@ buttons		:button elements
 *							.id is elements id
 *							.text is display text
@@ -56,69 +30,53 @@
 *									callback:function(){alert('cancel clicked');}
 *								}
 *							]
+*			@ searches		:search condition elements
+*							.id is elements id
+*							.label is elements label text
+*							.type is elements type
+*							.param is api parameter (<select> only)
+*							.value is key for value (<select> only)
+*							.text is key for display text (<select> only)
+*							.align is text alignment (<input> only)
+*							-example-
+*							searches[
+*								{
+*									id:'users',
+*									label:'choose user',
+*									type:'select',
+*									param:{app:1},
+*									value:'userid,
+*									text:'username'
+*								},
+*								{
+*									id:'companyname',
+*									label:'input companyname',
+*									type:'input',
+*									align:'left'
+*								}
+*							]
 * -------------------------------------------------------------------
 */
 var Referer=function(options){
 	var options=$.extend({
-		datasource:{
-			data:null,
-			text:[]
-		},
+		datasource:null,
+		displaytext:[],
 		searches:[],
 		buttons:[]
 	},options);
 	/* property */
 	this.datasource=options.datasource;
+	this.displaytext=options.displaytext;
 	this.callback=null;
 	/* create elements */
-	var block=$('<div>').css({
-		'box-sizing':'border-box'
-	}).style();
-	var button=$('<button>').css({
-		'background-color':'transparent',
-		'border':'1px solid #a9a9a9',
-		'border-radius':'5px',
-		'box-sizing':'border-box',
-		'height':'30px',
-		'lint-height':'30px'
-	}).style();
-	var label=$('<label>').css({
-		'box-sizing':'border-box',
-		'padding-bottom':'5px',
-		'width':'100%',
-		'z-index':'11'
-	}).style();
-	var select=$('<select>').css({
-		'box-sizing':'border-box',
-		'height':'30px',
-		'lint-height':'30px',
-		'padding-left':'100px',
-		'width':'100%',
-		'z-index':'11'
-	}).style();
-	var span=$('<span>').css({
-		'box-sizing':'border-box',
-		'height':'30px',
-		'lint-height':'30px',
-		'left':'0px',
-		'padding':'5px',
-		'position':'absolute',
-		'top':'0px',
-		'width':'100px',
-		'z-index':'99'
-	}).style();
-	var table=$('<table>').css({
-		'min-width':'100%',
-		'position':'relative',
-	}).style();
-	var text=$('<input type="text">').css({
-		'box-sizing':'border-box',
-		'height':'30px',
-		'lint-height':'30px',
-		'padding-left':'100px',
-		'width':'100%'
-	}).style();
-	this.container=block.clone().css({
+	var div=$('<div>').style();
+	var button=$('<button>').style();
+	var label=$('<label>').style();
+	var select=$('<select>').style();
+	var span=$('<span>').style();
+	var table=$('<table>').style();
+	var text=$('<input type="text">').style();
+	this.container=div.clone().css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'display':'none',
 		'height':'100%',
@@ -128,7 +86,7 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'999999'
 	});
-	this.contents=block.clone().css({
+	this.contents=div.clone().css({
 		'background-color':'#ffffff',
 		'bottom':'0',
 		'border-radius':'5px',
@@ -145,7 +103,7 @@ var Referer=function(options){
 		'top':'0',
 		'width':'900px'
 	});
-	this.buttonblock=block.clone().css({
+	this.buttonblock=div.clone().css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'bottom':'0px',
 		'left':'0px',
@@ -156,7 +114,7 @@ var Referer=function(options){
 		'z-index':'999'
 	});
 	this.listblock=table.clone().append('<tbody>');
-	this.searchblock=block.clone().css({
+	this.searchblock=div.clone().css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'left':'0px',
 		'padding':'5px',
@@ -187,8 +145,8 @@ var Referer=function(options){
 			label:'',
 			type:'',
 			param:{},
-			text:'',
 			value:'',
+			text:'',
 			align:'left'
 		},options.searches[index]);
 		var searchfield=null;
@@ -208,12 +166,16 @@ var Referer=function(options){
 				});
 				break;
 		}
-		this.searchblock.append(label.clone().append(span.clone().text(searchvalue.label)).append(searchfield));
+		this.searchblock.append(
+			label.clone()
+			.append(span.clone().text(searchvalue.label))
+			.append(searchfield)
+		);
 	});
 	/* append elements */
 	this.contents.append(this.listblock);
-	if (options.searches.length!=0) this.contents.append(this.searchblock);
 	if (options.buttons.length!=0) this.contents.append(this.buttonblock);
+	if (options.searches.length!=0) this.contents.append(this.searchblock);
 	this.container.append(this.contents);
 	$('body').append(this.container);
 	/* adjust contents paddings */
@@ -221,6 +183,8 @@ var Referer=function(options){
 		'padding-top':(this.searchblock.outerHeight(true)).toString()+'px',
 		'padding-bottom':(this.buttonblock.outerHeight(true)).toString()+'px',
 	});
+	/* reload referer */
+	this.search();
 };
 Referer.prototype={
 	/* reload referer */
@@ -228,7 +192,7 @@ Referer.prototype={
 		var callback=this.callback;
 		var lists=this.listblock.find('tbody').find('tr').find('td');
 		var searches=this.searchblock.find('input,select');
-		var filters=$.grep(this.datasource.data,function(item,index){
+		var filters=$.grep(this.datasource,function(item,index){
 			var exists=0;
 			$.each(searches,function(index){
 				if (searches.val().toString()=='') exists++;
@@ -251,10 +215,10 @@ Referer.prototype={
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key.toString()+'" value="'+values.value.toString()+'">');
 			});
-			$.each(this.datasource.text,function(index){
+			$.each(this.displaytext,function(index){
 				list.append($('<td>')
 				.style()
-				.text(filter[this.datasource.text[index]].value))
+				.text(filter[this.displaytext[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);});
 			});
 			this.listblock.find('tbody').append(list);
