@@ -36,7 +36,7 @@ var Table=function(options){
 	},options);
 	/* property */
 	this.container=$('<table id="'+options.id+'">').style();
-	this.head=$('<thead>').style();
+	this.head=$('<thead>').style().append(options.head);
 	this.contents=$('<tbody>').style();
 	this.template=options.template;
 	this.mergeclass=options.mergeclass;
