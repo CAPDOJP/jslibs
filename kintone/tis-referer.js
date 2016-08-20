@@ -197,7 +197,7 @@ Referer.prototype={
 		var listblock=this.listblock;
 		var lists=this.listblock.find('tbody').find('tr').find('td');
 		var searches=this.searchblock.find('input,select');
-		var filters=$.grep(this.datasource,function(item,index){
+		var filtersearch=$.grep(this.datasource,function(item,index){
 			var exists=0;
 			$.each(searches,function(index){
 				if ($(this).val()=='') exists++;
@@ -214,9 +214,9 @@ Referer.prototype={
 		});
 		/* create lists */
 		listblock.find('tbody').empty();
-		for (var i=0;i<filters.length;i++)
+		for (var i=0;i<filtersearch.length;i++)
 		{
-			var filter=filters[i];
+			var filter=filtersearch[i];
 			var list=$('<tr>');
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
