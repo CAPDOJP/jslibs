@@ -208,7 +208,6 @@ Referer.prototype={
 				if ($(this).val()=='') exists++;
 				else
 				{
-					alert('item:'+item[$(this).attr('id')].value+' search:'+$(this).val());
 					if (item[$(this).attr('id')].value==$(this).val()) exists++;
 				}
 			});
