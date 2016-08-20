@@ -167,7 +167,7 @@ var Referer=function(options){
 					text:searchvalue.text,
 					callback:function(){
 						/* reload referer */
-						this.search();
+						my.search();
 					}
 				});
 				break;
