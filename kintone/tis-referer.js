@@ -104,7 +104,7 @@ var Referer=function(options){
 		'top':'0',
 		'width':'900px'
 	});
-	this.contants=div.clone(true).css({
+	this.contents=div.clone(true).css({
 		'height':'100%',
 		'min-height':'100%',
 		'min-width':'100%',
@@ -206,7 +206,8 @@ var Referer=function(options){
 			})
 		);
 	}
-	this.contants.append(this.listblock);
+	this.contents.append(this.listblock);
+	this.container.append(this.contents);
 	if (options.buttons.length!=0) this.container.append(this.buttonblock);
 	if (options.searches.length!=0) this.container.append(this.searchblock);
 	this.cover.append(this.container);
