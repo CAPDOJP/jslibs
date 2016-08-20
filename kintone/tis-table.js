@@ -174,13 +174,13 @@ Table.prototype={
     	if (callback!=null) callback(target);
 	},
 	/* mearge cell */
-	merge:function(cell,from,to){
+	mergecell:function(cell,from,to){
         cell.attr('colspan',to-from+1);
         for (var i=from;i<to;i++) cell.parent().find('td').eq(from+1).remove();
 		cell.addClass(this.mergeclass);
 	},
 	/* unmearge cell */
-	unmerge:function(cell){
+	unmergecell:function(cell){
 		var colspan=parseInt('0'+cell.attr('colspan'));
         cell.removeAttr('colspan');
         for (var i=0;i<colspan-1;i++) $('<td>').fieldscss().insertAfter(cell);

@@ -79,7 +79,7 @@ Date.prototype.format=function(pattern){
 *			@ fields		:value change elements
 *							.fieldcode is field code
 *							.relation is array
-*							.relation.data is json
+*							.relation.datasource is json
 *							.relation.basekey is base key
 *							.relation.refererkey is referernce key
 *							.relation.recordcode is record code
@@ -104,7 +104,7 @@ jQuery.fn.crosslookup=function(options){
 				var fieldvalues=$.extend({
 					fieldcode:'',
 					relation:{
-						data:null,
+						datasource:null,
 						basekey:'',
 						refererkey:'',
 						recordcode:''
@@ -115,7 +115,7 @@ jQuery.fn.crosslookup=function(options){
 					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==target.val();});
 					if (filterbase.length!=0)
 					{
-						var filterreferer=$.grep(fieldvalues.relation.data,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
+						var filterreferer=$.grep(fieldvalues.relation.datasource,function(item,index){return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;});
 						$.each($('body').fields(fieldvalues.fieldcode),function(){$(this).val(filterreferer[0][fieldvalues.relation.recordcode].value);});
 					}
 				}
