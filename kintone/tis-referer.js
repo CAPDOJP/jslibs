@@ -214,7 +214,7 @@ Referer.prototype={
 		});
 		/* create lists */
 		listblock.find('tbody').empty();
-		for (var i=0;i<filter.length;i++)
+		for (var i=0;i<filters.length;i++)
 		{
 			var filter=filters[i];
 			var list=$('<tr>');
