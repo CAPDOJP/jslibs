@@ -125,7 +125,7 @@ var Table=function(options){
 		{
 			if (options.mergetrigger!=null)
 				options.mergetrigger(
-					container,
+					my,
 					cell,
 					mergerow,
 					mergefrom,
@@ -136,7 +136,7 @@ var Table=function(options){
 		{
 			if (options.unmergetrigger!=null)
 				options.unmergetrigger(
-					container,
+					my,
 					cell,
 					mergerow,
 					mergefrom
