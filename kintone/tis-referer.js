@@ -67,6 +67,7 @@ var Referer=function(options){
 	/* property */
 	this.datasource=options.datasource;
 	this.displaytext=options.displaytext;
+	this.buttons=[];
 	this.callback=null;
 	/* create elements */
 	var div=$('<div>');
@@ -124,7 +125,7 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'888'
 	});
-	this.buttons=[];
+	var buttons=this.buttons;
 	var buttonblock=this.buttonblock;
 	$.each(options.buttons,function(index){
 		var buttonvalue=$.extend({
@@ -132,13 +133,13 @@ var Referer=function(options){
 			text:'',
 			callback:null
 		},options.buttons[index]);
-		this.buttons.push(
+		buttons.push(
 			button.clone(true)
 			.attr('id',buttonvalue.id)
 			.text(buttonvalue.text)
 			.on('click',function(){if (buttonvalue.callback!=null) buttonvalue.callback();})
 		);
-		buttonblock.append(this.buttons[index]);
+		buttonblock.append(buttons[index]);
 	});
 	var searchblock=this.searchblock;
 	$.each(options.searches,function(index){
@@ -192,6 +193,8 @@ Referer.prototype={
 	/* reload referer */
 	search:function(){
 		var callback=this.callback;
+		var displaytext=this.displaytext;
+		var listblock=this.listblock;
 		var lists=this.listblock.find('tbody').find('tr').find('td');
 		var searches=this.searchblock.find('input,select');
 		var filters=$.grep(this.datasource,function(item,index){
@@ -210,19 +213,19 @@ Referer.prototype={
 			$(this).off('click');
 		});
 		/* create lists */
-		this.listblock.find('tbody').empty();
+		listblock.find('tbody').empty();
 		$.each(filters,function(index){
 			var filter=filters[index];
 			var list=$('<tr>');
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
-			$.each(this.displaytext,function(index){
+			$.each(displaytext,function(index){
 				list.append($('<td>')
-				.text(filter[this.displaytext[index]].value))
+				.text(filter[displaytext[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);});
 			});
-			this.listblock.find('tbody').append(list);
+			listblock.find('tbody').append(list);
 		});
 	},
 	/* display referer */
