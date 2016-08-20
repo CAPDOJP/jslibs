@@ -61,10 +61,8 @@ var Table=function(options){
 		var row=$(this).parent();
 		var cellindex=row.find('td').index($(this));
 		var rowindex=contents.find('tr').index(row);
-		alert('aaaa');
 		if (options.mergeexclude.indexOf(my.cellindex(row,cellindex))==-1)
 		{
-			alert('bbbb');
 			/* merge start */
 			merged=false;
 			mergerow=rowindex;
