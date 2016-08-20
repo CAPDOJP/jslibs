@@ -76,7 +76,7 @@ var Referer=function(options){
 	var span=$('<span>').style();
 	var table=$('<table>').style();
 	var text=$('<input type="text">').style();
-	this.container=div.clone().css({
+	this.container=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'display':'none',
 		'height':'100%',
@@ -86,7 +86,7 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'999999'
 	});
-	this.contents=div.clone().css({
+	this.contents=div.clone(true).css({
 		'background-color':'#ffffff',
 		'bottom':'0',
 		'border-radius':'5px',
@@ -103,7 +103,7 @@ var Referer=function(options){
 		'top':'0',
 		'width':'900px'
 	});
-	this.buttonblock=div.clone().css({
+	this.buttonblock=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'bottom':'0px',
 		'left':'0px',
@@ -113,8 +113,8 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'999'
 	});
-	this.listblock=table.clone().append('<tbody>');
-	this.searchblock=div.clone().css({
+	this.listblock=table.clone(true).append('<tbody>');
+	this.searchblock=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'left':'0px',
 		'padding':'5px',
@@ -133,7 +133,7 @@ var Referer=function(options){
 			callback:null
 		},options.buttons[index]);
 		this.buttons.push(
-			button.clone()
+			button.clone(true)
 			.attr('id',buttonvalue.id)
 			.text(buttonvalue.text)
 			.on('click',function(){if (buttonvalue.callback!=null) buttonvalue.callback();})
@@ -155,7 +155,7 @@ var Referer=function(options){
 		switch (searchvalue.type)
 		{
 			case 'select':
-				searchfield=select.clone().attr('id',searchvalue.id);
+				searchfield=select.clone(true).attr('id',searchvalue.id);
 				searchfield.listitems({
 					param:searchvalue.param,
 					value:searchvalue.value,
@@ -163,14 +163,14 @@ var Referer=function(options){
 				});
 				break;
 			case 'input':
-				searchfield=text.clone().attr('id',searchvalue.id).css({
+				searchfield=text.clone(true).attr('id',searchvalue.id).css({
 					'text-align':searchvalue.align
 				});
 				break;
 		}
 		searchblock.append(
-			label.clone()
-			.append(span.clone().text(searchvalue.label))
+			label.clone(true)
+			.append(span.clone(true).text(searchvalue.label))
 			.append(searchfield)
 		);
 	});

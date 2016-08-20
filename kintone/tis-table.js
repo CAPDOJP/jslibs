@@ -169,7 +169,7 @@ Table.prototype={
 	},
 	/* row insert */
 	insertrow:function(row,callback){
-	    var target=this.template.clone();
+	    var target=this.template.clone(true);
 	    if (row==null) this.contents.append(target);
 	    else
 	    {
