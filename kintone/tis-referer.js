@@ -200,10 +200,10 @@ Referer.prototype={
 		var filters=$.grep(this.datasource,function(item,index){
 			var exists=0;
 			$.each(searches,function(index){
-				if (searches.val()=='') exists++;
+				if ($(this).val()=='') exists++;
 				else
 				{
-					if (item[$(this).attr('id')].value==searches.val()) exists++;
+					if (item[$(this).attr('id')].value==$(this).val()) exists++;
 				}
 			});
 			return searches.length==exists;
