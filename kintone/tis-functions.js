@@ -31,10 +31,10 @@ Date.prototype.calc=function(pattern){
 		if (month<1) {year--;month=12;}
 		if (month>12) {year++;month=1;}
 		//check of next month
-		var check=new Date(year.toString()+'/'+month.toString()+'/'+day.toString());
+		var check=new Date(year+'/'+month+'/'+day);
 		if (check.getMonth()+1!=month)
 		{
-			check=new Date(year.toString()+'/'+(month+1).toString()+'/1');
+			check=new Date(year+'/'+(month+1)+'/1');
 			check.setDate(0);
 			day=check.getDate();
 		}
@@ -47,7 +47,7 @@ Date.prototype.calc=function(pattern){
 	if (pattern.match(/^first-of-month$/g)!=null) day=1;
 	if (month<1){year--;month=12;}
 	if (month>12){year++;month=1;}
-	return new Date(year.toString(),(month-1).toString(),day.toString());
+	return new Date(year,(month-1),day);
 }
 /*
 *--------------------------------------------------------------------
@@ -58,8 +58,8 @@ Date.prototype.calc=function(pattern){
 * -------------------------------------------------------------------
 */
 Date.prototype.format=function(pattern){
-	var year=this.getFullYear().toString();
-	var month=('0'+(this.getMonth()+1).toString()).slice(-2);
+	var year=this.getFullYear();
+	var month=('0'+(this.getMonth()+1)).slice(-2);
 	var day=('0'+this.getDate()).slice(-2);
 	//year
 	if (pattern.match(/^Y$/g)!=null) return year;
@@ -115,6 +115,7 @@ jQuery.fn.listitems=function(options){
 		var target=$(this);
 		target.empty();
 		kintone.api(kintone.api.url('/k/v1/records',true),'GET',options.param,function(resp){
+			$.data(target[0],'datasource',resp.records);
 			$.each(resp.records,function(index){
 				target.append(
 					$('<option>')
@@ -154,7 +155,7 @@ jQuery.fn.relations=function(options){
 		$.data(target[0],'value','');
 		/* check field value */
 		setInterval(function(){
-			var targetvalue=(target.val()!=null)?target.val().toString():'';
+			var targetvalue=(target.val()!=null)?target.val():'';
 			if ($.data(target[0],'value')==targetvalue) return;
 			$.data(target[0],'value',targetvalue);
 			/* set fields value */

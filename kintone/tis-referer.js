@@ -180,8 +180,8 @@ var Referer=function(options){
 	$('body').append(this.container);
 	/* adjust contents paddings */
 	this.contents.css({
-		'padding-top':(this.searchblock.outerHeight(true)).toString()+'px',
-		'padding-bottom':(this.buttonblock.outerHeight(true)).toString()+'px',
+		'padding-top':(this.searchblock.outerHeight(true))+'px',
+		'padding-bottom':(this.buttonblock.outerHeight(true))+'px',
 	});
 	/* reload referer */
 	this.search();
@@ -195,10 +195,10 @@ Referer.prototype={
 		var filters=$.grep(this.datasource,function(item,index){
 			var exists=0;
 			$.each(searches,function(index){
-				if (searches.val().toString()=='') exists++;
+				if (searches.val()=='') exists++;
 				else
 				{
-					if (item[$(this).attr('id')].value.toString()==searches.val().toString()) exists++;
+					if (item[$(this).attr('id')].value==searches.val()) exists++;
 				}
 			});
 			return searches.length==exists;
@@ -213,7 +213,7 @@ Referer.prototype={
 			var filter=filters[index];
 			var list=$('<tr>').style();
 			$.each(filter,function(key,values){
-				list.append('<input type="hidden" id="'+key.toString()+'" value="'+values.value.toString()+'">');
+				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
 			$.each(this.displaytext,function(index){
 				list.append($('<td>')
