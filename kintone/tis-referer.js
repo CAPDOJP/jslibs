@@ -203,7 +203,7 @@ Referer.prototype={
 				if ($(this).val()=='') exists++;
 				else
 				{
-					alert(item[$(this).attr('id')].value);
+					alert('item:'+item[$(this).attr('id')].value+' search:'+$(this).val());
 					if (item[$(this).attr('id')].value==$(this).val()) exists++;
 				}
 			});
@@ -217,7 +217,6 @@ Referer.prototype={
 		listblock.find('tbody').empty();
 		for (var i=0;i<filtersearch.length;i++)
 		{
-			alert('aaa');
 			var filter=filtersearch[i];
 			var list=$('<tr>');
 			$.each(filter,function(key,values){
