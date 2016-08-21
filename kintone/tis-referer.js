@@ -70,7 +70,9 @@ var Referer=function(options){
 	this.buttons=[];
 	this.callback=null;
 	/* valiable */
-	var div=$('<div>');
+	var div=$('<div>').css({
+		'box-sizing':'border-box;'
+	});
 	var button=$('<button>');
 	var label=$('<label>');
 	var select=$('<select>');
