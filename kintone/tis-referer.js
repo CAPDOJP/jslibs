@@ -177,10 +177,7 @@ var Referer=function(options){
 					param:searchvalue.param,
 					value:searchvalue.value,
 					text:searchvalue.text,
-					callback:function(){
-						/* reload referer */
-						my.search();
-					}
+					addition:$('<option value=""></option')
 				});
 				break;
 			case 'input':
@@ -212,6 +209,8 @@ var Referer=function(options){
 	if (options.searches.length!=0) this.container.append(this.searchblock);
 	this.cover.append(this.container);
 	$('body').append(this.cover);
+	/* reload referer */
+	my.search();
 };
 Referer.prototype={
 	/* reload referer */
@@ -224,10 +223,11 @@ Referer.prototype={
 		var filtersearch=$.grep(this.datasource,function(item,index){
 			var exists=0;
 			$.each(searches,function(index){
-				if ($(this).val()=='') exists++;
+				var value=($(this).val()!=null)?$(this).val():'';
+				if (value=='') exists++;
 				else
 				{
-					if (item[$(this).attr('id')].value==$(this).val()) exists++;
+					if (item[$(this).attr('id')].value==value) exists++;
 				}
 			});
 			return searches.length==exists;

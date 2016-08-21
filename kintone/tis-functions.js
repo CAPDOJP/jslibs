@@ -101,6 +101,7 @@ jQuery.fn.fields=function(fieldcode){
 * options	@ param		:api parameter
 *			@ value		:selected value
 *			@ text		:display text
+*			@ addition	:adding Elements
 *			@ callback	:callback function
 * -------------------------------------------------------------------
 */
@@ -109,11 +110,13 @@ jQuery.fn.listitems=function(options){
 		param:{},
 		value:'',
 		text:'',
+		addition:null,
 		callback:null
 	},options);
 	return $(this).each(function(){
 		var target=$(this);
 		target.empty();
+		if (options.addition!=null)	target.append(options.addition);
 		kintone.api(kintone.api.url('/k/v1/records',true),'GET',options.param,function(resp){
 			$.data(target[0],'datasource',resp.records);
 			$.each(resp.records,function(index){
@@ -198,7 +201,6 @@ jQuery.fn.style=function(addition){
 	var style='';
 	style+='<style type="text/css">';
 	style+='body *{';
-	style+='	box-sizing:border-box;';
 	style+='	position:relative;';
 	style+='}';
 	style+='button,input,label,p,select,span{';
