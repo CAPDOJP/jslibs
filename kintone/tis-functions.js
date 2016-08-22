@@ -94,6 +94,8 @@ jQuery.fn.fields=function(fieldcode){
 	if ('subTable' in cybozu.data.page.FORM_DATA.schema)
 		$.each(cybozu.data.page.FORM_DATA.schema.subTable,function(key,values){
 			/* table */
+			alert(values.var);
+			alert(fieldcode);
 			if (values.var==fieldcode)
 			{
 				$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
