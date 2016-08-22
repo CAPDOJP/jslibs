@@ -93,6 +93,15 @@ jQuery.fn.fields=function(fieldcode){
 	});
 	if ('subTable' in cybozu.data.page.FORM_DATA.schema)
 		$.each(cybozu.data.page.FORM_DATA.schema.subTable,function(key,values){
+			/* table */
+			if (values.var==fieldcode)
+			{
+				$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
+					if ($(this).prop('tagName').toLowerCase()!='undefined')
+						if ($.inArray($(this),fields)==-1) fields.push($(this));
+				});
+			}
+			/* elements in cell */
 			$.each(values.fieldList,function(key,values){
 				if (values.var==fieldcode)
 				{
