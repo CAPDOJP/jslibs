@@ -162,16 +162,19 @@ jQuery.fn.relations=function(options){
 	var options=$.extend({
 		recordcode:'',
 		datasource:null,
+		istable:false,
 		fields:[]
 	},options);
-	return this.each(function(){
+	return $(this).each(function(){
 		var target=$(this);
 		$.data(target[0],'value','');
 		/* check field value */
 		setInterval(function(){
+			var index=0;
 			var targetvalue=(target.val()!=null)?target.val():'';
 			if ($.data(target[0],'value')==targetvalue) return;
 			$.data(target[0],'value',targetvalue);
+			if (options.istable) index=target.closest('tbody').find('tr').index(target.closest('tr'));
 			/* set fields value */
 			$.each(options.fields,function(index){
 				var fieldvalues=$.extend({
@@ -192,9 +195,7 @@ jQuery.fn.relations=function(options){
 							return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;
 						});
 						if (filterreferer.length!=0)
-							$.each($('body').fields(fieldvalues.fieldcode),function(){
-								$(this).val(filterreferer[0][fieldvalues.relation.recordcode].value);
-							});
+							$('body').fields(fieldvalues.fieldcode).val(filterreferer[0][fieldvalues.relation.recordcode].value);
 					}
 				}
 			});
