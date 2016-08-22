@@ -82,7 +82,16 @@ Date.prototype.format=function(pattern){
 jQuery.fn.fields=function(fieldcode){
 	var fields=[];
 	var target=$(this);
-	$.each([cybozu.data.page.FORM_DATA.schema.table.fieldList,cybozu.data.page.FORM_DATA.schema.subtable.fieldList],function(key,values){
+	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
+		if (values.var==fieldcode)
+		{
+			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
+				if ($(this).prop('tagName').toLowerCase()!='undefined')
+					if ($.inArray($(this),fields)==-1) fields.push($(this));
+			});
+		}
+	});
+	$.each(cybozu.data.page.FORM_DATA.schema.subtable.fieldList,function(key,values){
 		if (values.var==fieldcode)
 		{
 			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
