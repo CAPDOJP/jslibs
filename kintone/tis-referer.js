@@ -70,7 +70,9 @@ var Referer=function(options){
 	this.buttons=[];
 	this.callback=null;
 	/* valiable */
-	var div=$('<div>');
+	var div=$('<div>').css({
+		'box-sizing':'border-box;',
+	});
 	var button=$('<button>');
 	var label=$('<label>');
 	var select=$('<select>');
@@ -93,7 +95,6 @@ var Referer=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'box-sizing':'border-box;',
 		'height':'700px',
 		'left':'0',
 		'margin':'auto',
@@ -105,7 +106,6 @@ var Referer=function(options){
 		'width':'900px'
 	});
 	this.contents=div.clone(true).css({
-		'box-sizing':'border-box;',
 		'height':'100%',
 		'min-height':'100%',
 		'min-width':'100%',
@@ -113,14 +113,14 @@ var Referer=function(options){
 		'overflow-y':'auto',
 		'padding':'5px',
 		'position':'relative',
-		'width':'100%'
+		'width':'100%',
+		'z-index':'777'
 	});
 	this.buttonblock=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'border-bottom-left-radius':'5px',
 		'border-bottom-right-radius':'5px',
 		'bottom':'0px',
-		'box-sizing':'border-box;',
 		'left':'0px',
 		'padding':'5px 0px',
 		'position':'absolute',
@@ -133,7 +133,6 @@ var Referer=function(options){
 		'background-color':'rgba(0,0,0,0.5)',
 		'border-top-left-radius':'5px',
 		'border-top-right-radius':'5px',
-		'box-sizing':'border-box;',
 		'left':'0px',
 		'padding':'5px 0px',
 		'position':'absolute',
