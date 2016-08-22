@@ -164,7 +164,7 @@ jQuery.fn.relations=function(options){
 		datasource:null,
 		fields:[]
 	},options);
-	return $(this).each(function(){
+	return this.each(function(){
 		var target=$(this);
 		$.data(target[0],'value','');
 		/* check field value */
