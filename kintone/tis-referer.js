@@ -96,16 +96,16 @@ var Referer=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':'700px',
+		'height':'100%',
 		'left':'0',
 		'margin':'auto',
-		'max-height':'100%',
-		'max-width':'100%',
+		'max-height':'700px',
+		'max-width':'900px',
 		'padding':'5px',
 		'position':'absolute',
 		'right':'0',
 		'top':'0',
-		'width':'900px'
+		'width':'100%'
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
