@@ -189,7 +189,9 @@ var Referer=function(options){
 				break;
 		}
 		searchblock.append(
-			label.clone(true)
+			label.clone(true).css({
+				'display':'inline-block'
+			})
 			.append(span.clone(true).text(searchvalue.label))
 			.append(searchfield)
 		);
