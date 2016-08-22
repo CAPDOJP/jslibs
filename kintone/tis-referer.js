@@ -108,8 +108,8 @@ var Referer=function(options){
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
-		'min-height':'100%',
-		'min-width':'100%',
+		'max-height':'100%',
+		'max-width':'100%',
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
 		'position':'relative',
@@ -128,7 +128,7 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'999'
 	});
-	this.listblock=table.clone(true).append('<tbody>');
+	this.listblock=table.clone(true).css({'width':'100%'}).append('<tbody>');
 	this.searchblock=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'border-top-left-radius':'5px',
