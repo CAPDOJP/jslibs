@@ -107,13 +107,9 @@ var Referer=function(options){
 		'width':'900px'
 	});
 	this.contents=div.clone(true).css({
-		'height':'100%',
-		'max-height':'100%',
-		'max-width':'100%',
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
 		'position':'relative',
-		'width':'100%',
 		'z-index':'777'
 	});
 	this.buttonblock=div.clone(true).css({
