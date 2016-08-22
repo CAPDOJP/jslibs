@@ -219,11 +219,8 @@ jQuery.fn.onrowinsert=function(callback){
 			var rows=target.find('tbody').find('tr').length;
 			if ($.data(target[0],'rows')==rows) return;
 			if ($.data(target[0],'rows')<rows)
-			{
-				alert(target.find('tbody').find('tr').length);
 				for (var i=$.data(target[0],'rows')-1;i<rows;i++)
 					callback(target.find('tbody').find('tr').eq(i));
-			}
 			$.data(target[0],'rows',rows);
 		},500);
 	});
