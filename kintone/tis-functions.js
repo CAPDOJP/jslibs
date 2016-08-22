@@ -93,17 +93,6 @@ jQuery.fn.fields=function(fieldcode){
 	});
 	if ('subTable' in cybozu.data.page.FORM_DATA.schema)
 		$.each(cybozu.data.page.FORM_DATA.schema.subTable,function(key,values){
-			/* table */
-			alert(values.var);
-			alert(fieldcode);
-			if (values.var==fieldcode)
-			{
-				$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
-					if ($(this).prop('tagName').toLowerCase()!='undefined')
-						if ($.inArray($(this),fields)==-1) fields.push($(this));
-				});
-			}
-			/* elements in cell */
 			$.each(values.fieldList,function(key,values){
 				if (values.var==fieldcode)
 				{
@@ -210,6 +199,29 @@ jQuery.fn.relations=function(options){
 					}
 				}
 			});
+		},500);
+	});
+}
+/*
+*--------------------------------------------------------------------
+* table rows add events
+*--------------------------------------------------------------------
+* parameters
+* callback	:addition function
+* -------------------------------------------------------------------
+*/
+jQuery.fn.rowsaddition=function(callback){
+	$.each($('body').find('table'),function(){
+		var target=$(this);
+		$.data(target[0],'rows',target.find('tbody').find('tr').length);
+		/* check rows count */
+		setInterval(function(){
+			var rows=target.find('tbody').find('tr').length;
+			if ($.data(target[0],'rows')==rows) return;
+			if ($.data(target[0],'rows')<rows)
+				for (var i=$.data(target[0],'rows')-1;i<rows;i++)
+					callback(target.find('tbody').find('tr')[i]);
+			$.data(target[0],'value',rows);
 		},500);
 	});
 }
