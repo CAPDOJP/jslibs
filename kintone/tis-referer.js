@@ -71,7 +71,8 @@ var Referer=function(options){
 	this.callback=null;
 	/* valiable */
 	var div=$('<div>').css({
-		'box-sizing':'border-box;'
+		'box-sizing':'border-box;',
+		'margin':'0px;'
 	});
 	var button=$('<button>');
 	var label=$('<label>');
