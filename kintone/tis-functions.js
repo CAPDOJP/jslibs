@@ -214,14 +214,16 @@ jQuery.fn.rowsaddition=function(callback){
 	$.each($('body').find('table'),function(){
 		var target=$(this);
 		$.data(target[0],'rows',target.find('tbody').find('tr').length);
-		alert(target.find('tbody').find('tr').length);
 		/* check rows count */
 		setInterval(function(){
 			var rows=target.find('tbody').find('tr').length;
 			if ($.data(target[0],'rows')==rows) return;
 			if ($.data(target[0],'rows')<rows)
+			{
+				alert(target.find('tbody').find('tr').length);
 				for (var i=$.data(target[0],'rows')-1;i<rows;i++)
 					callback(target.find('tbody').find('tr')[i]);
+			}
 			$.data(target[0],'value',rows);
 		},500);
 	});
