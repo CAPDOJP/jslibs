@@ -95,6 +95,7 @@ var Referer=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+		'box-sizing':'border-box;',
 		'height':'700px',
 		'left':'0',
 		'margin':'auto',
@@ -282,7 +283,7 @@ Referer.prototype={
 		/* adjust container paddings */
 		this.container.css({
 			'padding-top':(this.searchblock.outerHeight(true))+'px',
-			'padding-bottom':(this.buttonblock.outerHeight(true))+'px',
+			'padding-bottom':(this.buttonblock.outerHeight(true))+'px'
 		});
 	},
 	/* hide referer */
