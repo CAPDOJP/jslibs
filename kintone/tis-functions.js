@@ -170,11 +170,11 @@ jQuery.fn.relations=function(options){
 		$.data(target[0],'value','');
 		/* check field value */
 		setInterval(function(){
-			var index=0;
+			var counter=0;
 			var targetvalue=(target.val()!=null)?target.val():'';
 			if ($.data(target[0],'value')==targetvalue) return;
 			$.data(target[0],'value',targetvalue);
-			if (options.istable) index=target.closest('tbody').find('tr').index(target.closest('tr'));
+			if (options.istable) counter=target.closest('tbody').find('tr').index(target.closest('tr'));
 			/* set fields value */
 			$.each(options.fields,function(index){
 				var fieldvalues=$.extend({
@@ -195,7 +195,7 @@ jQuery.fn.relations=function(options){
 							return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;
 						});
 						if (filterreferer.length!=0)
-							$('body').fields(fieldvalues.fieldcode)[index].val(filterreferer[0][fieldvalues.relation.recordcode].value);
+							$('body').fields(fieldvalues.fieldcode)[counter].val(filterreferer[0][fieldvalues.relation.recordcode].value);
 					}
 				}
 			});
