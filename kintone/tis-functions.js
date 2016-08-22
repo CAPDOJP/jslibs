@@ -224,7 +224,7 @@ jQuery.fn.rowsaddition=function(callback){
 				for (var i=$.data(target[0],'rows')-1;i<rows;i++)
 					callback(target.find('tbody').find('tr')[i]);
 			}
-			$.data(target[0],'value',rows);
+			$.data(target[0],'rows',rows);
 		},500);
 	});
 }
