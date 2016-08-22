@@ -92,8 +92,8 @@ jQuery.fn.fields=function(fieldcode){
 		}
 	});
 	if ('subTable' in cybozu.data.page.FORM_DATA.schema)
-		if ('fieldList' in cybozu.data.page.FORM_DATA.schema.subTable)
-			$.each(cybozu.data.page.FORM_DATA.schema.subTable.fieldList,function(key,values){
+		$.each(cybozu.data.page.FORM_DATA.schema.subTable,function(key,values){
+			$.each(values.fieldList,function(key,values){
 				if (values.var==fieldcode)
 				{
 					alert(values.var);
@@ -103,6 +103,7 @@ jQuery.fn.fields=function(fieldcode){
 					});
 				}
 			});
+		});
 	return fields;
 }
 /*
