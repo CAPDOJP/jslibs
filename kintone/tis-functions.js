@@ -96,7 +96,6 @@ jQuery.fn.fields=function(fieldcode){
 			$.each(values.fieldList,function(key,values){
 				if (values.var==fieldcode)
 				{
-					alert(values.var);
 					$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
 						if ($(this).prop('tagName').toLowerCase()!='undefined')
 							if ($.inArray($(this),fields)==-1) fields.push($(this));
