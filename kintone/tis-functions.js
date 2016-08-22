@@ -210,7 +210,7 @@ jQuery.fn.relations=function(options){
 * callback	:addition function
 * -------------------------------------------------------------------
 */
-jQuery.fn.rowsaddition=function(callback){
+jQuery.fn.onrowinsert=function(callback){
 	$.each($('body').find('table'),function(){
 		var target=$(this);
 		$.data(target[0],'rows',target.find('tbody').find('tr').length);
