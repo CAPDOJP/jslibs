@@ -71,8 +71,7 @@ var Referer=function(options){
 	this.callback=null;
 	/* valiable */
 	var div=$('<div>').css({
-		'box-sizing':'border-box;',
-		'margin':'0px;'
+		'box-sizing':'border-box;'
 	});
 	var button=$('<button>');
 	var label=$('<label>');
@@ -96,16 +95,15 @@ var Referer=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':'100%',
+		'height':'700px',
 		'left':'0',
 		'margin':'auto',
-		'max-height':'700px',
-		'max-width':'900px',
-		'padding':'5px',
+		'max-height':'100%',
+		'max-width':'100%',
 		'position':'absolute',
 		'right':'0',
 		'top':'0',
-		'width':'100%'
+		'width':'900px'
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
@@ -113,6 +111,7 @@ var Referer=function(options){
 		'min-width':'100%',
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
+		'padding':'5px',
 		'position':'relative',
 		'width':'100%'
 	});
