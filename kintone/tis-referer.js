@@ -125,7 +125,10 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'999'
 	});
-	this.listblock=table.clone(true).css({'width':'100%'}).append('<tbody>');
+	this.listblock=table.clone(true).css({
+		'box-sizing':'border-box;',
+		'width':'100%'
+	}).append('<tbody>');
 	this.searchblock=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'border-top-left-radius':'5px',
