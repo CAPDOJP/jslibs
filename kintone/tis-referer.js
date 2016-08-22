@@ -71,7 +71,7 @@ var Referer=function(options){
 	this.callback=null;
 	/* valiable */
 	var div=$('<div>').css({
-		'box-sizing':'border-box;'
+		'box-sizing':'border-box'
 	});
 	var button=$('<button>');
 	var label=$('<label>');
@@ -95,7 +95,6 @@ var Referer=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'box-sizing':'border-box;',
 		'height':'700px',
 		'left':'0',
 		'margin':'auto',
@@ -126,7 +125,7 @@ var Referer=function(options){
 		'z-index':'999'
 	});
 	this.listblock=table.clone(true).css({
-		'box-sizing':'border-box;',
+		'box-sizing':'border-box',
 		'width':'100%'
 	}).append('<tbody>');
 	this.searchblock=div.clone(true).css({
