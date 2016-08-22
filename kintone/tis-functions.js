@@ -222,7 +222,7 @@ jQuery.fn.rowsaddition=function(callback){
 			{
 				alert(target.find('tbody').find('tr').length);
 				for (var i=$.data(target[0],'rows')-1;i<rows;i++)
-					callback(target.find('tbody').find('tr')[i]);
+					callback(target.find('tbody').find('tr').eq(i));
 			}
 			$.data(target[0],'rows',rows);
 		},500);
