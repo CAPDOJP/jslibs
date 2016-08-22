@@ -214,6 +214,7 @@ jQuery.fn.rowsaddition=function(callback){
 	$.each($('body').find('table'),function(){
 		var target=$(this);
 		$.data(target[0],'rows',target.find('tbody').find('tr').length);
+		alert(target.find('tbody').find('tr').length);
 		/* check rows count */
 		setInterval(function(){
 			var rows=target.find('tbody').find('tr').length;
