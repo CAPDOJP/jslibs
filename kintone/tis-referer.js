@@ -100,6 +100,7 @@ var Referer=function(options){
 		'margin':'auto',
 		'max-height':'100%',
 		'max-width':'100%',
+		'padding':'5px',
 		'position':'absolute',
 		'right':'0',
 		'top':'0',
@@ -111,7 +112,6 @@ var Referer=function(options){
 		'min-width':'100%',
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
-		'padding':'5px',
 		'position':'relative',
 		'width':'100%',
 		'z-index':'777'
