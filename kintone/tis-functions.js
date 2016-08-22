@@ -195,7 +195,7 @@ jQuery.fn.relations=function(options){
 							return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;
 						});
 						if (filterreferer.length!=0)
-							$('body').fields(fieldvalues.fieldcode).val(filterreferer[0][fieldvalues.relation.recordcode].value);
+							$('body').fields(fieldvalues.fieldcode)[index].val(filterreferer[0][fieldvalues.relation.recordcode].value);
 					}
 				}
 			});
