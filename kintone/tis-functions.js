@@ -238,7 +238,7 @@ jQuery.fn.relations=function(options){
 							{
 								alert($('body').fields(fieldvalues.fieldcode)[counter].parent().find('button').length);
 								alert($('body').fields(fieldvalues.fieldcode)[counter].parent().parent().find('button').length);
-								$('body').fields(fieldvalues.fieldcode)[counter].parent().find('button').eq(0).trigger('click');
+								$('body').fields(fieldvalues.fieldcode)[counter].parent().parent().find('button').eq(0).trigger('click');
 							}
 						}
 					}
