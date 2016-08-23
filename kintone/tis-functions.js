@@ -234,7 +234,12 @@ jQuery.fn.relations=function(options){
 						if (filterreferer.length!=0)
 						{
 							$('body').fields(fieldvalues.fieldcode)[counter].val(filterreferer[0][fieldvalues.relation.recordcode].value);
-							if (fieldvalues.relation.lookup) $('body').fields(fieldvalues.fieldcode)[counter].parent().find('button').eq(0).trigger('click');
+							if (fieldvalues.relation.lookup)
+							{
+								alert($('body').fields(fieldvalues.fieldcode)[counter].parent().find('button').length);
+								alert($('body').fields(fieldvalues.fieldcode)[counter].parent().parent().find('button').length);
+								$('body').fields(fieldvalues.fieldcode)[counter].parent().find('button').eq(0).trigger('click');
+							}
 						}
 					}
 				}
