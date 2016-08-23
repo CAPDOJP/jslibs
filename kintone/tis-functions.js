@@ -191,6 +191,7 @@ jQuery.fn.listitems=function(options){
 *							.relation.basekey is base key
 *							.relation.refererkey is referernce key
 *							.relation.recordcode is record code
+*							.relation.lookup is boolean
 * -------------------------------------------------------------------
 */
 jQuery.fn.relations=function(options){
@@ -218,7 +219,8 @@ jQuery.fn.relations=function(options){
 						datasource:null,
 						basekey:'',
 						refererkey:'',
-						recordcode:''
+						recordcode:'',
+						lookup:false
 					},
 				},options.fields[index]);
 				if (targetvalue.length!=0)
@@ -230,7 +232,10 @@ jQuery.fn.relations=function(options){
 							return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;
 						});
 						if (filterreferer.length!=0)
+						{
 							$('body').fields(fieldvalues.fieldcode)[counter].val(filterreferer[0][fieldvalues.relation.recordcode].value);
+							if (fieldvalues.lookup) $('body').fields(fieldvalues.fieldcode)[counter].parent().find('button').eq(0).trigger('click');
+						}
 					}
 				}
 			});
