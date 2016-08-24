@@ -36,7 +36,7 @@ var RouteMap=function(apiikey){
 		'position':'relative',
 		'width':'100%',
 		'z-index':'888'
-	});
+	}).attr('id','mapcontainer');
 	this.buttonblock=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'bottom':'0px',
@@ -122,7 +122,7 @@ var RouteMap=function(apiikey){
     		zoomControl:true,
     		zoom:14
     	};
-    	map=new google.maps.Map(contents[0],param);
+    	map=new google.maps.Map(document.getElementById(contents.attr('id')),param);
     	directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
     	directionsService=new google.maps.DirectionsService();
 	});
