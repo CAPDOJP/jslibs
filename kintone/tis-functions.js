@@ -331,7 +331,7 @@ jQuery.fn.onvaluechanged=function(callback){
 	return $(this).each(function(){
 		var target=$(this);
 		target.on('focus',function(){$.data(target[0],'focus',target.val());});
-		target.on('blur',function(){if ($.data(target[0],'focus')!=target.val()) callback();});
+		target.on('blur',function(){if ($.data(target[0],'focus')!=target.val()) callback(target);});
 	});
 }
 /*
