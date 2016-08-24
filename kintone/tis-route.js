@@ -56,7 +56,7 @@ var RouteMap=function(apiikey){
   		/* setup stylesheet */
 	var style='';
 	style+='<style type="text/css">';
-	style+='div#mapcontainer.show{';
+	style+='div.show{';
 	style+='	bottom:0px;';
 	style+='}';
 	style+='</style>';
