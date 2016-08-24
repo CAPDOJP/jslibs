@@ -16,8 +16,10 @@ var RouteMap=function(apiikey){
 	});
 	/* loading wait */
     var waitgoogle=function(callback){
-        if (typeof(google)=='undefined') setTimeout(waitgoogle(callback),1000);
-        else callback();
+        setTimeout(function(){
+            if (typeof(google)=='undefined') waitgoogle(callback);
+            else callback();
+        },1000);
     };
     /* append elements */
 	this.container=div.clone(true).css({
