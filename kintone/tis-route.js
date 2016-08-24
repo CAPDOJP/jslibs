@@ -32,7 +32,6 @@ var RouteMap=function(apiikey){
 		'z-index':'999999'
 	});
 	this.contents=div.clone(true).css({
-		'background-color':'#330000',
 		'height':'100%',
 		'left':'0px',
 		'position':'absolute',
@@ -243,5 +242,9 @@ RouteMap.prototype={
 				break;
 		}
 		this.container.show();
+		/* adjust container paddings */
+		this.container.css({
+			'padding-bottom':(this.buttonblock.outerHeight(true))+'px'
+		});
 	}
 };
