@@ -70,6 +70,7 @@ var Referer=function(options){
 	this.buttons=[];
 	this.callback=null;
 	/* valiable */
+	var my=this;
 	var div=$('<div>').css({
 		'box-sizing':'border-box'
 	});
@@ -141,7 +142,6 @@ var Referer=function(options){
 		'z-index':'888'
 	});
 	/* valiable */
-	var my=this;
 	var buttons=this.buttons;
 	var buttonblock=this.buttonblock;
 	var searchblock=this.searchblock;
