@@ -19,7 +19,7 @@ var RouteMap=function(){
         setTimeout(function(){
             if (typeof google==='undefined') waitgoogle(interval);
         },interval);
-    }
+    };
     /* append elements */
 	this.container=div.clone(true).css({
 		'display':'none',
