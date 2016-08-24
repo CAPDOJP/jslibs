@@ -245,6 +245,7 @@ jQuery.fn.listitems=function(options){
 *							.relation.basekey is base key
 *							.relation.refererkey is referernce key
 *							.relation.recordcode is record code
+*							.relation.rewrite is boolean
 *							.relation.lookup is boolean
 * -------------------------------------------------------------------
 */
@@ -274,9 +275,16 @@ jQuery.fn.relations=function(options){
 						basekey:'',
 						refererkey:'',
 						recordcode:'',
+						rewrite:true,
 						lookup:false
 					},
 				},options.fields[index]);
+				var field=$('body').fields(fieldvalues.fieldcode)[counter];
+				if (!options.rewrite)
+				{
+					if (field.val()!=null) return true;
+					if (field.val().length!=0) return true;
+				}
 				if (targetvalue.length!=0)
 				{
 					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==targetvalue;});
@@ -287,8 +295,8 @@ jQuery.fn.relations=function(options){
 						});
 						if (filterreferer.length!=0)
 						{
-							$('body').fields(fieldvalues.fieldcode)[counter].val(filterreferer[0][fieldvalues.relation.recordcode].value);
-							if (fieldvalues.relation.lookup) $('body').fields(fieldvalues.fieldcode)[counter].parent().parent().find('button').eq(0).trigger('click');
+							field.val(filterreferer[0][fieldvalues.relation.recordcode].value);
+							if (fieldvalues.relation.lookup) field.parent().parent().find('button').eq(0).trigger('click');
 						}
 					}
 				}
