@@ -53,10 +53,10 @@ var RouteMap=function(){
 	this.container.append(this.buttonblock);
 	$('body').append(this.container);
 	/* setup google map */
-	var apikey=$('<script>');
-	apikey.attr('type','text/javascript');
-	apikey.attr('src','https://maps-api-ssl.google.com/maps/api/js?v=3&sensor=false');
-	$('head').append($(apikey));
+	var api=$('<script>');
+	api.attr('type','text/javascript');
+	api.attr('src','https://maps-api-ssl.google.com/maps/api/js?v=3&sensor=false');
+	$('head').append(api);
 	/* loading wait */
 	waitgoogle(1000);
 	/* setup map */
