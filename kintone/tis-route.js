@@ -48,7 +48,7 @@ var RouteMap=function(apiikey){
 		'width':'100%',
 		'z-index':'999'
 	}).append($('<button>').text('閉じる').on('click',function(){
-	    my.container.removeClass('show');
+	    my.container.removeClass('mapshow');
 	}));
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
@@ -56,7 +56,7 @@ var RouteMap=function(apiikey){
   		/* setup stylesheet */
 	var style='';
 	style+='<style type="text/css">';
-	style+='div.show{';
+	style+='div.mapshow{';
 	style+='	bottom:0px;';
 	style+='}';
 	style+='</style>';
@@ -248,7 +248,7 @@ RouteMap.prototype={
 				});
 				break;
 		}
-		this.container.addClass('show');
+		this.container.addClass('mapshow');
 		/* adjust container paddings */
 		this.container.css({
 			'padding-bottom':this.buttonblock.outerHeight(true)+'px'
