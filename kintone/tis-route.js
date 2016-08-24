@@ -23,7 +23,7 @@ var RouteMap=function(apiikey){
     };
     /* append elements */
 	this.container=div.clone(true).css({
-		'bottom':'-90%',
+		'bottom':'-100%',
 		'height':'100%',
 		'left':'0px',
 		'position':'fixed',
@@ -56,7 +56,7 @@ var RouteMap=function(apiikey){
   		/* setup stylesheet */
 	var style='';
 	style+='<style type="text/css">';
-	style+='div.mapshow{';
+	style+='.mapshow{';
 	style+='	bottom:0px;';
 	style+='}';
 	style+='</style>';
