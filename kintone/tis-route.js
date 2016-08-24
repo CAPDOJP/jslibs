@@ -15,10 +15,8 @@ var RouteMap=function(apiikey){
 		'box-sizing':'border-box'
 	});
 	/* loading wait */
-    var waitgoogle=function(interval){
-        setTimeout(function(){
-            if (typeof google==='undefined') waitgoogle(interval);
-        },interval);
+    var waitgoogle=function(){
+        if (typeof(google)=='undefined') setTimeout(waitgoogle,1000);
     };
     /* append elements */
 	this.container=div.clone(true).css({
@@ -57,7 +55,7 @@ var RouteMap=function(apiikey){
 	api.attr('src','https://maps.googleapis.com/maps/api/js?key='+apiikey);
 	$('head').append(api);
 	/* loading wait */
-	while(typeof google==='undefined'){}
+	waitgoogle();
 	/* setup map */
 	var latlng=new google.maps.LatLng(0,0);
 	var param={
