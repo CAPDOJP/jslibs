@@ -23,14 +23,13 @@ var RouteMap=function(apiikey){
     };
     /* append elements */
 	this.container=div.clone(true).css({
-		'display':'none',
+		'bottom':'-100%',
 		'height':'100%',
 		'left':'0px',
 		'position':'fixed',
-		'top':'0px',
 		'width':'100%',
 		'z-index':'999999'
-	});
+	}).attr('id','mapcontainer');
 	this.contents=div.clone(true).css({
 		'height':'100%',
 		'left':'0px',
@@ -38,7 +37,7 @@ var RouteMap=function(apiikey){
 		'top':'0px',
 		'width':'100%',
 		'z-index':'888'
-	}).attr('id','mapcontainer');
+	}).attr('id','mapcontents');
 	this.buttonblock=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'bottom':'0px',
@@ -49,11 +48,19 @@ var RouteMap=function(apiikey){
 		'width':'100%',
 		'z-index':'999'
 	}).append($('<button>').text('閉じる').on('click',function(){
-	    my.container.hide();
+	    my.container.removeClass('show');
 	}));
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
 	$('body').append(this.container);
+  		/* setup stylesheet */
+	var style='';
+	style+='<style type="text/css">';
+	style+='div#mapcontainer.show{';
+	style+='	bottom:0px;';
+	style+='}';
+	style+='</style>';
+	$('head').append(style);
 	/* setup google map */
 	var api=$('<script>');
 	api.attr('type','text/javascript');
@@ -241,7 +248,7 @@ RouteMap.prototype={
 				});
 				break;
 		}
-		this.container.show();
+		this.container.addClass('show')
 		/* adjust container paddings */
 		this.container.css({
 			'padding-bottom':(this.buttonblock.outerHeight(true))+'px'
