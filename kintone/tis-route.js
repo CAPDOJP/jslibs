@@ -46,6 +46,7 @@ var RouteMap=function(){
 	this.container.append(this.buttonblock);
 	$('body').append(this.container);
 	/* setup map */
+	var latlng=new google.maps.LatLng(0,0);
 	var param={
 		center:latlng,
 		mapTypeControl:false,
