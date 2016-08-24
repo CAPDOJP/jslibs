@@ -54,10 +54,10 @@ var RouteMap=function(apiikey){
 	/* setup google map */
 	var api=$('<script>');
 	api.attr('type','text/javascript');
-	api.attr('src','https://maps.googleapis.com/maps/api/js?key='+apiikey+'&sensor=false');
+	api.attr('src','https://maps.googleapis.com/maps/api/js?key='+apiikey);
 	$('head').append(api);
 	/* loading wait */
-	waitgoogle(1000);
+	while(typeof google==='undefined'){}
 	/* setup map */
 	var latlng=new google.maps.LatLng(0,0);
 	var param={
