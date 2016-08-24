@@ -106,10 +106,6 @@ var RouteMap=function(apiikey){
 	this.directionsRenderer=null;
 	this.directionsService=null;
 	/* loading wait */
-	var contents=this.contents;
-	var map=this.map;
-	var directionsRenderer=this.directionsRenderer;
-	var directionsService=this.directionsService;
 	waitgoogle(function(){
     	var latlng=new google.maps.LatLng(0,0);
     	var param={
@@ -122,9 +118,9 @@ var RouteMap=function(apiikey){
     		zoomControl:true,
     		zoom:14
     	};
-    	map=new google.maps.Map(document.getElementById(contents.attr('id')),param);
-    	directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
-    	directionsService=new google.maps.DirectionsService();
+    	my.map=new google.maps.Map(document.getElementById(my.contents.attr('id')),param);
+    	my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
+    	my.directionsService=new google.maps.DirectionsService();
 	});
 };
 RouteMap.prototype={
