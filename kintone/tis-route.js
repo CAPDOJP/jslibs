@@ -251,7 +251,7 @@ RouteMap.prototype={
 		this.container.addClass('show');
 		/* adjust container paddings */
 		this.container.css({
-			'padding-bottom':(this.buttonblock.outerHeight(true))+'px'
+			'padding-bottom':this.buttonblock.outerHeight(true)+'px'
 		});
 	}
 };
