@@ -217,7 +217,7 @@ RouteMap.prototype={
 					origin:origin,
 					destination:destination,
 					waypoints:waypoints,
-					travelMode:this.travelmode
+					travelMode:google.maps.TravelMode.DRIVING
 				},
 				function(result,status){
 					if (status == google.maps.DirectionsStatus.OK)
