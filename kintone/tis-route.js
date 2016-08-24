@@ -151,7 +151,7 @@ RouteMap.prototype={
 			var marker=new google.maps.Marker({
 				map:map,
 				position:latlng,
-				icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter_withshadow&chld='+childindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+				icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+childindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
 			});
 			markers.push(marker);
 			/* append balloons */
