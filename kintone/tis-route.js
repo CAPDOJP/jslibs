@@ -23,7 +23,7 @@ var RouteMap=function(apiikey){
     };
     /* append elements */
 	this.container=div.clone(true).css({
-		'bottom':'-50%',
+		'bottom':'-100%',
 		'height':'100%',
 		'left':'0px',
 		'position':'fixed',
@@ -248,7 +248,7 @@ RouteMap.prototype={
 				});
 				break;
 		}
-		this.container.addClass('show')
+		this.container.addClass('show');
 		/* adjust container paddings */
 		this.container.css({
 			'padding-bottom':(this.buttonblock.outerHeight(true))+'px'
