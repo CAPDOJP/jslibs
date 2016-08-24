@@ -280,11 +280,6 @@ jQuery.fn.relations=function(options){
 					},
 				},options.fields[index]);
 				var field=$('body').fields(fieldvalues.fieldcode)[counter];
-				if (!fieldvalues.rewrite)
-				{
-					if (field.val()!=null) return true;
-					if (field.val().toString().length!=0) return true;
-				}
 				if (targetvalue.length!=0)
 				{
 					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==targetvalue;});
