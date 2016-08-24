@@ -280,10 +280,10 @@ jQuery.fn.relations=function(options){
 					},
 				},options.fields[index]);
 				var field=$('body').fields(fieldvalues.fieldcode)[counter];
-				if (!options.rewrite)
+				if (!fieldvalues.rewrite)
 				{
 					if (field.val()!=null) return true;
-					if (field.val().length!=0) return true;
+					if (field.val().toString().length!=0) return true;
 				}
 				if (targetvalue.length!=0)
 				{
