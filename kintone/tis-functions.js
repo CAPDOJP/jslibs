@@ -106,6 +106,60 @@ String.prototype.rpad=function(pattern,length){
 }
 /*
 *--------------------------------------------------------------------
+* display map
+*--------------------------------------------------------------------
+* parameters
+* options	@ address	:address
+*			@ latlng	:latitude and longitude
+*			@ callback	:callback function
+* -------------------------------------------------------------------
+*/
+jQuery.fn.displaymap = function(options){
+	var options=$.extend({
+		address:'',
+		latlng:'',
+		callback:null
+	},options);
+	var target=$(this);
+	if (options.address.length!=0)
+		$.ajax({
+			url:'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
+			type:'get',
+			datatype:'json',
+			error:function(){alert('地図座標取得に失敗しました。');},
+			success:function(json){
+				switch (json.status)
+				{
+					case 'ZERO_RESULTS':
+						break;
+					case 'OVER_QUERY_LIMIT':
+						alert('リクエストが割り当て量を超えています。');
+						break;
+					case 'REQUEST_DENIED':
+						alert('リクエストが拒否されました。');
+						break;
+					case 'INVALID_REQUEST':
+						alert('クエリが不足しています。');
+						break;
+					case 'OK':
+						var latlng=json.results[0].geometry.location.lat+','+json.results[0].geometry.location.lng;
+						var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
+						target.empty();
+						target.append('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>');
+						if (options.callback!=null) options.callback(json);
+						break;
+				}
+			}
+		});
+	if (options.latlng.length!=0)
+	{
+		var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
+		target.empty();
+		target.append('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>');
+	}
+}
+/*
+*--------------------------------------------------------------------
 * get elements
 *--------------------------------------------------------------------
 * parameters
@@ -250,7 +304,7 @@ jQuery.fn.relations=function(options){
 * callback	:addition function
 * -------------------------------------------------------------------
 */
-jQuery.fn.onrowinsert=function(callback){
+jQuery.fn.rowinserted=function(callback){
 	$.each($('body').find('table'),function(){
 		var target=$(this);
 		$.data(target[0],'rows',target.find('tbody').find('tr').length);
