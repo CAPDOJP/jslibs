@@ -17,8 +17,8 @@ var RouteMap=function(){
 	/* loading wait */
     var waitgoogle=function(interval){
         setTimeout(function(){
-            if (typeof google==='undefined') waitgoogle(interval);
-            if (typeof google.maps==='undefined') waitgoogle(interval);
+            if (google==null) waitgoogle(interval);
+            if (google.maps==null) waitgoogle(interval);
         },interval);
     }
     /* append elements */
