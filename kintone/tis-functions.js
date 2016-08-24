@@ -304,7 +304,7 @@ jQuery.fn.relations=function(options){
 * callback	:addition function
 * -------------------------------------------------------------------
 */
-jQuery.fn.rowinserted=function(callback){
+jQuery.fn.onrowinserted=function(callback){
 	$.each($('body').find('table'),function(){
 		var target=$(this);
 		$.data(target[0],'rows',target.find('tbody').find('tr').length);
@@ -317,6 +317,21 @@ jQuery.fn.rowinserted=function(callback){
 					callback(target.find('tbody').find('tr').eq(i));
 			$.data(target[0],'rows',rows);
 		},500);
+	});
+}
+/*
+*--------------------------------------------------------------------
+* elements value change events
+*--------------------------------------------------------------------
+* parameters
+* callback	:changed function
+* -------------------------------------------------------------------
+*/
+jQuery.fn.onvaluechanged=function(callback){
+	return $(this).each(function(){
+		var target=$(this);
+		target.on('focus',function(){$.data(target[0],'focus',target.val());});
+		target.on('blur',function(){if ($.data(target[0],'focus')!=target.val()) callback();});
 	});
 }
 /*
