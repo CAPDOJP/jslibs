@@ -32,6 +32,7 @@ var RouteMap=function(apiikey){
 		'z-index':'999999'
 	});
 	this.contents=div.clone(true).css({
+		'background-color':'#330000',
 		'height':'100%',
 		'position':'relative',
 		'width':'100%',
