@@ -8,7 +8,7 @@
 * http://tis2010.jp/license.txt
 * -------------------------------------------------------------------
 */
-var RouteMap=function(){
+var RouteMap=function(apiikey){
 	/* valiable */
 	var my=this;
 	var div=$('<div>').css({
@@ -17,7 +17,6 @@ var RouteMap=function(){
 	/* loading wait */
     var waitgoogle=function(interval){
         setTimeout(function(){
-            alert(typeof google);
             if (typeof google==='undefined') waitgoogle(interval);
         },interval);
     };
@@ -55,7 +54,7 @@ var RouteMap=function(){
 	/* setup google map */
 	var api=$('<script>');
 	api.attr('type','text/javascript');
-	api.attr('src','https://maps-api-ssl.google.com/maps/api/js?v=3&sensor=false');
+	api.attr('src','https://maps.googleapis.com/maps/api/js?key='+apiikey+'&sensor=false');
 	$('head').append(api);
 	/* loading wait */
 	waitgoogle(1000);
