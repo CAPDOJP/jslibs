@@ -127,7 +127,7 @@ RouteMap.prototype={
 	/* reload map */
 	reloadmap:function(options){
 		var options=$.extend({
-			markers:this.locations,
+			markers:[],
 			callback:null
 		},options);
 		var colors=this.colors;
