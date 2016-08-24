@@ -34,7 +34,9 @@ var RouteMap=function(apiikey){
 	this.contents=div.clone(true).css({
 		'background-color':'#330000',
 		'height':'100%',
-		'position':'relative',
+		'left':'0px',
+		'position':'absolute',
+		'top':'0px',
 		'width':'100%',
 		'z-index':'888'
 	}).attr('id','mapcontainer');
