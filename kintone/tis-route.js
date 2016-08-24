@@ -57,6 +57,8 @@ var RouteMap=function(){
 	apikey.attr('type','text/javascript');
 	apikey.attr('src','https://maps-api-ssl.google.com/maps/api/js?v=3&sensor=false');
 	$('head').append($(apikey));
+	/* loading wait */
+	waitgoogle(1000);
 	/* setup map */
 	var latlng=new google.maps.LatLng(0,0);
 	var param={
@@ -116,8 +118,6 @@ var RouteMap=function(){
 	this.map=new google.maps.Map(this.contents[0],param);
 	this.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 	this.directionsService=new google.maps.DirectionsService();
-	/* loading wait */
-	waitgoogle(1000);
 };
 RouteMap.prototype={
 	/* reload map */
