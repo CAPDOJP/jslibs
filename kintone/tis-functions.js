@@ -123,7 +123,7 @@ jQuery.fn.displaymap = function(options){
 	var target=$(this);
 	if (options.address.length!=0)
 		$.ajax({
-			url:'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
+			url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
 			type:'get',
 			datatype:'json',
 			error:function(){alert('地図座標取得に失敗しました。');},
