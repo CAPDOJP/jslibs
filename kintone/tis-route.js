@@ -14,7 +14,14 @@ var RouteMap=function(){
 	var div=$('<div>').css({
 		'box-sizing':'border-box'
 	});
-	/* append elements */
+	/* loading wait */
+    var waitgoogle=function(interval){
+        setTimeout(function(){
+            if (typeof google==='undefined') waitgoogle(interval);
+            if (typeof google.maps==='undefined') waitgoogle(interval);
+        },interval);
+    }
+    /* append elements */
 	this.container=div.clone(true).css({
 		'display':'none',
 		'height':'100%',
@@ -45,6 +52,11 @@ var RouteMap=function(){
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
 	$('body').append(this.container);
+	/* setup google map */
+	var apikey=$('<script>');
+	apikey.attr('type','text/javascript');
+	apikey.attr('src','https://maps-api-ssl.google.com/maps/api/js?v=3&sensor=false');
+	$('head').append($(apikey));
 	/* setup map */
 	var latlng=new google.maps.LatLng(0,0);
 	var param={
@@ -104,6 +116,8 @@ var RouteMap=function(){
 	this.map=new google.maps.Map(this.contents[0],param);
 	this.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 	this.directionsService=new google.maps.DirectionsService();
+	/* loading wait */
+	waitgoogle(1000);
 };
 RouteMap.prototype={
 	/* reload map */
@@ -133,7 +147,7 @@ RouteMap.prototype={
 			var marker=new google.maps.Marker({
 				map:map,
 				position:latlng,
-				icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter_withshadow&chld='+childindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+				icon:'https://chart.apis.google.com/chart?chst=d_map_pin_letter_withshadow&chld='+childindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
 			});
 			markers.push(marker);
 			/* append balloons */
