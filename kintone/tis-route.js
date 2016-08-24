@@ -23,7 +23,7 @@ var RouteMap=function(apiikey){
     };
     /* append elements */
 	this.container=div.clone(true).css({
-		'bottom':'-100%',
+		'bottom':'-50%',
 		'height':'100%',
 		'left':'0px',
 		'position':'fixed',
