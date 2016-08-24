@@ -15,8 +15,9 @@ var RouteMap=function(apiikey){
 		'box-sizing':'border-box'
 	});
 	/* loading wait */
-    var waitgoogle=function(){
-        if (typeof(google)=='undefined') setTimeout(waitgoogle,1000);
+    var waitgoogle=function(callback){
+        if (typeof(google)=='undefined') setTimeout(waitgoogle(callback),1000);
+        else callback();
     };
     /* append elements */
 	this.container=div.clone(true).css({
@@ -54,20 +55,7 @@ var RouteMap=function(apiikey){
 	api.attr('type','text/javascript');
 	api.attr('src','https://maps.googleapis.com/maps/api/js?key='+apiikey);
 	$('head').append(api);
-	/* loading wait */
-	waitgoogle();
 	/* setup map */
-	var latlng=new google.maps.LatLng(0,0);
-	var param={
-		center:latlng,
-		mapTypeControl:false,
-		overviewMapControl:false,
-		panControl:true,
-		scaleControl:false,
-		streetViewControl:false,
-		zoomControl:true,
-		zoom:14
-	};
 	this.markers=[];
 	this.balloons=[];
 	this.colors=[
@@ -112,9 +100,26 @@ var RouteMap=function(apiikey){
 			fore:'000000'
 		}
 	];
-	this.map=new google.maps.Map(this.contents[0],param);
-	this.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
-	this.directionsService=new google.maps.DirectionsService();
+	this.map=null;
+	this.directionsRenderer=null;
+	this.directionsService=null;
+	/* loading wait */
+	waitgoogle(function(){
+    	var latlng=new google.maps.LatLng(0,0);
+    	var param={
+    		center:latlng,
+    		mapTypeControl:false,
+    		overviewMapControl:false,
+    		panControl:true,
+    		scaleControl:false,
+    		streetViewControl:false,
+    		zoomControl:true,
+    		zoom:14
+    	};
+    	this.map=new google.maps.Map(this.contents[0],param);
+    	this.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
+    	this.directionsService=new google.maps.DirectionsService();
+	});
 };
 RouteMap.prototype={
 	/* reload map */
