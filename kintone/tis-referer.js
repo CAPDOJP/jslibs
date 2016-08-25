@@ -38,6 +38,7 @@
 *							.value is key for value (<select> only)
 *							.text is key for display text (<select> only)
 *							.align is text alignment (<input> only)
+*							.callback is value change event
 *							-example-
 *							searches[
 *								{
@@ -46,13 +47,15 @@
 *									type:'select',
 *									param:{app:1},
 *									value:'userid,
-*									text:'username'
+*									text:'username',
+*									callback:function(elements){...}
 *								},
 *								{
 *									id:'companyname',
 *									label:'input companyname',
 *									type:'input',
-*									align:'left'
+*									align:'left',
+*									callback:function(elements){...}
 *								}
 *							]
 * -------------------------------------------------------------------
@@ -168,7 +171,8 @@ var Referer=function(options){
 			param:{},
 			value:'',
 			text:'',
-			align:'left'
+			align:'left',
+			callback:null
 		},options.searches[index]);
 		var searchfield=null;
 		switch (searchvalue.type)
@@ -181,11 +185,13 @@ var Referer=function(options){
 					text:searchvalue.text,
 					addition:$('<option value=""></option')
 				});
+				if (searchvalue.callback!=null) searchfield.on('change',function(){searchvalue.callback(searchfield);});
 				break;
 			case 'input':
 				searchfield=text.clone(true).attr('id',searchvalue.id).css({
 					'text-align':searchvalue.align
 				});
+				if (searchvalue.callback!=null) searchfield.onvaluechanged(searchvalue.callback(searchfield));
 				break;
 		}
 		searchblock.append(
