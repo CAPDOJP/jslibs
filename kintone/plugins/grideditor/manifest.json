@@ -1,0 +1,50 @@
+{
+    "manifest_version": 1,
+    "version": 1,
+    "type": "APP",
+    "name":{
+        "ja": "kintone グリッドエディタープラグイン",
+        "en": "kintone Grid Editor plug-in",
+        "zh": "kintone 网格编辑器插件"
+    },
+    "description":{
+        "ja": "レコードを一覧画面で編集するプラグインです。",
+        "en": "This plugin to edit the list screen records",
+        "zh": "这个插件编辑列表屏幕记录"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja": "http://www.tis2010.jp/",
+        "en": "http://www.tis2010.jp/",
+        "zh": "http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js": [
+            "https://js.cybozu.com/jquery/2.2.4/jquery.min.js",
+            "js/grideditor.js"
+        ],
+        "css": [
+            "css/desktop/grideditor.css"
+        ]
+    },
+    "mobile":{
+        "js": [
+            "https://js.cybozu.com/jquery/2.2.4/jquery.min.js",
+            "js/grideditor.js"
+        ],
+        "css": [
+            "css/mobile/grideditor.css"
+        ]
+    },
+    "config":{
+        "html": "html/config.html",
+        "js":[
+            "https://js.cybozu.com/jquery/1.11.1/jquery.min.js",
+            "js/config.js"
+        ],
+        "css": [
+            "css/config.css",
+            "css/51-us-default.css"
+        ]
+    }
+}
