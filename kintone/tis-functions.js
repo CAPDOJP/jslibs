@@ -279,27 +279,29 @@ jQuery.fn.relations=function(options){
 						recordcode:''
 					},
 				},options.fields[index]);
+				var exclude=false;
 				var field=$('body').fields(fieldvalues.fieldcode)[counter];
 				if (!fieldvalues.rewrite)
 				{
 					if (field.val()!=null)
-						if (field.val().toString().length!=0) return true;
+						if (field.val().toString().length!=0) exclude=true;
 				}
-				if (targetvalue.length!=0)
-				{
-					var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==targetvalue;});
-					if (filterbase.length!=0)
+				if (!exclude)
+					if (targetvalue.length!=0)
 					{
-						var filterreferer=$.grep(fieldvalues.relation.datasource,function(item,index){
-							return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;
-						});
-						if (filterreferer.length!=0)
+						var filterbase=$.grep(options.datasource,function(item,index){return item[options.recordcode].value==targetvalue;});
+						if (filterbase.length!=0)
 						{
-							field.val(filterreferer[0][fieldvalues.relation.recordcode].value);
-							if (fieldvalues.lookup) field.parent().parent().find('button').eq(0).trigger('click');
+							var filterreferer=$.grep(fieldvalues.relation.datasource,function(item,index){
+								return item[fieldvalues.relation.refererkey].value==filterbase[0][fieldvalues.relation.basekey].value;
+							});
+							if (filterreferer.length!=0)
+							{
+								field.val(filterreferer[0][fieldvalues.relation.recordcode].value);
+								if (fieldvalues.lookup) field.parent().parent().find('button').eq(0).trigger('click');
+							}
 						}
 					}
-				}
 			});
 		},500);
 	});
