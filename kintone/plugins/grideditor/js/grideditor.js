@@ -1,215 +1,282 @@
+/*
+*--------------------------------------------------------------------
+* jQuery-Plugin "grideditor"
+* Version: 1.0
+* Copyright (c) 2016 TIS
+*
+* Released under the MIT License.
+* http://tis2010.jp/license.txt
+* -------------------------------------------------------------------
+*/
 jQuery.noConflict();
-(function($, PLUGIN_ID) {
-    "use strict";
-
-    // カレンダー上でイベントの時間を変更した時の更新処理
-    function putRecord(event) {
-        var putConfig = kintone.plugin.app.getConfig(PLUGIN_ID);
-        var stdtKey = putConfig.start_datetime;
-        var eddtKey = putConfig.end_datetime;
-
-        kintone.api('/k/v1/record', 'PUT', {
-            "app": kintone.app.getId(),
-            "id": event.rec,
-            "record": (function() {
-                var param = {};
-                param[stdtKey] = {
-                    "value": moment(event.start).add(-9, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
-                };
-                param[eddtKey] = {
-                    "value": moment(event.end).add(-9, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
-                };
-                return param;
-            })()
-        });
-    }
-
-    // レコード一覧画面表示イベント
-    kintone.events.on('app.record.index.show', function(event) {
-        var config = kintone.plugin.app.getConfig(PLUGIN_ID);
-        if (!config) {
-            return false;
-        }
-
-        var evTitle = config.name;
-        var evStart = config.start_datetime;
-        var evEnd = config.end_datetime;
-
-        var startDate;
-        var endDate;
-
-        var records = event.records;
-        var recEvents = [];
-        // アプリにレコードがある場合のみループ
-        if (records.length !== 0) {
-            for (var i = 0; i < records.length; i++) {
-                startDate = moment(records[i][evStart].value);
-                endDate = moment(records[i][evEnd].value);
-
-                // イベント背景色設定でミスがある場合とプロセス管理無効の場合はデフォルト青色とする
-                var eventColor = "#0000ff";
-                // イベント背景色設定処理
-                if (typeof (records[i].ステータス) !== 'undefined') {
-                    var eventStatus = records[i].ステータス.value;
-
-                    for (var k = 1; k < 6; k++) {
-                        var stsPropName = "status" + k;
-                        var clrPropName = "color" + k;
-                        var status = config[stsPropName];
-                        if (status === eventStatus) {
-                            eventColor = config[clrPropName];
-                            break;
-                        }
-                    }
-                }
-                recEvents.push({
-                    title: records[i][evTitle].value,
-                    start: startDate.format("YYYY-MM-DD HH:mm:ss"),
-                    end: endDate.format("YYYY-MM-DD HH:mm:ss"),
-                    url: location.protocol + '//' + location.hostname + '/k/' +
-                        kintone.app.getId() + '/show#record=' + records[i].$id.value,
-                    rec: records[i].$id.value,
-                    backgroundColor: eventColor,
-                    borderColor: eventColor
-                });
-            }
-        }
-
-
-        // カレンダーの設定
-        $('#calendar').fullCalendar({
-            lang: 'ja',
-            theme: false,
-            // 上部のボタンやタイトル
-            header: {
-                left: 'prev,next, today',
-                center: 'title',
-                right: ' month,agendaWeek,agendaDay'
-            },
-            // 各カレンダーの1日毎の表記方法
-            columnFormat: {
-                month: 'ddd',
-                week: 'M/D[(]ddd[)]',
-                day: 'M/D[(]ddd[)]'
-            },
-            // 各カレンダーのタイトル
-            titleFormat: {
-                month: 'YYYY年M月',
-                week: "YYYY年 M月 D日",
-                day: 'YYYY年 M月 D日[(]ddd[)]'
-            },
-            // ボタン文字列の表記
-            buttonText: {
-                prev: '＜',
-                next: '＞',
-                today: '今日',
-                month: '月',
-                week: '週',
-                day: '日'
-            },
-            // 日曜開始のカレンダーとする
-            firstDay: '0',
-            // 週末（土日）を表示
-            weekends: true,
-            // デフォルトは月カレンダー
-            defaultView: 'month',
-            // 月の表記
-            monthNames: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            monthNamesShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            // 曜日の表記
-            dayNames: ['日曜', '月曜', '火曜', '水曜', '木曜', '金曜', '土曜'],
-            dayNamesShort: ['日', '月', '火', '水', '木', '金', '土'],
-            // 各カレンダーの各時間の表記
-            axisFormat: 'H:mm',
-            timeFormat: 'H:mm',
-            // イベントをカレンダー上から編集する
-            editable: true,
-            durationEditable: true,
-            startEditable: true,
-            unselectAuto: true,
-            unselectCancel: '',
-            dragRevertDuration: 100,
-            // 終日予定は表示しない
-            allDaySlot: false,
-            // 0時区切りのカレンダーとする
-            nextDayThreshold: '00:00:00',
-            // カレンダーの高さ
-            height: 700,
-            contentHeight: 600,
-            // 時間軸の単位
-            slotDuration: '01:00:00',
-            // 何分刻みでバーを動かすか
-            snapDuration: '01:00:00',
-            // 日カレンダーのみ詳細に表示するための設定
-            views: {
-                day: {
-                    slotDuration: '00:30:00',
-                    snapDuration: '00:30:00',
-                    scrollTime: '06:00:00'
-                }
-            },
-            minTime: '00:00:00',
-            maxTime: '24:00:00',
-            // 初期時間位置
-            scrollTime: '00:00:00',
-            // 月カレンダーでイベントが多い場合に表所を省略する
-            eventLimit: true,
-            eventLimitText: 'すべて見る',
-            eventResize: function(ev, delta, revertFunc, jsEvent, ui, view) {
-                putRecord(ev);
-                $('#calendar').fullCalendar('unselect');
-            },
-            eventDrop: function(ev, delta, revertFunc, jsEvent, ui, view) {
-                putRecord(ev);
-                $('#calendar').fullCalendar('unselect');
-            },
-            eventSources: [{
-                events: recEvents
-            }]
-        });
-        return event;
-    });
-
-    // レコード作成・編集画面・一覧編集イベント
-    kintone.events.on(['app.record.create.submit', 'app.record.edit.submit',
-        'app.record.index.edit.submit'], function(event) {
-        var record = event.record;
-
-        var config = kintone.plugin.app.getConfig(PLUGIN_ID);
-        if (!config) {
-            return false;
-        }
-
-        var evTitleVal = record[config.name].value;
-        var evStartVal = record[config.start_datetime].value;
-        var evEndVal = record[config.end_datetime].value;
-
-        // イベントタイトル・イベント開始/終了日時は未入力不可
-        if (!evTitleVal || !evStartVal || !evEndVal) {
-            event.error = "未入力項目があります";
-            if (!evTitleVal) {
-                record[config.name].error = "必須です";
-            }
-            if (!evStartVal) {
-                record[config.start_datetime].error = "必須です";
-            }
-            if (!evEndVal) {
-                record[config.end_datetime].error = "必須です";
-            }
-        // 開始日時が終了日時より未来の場合はエラー
-        } else if (moment(evStartVal).format("X") > moment(evEndVal).format("X")) {
-            event.error = "開始日時が終了日時より未来になっています";
-            record[config.start_datetime].error = "終了日時より過去にして下さい";
-            record[config.end_datetime].error = "開始日時より未来にして下さい";
-        // 開始日時と終了日時が同時刻の場合はエラー（FullCalendarの仕様上の問題）
-        } else if (moment(evStartVal).format("X") === moment(evEndVal).format("X")) {
-            event.error = "開始日時と終了日時は1分以上あけて下さい";
-            record[config.start_datetime].error = "終了日時より過去にして下さい";
-            record[config.end_datetime].error = "開始日時より未来にして下さい";
-        }
-
-        return event;
-
-    });
-
-})(jQuery, kintone.$PLUGIN_ID);
+(function($,PLUGIN_ID){
+	"use strict";
+	/*---------------------------------------------------------------
+	 valiable
+	---------------------------------------------------------------*/
+	var vars={
+		loaded:false,
+		container:null,
+		header:null,
+		rows:null,
+		template:null,
+		fieldinfo:[],
+		disabled:{
+			'RICH_TEXT':'リッチエディター',
+			'FILE':'添付ファイル',
+			'USER_SELECT':'ユーザー選択',
+			'SUBTABLE':'テーブル',
+			'ORGANIZATION_SELECT':'組織選択フィールド',
+			'GROUP_SELECT':'グループ選択フィールド'
+		},
+		exclude:[
+			'LABEL',
+			'CALC',
+			'RICH_TEXT',
+			'FILE',
+			'SPACER',
+			'HR',
+			'USER_SELECT',
+			'REFERENCE_TABLE',
+			'RECORD_NUMBER',
+			'CREATOR',
+			'CREATED_TIME',
+			'MODIFIER',
+			'UPDATED_TIME',
+			'SUBTABLE',
+			'ORGANIZATION_SELECT',
+			'GROUP_SELECT'
+		]
+	};
+	var events={
+		show:[
+			'app.record.index.show'
+		]
+	};
+	var functions={
+		/* get field value */
+		fieldvalue:function(element,fieldinfo){
+			var fieldvalue=(element.val()==null)?'':element.val().toString();
+			if (fieldvalue.length==0)
+			{
+				/* check required */
+				if (fieldinfo.required)
+				{
+					/* check default value */
+					if (fieldinfo.defaultValue!=null) fieldvalue=fieldinfo.defaultValue;
+				}
+			}
+			return fieldvalue;
+		}
+	};
+	/*---------------------------------------------------------------
+	 key events
+	---------------------------------------------------------------*/
+	$(document).on('keydown','button,input[type=text],select',function(e){
+		var code=e.keyCode||e.which;
+		if (code==13)
+		{
+			var targets=$(this).closest('table').find('button:visible,input[type=text]:visible,select:visible,textarea:visible');
+			var total=targets.length;
+			var index=targets.index(this);
+			if (e.shiftKey)
+			{
+				if (index==0) index=total;
+				index--;
+			}
+			else
+			{
+				index++;
+				if (index==total) index=0;
+			}
+			targets.eq(index).focus();
+			return false;
+		}
+	});
+	/*---------------------------------------------------------------
+	 kintone events
+	---------------------------------------------------------------*/
+	kintone.events.on(events.show,function(event){
+		var config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if (!config) return false;
+		/* check viewid */
+		if (event.viewId!=config.viewId) return;
+		/* initialize valiable */
+		vars.container=$('div#grideditor-container');
+	   	vars.header=$('<thead>');
+	   	vars.rows=$('<tbody>');
+	   	vars.template=$('<tr>').append($('<td>').append($('<label>')));
+		/* get fieldinfo */
+		kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
+			var fields=['$id'];
+			var row=$('<tr>').append($('<th>').text('No'));
+			/* create header and template */
+			$.each(resp.properties,function(index,values){
+				var fieldinfo=values;
+				/* check disabled type */
+				if (fieldinfo.type in vars.disabled)
+				{
+					var message='';
+					message+='以下のフィールドが配置されている場合は使用出来ません。\r\n';
+					message+='\r\n';
+					$.each(vars.disabled,function(key,value){
+						message+=value+'\r\n';
+					});
+					return;
+				}
+				/* check exclude type */
+				if ($.inArray(fieldinfo.type,vars.exclude)<0)
+				{
+					/* create header field */
+					row.append($('<th>').text(fieldinfo.label));
+					/* create template field */
+					var element=null;
+					switch (fieldinfo.type)
+					{
+						case 'SINGLE_LINE_TEXT':
+						case 'DATE':
+						case 'TIME':
+						case 'DATETIME':
+						case 'LINK':
+							element=$('<input type="text">');
+							break;
+						case 'NUMBER':
+							element=$('<input type="text" class="right">');
+							break;
+						case 'MULTI_LINE_TEXT':
+							element=$('<textarea>');
+							break;
+						case 'CHECK_BOX':
+						case 'MULTI_SELECT':
+							element=$('<select multiple="multiple">');
+							$.each(fieldinfo.options,function(index,value){
+								element.append($('<option>').attr('value',value).text(value));
+							});
+						case 'RADIO_BUTTON':
+						case 'DROP_DOWN':
+							element=$('<select>');
+							$.each(fieldinfo.options,function(index,value){
+								element.append($('<option>').attr('value',value).text(value));
+							});
+							break;
+					}
+					vars.template.append($('<td>').append(element.onvaluechanged(function(target){
+						if (vars.loaded)
+						{
+							var row=$(this).closest('tr');
+							var index=row.find('td').eq(0).find('label').text();
+							var method='';
+							var body={};
+							var record={};
+							if (index.length!=0)
+							{
+								/* update */
+								method='PUT';
+								body={
+									app:kintone.app.getId(),
+									id:index,
+									record:{}
+								};
+								record[fieldinfo.code]={value:functions.fieldvalue(target,fieldinfo)};
+							}
+							else
+							{
+								/* register */
+								method='POST';
+								body={
+									app:kintone.app.getId(),
+									record:{}
+								};
+								$.each(vars.fieldinfo,function(index,values){
+									var element=row.find('td').eq(index+1).find('input,select,texarea');
+									var fieldinfo=values;
+									record[fieldinfo.code]={value:functions.fieldvalue(element,fieldinfo)};
+								});
+							}
+							body.record=record;
+							kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
+								row.find('td').eq(0).find('label').text(resp.id);
+							},function(error){
+								alert(error.message);
+								target.focus();
+							});
+						}
+					})));
+					/* append request fields */
+					fields.push(fieldinfo.code);
+					/* append fieldinfo */
+					vars.fieldinfo.push(fieldinfo);
+				}
+			});
+			/* create button field */
+			vars.template.append($('<td class="buttoncell">').append($('<button>').text('X').on('click',function(){
+				var row=$(this).closest('tr');
+				var index=row.find('td').eq(0).find('label').text();
+				if (index.length!=0)
+				{
+					if (!confirm('削除します。\n宜しいですか?')) return false;
+					var method='DELETE';
+					var body={
+						app:kintone.app.getId(),
+						ids:[index]
+					};
+					kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
+						vars.rows.remove(row);
+					},function(error){});
+				}
+			})));
+			/* append header */
+			vars.header.append(row.append($('<th>').text('')));
+			/* get records */
+			var body={
+				app:kintone.app.getId(),
+				query:kintone.app.getQuery(),
+				fields:fields
+			};
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+				var records=resp.records;
+				/* create rows */
+				$.each(records,function(index,values){
+					var record=values
+					var row=vars.template.clone(true);
+					/* setup field values */
+					row.find('td').eq(0).find('label').text(record['$id'].value);
+					$.each(vars.fieldinfo,function(index,values){
+						var cell=row.find('td').eq(index+1);
+						var fieldinfo=values;
+						var field=record[fieldinfo.code];
+						switch (fieldinfo.type)
+						{
+							case 'SINGLE_LINE_TEXT':
+							case 'NUMBER':
+							case 'DATE':
+							case 'TIME':
+							case 'DATETIME':
+							case 'LINK':
+								cell.find('input').val(field.value);
+								break;
+							case 'MULTI_LINE_TEXT':
+								cell.find('textarea').val(field.value);
+								break;
+							case 'CHECK_BOX':
+							case 'MULTI_SELECT':
+								if (field.value!=null) cell.find('select').val(field.value.toString().split(' '));
+							case 'RADIO_BUTTON':
+							case 'DROP_DOWN':
+								cell.find('select').val(field.value);
+								break;
+						}
+					});
+					/* append row */
+					vars.rows.append(row);
+				});
+				/* append new row */
+				vars.rows.append(vars.template.clone(true));
+		   },function(error){});
+		},function(error){});
+		/* append grid */
+		vars.container.append($('<table id="grideditor">').append(vars.header).append(vars.rows));
+		/* load complete */
+		vars.loaded=true;
+	});
+})(jQuery,kintone.$PLUGIN_ID);

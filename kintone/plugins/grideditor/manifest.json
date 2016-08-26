@@ -1,49 +1,40 @@
 {
-    "manifest_version": 1,
-    "version": 1,
-    "type": "APP",
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
     "name":{
-        "ja": "kintone グリッドエディタープラグイン",
-        "en": "kintone Grid Editor plug-in",
-        "zh": "kintone 网格编辑器插件"
+        "ja":"kintone グリッドエディタープラグイン",
+        "en":"kintone Grid Editor plug-in",
+        "zh":"kintone グリッドエディタープラグイン"
     },
     "description":{
-        "ja": "レコードを一覧画面で編集するプラグインです。",
-        "en": "This plugin to edit the list screen records",
-        "zh": "这个插件编辑列表屏幕记录"
+        "ja":"レコードを一覧画面で編集するプラグインです。",
+        "en":"This plugin to edit the list screen records",
+        "zh":"レコードを一覧画面で編集するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
-        "ja": "http://www.tis2010.jp/",
-        "en": "http://www.tis2010.jp/",
-        "zh": "http://www.tis2010.jp/"
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
     },
     "desktop":{
-        "js": [
-            "https://js.cybozu.com/jquery/2.2.4/jquery.min.js",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "js/grideditor.js"
         ],
-        "css": [
+        "css":[
             "css/desktop/grideditor.css"
-        ]
-    },
-    "mobile":{
-        "js": [
-            "https://js.cybozu.com/jquery/2.2.4/jquery.min.js",
-            "js/grideditor.js"
-        ],
-        "css": [
-            "css/mobile/grideditor.css"
         ]
     },
     "config":{
         "html": "html/config.html",
         "js":[
-            "https://js.cybozu.com/jquery/1.11.1/jquery.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "js/config.js"
         ],
-        "css": [
-            "css/config.css",
+        "css":[
             "css/51-us-default.css"
         ]
     }

@@ -1,18 +1,67 @@
-/* 日曜日 */
-.fc-head .fc-sun {
-    background: rgb(250, 220, 233);
+table#grideditor{
+	border:none;
+	margin:0px;
+	min-width:100%;
+	padding:0px;
 }
-
-/* 土曜日 */
-.fc-head .fc-sat {
-    background: rgb(211, 237, 251);
+table#grideditor thead th{
+	background-color:rgba(89,88,87,0.3);
+	border:1px solid rgba(89,88,87,0.2);
+	font-weight:normal;
+	height:30px;
+	line-height:30px;
+	margin:0px;
+	min-width:150px;
+	padding:0px;
+	text-align:center;
 }
-
-/* 今日 */
-.fc-today {
-    background: rgb(255, 255, 204);
+table#grideditor tbody td{
+	border:1px solid rgba(89,88,87,0.2);
+	height:30px;
+	line-height:30px;
+	margin:0px;
+	padding:0px;
 }
-
-.fc-center {
-    margin-right: 1.75em;
+table#grideditor tbody tr:nth-of-type(even){
+	background-color:rgba(89,88,87,0.1);
+}
+table#grideditor tbody button{
+	background-color:transparent;
+	border:none;
+	box-sizing:border-box;
+	cursor:pointer;
+	height:100%;
+	margin:0px;
+	outline:none;
+	text-align:center;
+	width:100%;
+}
+table#grideditor tbody input[type=text],
+table#grideditor tbody label,
+table#grideditor tbody select,
+table#grideditor tbody textarea{
+	background-color:transparent;
+	border:none;
+	box-sizing:border-box;
+	line-height:30px;
+	margin:0px;
+	padding:0px 3px;
+	width:100%;
+}
+table#grideditor tbody button:focus{
+    box-shadow:0px 0px 2px 2px rgba(135,206,235,1) inset;
+    outline:0;
+}
+table#grideditor tbody input[type=text]:focus,
+table#grideditor tbody select:focus,
+table#grideditor tbody textarea:focus{
+	background-color:rgba(237,228,205,1);
+    box-shadow:0px 0px 2px 2px rgba(135,206,235,1) inset;
+    outline:0;
+}
+.buttoncell{
+    width:35px;
+}
+.right{
+    text-align:right;
 }
