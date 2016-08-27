@@ -106,7 +106,7 @@ jQuery.noConflict();
 					break;
 			}
 			cell.on('focus',function(){$(this).select();})
-			.onvaluechanging(function(target){
+			.on('keyup',function(target){
 				var empty=true;
 				$.each(vars.rows.find('tr').last().find('td'),function(index,value){
 					var cell=$(this).find('input,select,texarea');
@@ -116,7 +116,7 @@ jQuery.noConflict();
 				/* append new row */
 				if (!empty) vars.rows.append(vars.template.clone(true));
 			})
-			.onvaluechanged(function(target){
+			.on('change',function(target){
 				if (vars.loaded)
 				{
 					var row=target.closest('tr');

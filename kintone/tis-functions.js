@@ -330,28 +330,6 @@ jQuery.fn.onrowinsert=function(callback){
 }
 /*
 *--------------------------------------------------------------------
-* elements value change events
-*--------------------------------------------------------------------
-* parameters
-* callback	:changed function
-* -------------------------------------------------------------------
-*/
-jQuery.fn.onvaluechanging=function(callback){
-	return $(this).each(function(){
-		var target=$(this);
-		target.on('change',function(){callback(target);});
-	});
-}
-jQuery.fn.onvaluechanged=function(callback){
-	return $(this).each(function(){
-		var target=$(this);
-		target
-		.on('focus',function(){$.data(target[0],'focus',target.val());})
-		.on('blur',function(){if ($.data(target[0],'focus')!=target.val()) callback(target);});
-	});
-}
-/*
-*--------------------------------------------------------------------
 * setup stylesheets
 *--------------------------------------------------------------------
 * parameters

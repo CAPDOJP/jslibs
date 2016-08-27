@@ -185,15 +185,14 @@ var Referer=function(options){
 					text:searchvalue.text,
 					addition:$('<option value=""></option')
 				});
-				if (searchvalue.callback!=null) searchfield.on('change',function(){searchvalue.callback(searchfield);});
 				break;
 			case 'input':
 				searchfield=text.clone(true).attr('id',searchvalue.id).css({
 					'text-align':searchvalue.align
 				});
-				if (searchvalue.callback!=null) searchfield.onvaluechanged(searchvalue.callback(searchfield));
 				break;
 		}
+		if (searchvalue.callback!=null) searchfield.on('change',function(){searchvalue.callback(searchfield);});
 		searchblock.append(
 			label.clone(true).css({
 				'display':'inline-block'
