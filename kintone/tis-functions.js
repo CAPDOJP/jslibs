@@ -323,8 +323,7 @@ jQuery.fn.onrowinsert=function(callback){
 			var rows=target.find('tbody').find('tr').length;
 			if ($.data(target[0],'rows')==rows) return;
 			if ($.data(target[0],'rows')<rows)
-				for (var i=$.data(target[0],'rows')-1;i<rows;i++)
-					callback(target.find('tbody').find('tr').eq(i));
+				for (var i=0;i<rows;i++) callback(target.find('tbody').find('tr').eq(i));
 			$.data(target[0],'rows',rows);
 		},500);
 	});
@@ -346,8 +345,8 @@ jQuery.fn.onvaluechanging=function(callback){
 jQuery.fn.onvaluechanged=function(callback){
 	return $(this).each(function(){
 		var target=$(this);
-		target.on('focus',function(){$.data(target[0],'focus',target.val());});
-		target.on('blur',function(){if ($.data(target[0],'focus')!=target.val()) callback(target);});
+		$('body').on('focus',target,function(){$.data(target[0],'focus',target.val());});
+		$('body').on('blur',target,function(){if ($.data(target[0],'focus')!=target.val()) callback(target);});
 	});
 }
 /*

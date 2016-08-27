@@ -115,8 +115,8 @@ jQuery.noConflict();
 			.onvaluechanged(function(target){
 				if (vars.loaded)
 				{
-					var row=$(this).closest('tr');
-					var index=row.find('td').eq(0).find('label').text();
+					var row=target.closest('tr');
+					var index=row.find('td').first().find('label').text();
 					var method='';
 					var body={};
 					var record={};
@@ -145,7 +145,7 @@ jQuery.noConflict();
 					}
 					body.record=record;
 					kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
-						row.find('td').eq(0).find('label').text(resp.id);
+						row.find('td').first().find('label').text(resp.id);
 					},function(error){
 						alert(error.message);
 						target.focus();
@@ -247,7 +247,7 @@ jQuery.noConflict();
 			/* append button field */
 			vars.template.append($('<td class="buttoncell">').append($('<button>').text('X').on('click',function(){
 				var row=$(this).closest('tr');
-				var index=row.find('td').eq(0).find('label').text();
+				var index=row.find('td').first().find('label').text();
 				if (index.length!=0)
 				{
 					if (!confirm('削除します。\n宜しいですか?')) return false;
@@ -274,7 +274,7 @@ jQuery.noConflict();
 					var record=values
 					var row=vars.template.clone(true);
 					/* setup field values */
-					row.find('td').eq(0).find('label').text(record['$id'].value);
+					row.find('td').first().find('label').text(record['$id'].value);
 					$.each(vars.fieldinfo,function(index,values){
 						var cell=row.find('td').eq(index+1).find('input,select,texarea');
 						var field=record[values.code];
@@ -293,6 +293,8 @@ jQuery.noConflict();
 				});
 				/* append new row */
 				vars.rows.append(vars.template.clone(true));
+				/* focus */
+				vars.rows.find('input,select,texarea').first().focus();
 		   },function(error){});
 		},function(error){});
 		/* load complete */
