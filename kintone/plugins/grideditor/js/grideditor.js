@@ -106,7 +106,7 @@ jQuery.noConflict();
 					break;
 			}
 			cell.on('focus',function(){$(this).select();})
-			.on('keyup',function(target){
+			.on('keyup',function(){
 				var empty=true;
 				$.each(vars.rows.find('tr').last().find('td'),function(index,value){
 					var cell=$(this).find('input,select,texarea');
@@ -116,9 +116,10 @@ jQuery.noConflict();
 				/* append new row */
 				if (!empty) vars.rows.append(vars.template.clone(true));
 			})
-			.on('change',function(target){
+			.on('change',function(){
 				if (vars.loaded)
 				{
+					var target=$(this);
 					var row=target.closest('tr');
 					var index=row.find('td').first().find('label').text();
 					var method='';

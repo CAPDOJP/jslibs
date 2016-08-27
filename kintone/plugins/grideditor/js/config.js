@@ -15,7 +15,7 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/
-	$('button#plugin-submit').on('click',function(e){
+	$('button#submit').on('click',function(e){
 		var body={
 			app:kintone.app.getId()
 		};
