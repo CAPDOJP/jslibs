@@ -17,6 +17,7 @@ jQuery.noConflict();
 	var vars={
 		loaded:false,
 		container:null,
+		grid:null,
 		header:null,
 		rows:null,
 		template:null,
@@ -54,9 +55,107 @@ jQuery.noConflict();
 		]
 	};
 	var functions={
+		/* create field */
+		createfield:function(fieldinfo){
+			var cell=null;
+			var date=new Date();
+			var placeholder='';
+			switch (fieldinfo.type)
+			{
+				case 'SINGLE_LINE_TEXT':
+				case 'LINK':
+					cell=$('<input type="text">');
+					break;
+				case 'NUMBER':
+					cell=$('<input type="text" class="right">');
+					break;
+				case 'MULTI_LINE_TEXT':
+					cell=$('<textarea>');
+					break;
+				case 'CHECK_BOX':
+				case 'MULTI_SELECT':
+					cell=$('<select multiple="multiple">');
+					cell.append($('<option>').attr('value','').text(''));
+					$.each(fieldinfo.options,function(index,value){
+						cell.append($('<option>').attr('value',value).text(value));
+					});
+				case 'RADIO_BUTTON':
+				case 'DROP_DOWN':
+					cell=$('<select>');
+					cell.append($('<option>').attr('value','').text(''));
+					$.each(fieldinfo.options,function(index,value){
+						cell.append($('<option>').attr('value',value).text(value));
+					});
+					break;
+				case 'DATE':
+					placeholder+=date.format('Y-m-d');
+					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
+					break;
+				case 'TIME':
+					placeholder+=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
+					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
+					break;
+				case 'DATETIME':
+					placeholder+=date.format('Y-m-d');
+					placeholder+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'Z';
+					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
+					break;
+			}
+			return cell
+			.onvaluechanging(function(target){
+				var empty=true;
+				$.each(vars.rows.find('tr').last().find('td'),function(index,value){
+					var cell=$(this).find('input,select,texarea');
+				    if (cell.val()!=null)
+				    	if (cell.val().toString().length!=0) empty=false;
+				})
+				/* append new row */
+				if (!empty) vars.rows.append(vars.template.clone(true));
+			})
+			.onvaluechanged(function(target){
+				if (vars.loaded)
+				{
+					var row=$(this).closest('tr');
+					var index=row.find('td').eq(0).find('label').text();
+					var method='';
+					var body={};
+					var record={};
+					if (index.length!=0)
+					{
+						/* update */
+						method='PUT';
+						body={
+							app:kintone.app.getId(),
+							id:index,
+							record:{}
+						};
+						record[fieldinfo.code]={value:functions.fieldvalue(target,fieldinfo)};
+					}
+					else
+					{
+						/* register */
+						method='POST';
+						body={
+							app:kintone.app.getId(),
+							record:{}
+						};
+						$.each(vars.fieldinfo,function(index,values){
+							record[values.code]={value:functions.fieldvalue(row.find('td').eq(index+1).find('input,select,texarea'),values)};
+						});
+					}
+					body.record=record;
+					kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
+						row.find('td').eq(0).find('label').text(resp.id);
+					},function(error){
+						alert(error.message);
+						target.focus();
+					});
+				}
+			});
+		},
 		/* get field value */
-		fieldvalue:function(element,fieldinfo){
-			var fieldvalue=(element.val()==null)?'':element.val().toString();
+		fieldvalue:function(cell,fieldinfo){
+			var fieldvalue=(cell.val()==null)?'':cell.val().toString();
 			if (fieldvalue.length==0)
 			{
 				/* check required */
@@ -103,112 +202,49 @@ jQuery.noConflict();
 		if (event.viewId!=config.viewId) return;
 		/* initialize valiable */
 		vars.container=$('div#grideditor-container');
-	   	vars.header=$('<thead>');
+	   	vars.grid=$('<table id="grideditor">');
+	   	vars.header=$('<tr>');
 	   	vars.rows=$('<tbody>');
-	   	vars.template=$('<tr>').append($('<td>').append($('<label>')));
+	   	vars.template=$('<tr>');
+		/* append elements */
+		vars.grid.append($('<thead>').append(vars.header));
+		vars.grid.append(vars.rows);
+		vars.container.append(vars.grid);
 		/* get fieldinfo */
 		kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
-			var fields=['$id'];
-			var row=$('<tr>').append($('<th>').text('No'));
+			var displayfields=['$id'];
 			/* create header and template */
+			vars.header.append($('<th>').text('No'));
+	   		vars.template.append($('<td>').append($('<label>')));
 			$.each(resp.properties,function(index,values){
-				var fieldinfo=values;
 				/* check disabled type */
-				if (fieldinfo.type in vars.disabled)
+				if (values.type in vars.disabled)
 				{
 					var message='';
-					message+='以下のフィールドが配置されている場合は使用出来ません。\r\n';
-					message+='\r\n';
+					message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
 					$.each(vars.disabled,function(key,value){
-						message+=value+'\r\n';
+						message+=value+'\n';
 					});
+					alert(message);
+					vars.grid.hide();
 					return;
 				}
 				/* check exclude type */
-				if ($.inArray(fieldinfo.type,vars.exclude)<0)
+				if ($.inArray(values.type,vars.exclude)<0)
 				{
-					/* create header field */
-					row.append($('<th>').text(fieldinfo.label));
-					/* create template field */
-					var element=null;
-					switch (fieldinfo.type)
-					{
-						case 'SINGLE_LINE_TEXT':
-						case 'DATE':
-						case 'TIME':
-						case 'DATETIME':
-						case 'LINK':
-							element=$('<input type="text">');
-							break;
-						case 'NUMBER':
-							element=$('<input type="text" class="right">');
-							break;
-						case 'MULTI_LINE_TEXT':
-							element=$('<textarea>');
-							break;
-						case 'CHECK_BOX':
-						case 'MULTI_SELECT':
-							element=$('<select multiple="multiple">');
-							$.each(fieldinfo.options,function(index,value){
-								element.append($('<option>').attr('value',value).text(value));
-							});
-						case 'RADIO_BUTTON':
-						case 'DROP_DOWN':
-							element=$('<select>');
-							$.each(fieldinfo.options,function(index,value){
-								element.append($('<option>').attr('value',value).text(value));
-							});
-							break;
-					}
-					vars.template.append($('<td>').append(element.onvaluechanged(function(target){
-						if (vars.loaded)
-						{
-							var row=$(this).closest('tr');
-							var index=row.find('td').eq(0).find('label').text();
-							var method='';
-							var body={};
-							var record={};
-							if (index.length!=0)
-							{
-								/* update */
-								method='PUT';
-								body={
-									app:kintone.app.getId(),
-									id:index,
-									record:{}
-								};
-								record[fieldinfo.code]={value:functions.fieldvalue(target,fieldinfo)};
-							}
-							else
-							{
-								/* register */
-								method='POST';
-								body={
-									app:kintone.app.getId(),
-									record:{}
-								};
-								$.each(vars.fieldinfo,function(index,values){
-									var element=row.find('td').eq(index+1).find('input,select,texarea');
-									var fieldinfo=values;
-									record[fieldinfo.code]={value:functions.fieldvalue(element,fieldinfo)};
-								});
-							}
-							body.record=record;
-							kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
-								row.find('td').eq(0).find('label').text(resp.id);
-							},function(error){
-								alert(error.message);
-								target.focus();
-							});
-						}
-					})));
-					/* append request fields */
-					fields.push(fieldinfo.code);
+					/* append header field */
+					vars.header.append($('<th>').text(values.label));
+					/* append template field */
+					vars.template.append($('<td>').append(functions.createfield(values)));
+					/* append display fields */
+					displayfields.push(values.code);
 					/* append fieldinfo */
-					vars.fieldinfo.push(fieldinfo);
+					vars.fieldinfo.push(values);
 				}
 			});
-			/* create button field */
+			/* append header field */
+			vars.header.append($('<th>').text(''));
+			/* append button field */
 			vars.template.append($('<td class="buttoncell">').append($('<button>').text('X').on('click',function(){
 				var row=$(this).closest('tr');
 				var index=row.find('td').eq(0).find('label').text();
@@ -225,45 +261,30 @@ jQuery.noConflict();
 					},function(error){});
 				}
 			})));
-			/* append header */
-			vars.header.append(row.append($('<th>').text('')));
 			/* get records */
 			var body={
 				app:kintone.app.getId(),
 				query:kintone.app.getQuery(),
-				fields:fields
+				fields:displayfields
 			};
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				var records=resp.records;
-				/* create rows */
+				/* create row */
 				$.each(records,function(index,values){
 					var record=values
 					var row=vars.template.clone(true);
 					/* setup field values */
 					row.find('td').eq(0).find('label').text(record['$id'].value);
 					$.each(vars.fieldinfo,function(index,values){
-						var cell=row.find('td').eq(index+1);
-						var fieldinfo=values;
-						var field=record[fieldinfo.code];
-						switch (fieldinfo.type)
+						var cell=row.find('td').eq(index+1).find('input,select,texarea');
+						var field=record[values.code];
+						switch (values.type)
 						{
-							case 'SINGLE_LINE_TEXT':
-							case 'NUMBER':
-							case 'DATE':
-							case 'TIME':
-							case 'DATETIME':
-							case 'LINK':
-								cell.find('input').val(field.value);
-								break;
-							case 'MULTI_LINE_TEXT':
-								cell.find('textarea').val(field.value);
-								break;
 							case 'CHECK_BOX':
 							case 'MULTI_SELECT':
-								if (field.value!=null) cell.find('select').val(field.value.toString().split(' '));
-							case 'RADIO_BUTTON':
-							case 'DROP_DOWN':
-								cell.find('select').val(field.value);
+								if (field.value!=null) cell.val(field.value.toString().split(' '));
+							default:
+								cell.val(field.value);
 								break;
 						}
 					});
@@ -274,8 +295,6 @@ jQuery.noConflict();
 				vars.rows.append(vars.template.clone(true));
 		   },function(error){});
 		},function(error){});
-		/* append grid */
-		vars.container.append($('<table id="grideditor">').append(vars.header).append(vars.rows));
 		/* load complete */
 		vars.loaded=true;
 	});

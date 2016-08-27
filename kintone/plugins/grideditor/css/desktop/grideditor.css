@@ -1,3 +1,7 @@
+div#grideditor-container{
+	overflow-x:auto;
+	width:100%;
+}
 table#grideditor{
 	border:none;
 	margin:0px;
@@ -14,6 +18,10 @@ table#grideditor thead th{
 	min-width:150px;
 	padding:0px;
 	text-align:center;
+}
+table#grideditor thead th:first-of-type,
+table#grideditor thead th:last-of-type{
+	min-width:auto;
 }
 table#grideditor tbody td{
 	border:1px solid rgba(89,88,87,0.2);
@@ -36,6 +44,10 @@ table#grideditor tbody button{
 	text-align:center;
 	width:100%;
 }
+table#grideditor tbody button:focus{
+    box-shadow:0px 0px 2px 2px rgba(135,206,235,1) inset;
+    outline:0;
+}
 table#grideditor tbody input[type=text],
 table#grideditor tbody label,
 table#grideditor tbody select,
@@ -47,10 +59,6 @@ table#grideditor tbody textarea{
 	margin:0px;
 	padding:0px 3px;
 	width:100%;
-}
-table#grideditor tbody button:focus{
-    box-shadow:0px 0px 2px 2px rgba(135,206,235,1) inset;
-    outline:0;
 }
 table#grideditor tbody input[type=text]:focus,
 table#grideditor tbody select:focus,

@@ -337,6 +337,12 @@ jQuery.fn.onrowinsert=function(callback){
 * callback	:changed function
 * -------------------------------------------------------------------
 */
+jQuery.fn.onvaluechanging=function(callback){
+	return $(this).each(function(){
+		var target=$(this);
+		target.on('change',function(){callback(target);});
+	});
+}
 jQuery.fn.onvaluechanged=function(callback){
 	return $(this).each(function(){
 		var target=$(this);
