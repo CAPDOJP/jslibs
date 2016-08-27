@@ -105,7 +105,8 @@ jQuery.noConflict();
 					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
 					break;
 			}
-			cell.onvaluechanging(function(target){
+			cell.on('focus',function(){$(this).select();})
+			.onvaluechanging(function(target){
 				var empty=true;
 				$.each(vars.rows.find('tr').last().find('td'),function(index,value){
 					var cell=$(this).find('input,select,texarea');
