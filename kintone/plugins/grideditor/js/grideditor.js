@@ -58,6 +58,7 @@ jQuery.noConflict();
 		/* create field */
 		createfield:function(fieldinfo){
 			var cell=null;
+			var classes='';
 			var date=new Date();
 			var placeholder='';
 			switch (fieldinfo.type)
@@ -88,21 +89,23 @@ jQuery.noConflict();
 					});
 					break;
 				case 'DATE':
+					classes='datecell';
 					placeholder+=date.format('Y-m-d');
 					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
 					break;
 				case 'TIME':
+					classes='timecell';
 					placeholder+=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
 					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
 					break;
 				case 'DATETIME':
+					classes='datetimecell';
 					placeholder+=date.format('Y-m-d');
 					placeholder+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'Z';
 					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
 					break;
 			}
-			return cell
-			.onvaluechanging(function(target){
+			cell.onvaluechanging(function(target){
 				var empty=true;
 				$.each(vars.rows.find('tr').last().find('td'),function(index,value){
 					var cell=$(this).find('input,select,texarea');
@@ -152,10 +155,11 @@ jQuery.noConflict();
 					});
 				}
 			});
+			return $('<td>').addClass(classes).append(cell);
 		},
 		/* get field value */
 		fieldvalue:function(cell,fieldinfo){
-			var fieldvalue=(cell.val()==null)?'':cell.val().toString();
+			var fieldvalue=(cell.val()!=null)?cell.val().toString():'';
 			if (fieldvalue.length==0)
 			{
 				/* check required */
@@ -163,6 +167,44 @@ jQuery.noConflict();
 				{
 					/* check default value */
 					if (fieldinfo.defaultValue!=null) fieldvalue=fieldinfo.defaultValue;
+					else
+					{
+						var date=new Date();
+						switch (fieldinfo.type)
+						{
+							case 'SINGLE_LINE_TEXT':
+							case 'MULTI_LINE_TEXT':
+							case 'LINK':
+								fieldvalue=' ';
+								break;
+							case 'NUMBER':
+								fieldvalue=(fieldinfo.minValue!=null)?fieldinfo.minValue:'0';
+								break;
+							case 'CHECK_BOX':
+							case 'RADIO_BUTTON':
+							case 'DROP_DOWN':
+							case 'MULTI_SELECT':
+								fieldvalue=cell.find('option').eq(1).val();
+								break;
+							case 'DATE':
+								if (fieldinfo.defaultExpression!=null) fieldvalue=date.format('Y-m-d');
+								else fieldvalue='1000-01-01';
+								break;
+							case 'TIME':
+								if (fieldinfo.defaultExpression!=null) fieldvalue=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
+								else fieldvalue='00:00';
+								break;
+							case 'DATETIME':
+								if (fieldinfo.defaultExpression!=null)
+								{
+									fieldvalue='';
+									fieldvalue+=date.format('Y-m-d');
+									fieldvalue+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'Z';
+								}
+								else fieldvalue='1000-01-01T00:00:00Z';
+								break;
+						}
+					}
 				}
 			}
 			return fieldvalue;
@@ -235,7 +277,7 @@ jQuery.noConflict();
 					/* append header field */
 					vars.header.append($('<th>').text(values.label));
 					/* append template field */
-					vars.template.append($('<td>').append(functions.createfield(values)));
+					vars.template.append(functions.createfield(values));
 					/* append display fields */
 					displayfields.push(values.code);
 					/* append fieldinfo */

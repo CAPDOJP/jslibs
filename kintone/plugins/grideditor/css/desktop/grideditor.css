@@ -11,21 +11,18 @@ table#grideditor{
 table#grideditor thead th{
 	background-color:rgba(89,88,87,0.3);
 	border:1px solid rgba(89,88,87,0.2);
+	font-size:13px;
 	font-weight:normal;
 	height:30px;
 	line-height:30px;
 	margin:0px;
-	min-width:150px;
 	padding:0px;
 	text-align:center;
-}
-table#grideditor thead th:first-of-type,
-table#grideditor thead th:last-of-type{
-	min-width:auto;
 }
 table#grideditor tbody td{
 	border:1px solid rgba(89,88,87,0.2);
 	height:30px;
+	font-size:13px;
 	line-height:30px;
 	margin:0px;
 	padding:0px;
@@ -38,6 +35,7 @@ table#grideditor tbody button{
 	border:none;
 	box-sizing:border-box;
 	cursor:pointer;
+	font-size:13px;
 	height:100%;
 	margin:0px;
 	outline:none;
@@ -55,6 +53,7 @@ table#grideditor tbody textarea{
 	background-color:transparent;
 	border:none;
 	box-sizing:border-box;
+	font-size:13px;
 	line-height:30px;
 	margin:0px;
 	padding:0px 3px;
@@ -69,6 +68,15 @@ table#grideditor tbody textarea:focus{
 }
 .buttoncell{
     width:35px;
+}
+.datecell{
+    width:125px;
+}
+.timecell{
+    width:75px;
+}
+.datetimecell{
+    width:175px;
 }
 .right{
     text-align:right;

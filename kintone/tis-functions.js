@@ -345,8 +345,8 @@ jQuery.fn.onvaluechanging=function(callback){
 jQuery.fn.onvaluechanged=function(callback){
 	return $(this).each(function(){
 		var target=$(this);
-		$('body').on('focus',target,function(){$.data(target[0],'focus',target.val());});
-		$('body').on('blur',target,function(){if ($.data(target[0],'focus')!=target.val()) callback(target);});
+		target.on('focus',function(){alert('focus');$.data(target[0],'focus',target.val());});
+		target.on('blur',function(){if ($.data(target[0],'focus')!=target.val()) {alert('blur');callback(target);}});
 	});
 }
 /*
