@@ -166,9 +166,7 @@ jQuery.noConflict();
 			head.eq(1).append($('<th></th><th></th>'));
 			template.append($('<td></td><td></td>'));
 		}
-		vars.table=new Table({
-			id:'timetable',
-			container:container,
+		vars.table=$('<table id="timetable">').mergetable({
 			head:head,
 			template:template,
 			merge:true,
@@ -190,6 +188,7 @@ jQuery.noConflict();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#$id').val()+'&mode=show';
 			}
 		});
+		container.append(vars.table);
 		/* create routemap box */
 		if (vars.config['route']=='1') vars.route=new RouteMap('AIzaSyDjmVLMiHwzT1ltvD8tJlWW0FvfYGQqp6o');
 		/* get fields of app */
