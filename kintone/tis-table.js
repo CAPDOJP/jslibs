@@ -40,42 +40,11 @@ jQuery.fn.mergetable=function(options){
 		/* append elements */
 		$(this).append(this.head);
 		$(this).append(this.contents);
-		/* functions */
-		this.cellindex=function(row,cellindex){
-	    	var colspan=0;
-	    	$.each(row.find('td'),function(index){
-	    	  	if (index<cellindex)
-	    			if (parseInt('0'+$(this).attr('colspan'))!=0) colspan+=parseInt('0'+$(this).attr('colspan'))-1;
-	    	});
-	    	return cellindex+colspan;
-		};
-		this.clearrows=function(){
-			this.contents.empty();
-		};
-		this.insertrow=function(row,callback){
-		    var target=this.template.clone(true);
-		    if (row==null) this.contents.append(target);
-		    else
-		    {
-	        	if (this.contents.find('tr').index(row)==this.contents.find('tr').length-1) this.contents.append(target);
-	        	else target.insertAfter(row);
-		    }
-	    	if (callback!=null) callback(target);
-		};
-		this.mergecell=function(cell,from,to){
-	        cell.attr('colspan',to-from+1);
-	        for (var i=from;i<to;i++) cell.parent().find('td').eq(from+1).remove();
-			cell.addClass(this.mergeclass);
-		};
-		this.unmergecell=function(cell){
-			var colspan=parseInt('0'+cell.attr('colspan'));
-	        cell.removeAttr('colspan');
-	        for (var i=0;i<colspan-1;i++) $('<td>').insertAfter(cell);
-			cell.removeClass(this.mergeclass);
-		};
 		/* valiable */
 		var my=this;
 		var contents=this.contents;
+		var template=this.template;
+		var mergeclass=this.mergeclass;
 		var merged=false;
 		var mergerow=-1;
 		var mergestart=-1;
@@ -83,6 +52,41 @@ jQuery.fn.mergetable=function(options){
 		var mergeto=-1;
 		var mergelimitfrom=-1;
 		var mergelimitto=-1;
+		/* functions */
+		$(this).extend({
+			cellindex:function(row,cellindex){
+		    	var colspan=0;
+		    	$.each(row.find('td'),function(index){
+		    	  	if (index<cellindex)
+		    			if (parseInt('0'+$(this).attr('colspan'))!=0) colspan+=parseInt('0'+$(this).attr('colspan'))-1;
+		    	});
+		    	return cellindex+colspan;
+			},
+			clearrows:function(){
+				contents.empty();
+			},
+			insertrow:function(row,callback){
+			    var target=template.clone(true);
+			    if (row==null) contents.append(target);
+			    else
+			    {
+		        	if (contents.find('tr').index(row)==contents.find('tr').length-1) contents.append(target);
+		        	else target.insertAfter(row);
+			    }
+		    	if (callback!=null) callback(target);
+			},
+			mergecell:function(cell,from,to){
+		        cell.attr('colspan',to-from+1);
+		        for (var i=from;i<to;i++) cell.parent().find('td').eq(from+1).remove();
+				cell.addClass(mergeclass);
+			},
+			unmergecell:function(cell){
+				var colspan=parseInt('0'+cell.attr('colspan'));
+		        cell.removeAttr('colspan');
+		        for (var i=0;i<colspan-1;i++) $('<td>').insertAfter(cell);
+				cell.removeClass(mergeclass);
+			}
+		});
 		/* events of merge */
 		$(this).on('mousedown touchstart','td',function(e){
 			if (!options.merge) return;
