@@ -11,24 +11,6 @@
 (function($){
 /*
 *--------------------------------------------------------------------
-* get query strings
-* -------------------------------------------------------------------
-*/
-jQuery.extend({
-	queries:function(){
-		var queries=[];
-		var hash=null;
-		var hashes=window.location.search.substring(1).split('&');
-		for(var i=0;i<hashes.length;i++)
-		{
-			hash=hashes[i].split('=');
-			queries[hash[0]]=hash[1];
-		}
-		return queries;
-	}
-});
-/*
-*--------------------------------------------------------------------
 * date calc
 *--------------------------------------------------------------------
 * parameters
@@ -106,6 +88,24 @@ String.prototype.rpad=function(pattern,length){
 	for (var i=0;i<length;i++) padding+=pattern;
 	return (this+pattern).slice(0,length);
 }
+/*
+*--------------------------------------------------------------------
+* get query strings
+* -------------------------------------------------------------------
+*/
+jQuery.extend({
+	queries:function(){
+		var queries=[];
+		var hash=null;
+		var hashes=window.location.search.substring(1).split('&');
+		for(var i=0;i<hashes.length;i++)
+		{
+			hash=hashes[i].split('=');
+			queries[hash[0]]=hash[1];
+		}
+		return queries;
+	}
+});
 /*
 *--------------------------------------------------------------------
 * get elements
