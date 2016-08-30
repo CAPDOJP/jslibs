@@ -49,7 +49,7 @@ jQuery.noConflict();
 						var markers=[];
 						var rows=$(this).closest('tr');
 						$.each(rows.find('td'),function(index){
-							if ($(this).find('input#$id').size())
+							if ($(this).find('input#\\$id').size())
 								if ($.isNumeric($(this).find('input#'+vars.config['lat']).val()) && $.isNumeric($(this).find('input#'+vars.config['lng']).val()))
 									markers.push({
 										label:$(this).find('p').text(),
@@ -81,8 +81,10 @@ jQuery.noConflict();
 						/* cell value switching */
 						var inner='';
 						inner+='<p>'+filter[i][vars.config['display']].value+'</p>';
-						$.each(filter[i],function(key,value){
-							if (value!=null) inner+='<input type="hidden" id="'+key+'" value="'+value+'" />';
+						$.each(filter[i],function(key,values){
+							if (values!=null)
+								if (values.value!=null)
+									inner+='<input type="hidden" id="'+key+'" value="'+values.value+'" />';
 						})
 						row.find('td').eq(from).html(inner);
 					}
@@ -103,15 +105,12 @@ jQuery.noConflict();
 				vars.table.clearrows();
 				if (vars.config['segment'].length!=0)
 				{
-					kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp']},function(resp){
-						var segment=resp.records;
-						/* place the segment data */
-						$.each(segment,function(index){
-							var filter=$.grep(records,function(item,index){return item[vars.config['segment']].value==segment[index][vars.config['segmentappfield']];});
-							/* rebuild view */
-							functions.build(filter,segment[index][vars.config['segmentappfield']],segment[index][vars.config['segmentdisplay']]);
-						});
-					},function(error){});
+					/* place the segment data */
+					$.each(vars.segment,function(index,values){
+						var filter=$.grep(records,function(item,index){return item[vars.config['segment']].value==values[vars.config['segmentappfield']].value;});
+						/* rebuild view */
+						functions.build(filter,values[vars.config['segmentappfield']].value,values[vars.config['segmentdisplay']].value);
+					});
 				}
 				else
 				{
@@ -131,7 +130,7 @@ jQuery.noConflict();
 		/* check viewid */
 		if (event.viewId!=vars.config.datetimetable && event.viewId!=vars.config.weektimetable) return;
 		/* initialize valiable */
-		var container=$('<div id="timetable-container"></div>');
+		var container=$('div#timetable-container');
 		var date=$('<span id="date">');
 		var prev=$('<button id="prev">').text('<');
 		var next=$('<button id="next">').text('>');
@@ -171,7 +170,7 @@ jQuery.noConflict();
 			head:head,
 			template:template,
 			merge:true,
-			mergeexclude:(vars.config['route']=='1' || vars.config['segment'].length!=0)?[0]:[],
+			mergeexclude:((vars.config['route']=='1' || vars.config['segment'].length!=0)?[0]:[]),
 			mergeclass:'merge',
 			mergetrigger:function(caller,cell,rowindex,cellfrom,cellto){
 				var query='';
@@ -186,7 +185,7 @@ jQuery.noConflict();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#$id').val()+'&mode=show';
+				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
 			}
 		});
 		/* create routemap box */

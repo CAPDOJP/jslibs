@@ -1,0 +1,53 @@
+div#timetable-container{
+	overflow-x:auto;
+	width:100%;
+}
+div#timetable-container *{
+	box-sizing:border-box;
+}
+table#timetable{
+	border:none;
+	margin:0px;
+	min-width:100%;
+	padding:0px;
+}
+table#timetable thead tr th{
+	border:1px solid #d3d3d3;
+	font-size:13px;
+	font-weight:normal;
+	margin:0px;
+	min-width:10px;
+	padding:3px;
+	text-align:center;
+}
+table#timetable thead tr:first-of-type th{
+	border-bottom:none;
+}
+table#timetable thead tr:last-of-type th{
+	border-top:none;
+}
+table#timetable tbody tr td{
+	border:1px solid #d3d3d3;
+	font-size:13px;
+	margin:0px;
+	padding:3px;
+}
+table#timetable tbody tr:nth-of-type(even){
+	background-color:#f5f5f5;
+}
+table#timetable tbody button{
+	background-color:transparent;
+	border:none;
+	cursor:pointer;
+	font-size:13px;
+	margin:0px;
+	outline:none;
+	text-align:center;
+}
+table#timetable tbody p{
+    line-height:30px;
+	margin:0px;
+}
+.merge{
+	background-color:#ef857d;
+}

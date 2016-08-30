@@ -61,42 +61,42 @@ jQuery.noConflict();
 					$('select#totime').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 			}
-			/* lists action */
-			$('select#segment').on('change',function(){
-				kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
-					/* setup field lists */
-					var list=$('select#segmentdisplay');
-					list.html('<option value=""></option>');
-					$.each(resp.properties,function(index,values){
-						switch (values.type)
-						{
-							case 'SINGLE_LINE_TEXT':
-								if (values.relatedApp==null) list.append($('<option>').attr('value',values.code).text(values.label));
-						}
-					});
-		        	if ($.hasData(list[0]))
-		        		if ($.data(list[0],'initialdata').length!=0)
-		        		{
-		        			list.val($.data(list[0],'initialdata'));
-		        			$.data(list[0],'initialdata','');
-		        		}
-				},function(error){});
-			})
-	        if (Object.keys(config).length!==0)
-	        {
-	        	$('select#date').val(config['date']);
-	        	$('select#fromtime').val(config['fromtime']);
-	        	$('select#totime').val(config['totime']);
-	        	$('select#display').val(config['display']);
-	        	$('select#segment').val(config['segment']);
-	        	$('select#lat').val(config['lat']);
-	        	$('select#lng').val(config['lng']);
-	        	if (config['route']=='1') $('input#route').prop('checked',true);
-		    	/* trigger events */
-	        	$.data($('select#segmentdisplay')[0],'initialdata',config['segmentdisplay']);
-	        	$('select#segment').trigger('change');
-	        }
 		});
+		/* lists action */
+		$('select#segment').on('change',function(){
+			kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
+				/* setup field lists */
+				var list=$('select#segmentdisplay');
+				list.html('<option value=""></option>');
+				$.each(resp.properties,function(index,values){
+					switch (values.type)
+					{
+						case 'SINGLE_LINE_TEXT':
+							if (values.relatedApp==null) list.append($('<option>').attr('value',values.code).text(values.label));
+					}
+				});
+	        	if ($.hasData(list[0]))
+	        		if ($.data(list[0],'initialdata').length!=0)
+	        		{
+	        			list.val($.data(list[0],'initialdata'));
+	        			$.data(list[0],'initialdata','');
+	        		}
+			},function(error){});
+		})
+        if (Object.keys(config).length!==0)
+        {
+        	$('select#date').val(config['date']);
+        	$('select#fromtime').val(config['fromtime']);
+        	$('select#totime').val(config['totime']);
+        	$('select#display').val(config['display']);
+        	$('select#segment').val(config['segment']);
+        	$('select#lat').val(config['lat']);
+        	$('select#lng').val(config['lng']);
+        	if (config['route']=='1') $('input#route').prop('checked',true);
+	    	/* trigger events */
+        	$.data($('select#segmentdisplay')[0],'initialdata',config['segmentdisplay']);
+        	$('select#segment').trigger('change');
+        }
 	},function(error){});
 	/*---------------------------------------------------------------
 	 button events
