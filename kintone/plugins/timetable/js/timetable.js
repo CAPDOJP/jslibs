@@ -214,7 +214,7 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
 		/* get query strings */
-		var queries=[].queries();
+		var queries=$.queries();
 		if (vars.config['date'] in queries) event.record[vars.config['date']].value=queries[vars.config['date']];
 		if (vars.config['fromtime'] in queries) event.record[vars.config['fromtime']].value=queries[vars.config['fromtime']];
 		if (vars.config['totime'] in queries) event.record[vars.config['totime']].value=queries[vars.config['totime']];
