@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone グリッドエディタープラグイン",
-        "en":"kintone Grid Editor plug-in",
-        "zh":"kintone グリッドエディタープラグイン"
+        "ja":"kintone 関連フィールドデータ一括取得プラグイン",
+        "en":"kintone Relations plug-in",
+        "zh":"kintone 関連フィールドデータ一括取得プラグイン"
     },
     "description":{
-        "ja":"レコードを一覧画面で編集するプラグインです。",
-        "en":"This plug-in to edit the list screen records",
-        "zh":"レコードを一覧画面で編集するプラグインです。"
+        "ja":"ルックアップフィールドの値を元に関連するデータを別フィールドへ表示するプラグインです。",
+        "en":"This plug-in to display data related to the basis of the value of the lookup field to another field",
+        "zh":"ルックアップフィールドの値を元に関連するデータを別フィールドへ表示するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -22,12 +22,7 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "js/sweetalert.min.js",
-            "js/grideditor.js"
-        ],
-        "css":[
-            "css/sweetalert.css",
-            "css/desktop/grideditor.css"
+            "js/relations.js"
         ]
     },
     "config":{

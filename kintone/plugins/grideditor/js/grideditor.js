@@ -77,15 +77,15 @@ jQuery.noConflict();
 				case 'MULTI_SELECT':
 					cell=$('<select multiple="multiple">');
 					cell.append($('<option>').attr('value','').text(''));
-					$.each(fieldinfo.options,function(index,value){
-						cell.append($('<option>').attr('value',value).text(value));
+					$.each(fieldinfo.options,function(index,values){
+						cell.append($('<option>').attr('value',values).text(values));
 					});
 				case 'RADIO_BUTTON':
 				case 'DROP_DOWN':
 					cell=$('<select>');
 					cell.append($('<option>').attr('value','').text(''));
-					$.each(fieldinfo.options,function(index,value){
-						cell.append($('<option>').attr('value',value).text(value));
+					$.each(fieldinfo.options,function(index,values){
+						cell.append($('<option>').attr('value',values).text(values));
 					});
 					break;
 				case 'DATE':
@@ -108,7 +108,7 @@ jQuery.noConflict();
 			cell.on('focus',function(){$(this).select();})
 			.on('keyup',function(){
 				var empty=true;
-				$.each(vars.rows.find('tr').last().find('td'),function(index,value){
+				$.each(vars.rows.find('tr').last().find('td'),function(index,values){
 					var cell=$(this).find('input,select,texarea');
 				    if (cell.val()!=null)
 				    	if (cell.val().toString().length!=0) empty=false;
@@ -152,7 +152,7 @@ jQuery.noConflict();
 					kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
 						row.find('td').first().find('label').text(resp.id);
 					},function(error){
-						alert(error.message);
+				    	swal('Error!',error.message,'error');
 						target.focus();
 					});
 				}
@@ -269,7 +269,7 @@ jQuery.noConflict();
 					$.each(vars.disabled,function(key,value){
 						message+=value+'\n';
 					});
-					alert(message);
+			    	swal('Error!',message,'error');
 					vars.grid.hide();
 					return;
 				}
@@ -294,15 +294,24 @@ jQuery.noConflict();
 				var index=row.find('td').first().find('label').text();
 				if (index.length!=0)
 				{
-					if (!confirm('削除します。\n宜しいですか?')) return false;
-					var method='DELETE';
-					var body={
-						app:kintone.app.getId(),
-						ids:[index]
-					};
-					kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
-						vars.rows.remove(row);
-					},function(error){});
+					swal({
+						title:'確認',
+						text:'削除します。\n宜しいですか?',
+						type:'warning',
+						showCancelButton:true,
+						confirmButtonText:'OK',
+						cancelButtonText:"Cancel"
+					},
+					function(){
+						var method='DELETE';
+						var body={
+							app:kintone.app.getId(),
+							ids:[index]
+						};
+						kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
+							row.remove();
+						},function(error){});
+					});
 				}
 			})));
 			/* get records */

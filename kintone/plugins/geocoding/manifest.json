@@ -9,7 +9,7 @@
     },
     "description":{
         "ja":"入力された住所を元に地図や緯度経度を表示するプラグインです。",
-        "en":"This plugin to view the map and latitude and longitude based on the input address",
+        "en":"This plug-in to view the map and latitude and longitude based on the input address",
         "zh":"入力された住所を元に地図や緯度経度を表示するプラグインです。"
     },
     "icon": "image/icon.png",
@@ -33,14 +33,14 @@
         ]
     },
     "config":{
-        "html": "html/config.html",
+        "html":"html/config.html",
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "js/sweetalert.min.js",
             "js/config.js"
         ],
         "css":[
-            "css/51-us-default.css",
+            "css/51-jp-default.css",
             "css/sweetalert.css"
         ]
     }

@@ -12,7 +12,7 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	/*---------------------------------------------------------------
-	 get fieldinfo
+	 initialize fields
 	---------------------------------------------------------------*/
 	kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
         var config=kintone.plugin.app.getConfig(PLUGIN_ID);
@@ -37,13 +37,13 @@ jQuery.noConflict();
 					$('select#spacer').append($('<option>').attr('value',values.elementId).text(values.elementId));
 					break;
 			}
-        if (Object.keys(config).length!==0)
-        {
-        	$('select#address').val(config['address']);
-        	$('select#lat').val(config['lat']);
-        	$('select#lng').val(config['lng']);
-        	$('select#spacer').val(config['spacer']);
-        }
+	        if (Object.keys(config).length!==0)
+	        {
+	        	$('select#address').val(config['address']);
+	        	$('select#lat').val(config['lat']);
+	        	$('select#lng').val(config['lng']);
+	        	$('select#spacer').val(config['spacer']);
+	        }
 		});
 	},function(error){});
 	/*---------------------------------------------------------------
