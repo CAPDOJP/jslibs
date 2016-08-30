@@ -23,7 +23,7 @@
 * -------------------------------------------------------------------
 */
 var Table=function(options){
-	var options=jQuery().extend({
+	var options=jQuery.extend({
 		id:'',
 		container:null,
 		head:null,
