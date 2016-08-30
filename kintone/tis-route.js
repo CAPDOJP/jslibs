@@ -8,13 +8,18 @@
 * http://tis2010.jp/license.txt
 * -------------------------------------------------------------------
 */
+(function($){
 /*
 *--------------------------------------------------------------------
 * parameters
 * apiikey	:google api key
 * -------------------------------------------------------------------
 */
-var RouteMap=function(apiikey){
+var RouteMap=function(options){
+	var options=$.extend({
+		apiikey:'',
+		container:null
+	},options);
 	/* valiable */
 	var my=this;
 	var div=$('<div>').css({
@@ -59,11 +64,11 @@ var RouteMap=function(apiikey){
 	}));
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
-	$('body').append(this.container);
+	options.container.append(this.container);
 	/* setup google map */
 	var api=$('<script>');
 	api.attr('type','text/javascript');
-	api.attr('src','https://maps.googleapis.com/maps/api/js?key='+apiikey);
+	api.attr('src','https://maps.googleapis.com/maps/api/js?key='+options.apiikey);
 	$('head').append(api);
 	/* setup map */
 	this.markers=[];
@@ -254,3 +259,10 @@ RouteMap.prototype={
 		});
 	}
 };
+jQuery.fn.routemap=function(apiikey){
+	return new RouteMap({
+		apiikey:apiikey,
+		container:this
+	});
+};
+})(jQuery);

@@ -8,6 +8,7 @@
 * http://tis2010.jp/license.txt
 * -------------------------------------------------------------------
 */
+(function($){
 /*
 *--------------------------------------------------------------------
 * parameters
@@ -62,6 +63,7 @@
 */
 var Referer=function(options){
 	var options=$.extend({
+		container:null,
 		datasource:null,
 		displaytext:[],
 		searches:[],
@@ -217,7 +219,7 @@ var Referer=function(options){
 	if (options.buttons.length!=0) this.container.append(this.buttonblock);
 	if (options.searches.length!=0) this.container.append(this.searchblock);
 	this.cover.append(this.container);
-	$('body').append(this.cover);
+	options.container.append(this.cover);
 	/* reload referer */
 	my.search();
 };
@@ -298,3 +300,15 @@ Referer.prototype={
 		this.cover.hide();
 	}
 };
+jQuery.fn.referer=function(options){
+	var options=$.extend({
+		container:null,
+		datasource:null,
+		displaytext:[],
+		searches:[],
+		buttons:[]
+	},options);
+	options.container=this;
+	return new Referer(options);
+};
+})(jQuery);
