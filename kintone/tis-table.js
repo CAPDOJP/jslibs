@@ -12,7 +12,7 @@
 /*
 *--------------------------------------------------------------------
 * parameters
-* options	@ header			:elements of head
+* options	@ head				:elements of head
 *			@ template			:elements of row
 *			@ merge				:merge flag
 *			@ mergeexclude		:merge exclude column index (array)
