@@ -457,7 +457,7 @@ div.relations table tbody tr:nth-of-type(even){
   background-color:#fffcf2;
 }
 div.relations table tbody tr td{
-  padding-right: 10px;
+  padding: 5px;
   vertical-align:top;
 }
 div.relations table tbody tr td:first-of-type{

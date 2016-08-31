@@ -44,7 +44,7 @@ jQuery.noConflict();
 				}
 				if (vars.config['route'].length!=0)
 				{
-					row.find('td').eq(0).append($('<button>').text('地図を表示').on('click',function(){
+					row.find('td').eq(0).append($('<button class="customview-button compass-button">').text('地図を表示').on('click',function(){
 						/* display routemap */
 						var markers=[];
 						var rows=$(this).closest('tr');
@@ -132,8 +132,8 @@ jQuery.noConflict();
 		/* initialize valiable */
 		var container=$('div#timetable-container');
 		var date=$('<span id="date">');
-		var prev=$('<button id="prev">').text('<');
-		var next=$('<button id="next">').text('>');
+		var prev=$('<button id="prev" class="customview-button prev-button">');
+		var next=$('<button id="next" class="customview-button next-button">');
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(date[0]);
@@ -165,7 +165,7 @@ jQuery.noConflict();
 			head.eq(1).append($('<th></th><th></th>'));
 			template.append($('<td></td><td></td>'));
 		}
-		vars.table=$('<table id="timetable">').mergetable({
+		vars.table=$('<table id="timetable" class="customview-table">').mergetable({
 			container:container,
 			head:head,
 			template:template,
@@ -189,7 +189,7 @@ jQuery.noConflict();
 			}
 		});
 		/* create routemap box */
-		if (vars.config['route']=='1') vars.route=$('body').routemap('AIzaSyDjmVLMiHwzT1ltvD8tJlWW0FvfYGQqp6o');
+		if (vars.config['route']=='1') vars.route=$('body').routemap(vars.config['apikey']);
 		/* get fields of app */
 		kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fields=['$id'];

@@ -27,6 +27,7 @@
         ],
         "css":[
             "css/sweetalert.css",
+            "css/desktop/common.css",
             "css/desktop/grideditor.css"
         ]
     },

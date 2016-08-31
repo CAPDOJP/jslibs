@@ -92,6 +92,7 @@ jQuery.noConflict();
         	$('select#segment').val(config['segment']);
         	$('select#lat').val(config['lat']);
         	$('select#lng').val(config['lng']);
+        	$('input#apikey').val(config['apikey']);
         	if (config['route']=='1') $('input#route').prop('checked',true);
 	    	/* trigger events */
         	$.data($('select#segmentdisplay')[0],'initialdata',config['segmentdisplay']);
@@ -149,6 +150,11 @@ jQuery.noConflict();
 		    	swal('Error!','経度表示フィールドを選択して下さい。','error');
 		    	return;
 		    }
+		    if ($('input#apikey').val()=='')
+		    {
+		    	swal('Error!','Google Maps APIキーを入力して下さい。','error');
+		    	return;
+		    }
 		    if ($('select#lat').val()==$('select#lng').val())
 		    {
 		    	swal('Error!','緯度表示フィールドと経度表示フィールドは異なるフィールドを選択して下さい。','error');
@@ -175,6 +181,7 @@ jQuery.noConflict();
         config['route']=($('input#route').prop('checked'))?'1':'0';
         config['lat']=$('select#lat').val();
         config['lng']=$('select#lng').val();
+        config['apikey']=$('input#apikey').val();
 	    /* get view lists */
 		kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
 			var req=$.extend(true,{},resp);
@@ -190,7 +197,7 @@ jQuery.noConflict();
 					req.views[VIEW_NAME[index]]={
 						type:'CUSTOM',
 						name:VIEW_NAME[index],
-						html:'<div id="timetable-container"></div>',
+						html:'<div id="timetable-container" class="customview-container"></div>',
 						filterCond:'',
 						sort:'',
 						pager:false,

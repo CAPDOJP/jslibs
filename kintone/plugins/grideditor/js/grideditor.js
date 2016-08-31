@@ -246,7 +246,7 @@ jQuery.noConflict();
 		if (event.viewId!=config.viewId) return;
 		/* initialize valiable */
 		vars.container=$('div#grideditor-container');
-	   	vars.grid=$('<table id="grideditor">');
+	   	vars.grid=$('<table id="grideditor" class="customview-table">');
 	   	vars.header=$('<tr>');
 	   	vars.rows=$('<tbody>');
 	   	vars.template=$('<tr>');
@@ -289,7 +289,7 @@ jQuery.noConflict();
 			/* append header field */
 			vars.header.append($('<th>').text(''));
 			/* append button field */
-			vars.template.append($('<td class="buttoncell">').append($('<button>').text('X').on('click',function(){
+			vars.template.append($('<td class="buttoncell">').append($('<button class="customview-button close-button">').on('click',function(){
 				var row=$(this).closest('tr');
 				var index=row.find('td').first().find('label').text();
 				if (index.length!=0)

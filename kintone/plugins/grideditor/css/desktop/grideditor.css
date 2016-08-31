@@ -1,71 +1,4 @@
-div#grideditor-container{
-	overflow-x:auto;
-	width:100%;
-}
-table#grideditor{
-	border:none;
-	margin:0px;
-	min-width:100%;
-	padding:0px;
-}
-table#grideditor thead th{
-	background-color:#c0c0c0;
-	border:1px solid #d3d3d3;
-	font-size:13px;
-	font-weight:normal;
-	height:30px;
-	line-height:30px;
-	margin:0px;
-	padding:0px 3px;
-	text-align:center;
-}
-table#grideditor tbody td{
-	border:1px solid #d3d3d3;
-	height:30px;
-	font-size:13px;
-	line-height:30px;
-	margin:0px;
-	padding:0px;
-}
-table#grideditor tbody tr:nth-of-type(even){
-	background-color:#f5f5f5;
-}
-table#grideditor tbody button{
-	background-color:transparent;
-	border:none;
-	box-sizing:border-box;
-	cursor:pointer;
-	font-size:13px;
-	height:100%;
-	margin:0px;
-	outline:none;
-	text-align:center;
-	width:100%;
-}
-table#grideditor tbody button:focus{
-    box-shadow:0px 0px 2px 2px #1e90ff inset;
-    outline:0;
-}
-table#grideditor tbody input[type=text],
-table#grideditor tbody label,
-table#grideditor tbody select,
-table#grideditor tbody textarea{
-	background-color:transparent;
-	border:none;
-	box-sizing:border-box;
-	font-size:13px;
-	line-height:30px;
-	margin:0px;
-	padding:0px 3px;
-	width:100%;
-}
-table#grideditor tbody input[type=text]:focus,
-table#grideditor tbody select:focus,
-table#grideditor tbody textarea:focus{
-	background-color:#ffe4b5;
-    box-shadow:0px 0px 2px 2px #1e90ff inset;
-    outline:0;
-}
+/* individual style */
 .buttoncell{
     width:35px;
 }
@@ -77,7 +10,4 @@ table#grideditor tbody textarea:focus{
 }
 .datetimecell{
     width:175px;
-}
-.right{
-    text-align:right;
 }

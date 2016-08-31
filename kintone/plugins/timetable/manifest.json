@@ -28,6 +28,7 @@
         ],
         "css":[
             "css/sweetalert.css",
+            "css/desktop/common.css",
             "css/desktop/timetable.css"
         ]
     },

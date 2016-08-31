@@ -1,0 +1,154 @@
+/* common style */
+button.customview-button{
+	background-color:transparent;
+	border:none;
+	box-sizing:border-box;
+	cursor:pointer;
+	font-size:13px;
+	outline:0;
+}
+div.customview-container{
+	box-sizing:border-box;
+	font-size:13px;
+	overflow-x:auto;
+	width:100%;
+}
+table.customview-table{
+	border:none;
+	box-sizing:border-box;
+	margin:0px;
+	min-width:100%;
+	padding:0px;
+}
+table.customview-table thead th{
+	background-color:#EFEFEF;
+	border:1px solid #C9C9C9;
+	box-sizing:border-box;
+	font-weight:normal;
+	line-height:30px;
+	margin:0px;
+	min-height:10px;
+	padding:0px 3px;
+	text-align:center;
+}
+table.customview-table tbody td{
+	border:1px solid #C9C9C9;
+	box-sizing:border-box;
+	line-height:30px;
+	margin:0px;
+	padding:0px;
+}
+table.customview-table tbody tr:nth-of-type(even){
+	background-color:#FAF9F9;
+}
+table.customview-table button{
+	border-radius:15px;
+	margin:0px;
+}
+table.customview-table button:focus{
+    box-shadow:0px 0px 2px 2px #7BDFF2 inset;
+}
+table.customview-table input[type=text],
+table.customview-table label,
+table.customview-table select,
+table.customview-table textarea{
+	background-color:transparent;
+	border:none;
+	box-sizing:border-box;
+	line-height:30px;
+	margin:0px;
+    outline:0;
+	padding:0px 3px;
+	width:100%;
+}
+table.customview-table input[type=text]:focus,
+table.customview-table select:focus,
+table.customview-table textarea:focus{
+	background-color:#FCE694;
+    box-shadow:0px 0px 2px 2px #7BDFF2 inset;
+}
+table.customview-table p{
+    line-height:30px;
+	margin:0px;
+}
+.calendar-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.close-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.compass-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/compass.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.download-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/download.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.next-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/next.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.pdf-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/pdf.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.prev-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/prev.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.search-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.time-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/time.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	min-width:34px;
+	padding-left:32px;
+}
+.left{
+    text-align:left;
+}
+.right{
+    text-align:right;
+}
+.center{
+    text-align:center;
+}

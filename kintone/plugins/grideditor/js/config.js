@@ -31,7 +31,7 @@ jQuery.noConflict();
 				req.views[VIEW_NAME]={
 					type:'CUSTOM',
 					name:VIEW_NAME,
-					html:'<div id="grideditor-container"></div>',
+					html:'<div id="grideditor-container" class="customview-container"></div>',
 					filterCond:'',
 					sort:'',
 					pager:false,
