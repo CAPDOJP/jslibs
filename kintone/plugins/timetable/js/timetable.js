@@ -38,7 +38,7 @@ jQuery.noConflict();
 				var inner='';
 				if (vars.config['segment'].length!=0)
 				{
-					inner+='<p>'+segmentname+'</p>';
+					inner+='<p class="customview-p">'+segmentname+'</p>';
 					inner+='<input type="hidden" id="segment" value="'+segment+'" />';
 					row.find('td').eq(0).html(inner);
 				}
@@ -80,7 +80,7 @@ jQuery.noConflict();
 						);
 						/* cell value switching */
 						var inner='';
-						inner+='<p>'+filter[i][vars.config['display']].value+'</p>';
+						inner+='<p class="customview-p">'+filter[i][vars.config['display']].value+'</p>';
 						$.each(filter[i],function(key,values){
 							if (values!=null)
 								if (values.value!=null)
@@ -131,7 +131,7 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.datetimetable && event.viewId!=vars.config.weektimetable) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container');
-		var date=$('<span id="date">');
+		var date=$('<span id="date" class="customview-span">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
 		/* append elements */

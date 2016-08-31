@@ -1,9 +1,13 @@
 /* individual style */
+table#timetable thead tr th{
+	min-width:10px;
+}
 table#timetable thead tr:first-of-type th{
 	border-bottom:none;
 }
 table#timetable thead tr:last-of-type th{
 	border-top:none;
+	height:10px;
 }
 .merge{
 	background-color:#D6A99A;
