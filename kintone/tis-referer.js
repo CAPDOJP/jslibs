@@ -258,7 +258,7 @@ Referer.prototype={
 					var checker=0;
 					if ($.data($(this)[0],'multi'))
 					{
-						var values=searchesvalue.split('/[ 　]/',0);
+						var values=searchesvalue.split(/[ 　]/,0);
 						$.each(values,function(index){
 							var value=values[index];
 							$.each(item,function(key,values){
