@@ -70,10 +70,13 @@ jQuery.noConflict();
 						var totime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
 						var from=(fromtime.getHours())*2+Math.floor(fromtime.getMinutes()/30);
 						var to=(totime.getHours())*2+Math.ceil(totime.getMinutes()/30)-1;
-						from++;
-						to++;
-						from-=vars.table.cellindex(row,from)-from;
-						to-=vars.table.cellindex(row,to)-to;
+						if (vars.config['route']=='1' || vars.config['segment'].length!=0)
+						{
+							from++;
+							to++;
+						}
+						from=vars.table.mergecellindex(row,from);
+						to=vars.table.mergecellindex(row,to);
 						vars.table.mergecell(
 							row.find('td').eq(from),
 							from,
@@ -151,6 +154,7 @@ jQuery.noConflict();
 			});
 		});
 		/* create table */
+		container.empty();
 		var head=$('<tr></tr><tr></tr>');
 		var template=$('<tr>');
 		if (vars.config['route']=='1' || vars.config['segment'].length!=0)

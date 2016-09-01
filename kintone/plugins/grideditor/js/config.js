@@ -34,7 +34,7 @@ jQuery.noConflict();
 					html:'<div id="grideditor-container" class="customview-container"></div>',
 					filterCond:'',
 					sort:'',
-					pager:false,
+					pager:true,
 					index:0
 				};
 			}

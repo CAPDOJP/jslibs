@@ -9,6 +9,9 @@ table#timetable thead tr:last-of-type th{
 	border-top:none;
 	height:10px;
 }
+table#timetable.daily thead tr:last-of-type th:nth-of-type(n+2){
+	width:2%;
+}
 .merge{
 	background-color:#D6A99A;
 }

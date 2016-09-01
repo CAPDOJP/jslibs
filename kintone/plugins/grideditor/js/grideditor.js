@@ -385,7 +385,7 @@ jQuery.noConflict();
 		/* append elements */
 		vars.grid.append($('<thead>').append(vars.header));
 		vars.grid.append(vars.rows);
-		vars.container.append(vars.grid);
+		vars.container.empty().append(vars.grid);
 		/* get layout */
 		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
 			var sorted=functions.fieldsort(resp.layout);
@@ -455,33 +455,24 @@ jQuery.noConflict();
 						});
 					}
 				})));
-				/* get records */
-				var body={
-					app:kintone.app.getId(),
-					query:kintone.app.getQuery(),
-					fields:displayfields
-				};
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-					var records=resp.records;
-					/* create row */
-					$.each(records,function(index,values){
-						var record=values
-						var row=vars.template.clone(true);
-						/* setup field values */
-						row.find('td').first().find('label').text(record['$id'].value);
-						$.each(vars.fieldinfos,function(index,values){
-							row.find('#'+values.code).val(record[values.code].value);
-						});
-						/* append row */
-						vars.rows.append(row);
+				/* create row */
+				$.each(event.records,function(index,values){
+					var record=values
+					var row=vars.template.clone(true);
+					/* setup field values */
+					row.find('td').first().find('label').text(record['$id'].value);
+					$.each(vars.fieldinfos,function(index,values){
+						row.find('#'+values.code).val(record[values.code].value);
 					});
-					/* append new row */
-					vars.rows.append(vars.template.clone(true));
-					/* focus */
-					vars.rows.find('input,select,texarea').first().focus();
-					/* load complete */
-					vars.loaded=true;
-			   },function(error){});
+					/* append row */
+					vars.rows.append(row);
+				});
+				/* append new row */
+				vars.rows.append(vars.template.clone(true));
+				/* focus */
+				vars.rows.find('input,select,texarea').first().focus();
+				/* load complete */
+				vars.loaded=true;
 			},function(error){});
 		},function(error){});
 	});
