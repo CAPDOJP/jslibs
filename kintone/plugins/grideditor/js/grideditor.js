@@ -191,7 +191,6 @@ jQuery.noConflict();
 					vars.referer[fieldinfo.code]=$('body').referer({
 						datasource:resp.records,
 						displaytext:fieldinfo.lookup.lookupPickerFields,
-						containerclass:'referer-container',
 						searchbuttonclass:'customview-button search-button referer-button-search',
 						searchbuttontext:'',
 						buttons:[
