@@ -174,6 +174,16 @@ Table.prototype={
     	});
     	return colspan;
 	},
+	/* get merged roe index */
+	mergerowindex:function(rowindex,cellindex){
+    	var rowspan=0;
+    	$.each(this.contents.find('tr'),function(index){
+   			if (parseInt('0'+$(this).find('td').eq(cellindex).attr('rowspan'))!=0) rowspan+=parseInt('0'+$(this).find('td').eq(cellindex).attr('rowspan'));
+   			else rowspan++;
+    	  	if (rowspan>rowindex) {rowspan=index;return false;}
+    	});
+    	return rowspan;
+	},
 	/* rows clear */
 	clearrows:function(){
 		this.contents.empty();
@@ -201,11 +211,7 @@ Table.prototype={
         cell.removeAttr('colspan');
         for (var i=0;i<colspan-1;i++) $('<td>').insertAfter(cell);
 		cell.removeClass(this.mergeclass);
-	},
-	/* check cell merged */
-	ismerged:function(row,cellindex){
-    	return row.find('td').eq(this.mergecellindex(row,cellindex)).hasClass(this.mergeclass);
-	},
+	}
 };
 jQuery.fn.mergetable=function(options){
 	var options=$.extend({

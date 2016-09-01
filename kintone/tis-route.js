@@ -233,7 +233,7 @@ RouteMap.prototype={
 					travelMode:google.maps.TravelMode.DRIVING
 				},
 				function(result,status){
-					if (status == google.maps.DirectionsStatus.OK)
+					if (status==google.maps.DirectionsStatus.OK)
 					{
 						$.each(options.markers,function(index,values){
 							var values=$.extend({

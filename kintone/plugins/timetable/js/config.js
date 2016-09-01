@@ -69,24 +69,27 @@ jQuery.noConflict();
 		});
 		/* lists action */
 		$('select#segment').on('change',function(){
-			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
-				/* setup field lists */
-				var list=$('select#segmentdisplay');
-				list.html('<option value=""></option>');
-				$.each(resp.properties,function(key,values){
-					switch (values.type)
-					{
-						case 'SINGLE_LINE_TEXT':
-							if (!values.lookup) list.append($('<option>').attr('value',values.code).text(values.label));
-					}
-				});
-	        	if ($.hasData(list[0]))
-	        		if ($.data(list[0],'initialdata').length!=0)
-	        		{
-	        			list.val($.data(list[0],'initialdata'));
-	        			$.data(list[0],'initialdata','');
-	        		}
-			},function(error){});
+			var list=$('select#segmentdisplay');
+			list.html('<option value=""></option>');
+			if ($(this).val().length!=0)
+			{
+				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
+					/* setup field lists */
+					$.each(resp.properties,function(key,values){
+						switch (values.type)
+						{
+							case 'SINGLE_LINE_TEXT':
+								if (!values.lookup) list.append($('<option>').attr('value',values.code).text(values.label));
+						}
+					});
+		        	if ($.hasData(list[0]))
+		        		if ($.data(list[0],'initialdata').length!=0)
+		        		{
+		        			list.val($.data(list[0],'initialdata'));
+		        			$.data(list[0],'initialdata','');
+		        		}
+				},function(error){});
+			}
 		})
         if (Object.keys(config).length!==0)
         {

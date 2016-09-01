@@ -36,28 +36,51 @@ jQuery.noConflict();
 		build:function(filter,segment,segmentname){
 			/* insert row */
 			vars.table.insertrow(null,function(row){
+				var inserted=0;
+				var insertrow=row;
+				var baserow=row;
 				var inner='';
 				if (vars.config['segment'].length!=0)
 				{
 					inner+='<p class="customview-p">'+segmentname+'</p>';
 					inner+='<input type="hidden" id="segment" value="'+segment+'" />';
-					row.find('td').eq(0).html(inner);
+					baserow.find('td').eq(0).html(inner);
 				}
 				if (vars.config['route'].length!=0)
 				{
-					row.find('td').eq(0).append($('<button class="customview-button compass-button">').text('地図を表示').on('click',function(){
+					baserow.find('td').eq(0).append($('<button class="customview-button compass-button">').text('地図を表示').on('click',function(){
 						/* display routemap */
 						var markers=[];
-						var rows=$(this).closest('tr');
-						$.each(rows.find('td'),function(index){
-							if ($(this).find('input#\\$id').size())
-								if ($.isNumeric($(this).find('input#'+vars.config['lat']).val()) && $.isNumeric($(this).find('input#'+vars.config['lng']).val()))
-									markers.push({
-										label:$(this).find('p').text(),
-										lat:$(this).find('input#'+vars.config['lat']).val(),
-										lng:$(this).find('input#'+vars.config['lng']).val()
-									});
-						});
+						var rowindex=vars.table.contents.find('tr').index($(this).closest('tr'));
+						var rowspan=(parseInt('0'+baserow.find('td').eq(0).attr('rowspan'))!=0)?parseInt('0'+baserow.find('td').eq(0).attr('rowspan')):1;
+						for (var i=rowindex;i<rowindex+rowspan;i++)
+						{
+							var row=vars.table.contents.find('tr').eq(i);
+							$.each(row.find('td'),function(index){
+								if ($(this).find('input#\\$id').size())
+								{
+									var lat=parseFloat('0'+$(this).find('input#'+vars.config['lat']).val());
+									var lng=parseFloat('0'+$(this).find('input#'+vars.config['lng']).val());
+									if (lat+lng!=0)
+										markers.push({
+											from:vars.table.cellindex(row,index),
+											label:$(this).find('p').text(),
+											lat:$(this).find('input#'+vars.config['lat']).val(),
+											lng:$(this).find('input#'+vars.config['lng']).val()
+										});
+								}
+							});
+						}
+						if (markers.length==0)
+						{
+					    	swal('Error!','位置情報が設定されたセルがありません。','error');
+							return;
+						}
+						markers.sort(function(a,b){
+							if(a.from<b.from) return -1;
+							if(a.from>b.from) return 1;
+							return 0;
+    					});
 						vars.route.reloadmap({markers:markers});
 					}));
 				}
@@ -70,43 +93,60 @@ jQuery.noConflict();
 						var totime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
 						var from=(fromtime.getHours())*2+Math.floor(fromtime.getMinutes()/30);
 						var to=(totime.getHours())*2+Math.ceil(totime.getMinutes()/30)-1;
+						var fromindex=0;
+						var toindex=0;
 						if (vars.config['route']=='1' || vars.config['segment'].length!=0)
 						{
 							from++;
 							to++;
 						}
-						alert('before');
-						alert('from:'+from);
-						alert('to:'+to);
-						from=vars.table.mergecellindex(row,from);
-						to=vars.table.mergecellindex(row,to);
-						alert('after');
-						alert('from:'+from);
-						alert('to:'+to);
-						vars.table.mergecell(
-							row.find('td').eq(from),
-							from,
-							to
-						);
-						/* cell value switching */
-						var inner='';
-						inner+='<p class="customview-p">'+filter[i][vars.config['display']].value+'</p>';
-						$.each(filter[i],function(key,values){
-							if (values!=null)
-								if (values.value!=null)
-									inner+='<input type="hidden" id="'+key+'" value="'+values.value+'" />';
-						})
-						row.find('td').eq(from).html(inner);
+						fromindex=vars.table.mergecellindex(baserow,from);
+						toindex=vars.table.mergecellindex(baserow,to);
+						/* check cell merged */
+						if (baserow.find('td').eq(fromindex).hasClass('merge') || baserow.find('td').eq(toindex).hasClass('merge'))
+						{
+							vars.table.insertrow(insertrow,function(row){
+								insertrow=row;
+								fromindex=vars.table.mergecellindex(insertrow,from);
+								toindex=vars.table.mergecellindex(insertrow,to);
+								functions.mergeaftervalue(insertrow,fromindex,toindex,filter[i]);
+								inserted++;
+								/* check row merged */
+								if (vars.config['route']=='1' || vars.config['segment'].length!=0)
+								{
+									baserow.find('td').eq(0).attr('rowspan',inserted+1);
+							        insertrow.find('td').eq(1).remove();
+								}
+							});
+						}
+						else functions.mergeaftervalue(baserow,fromindex,toindex,filter[i]);
 					}
 				}
 			});
+		},
+		/* setup merge cell value */
+		mergeaftervalue:function(row,from,to,filter){
+			vars.table.mergecell(
+				row.find('td').eq(from),
+				from,
+				to
+			);
+			/* cell value switching */
+			var inner='';
+			inner+='<p class="customview-p">'+filter[vars.config['display']].value+'</p>';
+			$.each(filter,function(key,values){
+				if (values!=null)
+					if (values.value!=null)
+						inner+='<input type="hidden" id="'+key+'" value="'+values.value+'" />';
+			})
+			row.find('td').eq(from).html(inner);
 		},
 		/* reload view */
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
 			var body={
 				app:kintone.app.getId(),
-				query:vars.config['date']+'="'+vars.date.format('Y-m-d')+'"',
+				query:vars.config['date']+'="'+vars.date.format('Y-m-d')+'" order by $id asc',
 				fields:vars.fields
 			};
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -176,7 +216,7 @@ jQuery.noConflict();
 			head.eq(1).append($('<th></th><th></th>'));
 			template.append($('<td></td><td></td>'));
 		}
-		vars.table=$('<table id="timetable" class="customview-table">').mergetable({
+		vars.table=$('<table id="timetable" class="customview-table timetable-daily">').mergetable({
 			container:container,
 			head:head,
 			template:template,
@@ -192,7 +232,8 @@ jQuery.noConflict();
 				query+=vars.config['date']+'='+vars.date.format('Y-m-d');
 				query+='&'+vars.config['fromtime']+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
 				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
-				if (vars.config['segment'].length!=0) query+='&'+vars.config['segment']+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(0).find('input#segment').val();
+				if (vars.config['segment'].length!=0)
+					query+='&'+vars.config['segment']+'='+caller.contents.find('tr').eq(caller.mergerowindex(rowindex,0)).find('td').eq(0).find('input#segment').val();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
