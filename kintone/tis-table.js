@@ -172,7 +172,7 @@ Table.prototype={
    			else colspan++;
     	  	if (colspan>cellindex) return index
     	});
-    	return 0;
+    	return cellindex;
 	},
 	/* rows clear */
 	clearrows:function(){
