@@ -14,7 +14,6 @@
 * parameters
 * options	@ datasource		:json
 *			@ displaytext		:display text (array)
-*			@ containerclass	:container class
 *			@ searchbuttonclass	:searchbutton class
 *			@ searchbuttontext	:searchbutton text
 *			@ buttons			:button elements
@@ -75,7 +74,6 @@ var Referer=function(options){
 		container:null,
 		datasource:null,
 		displaytext:[],
-		containerclass:'',
 		searchbuttonclass:'',
 		searchbuttontext:'再検索',
 		buttons:[],
@@ -123,7 +121,7 @@ var Referer=function(options){
 		'right':'0',
 		'top':'0',
 		'width':'900px'
-	}).addClass(options.containerclass);
+	});
 	this.contents=div.clone(true).css({
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
