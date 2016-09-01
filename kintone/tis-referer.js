@@ -260,11 +260,7 @@ Referer.prototype={
 					{
 						var values=searchesvalue.replace(/[ 　]+/g,'|');
 						$.each(item,function(key,values){
-							
-							alert(values.value);
-							alert(values.value.toString().match(new RegExp('('+values+')+','ig')));
-							
-						    if (values.value) checker+=(values.value.toString().match(new RegExp('('+values+')+','ig')))?1:0;
+						    if (values.value) checker+=(values.value.toString().match(new RegExp('('+values+')+','ig'))!=null)?1:0;
 						});
 					}
 					else checker+=(item[$(this).attr('id')].value==searchesvalue)?1:0;
