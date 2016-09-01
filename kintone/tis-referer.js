@@ -14,6 +14,7 @@
 * parameters
 * options	@ datasource		:json
 *			@ displaytext		:display text (array)
+*			@ containerclass	:container class
 *			@ searchbuttonclass	:searchbutton class
 *			@ searchbuttontext	:searchbutton text
 *			@ buttons			:button elements
@@ -74,6 +75,7 @@ var Referer=function(options){
 		container:null,
 		datasource:null,
 		displaytext:[],
+		containerclass:'',
 		searchbuttonclass:'',
 		searchbuttontext:'再検索',
 		buttons:[],
@@ -121,7 +123,7 @@ var Referer=function(options){
 		'right':'0',
 		'top':'0',
 		'width':'900px'
-	});
+	}).addClass(options.containerclass);
 	this.contents=div.clone(true).css({
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
@@ -134,7 +136,7 @@ var Referer=function(options){
 		'border-bottom-right-radius':'5px',
 		'bottom':'0px',
 		'left':'0px',
-		'padding':'5px 0px',
+		'padding':'5px',
 		'position':'absolute',
 		'text-align':'center',
 		'width':'100%',
@@ -149,7 +151,7 @@ var Referer=function(options){
 		'border-top-left-radius':'5px',
 		'border-top-right-radius':'5px',
 		'left':'0px',
-		'padding':'5px 0px',
+		'padding':'5px',
 		'position':'absolute',
 		'text-align':'center',
 		'top':'0px',

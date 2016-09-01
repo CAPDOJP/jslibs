@@ -191,19 +191,20 @@ jQuery.noConflict();
 					vars.referer[fieldinfo.code]=$('body').referer({
 						datasource:resp.records,
 						displaytext:fieldinfo.lookup.lookupPickerFields,
-						searchbuttonclass:'customview-button search-button',
+						containerclass:'referer-container',
+						searchbuttonclass:'customview-button search-button referer-button-search',
 						searchbuttontext:'',
 						buttons:[
 							{
 								id:'cancel',
-								class:'customview-button',
+								class:'customview-button referer-button-cancel',
 								text:'キャンセル'
 							}
 						],
 						searches:[
 							{
 								id:'multi',
-								class:'',
+								class:'referer-input-multi',
 								label:'',
 								type:'multi'
 							}
