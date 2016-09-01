@@ -262,7 +262,7 @@ Referer.prototype={
 						$.each(values,function(index){
 							var value=values[index];
 							$.each(item,function(key,values){
-							    checker+=(values.value==value)?1:0;
+							    if (values.value) checker+=(values.value.toString().match('/'+value+'/g'))?1:0;
 							});
 						});
 					}
@@ -281,16 +281,16 @@ Referer.prototype={
 		for (var i=0;i<filtersearch.length;i++)
 		{
 			var filter=filtersearch[i];
-			var list=$('<tr>').css({
-				'border':'1px solid #c9c9c9',
-				'cursor':'pointer',
-				'padding':'5px'
-			});
+			var list=$('<tr>');
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
 			$.each(displaytext,function(index){
-				list.append($('<td>')
+				list.append($('<td>').css({
+					'border':'1px solid #c9c9c9',
+					'cursor':'pointer',
+					'padding':'5px'
+				})
 				.text(filter[displaytext[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);});
 			});
@@ -324,8 +324,8 @@ Referer.prototype={
 		this.cover.show();
 		/* adjust container paddings */
 		this.container.css({
-			'padding-top':(this.searchblock.outerHeight(true))+'px',
-			'padding-bottom':(this.buttonblock.outerHeight(true))+'px'
+			'padding-top':this.searchblock.outerHeight(true)+5+'px',
+			'padding-bottom':this.buttonblock.outerHeight(true)+5+'px'
 		});
 	},
 	/* hide referer */
