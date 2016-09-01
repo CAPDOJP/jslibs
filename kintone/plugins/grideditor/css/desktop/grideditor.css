@@ -27,7 +27,6 @@ table#grideditor tbody td.datetimecell{
 }
 button.referer-button-search{
 	margin:0px;
-    margin-left:-30px;
     position:absolute;
     right:5px;
     top:5px;
@@ -37,6 +36,7 @@ button.referer-button-cancel{
     color:#FFFFFF;
 }
 input.referer-input-multi{
+	box-sizing:border-box;
     padding-right:30px;
     position:relative;
     max-width:auto;

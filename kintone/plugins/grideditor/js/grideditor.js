@@ -209,6 +209,7 @@ jQuery.noConflict();
 							}
 						]
 					});
+					vars.referer[fieldinfo.code].searchblock.find('input#multi').closest('label').css({'width':'100%'});
 				},function(error){});
 				button.on('click',function(){
 					var target=$(this);
