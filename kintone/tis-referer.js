@@ -259,10 +259,11 @@ Referer.prototype={
 					if ($.data($(this)[0],'multi'))
 					{
 						var values=searchesvalue.replace(/[ 　]+/g,'|');
-						
-						alert(values);
-						
 						$.each(item,function(key,values){
+							
+							alert(values.value);
+							alert(values.value.toString().match(new RegExp('('+values+')+','ig')));
+							
 						    if (values.value) checker+=(values.value.toString().match(new RegExp('('+values+')+','ig')))?1:0;
 						});
 					}
