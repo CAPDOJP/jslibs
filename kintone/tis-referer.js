@@ -258,9 +258,9 @@ Referer.prototype={
 					var checker=0;
 					if ($.data($(this)[0],'multi'))
 					{
-						var values=searchesvalue.replace(/[ 　]+/g,'|');
+						var pattern=searchesvalue.replace(/[ 　]+/g,'|');
 						$.each(item,function(key,values){
-						    if (values.value) checker+=(values.value.toString().match(new RegExp('('+values+')+','ig'))!=null)?1:0;
+						    if (values.value) checker+=(values.value.toString().match(new RegExp('('+pattern+')+','ig'))!=null)?1:0;
 						});
 					}
 					else checker+=(item[$(this).attr('id')].value==searchesvalue)?1:0;
