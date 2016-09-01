@@ -258,12 +258,9 @@ Referer.prototype={
 					var checker=0;
 					if ($.data($(this)[0],'multi'))
 					{
-						var values=searchesvalue.split(/[ 　]/,0);
-						$.each(values,function(index){
-							var value=values[index];
-							$.each(item,function(key,values){
-							    if (values.value) checker+=(values.value.toString().match(new RegExp('('+value+')+','g')))?1:0;
-							});
+						var values=searchesvalue.replace(/[ 　]+/g,'|');
+						$.each(item,function(key,values){
+						    if (values.value) checker+=(values.value.toString().match(new RegExp('('+values+')','ig')))?1:0;
 						});
 					}
 					else checker+=(item[$(this).attr('id')].value==searchesvalue)?1:0;
