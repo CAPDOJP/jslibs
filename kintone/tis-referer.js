@@ -262,7 +262,7 @@ Referer.prototype={
 						$.each(values,function(index){
 							var value=values[index];
 							$.each(item,function(key,values){
-							    if (values.value) checker+=(values.value.toString().match('/'+value+'/g'))?1:0;
+							    if (values.value) checker+=(values.value.toString().match(new RegExp(value,'g')))?1:0;
 							});
 						});
 					}
