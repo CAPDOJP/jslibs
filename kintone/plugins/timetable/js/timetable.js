@@ -75,8 +75,14 @@ jQuery.noConflict();
 							from++;
 							to++;
 						}
+						alert('before');
+						alert('from:'+from);
+						alert('to:'+to);
 						from=vars.table.mergecellindex(row,from);
 						to=vars.table.mergecellindex(row,to);
+						alert('after');
+						alert('from:'+from);
+						alert('to:'+to);
 						vars.table.mergecell(
 							row.find('td').eq(from),
 							from,
