@@ -170,7 +170,7 @@ Table.prototype={
     	$.each(row.find('td'),function(index){
    			if (parseInt('0'+$(this).attr('colspan'))!=0) colspan+=parseInt('0'+$(this).attr('colspan'));
    			else colspan++;
-    	  	if (colspan>cellindex) return index;
+    	  	if (colspan>cellindex) {colspan=index;return false;}
     	});
     	return colspan;
 	},
