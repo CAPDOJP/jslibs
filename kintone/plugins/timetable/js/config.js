@@ -21,22 +21,23 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
         var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		$.each(resp.properties,function(index,values){
+		$.each(resp.properties,function(key,values){
 			/* check field type */
 			switch (values.type)
 			{
-				case 'SINGLE_LINE_TEXT':
-				case 'NUMBER':
-				case 'RADIO_BUTTON':
-				case 'DROP_DOWN':
-				case 'LINK':
-				case 'USER_SELECT':
+				case 'CATEGORY':
 				case 'CREATOR':
-				case 'MODIFIER':
-				case 'ORGANIZATION_SELECT':
+				case 'DROP_DOWN':
 				case 'GROUP_SELECT':
+				case 'LINK':
+				case 'MODIFIER':
+				case 'NUMBER':
+				case 'ORGANIZATION_SELECT':
+				case 'RADIO_BUTTON':
+				case 'SINGLE_LINE_TEXT':
+				case 'USER_SELECT':
 					$('select#display').append($('<option>').attr('value',values.code).text(values.label));
-					if (values.lookup!=null)
+					if (values.lookup)
 					{
 						$('select#segment').append($('<option>').attr('value',values.code).text(values.label));
 						vars.appIds[values.code]=values.lookup.relatedApp.app;
@@ -44,13 +45,17 @@ jQuery.noConflict();
 					}
 					if (values.type=='NUMBER')
 					{
-						/* check scale */
-						if (values.displayScale!=null)
-							if (values.displayScale>8)
-							{
-								$('select#lat').append($('<option>').attr('value',values.code).text(values.label));
-								$('select#lng').append($('<option>').attr('value',values.code).text(values.label));
-							}
+						/* exclude lookup */
+						if (!values.lookup)
+						{
+							/* check scale */
+							if (values.displayScale)
+								if (values.displayScale>8)
+								{
+									$('select#lat').append($('<option>').attr('value',values.code).text(values.label));
+									$('select#lng').append($('<option>').attr('value',values.code).text(values.label));
+								}
+						}
 					}
 					break;
 				case 'DATE':
@@ -64,15 +69,15 @@ jQuery.noConflict();
 		});
 		/* lists action */
 		$('select#segment').on('change',function(){
-			kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
+			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
 				/* setup field lists */
 				var list=$('select#segmentdisplay');
 				list.html('<option value=""></option>');
-				$.each(resp.properties,function(index,values){
+				$.each(resp.properties,function(key,values){
 					switch (values.type)
 					{
 						case 'SINGLE_LINE_TEXT':
-							if (values.relatedApp==null) list.append($('<option>').attr('value',values.code).text(values.label));
+							if (!values.lookup) list.append($('<option>').attr('value',values.code).text(values.label));
 					}
 				});
 	        	if ($.hasData(list[0]))

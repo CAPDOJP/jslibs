@@ -1,13 +1,27 @@
 /* individual style */
-.buttoncell{
+table#grideditor tbody td.buttoncell{
     width:35px;
 }
-.datecell{
+table#grideditor tbody td.datecell{
     width:125px;
 }
-.timecell{
+table#grideditor tbody td.lookupcell{
+    width:125px;
+}
+table#grideditor tbody td.lookupcell input{
+    padding-right:30px;
+    z-index:888;
+}
+table#grideditor tbody td.lookupcell button{
+	margin:0px;
+    margin-left:-30px;
+    right:0px;
+    top:0px;
+    z-index:999;
+}
+table#grideditor tbody td.timecell{
     width:75px;
 }
-.datetimecell{
+table#grideditor tbody td.datetimecell{
     width:175px;
 }

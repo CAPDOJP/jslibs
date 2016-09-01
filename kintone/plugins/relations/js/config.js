@@ -19,17 +19,17 @@ jQuery.noConflict();
 		relations:[],
 		template:null,
 		types:[
-			'SINGLE_LINE_TEXT',
-			'NUMBER',
-			'MULTI_LINE_TEXT',
-			'RADIO_BUTTON',
-			'DROP_DOWN',
 			'DATE',
-			'TIME',
 			'DATETIME',
+			'DROP_DOWN',
 			'LINK',
+			'MULTI_LINE_TEXT',
+			'NUMBER',
+			'RADIO_BUTTON',
 			'RECORD_NUMBER',
-			'SUBTABLE'
+			'SINGLE_LINE_TEXT',
+			'SUBTABLE',
+			'TIME'
 		]
 	};
 	var functions={
@@ -70,7 +70,7 @@ jQuery.noConflict();
 					{
 						case 'SUBTABLE':
 							$.each(values.fields,function(key,values){
-								if (values.lookup!=null)
+								if (values.lookup)
 								{
 									$('select#basefield').append($('<option>').attr('value',values.code).text(values.label));
 									vars.appIds[values.code]=values.lookup.relatedApp.app;
@@ -81,7 +81,7 @@ jQuery.noConflict();
 							});
 							break;
 						default:
-							if (values.lookup!=null)
+							if (values.lookup)
 							{
 								$('select#basefield').append($('<option>').attr('value',values.code).text(values.label));
 								vars.appIds[values.code]=values.lookup.relatedApp.app;
@@ -97,12 +97,12 @@ jQuery.noConflict();
 			$('select#basefield').on('change',function(){
 				var app=vars.appNames[vars.appIds[$(this).val()]];
 				var container=$(this).closest('div.relations');
-				kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
+				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
 					/* setup field lists */
 					$.each(container.find('select#basecode'),function(index){
 						var list=$(this);
 						list.html('<option value=""></option>');
-						$.each(resp.properties,function(index,values){
+						$.each(resp.properties,function(key,values){
 							if ($.inArray(values.type,vars.types)>-1)
 								if (values.type!='SUBTABLE')
 									list.append($('<option>').attr('value',values.code).text('['+app+']'+values.label));
@@ -119,11 +119,11 @@ jQuery.noConflict();
 			$('select#relationapp').on('change',function(){
 				var app=$(this).find('option:selected').text();
 				var row=$(this).closest('tr');
-				kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:$(this).val()},function(resp){
+				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:$(this).val()},function(resp){
 					/* setup field lists */
 					$('select#relationappfield',row).html('<option value=""></option>');
 					$('select#relationcode',row).html('<option value=""></option>');
-					$.each(resp.properties,function(index,values){
+					$.each(resp.properties,function(key,values){
 						if ($.inArray(values.type,vars.types)>-1)
 							if (values.type!='SUBTABLE')
 							{

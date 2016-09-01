@@ -19,6 +19,7 @@ jQuery.noConflict();
 		fields:[],
 		date:new Date(),
 		route:null,
+		segment:null,
 		table:null
 	};
 	var events={
@@ -191,9 +192,9 @@ jQuery.noConflict();
 		/* create routemap box */
 		if (vars.config['route']=='1') vars.route=$('body').routemap(vars.config['apikey']);
 		/* get fields of app */
-		kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fields=['$id'];
-			$.each(resp.properties,function(index,values){
+			$.each(resp.properties,function(key,values){
 				vars.fields.push(values.code);
 			});
 			/* get datas of segment */

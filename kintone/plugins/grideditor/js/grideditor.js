@@ -21,32 +21,32 @@ jQuery.noConflict();
 		header:null,
 		rows:null,
 		template:null,
-		fieldinfo:[],
+		referer:{},
+		requiredvalue:{},
 		disabled:{
-			'RICH_TEXT':'リッチエディター',
 			'FILE':'添付ファイル',
-			'USER_SELECT':'ユーザー選択',
+			'RICH_TEXT':'リッチエディター',
 			'SUBTABLE':'テーブル',
-			'ORGANIZATION_SELECT':'組織選択フィールド',
-			'GROUP_SELECT':'グループ選択フィールド'
+			'USER_SELECT':'ユーザー選択'
 		},
-		exclude:[
-			'LABEL',
+		fieldinfos:[],
+		mappings:[],
+		excludes:[
 			'CALC',
-			'RICH_TEXT',
-			'FILE',
-			'SPACER',
-			'HR',
-			'USER_SELECT',
-			'REFERENCE_TABLE',
-			'RECORD_NUMBER',
-			'CREATOR',
+			'CATEGORY',
 			'CREATED_TIME',
+			'CREATOR',
+			'FILE',
+			'GROUP_SELECT',
 			'MODIFIER',
-			'UPDATED_TIME',
-			'SUBTABLE',
 			'ORGANIZATION_SELECT',
-			'GROUP_SELECT'
+			'RECORD_NUMBER',
+			'RICH_TEXT',
+			'STATUS',
+			'STATUS_ASSIGNEE',
+			'SUBTABLE',
+			'UPDATED_TIME',
+			'USER_SELECT'
 		]
 	};
 	var events={
@@ -57,60 +57,85 @@ jQuery.noConflict();
 	var functions={
 		/* create field */
 		createfield:function(fieldinfo){
+			var button=null;
 			var cell=null;
 			var classes='';
 			var date=new Date();
 			var placeholder='';
 			switch (fieldinfo.type)
 			{
-				case 'SINGLE_LINE_TEXT':
-				case 'LINK':
-					cell=$('<input type="text">');
-					break;
-				case 'NUMBER':
-					cell=$('<input type="text" class="right">');
-					break;
-				case 'MULTI_LINE_TEXT':
-					cell=$('<textarea>');
-					break;
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
-					cell=$('<select multiple="multiple">');
+					cell=$('<select id="'+fieldinfo.code+'" multiple="multiple">');
 					cell.append($('<option>').attr('value','').text(''));
-					$.each(fieldinfo.options,function(index,values){
-						cell.append($('<option>').attr('value',values).text(values));
-					});
-				case 'RADIO_BUTTON':
-				case 'DROP_DOWN':
-					cell=$('<select>');
-					cell.append($('<option>').attr('value','').text(''));
-					$.each(fieldinfo.options,function(index,values){
-						cell.append($('<option>').attr('value',values).text(values));
+					$.each(fieldinfo.options,function(key,values){
+						cell.append($('<option>').attr('value',values.label).text(values.label));
 					});
 					break;
 				case 'DATE':
 					classes='datecell';
 					placeholder+=date.format('Y-m-d');
-					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
-					break;
-				case 'TIME':
-					classes='timecell';
-					placeholder+=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
-					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
+					cell=$('<input type="text" id="'+fieldinfo.code+'" placeholder="ex) '+placeholder+'">');
 					break;
 				case 'DATETIME':
 					classes='datetimecell';
 					placeholder+=date.format('Y-m-d');
 					placeholder+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'Z';
-					cell=$('<input type="text" placeholder="ex) '+placeholder+'">');
+					cell=$('<input type="text" id="'+fieldinfo.code+'" placeholder="ex) '+placeholder+'">');
+					break;
+				case 'DROP_DOWN':
+				case 'RADIO_BUTTON':
+					cell=$('<select id="'+fieldinfo.code+'">');
+					cell.append($('<option>').attr('value','').text(''));
+					$.each(fieldinfo.options,function(key,values){
+						cell.append($('<option>').attr('value',values.label).text(values.label));
+					});
+					break;
+				case 'LINK':
+				case 'SINGLE_LINE_TEXT':
+					if (fieldinfo.lookup)
+					{
+						classes='lookupcell';
+						button=$('<button type="button" class="customview-button search-button">');
+						/* setup required value */
+						kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+							if (resp.records.length!=0) vars.requiredvalue[fieldinfo.code]=resp.records[0][fieldinfo.lookup.relatedKeyField].value;
+							else vars.requiredvalue[fieldinfo.code]='';
+						},function(error){});
+					}
+					cell=$('<input type="text" id="'+fieldinfo.code+'">');
+					break;
+				case 'MULTI_LINE_TEXT':
+					cell=$('<textarea id="'+fieldinfo.code+'">');
+					break;
+				case 'NUMBER':
+					if (fieldinfo.lookup)
+					{
+						classes='lookupcell';
+						button=$('<button type="button" class="customview-button search-button">');
+						/* setup required value */
+						kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+							if (resp.records.length!=0) vars.requiredvalue[fieldinfo.code]=resp.records[0][fieldinfo.lookup.relatedKeyField].value;
+							else vars.requiredvalue[fieldinfo.code]='';
+						},function(error){});
+					}
+					cell=$('<input type="text" id="'+fieldinfo.code+'" class="right">');
+					break;
+				case 'TIME':
+					classes='timecell';
+					placeholder+=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
+					cell=$('<input type="text" id="'+fieldinfo.code+'" placeholder="ex) '+placeholder+'">');
 					break;
 			}
+			/* check mappings */
+			if ($.inArray(fieldinfo.code,vars.mappings)>-1) cell.prop('disabled',true);
+			/* cell events */
 			cell.on('focus',function(){$(this).select();})
 			.on('keyup',function(){
 				var empty=true;
 				$.each(vars.rows.find('tr').last().find('td'),function(index,values){
 					var cell=$(this).find('input,select,texarea');
-				    if (cell.val()!=null)
+				    if (cell.val())
 				    	if (cell.val().toString().length!=0) empty=false;
 				})
 				/* append new row */
@@ -144,8 +169,10 @@ jQuery.noConflict();
 							app:kintone.app.getId(),
 							record:{}
 						};
-						$.each(vars.fieldinfo,function(index,values){
-							record[values.code]={value:functions.fieldvalue(row.find('td').eq(index+1).find('input,select,texarea'),values)};
+						$.each(vars.fieldinfos,function(index,values){
+							/* check mappings */
+							if ($.inArray(values.code,vars.mappings)<0)
+								record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
 						});
 					}
 					body.record=record;
@@ -157,53 +184,157 @@ jQuery.noConflict();
 					});
 				}
 			});
-			return $('<td>').addClass(classes).append(cell);
+			if (button!=null)
+			{
+				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+					/* create reference box */
+					vars.referer[fieldinfo.code]=$('body').referer({
+						datasource:resp.records,
+						displaytext:fieldinfo.lookup.lookupPickerFields,
+						searchbuttonclass:'customview-button search-button',
+						searchbuttontext:'',
+						buttons:[
+							{
+								id:'cancel',
+								class:'customview-button',
+								text:'キャンセル'
+							}
+						],
+						searches:[
+							{
+								id:'multi',
+								class:'',
+								label:'',
+								type:'multi'
+							}
+						]
+					});
+				},function(error){});
+				button.on('click',function(){
+					var target=$(this);
+					vars.referer[fieldinfo.code].show({
+						buttons:{
+							cancel:function(){
+								/* close the reference box */
+								vars.referer[fieldinfo.code].hide();
+							}
+						},
+						callback:function(row){
+							target.closest('td').find('#'+fieldinfo.code).val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
+							$.each(fieldinfo.lookup.fieldMappings,function(index,values){
+								target.closest('tr').find('#'+values.field).val(row.find('#'+values.relatedField).val());
+							});
+				        	target.closest('td').find('#'+fieldinfo.code).trigger('change');
+							/* close the reference box */
+							vars.referer[fieldinfo.code].hide();
+						}
+					});
+				});
+				return $('<td>').addClass(classes).append(cell).append(button);
+			}
+			else return $('<td>').addClass(classes).append(cell);
+		},
+		/* get field sorted index */
+		fieldsort:function(layout){
+			var codes=[];
+			$.each(layout,function(index,values){
+				switch (values.type)
+				{
+					case 'ROW':
+						$.each(values.fields,function(index,values){
+							/* exclude spacer */
+							if (!values.elementId) codes.push(values.code);
+						});
+						break;
+					case 'GROUP':
+						$.merge(codes,functions.fieldsort(values.layout));
+						break;
+				}
+			});
+			return codes;
 		},
 		/* get field value */
 		fieldvalue:function(cell,fieldinfo){
-			var fieldvalue=(cell.val()!=null)?cell.val().toString():'';
+			var fieldvalue=null;
+			switch (fieldinfo.type)
+			{
+				case 'CHECK_BOX':
+				case 'MULTI_SELECT':
+					fieldvalue=[];
+					break;
+			}
+			if (cell.val())
+				switch (fieldinfo.type)
+				{
+					case 'CHECK_BOX':
+					case 'MULTI_SELECT':
+						$.each(cell.find('option:selected'),function(){
+							fieldvalue.push($(this).attr('value'));
+						});
+						break;
+					default:
+						fieldvalue=cell.val();
+						break;
+				}
+			if (!fieldvalue) fieldvalue='';
 			if (fieldvalue.length==0)
 			{
 				/* check required */
 				if (fieldinfo.required)
 				{
 					/* check default value */
-					if (fieldinfo.defaultValue!=null) fieldvalue=fieldinfo.defaultValue;
+					if (fieldinfo.defaultValue)
+					{
+						switch (fieldinfo.type)
+						{
+							case 'CHECK_BOX':
+							case 'MULTI_SELECT':
+								fieldvalue=[fieldinfo.defaultValue];
+								break;
+							default:
+								fieldvalue=fieldinfo.defaultValue;
+								break;
+						}
+					}
 					else
 					{
 						var date=new Date();
 						switch (fieldinfo.type)
 						{
-							case 'SINGLE_LINE_TEXT':
-							case 'MULTI_LINE_TEXT':
-							case 'LINK':
-								fieldvalue=' ';
-								break;
-							case 'NUMBER':
-								fieldvalue=(fieldinfo.minValue!=null)?fieldinfo.minValue:'0';
-								break;
 							case 'CHECK_BOX':
-							case 'RADIO_BUTTON':
-							case 'DROP_DOWN':
 							case 'MULTI_SELECT':
+								fieldvalue=[cell.find('option').eq(1).val()];
+								break;
+							case 'DROP_DOWN':
+							case 'RADIO_BUTTON':
 								fieldvalue=cell.find('option').eq(1).val();
 								break;
 							case 'DATE':
-								if (fieldinfo.defaultExpression!=null) fieldvalue=date.format('Y-m-d');
+								if (fieldinfo.defaultExpression) fieldvalue=date.format('Y-m-d');
 								else fieldvalue='1000-01-01';
 								break;
-							case 'TIME':
-								if (fieldinfo.defaultExpression!=null) fieldvalue=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
-								else fieldvalue='00:00';
-								break;
 							case 'DATETIME':
-								if (fieldinfo.defaultExpression!=null)
+								if (fieldinfo.defaultExpression)
 								{
 									fieldvalue='';
 									fieldvalue+=date.format('Y-m-d');
 									fieldvalue+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'Z';
 								}
 								else fieldvalue='1000-01-01T00:00:00Z';
+								break;
+							case 'LINK':
+							case 'MULTI_LINE_TEXT':
+							case 'SINGLE_LINE_TEXT':
+								if (fieldinfo.lookup) fieldvalue=vars.requiredvalue[fieldinfo.code];
+								else fieldvalue=' ';
+								break;
+							case 'NUMBER':
+								if (fieldinfo.lookup) fieldvalue=vars.requiredvalue[fieldinfo.code];
+								else fieldvalue=(fieldinfo.minValue)?(fieldinfo.minValue.toString().match(/^-?[0-9]+/g))?fieldinfo.minValue:'0':'0';
+								break;
+							case 'TIME':
+								if (fieldinfo.defaultExpression) fieldvalue=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
+								else fieldvalue='00:00';
 								break;
 						}
 					}
@@ -215,11 +346,11 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 key events
 	---------------------------------------------------------------*/
-	$(document).on('keydown','button,input[type=text],select',function(e){
+	$(document).on('keydown','input[type=text],select',function(e){
 		var code=e.keyCode||e.which;
 		if (code==13)
 		{
-			var targets=$(this).closest('table').find('button:visible,input[type=text]:visible,select:visible,textarea:visible');
+			var targets=$(this).closest('table').find('input[type=text]:visible:not(:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)');
 			var total=targets.length;
 			var index=targets.index(this);
 			if (e.shiftKey)
@@ -254,103 +385,103 @@ jQuery.noConflict();
 		vars.grid.append($('<thead>').append(vars.header));
 		vars.grid.append(vars.rows);
 		vars.container.append(vars.grid);
-		/* get fieldinfo */
-		kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
-			var displayfields=['$id'];
-			/* create header and template */
-			vars.header.append($('<th>').text('No'));
-	   		vars.template.append($('<td>').append($('<label>')));
-			$.each(resp.properties,function(index,values){
-				/* check disabled type */
-				if (values.type in vars.disabled)
-				{
-					var message='';
-					message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
-					$.each(vars.disabled,function(key,value){
-						message+=value+'\n';
+		/* get layout */
+		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
+			var sorted=functions.fieldsort(resp.layout);
+			/* get fieldinfo */
+			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+				var displayfields=['$id'];
+				/* create header and template */
+				vars.header.append($('<th>').text('No'));
+		   		vars.template.append($('<td>').append($('<label>')));
+		   		$.each(sorted,function(index){
+		   			var fieldinfo=resp.properties[sorted[index]];
+					/* check disabled type */
+					if (fieldinfo.type in vars.disabled)
+					{
+						var message='';
+						message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
+						$.each(vars.disabled,function(key,value){
+							message+=value+'\n';
+						});
+				    	swal('Error!',message,'error');
+						vars.grid.hide();
+						return;
+					}
+					/* check exclude type */
+					if ($.inArray(fieldinfo.type,vars.excludes)<0)
+					{
+						/* append header field */
+						vars.header.append($('<th>').text(fieldinfo.label));
+						/* append template field */
+						vars.template.append(functions.createfield(fieldinfo));
+						/* append display fields */
+						displayfields.push(fieldinfo.code);
+						/* append fieldinfo */
+						vars.fieldinfos.push(fieldinfo);
+						/* append lookup mappings fields */
+						if (fieldinfo.lookup)
+							$.each(fieldinfo.lookup.fieldMappings,function(index,values){
+								vars.mappings.push(values.field);
+							});
+					}
+		   		});
+				/* append header field */
+				vars.header.append($('<th>').text(''));
+				/* append button field */
+				vars.template.append($('<td class="buttoncell">').append($('<button class="customview-button close-button">').on('click',function(){
+					var row=$(this).closest('tr');
+					var index=row.find('td').first().find('label').text();
+					if (index.length!=0)
+					{
+						swal({
+							title:'確認',
+							text:'削除します。\n宜しいですか?',
+							type:'warning',
+							showCancelButton:true,
+							confirmButtonText:'OK',
+							cancelButtonText:"Cancel"
+						},
+						function(){
+							var method='DELETE';
+							var body={
+								app:kintone.app.getId(),
+								ids:[index]
+							};
+							kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
+								row.remove();
+							},function(error){});
+						});
+					}
+				})));
+				/* get records */
+				var body={
+					app:kintone.app.getId(),
+					query:kintone.app.getQuery(),
+					fields:displayfields
+				};
+				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+					var records=resp.records;
+					/* create row */
+					$.each(records,function(index,values){
+						var record=values
+						var row=vars.template.clone(true);
+						/* setup field values */
+						row.find('td').first().find('label').text(record['$id'].value);
+						$.each(vars.fieldinfos,function(index,values){
+							row.find('#'+values.code).val(record[values.code].value);
+						});
+						/* append row */
+						vars.rows.append(row);
 					});
-			    	swal('Error!',message,'error');
-					vars.grid.hide();
-					return;
-				}
-				/* check exclude type */
-				if ($.inArray(values.type,vars.exclude)<0)
-				{
-					/* append header field */
-					vars.header.append($('<th>').text(values.label));
-					/* append template field */
-					vars.template.append(functions.createfield(values));
-					/* append display fields */
-					displayfields.push(values.code);
-					/* append fieldinfo */
-					vars.fieldinfo.push(values);
-				}
-			});
-			/* append header field */
-			vars.header.append($('<th>').text(''));
-			/* append button field */
-			vars.template.append($('<td class="buttoncell">').append($('<button class="customview-button close-button">').on('click',function(){
-				var row=$(this).closest('tr');
-				var index=row.find('td').first().find('label').text();
-				if (index.length!=0)
-				{
-					swal({
-						title:'確認',
-						text:'削除します。\n宜しいですか?',
-						type:'warning',
-						showCancelButton:true,
-						confirmButtonText:'OK',
-						cancelButtonText:"Cancel"
-					},
-					function(){
-						var method='DELETE';
-						var body={
-							app:kintone.app.getId(),
-							ids:[index]
-						};
-						kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
-							row.remove();
-						},function(error){});
-					});
-				}
-			})));
-			/* get records */
-			var body={
-				app:kintone.app.getId(),
-				query:kintone.app.getQuery(),
-				fields:displayfields
-			};
-			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-				var records=resp.records;
-				/* create row */
-				$.each(records,function(index,values){
-					var record=values
-					var row=vars.template.clone(true);
-					/* setup field values */
-					row.find('td').first().find('label').text(record['$id'].value);
-					$.each(vars.fieldinfo,function(index,values){
-						var cell=row.find('td').eq(index+1).find('input,select,texarea');
-						var field=record[values.code];
-						switch (values.type)
-						{
-							case 'CHECK_BOX':
-							case 'MULTI_SELECT':
-								if (field.value!=null) cell.val(field.value.toString().split(' '));
-							default:
-								cell.val(field.value);
-								break;
-						}
-					});
-					/* append row */
-					vars.rows.append(row);
-				});
-				/* append new row */
-				vars.rows.append(vars.template.clone(true));
-				/* focus */
-				vars.rows.find('input,select,texarea').first().focus();
-		   },function(error){});
+					/* append new row */
+					vars.rows.append(vars.template.clone(true));
+					/* focus */
+					vars.rows.find('input,select,texarea').first().focus();
+					/* load complete */
+					vars.loaded=true;
+			   },function(error){});
+			},function(error){});
 		},function(error){});
-		/* load complete */
-		vars.loaded=true;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

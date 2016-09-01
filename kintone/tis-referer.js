@@ -12,38 +12,45 @@
 /*
 *--------------------------------------------------------------------
 * parameters
-* options	@ datasource	:json
-*			@ displaytext	:display text (array)
-*			@ buttons		:button elements
-*							.id is elements id
-*							.text is display text
-*							.callback is callback of button clicked
-*							-example-
-*							buttons[
-*								{
-*									id:'ok',
-*									text:'ok',
-*									callback:function(){alert('ok clicked');}
-*								},
-*								{
-*									id:'cancel',
-*									text:'cancel',
-*									callback:function(){alert('cancel clicked');}
-*								}
-*							]
-*			@ searches		:search condition elements
-*							.id is elements id
-*							.label is elements label text
-*							.type is elements type
-*							.param is api parameter (<select> only)
-*							.value is key for value (<select> only)
-*							.text is key for display text (<select> only)
-*							.align is text alignment (<input> only)
+* options	@ datasource		:json
+*			@ displaytext		:display text (array)
+*			@ searchbuttonclass	:searchbutton class
+*			@ searchbuttontext	:searchbutton text
+*			@ buttons			:button elements
+*								.id is elements id
+*								.class is elements class
+*								.text is display text
+*								.callback is callback of button clicked
+*								-example-
+*								buttons[
+*									{
+*										id:'ok',
+*										class:'okbuttonclasss',
+*										text:'ok',
+*										callback:function(){alert('ok clicked');}
+*									},
+*									{
+*										id:'cancel',
+*										class:'cancelbuttonclasss',
+*										text:'cancel',
+*										callback:function(){alert('cancel clicked');}
+*									}
+*								]
+*			@ searches			:search condition elements
+*								.id is elements id
+*								.class is elements class
+*								.label is elements label text
+*								.type is elements type [select,input,multi] (multi is all fields search)
+*								.param is api parameter (<select> only)
+*								.value is key for value (<select> only)
+*								.text is key for display text (<select> only)
+*								.align is text alignment (<input> only)
 *							.callback is value change event
 *							-example-
 *							searches[
 *								{
 *									id:'users',
+*									class:'selectclasss',
 *									label:'choose user',
 *									type:'select',
 *									param:{app:1},
@@ -53,6 +60,7 @@
 *								},
 *								{
 *									id:'companyname',
+*									class:'inputclass',
 *									label:'input companyname',
 *									type:'input',
 *									align:'left',
@@ -66,8 +74,10 @@ var Referer=function(options){
 		container:null,
 		datasource:null,
 		displaytext:[],
-		searches:[],
-		buttons:[]
+		searchbuttonclass:'',
+		searchbuttontext:'再検索',
+		buttons:[],
+		searches:[]
 	},options);
 	/* property */
 	this.datasource=options.datasource;
@@ -154,12 +164,14 @@ var Referer=function(options){
 	$.each(options.buttons,function(index){
 		var buttonvalue=$.extend({
 			id:'',
+			class:'',
 			text:'',
 			callback:null
 		},options.buttons[index]);
 		buttons.push(
 			button.clone(true)
 			.attr('id',buttonvalue.id)
+			.addClass(buttonvalue.class)
 			.text(buttonvalue.text)
 			.on('click',function(){if (buttonvalue.callback!=null) buttonvalue.callback();})
 		);
@@ -168,6 +180,7 @@ var Referer=function(options){
 	$.each(options.searches,function(index){
 		var searchvalue=$.extend({
 			id:'',
+			class:'',
 			label:'',
 			type:'',
 			param:{},
@@ -180,18 +193,21 @@ var Referer=function(options){
 		switch (searchvalue.type)
 		{
 			case 'select':
-				searchfield=select.clone(true).attr('id',searchvalue.id);
+				searchfield=select.clone(true).attr('id',searchvalue.id).addClass(searchvalue.class);
 				searchfield.listitems({
 					param:searchvalue.param,
 					value:searchvalue.value,
 					text:searchvalue.text,
 					addition:$('<option value=""></option')
 				});
+				$.data(searchfield[0],'multi',false);
 				break;
 			case 'input':
-				searchfield=text.clone(true).attr('id',searchvalue.id).css({
+			case 'multi':
+				searchfield=text.clone(true).attr('id',searchvalue.id).addClass(searchvalue.class).css({
 					'text-align':searchvalue.align
 				});
+				$.data(searchfield[0],'multi',(searchvalue.type=='multi'));
 				break;
 		}
 		if (searchvalue.callback!=null) searchfield.on('change',function(){searchvalue.callback(searchfield);});
@@ -207,7 +223,8 @@ var Referer=function(options){
 	{
 		searchblock.append(
 			button.clone(true)
-			.text('再検索')
+			.addClass(options.searchbuttonclass)
+			.text(options.searchbuttontext)
 			.on('click',function(){
 				/* reload referer */
 				my.search();
@@ -234,11 +251,23 @@ Referer.prototype={
 		var filtersearch=$.grep(this.datasource,function(item,index){
 			var exists=0;
 			$.each(searches,function(index){
-				var value=($(this).val()!=null)?$(this).val():'';
-				if (value=='') exists++;
+				var searchesvalue=($(this).val())?$(this).val():'';
+				if (searchesvalue=='') exists++;
 				else
 				{
-					if (item[$(this).attr('id')].value==value) exists++;
+					var checker=0;
+					if ($.data($(this)[0],'multi'))
+					{
+						var values=searchesvalue.split('/[ 　]/',0);
+						$.each(values,function(index){
+							var value=values[index];
+							$.each(item,function(key,values){
+							    checker+=(values.value==value)?1:0;
+							});
+						});
+					}
+					else checker+=(item[$(this).attr('id')].value==searchesvalue)?1:0;
+					exists+=(checker!=0)?1:0;
 				}
 			});
 			return searches.length==exists;
@@ -252,7 +281,11 @@ Referer.prototype={
 		for (var i=0;i<filtersearch.length;i++)
 		{
 			var filter=filtersearch[i];
-			var list=$('<tr>');
+			var list=$('<tr>').css({
+				'border':'1px solid #c9c9c9',
+				'cursor':'pointer',
+				'padding':'5px'
+			});
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});

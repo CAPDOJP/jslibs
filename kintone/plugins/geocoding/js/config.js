@@ -20,18 +20,22 @@ jQuery.noConflict();
 			/* check field type */
 			switch (values.type)
 			{
+				case 'NUMBER':
+					/* exclude lookup */
+					if (!values.relatedApp)
+					{
+						/* check scale */
+						if (values.displayScale)
+							if (values.displayScale>8)
+							{
+								$('select#lat').append($('<option>').attr('value',values.code).text(values.label));
+								$('select#lng').append($('<option>').attr('value',values.code).text(values.label));
+							}
+					}
+					break;
 				case 'SINGLE_LINE_TEXT':
 					/* exclude lookup */
-					if (values.relatedApp==null) $('select#address').append($('<option>').attr('value',values.code).text(values.label));
-					break;
-				case 'NUMBER':
-					/* check scale */
-					if (values.displayScale!=null)
-						if (values.displayScale>8)
-						{
-							$('select#lat').append($('<option>').attr('value',values.code).text(values.label));
-							$('select#lng').append($('<option>').attr('value',values.code).text(values.label));
-						}
+					if (!values.relatedApp) $('select#address').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 				case 'SPACER':
 					$('select#spacer').append($('<option>').attr('value',values.elementId).text(values.elementId));

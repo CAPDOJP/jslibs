@@ -38,7 +38,7 @@ jQuery.noConflict();
 				$.each($('body').fields(options.basefield),function(){
 					var counter=0;
 					var target=$(this);
-					var targetvalue=(target.val()!=null)?target.val():'';
+					var targetvalue=(target.val())?target.val():'';
 					if ($.data(target[0],'value')==null) $.data(target[0],'value','');
 					if ($.data(target[0],'value')==targetvalue) return;
 					$.data(target[0],'value',targetvalue);
@@ -58,7 +58,7 @@ jQuery.noConflict();
 						var field=$('body').fields(fieldvalues.relationfield)[counter];
 						if (!fieldvalues.rewrite)
 						{
-							if (field.val()!=null)
+							if (field.val())
 								if (field.val().toString().length!=0) exclude=true;
 						}
 						if (!exclude)
