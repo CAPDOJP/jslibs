@@ -95,55 +95,68 @@ jQuery.noConflict();
 			});
 			/* lists action */
 			$('select#basefield').on('change',function(){
-				var app=vars.appNames[vars.appIds[$(this).val()]];
+				var app='';
 				var container=$(this).closest('div.relations');
-				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
-					/* setup field lists */
-					$.each(container.find('select#basecode'),function(index){
-						var list=$(this);
-						list.html('<option value=""></option>');
+				/* initialize field lists */
+				$.each(container.find('select#basecode'),function(index){$(this).html('<option value=""></option>');});
+				if ($(this).val().length!=0)
+				{
+					app=vars.appNames[vars.appIds[$(this).val()]];
+					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
+						/* setup field lists */
+						$.each(container.find('select#basecode'),function(index){
+							var list=$(this);
+							list.html('<option value=""></option>');
+							$.each(resp.properties,function(key,values){
+								if ($.inArray(values.type,vars.types)>-1)
+									if (values.type!='SUBTABLE')
+										list.append($('<option>').attr('value',values.code).text('['+app+']'+values.label));
+							});
+				        	if ($.hasData(list[0]))
+				        		if ($.data(list[0],'initialdata').length!=0)
+				        		{
+				        			list.val($.data(list[0],'initialdata'));
+				        			$.data(list[0],'initialdata','');
+				        		}
+						});
+					},function(error){});
+				}
+			})
+			$('select#relationapp').on('change',function(){
+				var app='';
+				var row=$(this).closest('tr');
+				var listappfield=$('select#relationappfield',row);
+				var listcode=$('select#relationcode',row);
+				/* initialize field lists */
+				listappfield.html('<option value=""></option>');
+				listcode.html('<option value=""></option>');
+				if ($(this).val().length!=0)
+				{
+					app=$(this).find('option:selected').text();
+					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:$(this).val()},function(resp){
+						/* setup field lists */
 						$.each(resp.properties,function(key,values){
 							if ($.inArray(values.type,vars.types)>-1)
 								if (values.type!='SUBTABLE')
-									list.append($('<option>').attr('value',values.code).text('['+app+']'+values.label));
+								{
+									listappfield.append($('<option>').attr('value',values.code).text(values.label));
+									listcode.append($('<option>').attr('value',values.code).text('['+app+']'+values.label));
+								}
 						});
-			        	if ($.hasData(list[0]))
-			        		if ($.data(list[0],'initialdata').length!=0)
+			        	if ($.hasData(listappfield[0]))
+			        		if ($.data(listappfield[0],'initialdata').length!=0)
 			        		{
-			        			list.val($.data(list[0],'initialdata'));
-			        			$.data(list[0],'initialdata','');
+			        			listappfield.val($.data(listappfield[0],'initialdata'));
+			        			$.data(listappfield[0],'initialdata','');
 			        		}
-					});
-				},function(error){});
-			})
-			$('select#relationapp').on('change',function(){
-				var app=$(this).find('option:selected').text();
-				var row=$(this).closest('tr');
-				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:$(this).val()},function(resp){
-					/* setup field lists */
-					$('select#relationappfield',row).html('<option value=""></option>');
-					$('select#relationcode',row).html('<option value=""></option>');
-					$.each(resp.properties,function(key,values){
-						if ($.inArray(values.type,vars.types)>-1)
-							if (values.type!='SUBTABLE')
-							{
-								$('select#relationappfield',row).append($('<option>').attr('value',values.code).text(values.label));
-								$('select#relationcode',row).append($('<option>').attr('value',values.code).text('['+app+']'+values.label));
-							}
-					});
-		        	if ($.hasData($('select#relationappfield',row)[0]))
-		        		if ($.data($('select#relationappfield',row)[0],'initialdata').length!=0)
-		        		{
-		        			$('select#relationappfield',row).val($.data($('select#relationappfield',row)[0],'initialdata'));
-		        			$.data($('select#relationappfield',row)[0],'initialdata','');
-		        		}
-		        	if ($.hasData($('select#relationcode',row)[0]))
-		        		if ($.data($('select#relationcode',row)[0],'initialdata').length!=0)
-		        		{
-		        			$('select#relationcode',row).val($.data($('select#relationcode',row)[0],'initialdata'));
-		        			$.data($('select#relationcode',row)[0],'initialdata','');
-		        		}
-				},function(error){});
+			        	if ($.hasData(listcode[0]))
+			        		if ($.data(listcode[0],'initialdata').length!=0)
+			        		{
+			        			listcode.val($.data(listcode[0],'initialdata'));
+			        			$.data(listcode[0],'initialdata','');
+			        		}
+					},function(error){});
+				}
 			})
 			/* buttons action */
 			$('button#addbase').on('click',function(){
@@ -191,6 +204,7 @@ jQuery.noConflict();
 	 button events
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
+        var error=false;
         var config=[];
         var relations={};
 	    /* check values */
@@ -201,7 +215,8 @@ jQuery.noConflict();
 		    if ($('select#basefield',container).val()=='')
 		    {
 		    	swal('Error!','基準フィールドを選択して下さい。','error');
-		    	return;
+		    	error=true;
+		    	return false;
 		    }
 		    isTable=vars.isTable[$('select#basefield',container).val()];
 		    values['basefield']=$('select#basefield',container).val();
@@ -214,43 +229,51 @@ jQuery.noConflict();
 			    if ($('select#relationfield',row).val()=='')
 			    {
 			    	swal('Error!','表示フィールドを選択して下さい。','error');
-			    	return;
+			    	error=true;
+			    	return false;
 			    }
 			    if ($('select#basefield',container).val()==$('select#relationfield',row).val())
 			    {
 			    	swal('Error!','基準フィールドと表示フィールドは異なるフィールドを選択して下さい。','error');
-			    	return;
+			    	error=true;
+			    	return false;
 			    }
 			    if (vars.isTable[$('select#relationfield',container).val()]!=isTable)
 			    {
 			    	if (isTable) swal('Error!','基準フィールドをテーブル内のフィールドにした場合は、表示フィールドもテーブル内フィールドにして下さい。','error');
 			    	else swal('Error!','基準フィールドがテーブル内のフィールドでない場合は、表示フィールドにテーブル内フィールドを指定出来ません。','error');
-			    	return;
+			    	error=true;
+			    	return false;
 			    }
 			    if ($('select#relationapp',row).val()=='')
 			    {
 			    	swal('Error!','関連付けるアプリとコピー元のフィールドを選択して下さい。','error');
-			    	return;
+			    	error=true;
+			    	return false;
 			    }
 			    if ($('select#relationappfield',row).val()=='')
 			    {
 			    	swal('Error!','関連付けるアプリとコピー元のフィールドを選択して下さい。','error');
-			    	return;
+			    	error=true;
+			    	return false;
 			    }
 			    if ($('select#basecode',row).val()=='')
 			    {
 			    	swal('Error!','フィールドの関連付けを選択して下さい。','error');
-			    	return;
+			    	error=true;
+			    	return false;
 			    }
 			    if ($('select#relationcode',row).val()=='')
 			    {
 			    	swal('Error!','フィールドの関連付けを選択して下さい。','error');
-			    	return;
+			    	error=true;
+			    	return false;
 			    }
 			    if ($('select#basefield',container).val()==$('select#relationfield',row).val())
 			    {
 			    	swal('Error!','基準フィールドと表示フィールドは異なるフィールドを選択して下さい。','error');
-			    	return;
+			    	error=true;
+			    	return false;
 			    }
 				values['relations'][index]={
 					relationfield:$('select#relationfield',row).val(),
@@ -263,7 +286,9 @@ jQuery.noConflict();
 				};
 			});
 		    relations[index]=values;
+			if (error) return false;
 	    });
+		if (error) return;
 		/* setup config */
         config['relations']=JSON.stringify(relations,'');
 		/* save config */

@@ -174,16 +174,6 @@ Table.prototype={
     	});
     	return colspan;
 	},
-	/* get merged roe index */
-	mergerowindex:function(rowindex,cellindex){
-    	var rowspan=0;
-    	$.each(this.contents.find('tr'),function(index){
-   			if (parseInt('0'+$(this).find('td').eq(cellindex).attr('rowspan'))!=0) rowspan+=parseInt('0'+$(this).find('td').eq(cellindex).attr('rowspan'));
-   			else rowspan++;
-    	  	if (rowspan>rowindex) {rowspan=index;return false;}
-    	});
-    	return rowspan;
-	},
 	/* rows clear */
 	clearrows:function(){
 		this.contents.empty();

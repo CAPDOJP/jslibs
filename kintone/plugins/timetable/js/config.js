@@ -70,6 +70,7 @@ jQuery.noConflict();
 		/* lists action */
 		$('select#segment').on('change',function(){
 			var list=$('select#segmentdisplay');
+			/* initialize field lists */
 			list.html('<option value=""></option>');
 			if ($(this).val().length!=0)
 			{

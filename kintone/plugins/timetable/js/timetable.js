@@ -115,7 +115,7 @@ jQuery.noConflict();
 								if (vars.config['route']=='1' || vars.config['segment'].length!=0)
 								{
 									baserow.find('td').eq(0).attr('rowspan',inserted+1);
-							        insertrow.find('td').eq(1).remove();
+							        insertrow.find('td').eq(0).html(baserow.find('td').eq(0).html()).hide();
 								}
 							});
 						}
@@ -233,7 +233,7 @@ jQuery.noConflict();
 				query+='&'+vars.config['fromtime']+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
 				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
 				if (vars.config['segment'].length!=0)
-					query+='&'+vars.config['segment']+'='+caller.contents.find('tr').eq(caller.mergerowindex(rowindex,0)).find('td').eq(0).find('input#segment').val();
+					query+='&'+vars.config['segment']+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(0).find('input#segment').val();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
