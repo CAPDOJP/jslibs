@@ -57,7 +57,7 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':'auto',
+		'height':'200px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
@@ -67,7 +67,7 @@ var Calendar=function(options){
 		'right':'0',
 		'text-align':'center',
 		'top':'0',
-		'width':'auto'
+		'width':'250px'
 	});
 	this.contents=table.clone(true).css({
 		'box-sizing':'border-box',
