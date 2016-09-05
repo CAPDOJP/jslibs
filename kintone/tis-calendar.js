@@ -144,7 +144,7 @@ var Calendar=function(options){
 	}));
 	/* append elements */
 	this.buttonblock.append(button.clone(true).css({
-			'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png")',
+			'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png")',
 		})
 		.on('click',function(){my.cover.hide();})
 	);
