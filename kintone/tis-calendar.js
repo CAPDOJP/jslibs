@@ -199,6 +199,7 @@ Calendar.prototype={
 				$(this).css(style).text((display+1).toString());
 			}).delay(index*10).animate({opacity:'1'},150);
 		});
+		this.cover.show();
 	}
 };
 jQuery.fn.calendar=function(options){
