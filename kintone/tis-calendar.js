@@ -169,32 +169,31 @@ Calendar.prototype={
 					'color':params.active.fore,
 					'cursor':'pointer'
 				};
-				//月初日以前は処理しない
+				/* not process less than one day this month */
 				if (display<0) {$(this).css(style).html('&nbsp;');return;}
-				//翌月初日以降は処理しない
+				/* not processing beyond the next month 1 day */
 				if (day.format('Y-m')!=displaymonth.format('Y-m')) {$(this).css(style).html('&nbsp;');return;}
 				switch ((index+1)%7)
 				{
 					case 0:
-						//土曜日
+						//saturday's style
 						style['background-color']=params.saturday.back;
 						style['color']=params.saturday.fore;
 						break;
 					case 1:
-						//日曜日
+						//sunday's style
 						style['background-color']=params.sunday.back;
 						style['color']=params.sunday.fore;
 						break;
 				}
-				//当日
+				//today's style
 				if(day.format('Y-m-d')==new Date().format('Y-m-d'))
 				{
 					style['background-color']=params.today.back;
 					style['color']=params.today.fore;
 				}
-				//指定日
+				//activedate's style
 				if(day.format('Y-m-d')==activedate.format('Y-m-d')) style=active;
-				//日付設定
 				style['cursor']='pointer';
 				$(this).css(style).text((display+1).toString());
 			}).delay(index*10).animate({opacity:'1'},150);
