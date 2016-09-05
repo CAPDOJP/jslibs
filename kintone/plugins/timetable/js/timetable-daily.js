@@ -34,7 +34,8 @@ jQuery.noConflict();
 	};
 	var functions={
 		/* rebuild view */
-		build:function(filter,segment,segmentname){
+		build:function(filter,segment,segmentname,colorindex){
+			var color=colorindex%12;
 			/* insert row */
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
@@ -126,11 +127,19 @@ jQuery.noConflict();
 									baserow.find('td').eq(0).attr('rowspan',rowspan);
 							        mergerow.find('td').eq(0).html(baserow.find('td').eq(0).html()).hide();
 								}
+								/* setup merge class */
+								$.each(row.find('td'),function(index){
+								    $(this).addClass('timetable-daily-merge'+color);
+								})
 							});
 						}
 						else functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
 					}
 				}
+				/* setup merge class */
+				$.each(row.find('td'),function(index){
+				    $(this).addClass('timetable-daily-merge'+color);
+				})
 			});
 		},
 		/* setup merge cell value */
@@ -160,7 +169,7 @@ jQuery.noConflict();
 				fields:vars.fields
 			};
 			sort=' order by ';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' desc,':'';
 			sort+=vars.config['fromtime']+' asc';
 			body.query+=sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -173,14 +182,14 @@ jQuery.noConflict();
 					$.each(vars.segment,function(index,values){
 						var filter=$.grep(records,function(item,index){return item[vars.config['segment']].value==values[vars.config['segmentappfield']].value;});
 						/* rebuild view */
-						functions.build(filter,values[vars.config['segmentappfield']].value,values[vars.config['segmentdisplay']].value);
+						functions.build(filter,values[vars.config['segmentappfield']].value,values[vars.config['segmentdisplay']].value,index);
 					});
 				}
 				else
 				{
 					var filter=$.grep(records,function(item,index){return true;});
 					/* rebuild view */
-					functions.build(filter,'','');
+					functions.build(filter,'','',0);
 				}
 			},function(error){});
 		}
@@ -193,6 +202,9 @@ jQuery.noConflict();
 		if (!vars.config) return false;
 		/* check viewid */
 		if (event.viewId!=vars.config.datetimetable) return;
+		/* get query strings */
+		var queries=$.queries();
+		if (vars.config['date'] in queries) vars.date=new Date(queries[vars.config['date']]);
 		/* initialize valiable */
 		var container=$('div#timetable-container');
 		var date=$('<span id="date" class="customview-span">');

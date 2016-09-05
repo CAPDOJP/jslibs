@@ -15,7 +15,7 @@ jQuery.noConflict();
 		appIds:{},
 		appFields:{}
 	};
-	var VIEW_NAME=['日別タイムテーブル','週別タイムテーブル'];
+	var VIEW_NAME=['日次タイムテーブル','週次タイムテーブル','月次予定表'];
 	/*---------------------------------------------------------------
 	 initialize fields
 	---------------------------------------------------------------*/
@@ -195,14 +195,14 @@ jQuery.noConflict();
 		kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
 			var req=$.extend(true,{},resp);
 			req.app=kintone.app.getId();
-		    /* swaps the index */
 			$.each(VIEW_NAME,function(index){
 				if (!req.views[VIEW_NAME[index]])
-					for (var key in req.views) req.views[key].index=Number(req.views[key].index)+1;
-			});
-   		    /* create custom view */
-			$.each(VIEW_NAME,function(index){
-				if (!req.views[VIEW_NAME[index]])
+				{
+				    /* swaps the index */
+				    $.each(req.views,function(key,values){
+						if ($.inArray(key,VIEW_NAME)<0) values.index=Number(values.index)+1;
+				    })
+		   		    /* create custom view */
 					req.views[VIEW_NAME[index]]={
 						type:'CUSTOM',
 						name:VIEW_NAME[index],
@@ -212,12 +212,14 @@ jQuery.noConflict();
 						pager:false,
 						index:index
 					};
+				}
 			});
 			/* save viewid */
 			kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'PUT',req,function(resp){
 				/* setup config */
 		        config['datetimetable']=resp.views[VIEW_NAME[0]].id;
 		        config['weektimetable']=resp.views[VIEW_NAME[1]].id;
+		        config['monthtimetable']=resp.views[VIEW_NAME[2]].id;
 				/* save config */
 				kintone.plugin.app.setConfig(config);
 			},function(error){});

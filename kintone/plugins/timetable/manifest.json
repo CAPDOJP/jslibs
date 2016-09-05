@@ -27,7 +27,8 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
             "js/sweetalert.min.js",
             "js/timetable-daily.js",
-            "js/timetable-weekly.js"
+            "js/timetable-weekly.js",
+            "js/timetable-monthly.js"
         ],
         "css":[
             "css/sweetalert.css",

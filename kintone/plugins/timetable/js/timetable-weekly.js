@@ -130,7 +130,7 @@ jQuery.noConflict();
 			};
 			sort=' order by ';
 			sort+=vars.config['date']+' asc,';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' desc,':'';
 			sort+=vars.config['fromtime']+' asc';
 			body.query+=sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -139,11 +139,19 @@ jQuery.noConflict();
 				/* initialize cells */
 			    $('div.timetable-weekly-cell').remove();
 			    $('div.timetable-weekly-balloon').remove();
-				$.each(vars.table.head.find('th'),function(index){$(this).css({'width':'auto'});})
+				$.each(vars.table.head.find('th'),function(index){
+					$(this).css({'width':'auto'}).empty();
+				})
 				for (var i=0;i<7;i++)
 				{
 					vars.cellposition=0;
-					vars.table.head.find('th').eq(i+1).text(vars.fromdate.calc(i+' day').format('Y-m-d'));
+					vars.table.head.find('th').eq(i+1).append($('<p class="customview-p">').text(vars.fromdate.calc(i+' day').format('Y-m-d')))
+					vars.table.head.find('th').eq(i+1).append($('<button class="customview-button time-button">').text('タイムテーブルを表示').on('click',function(){
+						var query='';
+						query+='view='+vars.config.datetimetable;
+						query+='&'+vars.config['date']+'='+$(this).closest('th').find('p').text();
+						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+					}));
 					if (vars.config['segment'].length!=0)
 					{
 						/* place the segment data */
@@ -192,7 +200,7 @@ jQuery.noConflict();
 		var button=$('<button id="datepick" class="customview-button calendar-button">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
-		vars.graphlegend=$('<div class="timetable-weekly-graphlegend">');
+		vars.graphlegend=$('<div class="timetable-graphlegend">');
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(week[0]);
@@ -205,7 +213,8 @@ jQuery.noConflict();
 		/* day pickup button */
 		vars.calendar=$('body').calendar({
 			selected:function(target,value){
-				vars.fromdate.setDate(new Date(value).getDate()+new Date(value).getDay()*-1);
+				vars.fromdate=new Date(value);
+				vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);
 				vars.todate=vars.fromdate.calc('6 day');
 				week.text(vars.fromdate.format('Y-m-d')+' ～ '+vars.todate.format('Y-m-d'));
 				/* reload view */
@@ -267,8 +276,8 @@ jQuery.noConflict();
 					$.each(vars.segment,function(index,values){
 						var color=vars.colors[index%vars.colors.length];
 						vars.graphlegend
-						.append($('<span class="customview-span timetable-weekly-graphlegend-color">').css({'background-color':color}))
-						.append($('<span class="customview-span timetable-weekly-graphlegend-title">').text(values[vars.config['segmentdisplay']].value));
+						.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':color}))
+						.append($('<span class="customview-span timetable-graphlegend-title">').text(values[vars.config['segmentdisplay']].value));
 					});
 					/* reload view */
 					functions.load();
