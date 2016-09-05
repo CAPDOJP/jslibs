@@ -39,7 +39,21 @@ var Calendar=function(options){
 	var div=$('<div>').css({
 		'box-sizing':'border-box'
 	});
-	var button=$('<button>');
+	var button=$('<button>').css({
+		'background-color':'transparent',
+		'background-position':'left top',
+		'background-repeat':'no-repeat',
+		'background-size':'30px 30px',
+		'border':'none',
+		'box-sizing':'border-box',
+		'cursor':'pointer',
+		'font-size':'13px',
+		'height':'30px',
+		'margin':'0px',
+	    'outline':'none',
+	    'padding':'0px',
+		'width':'30px'
+	});
 	var table=$('<table>');
 	/* append elements */
 	this.cover=div.clone(true).css({
@@ -86,9 +100,11 @@ var Calendar=function(options){
 			'border':'1px solid #C9C9C9',
 			'color':options.normal.fore,
 			'font-size':'13px',
+			'height':'30px',
 			'margin':'0px',
 			'padding':'3px',
-			'text-align':'center'
+			'text-align':'center',
+			'width':'30px'
 		})
 		.on('click',function(){
 			if ($.isNumeric($(this).text()))
@@ -108,25 +124,28 @@ var Calendar=function(options){
 	this.contents.find('tr:gt(0)').find('td').eq(0).css({'background-color':options.sunday.back,'color':options.sunday.fore});
 	this.contents.find('tr:gt(0)').find('td').eq(6).css({'background-color':options.saturday.back,'color':options.saturday.fore});
 	/* create buttons */
-	this.contents.find('tr').first().find('td').first().append($('<div>'))
+	this.contents.find('tr').first().find('td').first().append($('<button>').css({
+		'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/prev.png")',
+	})
 	.on('click',function(){
 		/* calc months */
 		my.displaymonth=my.displaymonth.calc('-1 month').calc('first-of-month');
 		/* display calendar */
 		my.show();
-	});
-	this.contents.find('tr').first().find('td').last().append($('<div>'))
+	}));
+	this.contents.find('tr').first().find('td').last().append($('<button>').css({
+		'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/next.png")',
+	})
 	.on('click',function(){
 		/* calc months */
 		my.displaymonth=my.displaymonth.calc('1 month').calc('first-of-month');
 		/* display calendar */
 		my.show();
-	});
+	}));
 	/* append elements */
-	this.buttonblock.append(button.clone(true)
-	
-	
-	
+	this.buttonblock.append(button.clone(true).css({
+			'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png")',
+		})
 		.on('click',function(){my.cover.hide();})
 	);
 	this.container.append(this.buttonblock);
