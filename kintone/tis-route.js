@@ -34,7 +34,7 @@ var RouteMap=function(options){
     };
     /* append elements */
 	this.container=div.clone(true).css({
-		'background-color':'#ffffff',
+		'background-color':'#FFFFFF',
 		'bottom':'-100%',
 		'height':'100%',
 		'left':'0px',

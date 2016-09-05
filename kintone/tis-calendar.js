@@ -24,9 +24,9 @@ var Calendar=function(options){
 	var options=$.extend({
 		container:null,
 		active:{back:'#FFB46E',fore:'#2B2B2B'},
-		normal:{back:'#F3F3F3',fore:'#2B2B2B'},
-		saturday:{back:'#F3F3F3',fore:'#69B4C8'},
-		sunday:{back:'#F3F3F3',fore:'#FA8273'},
+		normal:{back:'#FFFFFF',fore:'#2B2B2B'},
+		saturday:{back:'#FFFFFF',fore:'#69B4C8'},
+		sunday:{back:'#FFFFFF',fore:'#FA8273'},
 		today:{back:'#B4DC69',fore:'#2B2B2B'},
 		selected:null
 	},options);
@@ -53,11 +53,11 @@ var Calendar=function(options){
 		'z-index':'999999'
 	});
 	this.container=div.clone(true).css({
-		'background-color':'#ffffff',
+		'background-color':'#FFFFFF',
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':'600px',
+		'height':'auto',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
@@ -67,7 +67,7 @@ var Calendar=function(options){
 		'right':'0',
 		'text-align':'center',
 		'top':'0',
-		'width':'600px'
+		'width':'auto'
 	});
 	this.contents=table.clone(true).css({
 		'box-sizing':'border-box',
@@ -95,6 +95,7 @@ var Calendar=function(options){
 			{
 				var value=my.displaymonth.calc((parseInt($(this).text())-1).toString()+' day');
 				if (options.selected!=null) options.selected($(this).closest('td'),value.format('Y-m-d'));
+				my.cover.hide();
 			}
 		}));
 	}
@@ -112,14 +113,14 @@ var Calendar=function(options){
 		/* calc months */
 		my.displaymonth=my.displaymonth.calc('-1 month').calc('first-of-month');
 		/* display calendar */
-		my.calendarShow();
+		my.show();
 	});
 	this.contents.find('tr').first().find('td').last().append($('<div>'))
 	.on('click',function(){
 		/* calc months */
 		my.displaymonth=my.displaymonth.calc('1 month').calc('first-of-month');
 		/* display calendar */
-		my.calendarShow();
+		my.show();
 	});
 	/* append elements */
 	this.buttonblock.append(button.clone(true)
@@ -156,47 +157,45 @@ Calendar.prototype={
 		var displaymonth=this.displaymonth;
 		var params=this.params;
 		this.contents.find('tr:gt(1)').find('td').each(function(index){
-			$(this).animate({opacity:'0'},50,function(){
-				var display=index-displaymonth.getDay();
-				var day=displaymonth.calc(display.toString()+' day');
-				var style={
-					'background-color':params.normal.back,
-					'color':params.normal.fore,
-					'cursor':'default'
-				};
-				var active={
-					'background-color':params.active.back,
-					'color':params.active.fore,
-					'cursor':'pointer'
-				};
-				/* not process less than one day this month */
-				if (display<0) {$(this).css(style).html('&nbsp;');return;}
-				/* not processing beyond the next month 1 day */
-				if (day.format('Y-m')!=displaymonth.format('Y-m')) {$(this).css(style).html('&nbsp;');return;}
-				switch ((index+1)%7)
-				{
-					case 0:
-						//saturday's style
-						style['background-color']=params.saturday.back;
-						style['color']=params.saturday.fore;
-						break;
-					case 1:
-						//sunday's style
-						style['background-color']=params.sunday.back;
-						style['color']=params.sunday.fore;
-						break;
-				}
-				//today's style
-				if(day.format('Y-m-d')==new Date().format('Y-m-d'))
-				{
-					style['background-color']=params.today.back;
-					style['color']=params.today.fore;
-				}
-				//activedate's style
-				if(day.format('Y-m-d')==activedate.format('Y-m-d')) style=active;
-				style['cursor']='pointer';
-				$(this).css(style).text((display+1).toString());
-			}).delay(index*10).animate({opacity:'1'},150);
+			var display=index-displaymonth.getDay();
+			var day=displaymonth.calc(display.toString()+' day');
+			var style={
+				'background-color':params.normal.back,
+				'color':params.normal.fore,
+				'cursor':'default'
+			};
+			var active={
+				'background-color':params.active.back,
+				'color':params.active.fore,
+				'cursor':'pointer'
+			};
+			/* not process less than one day this month */
+			if (display<0) {$(this).css(style).html('&nbsp;');return;}
+			/* not processing beyond the next month 1 day */
+			if (day.format('Y-m')!=displaymonth.format('Y-m')) {$(this).css(style).html('&nbsp;');return;}
+			switch ((index+1)%7)
+			{
+				case 0:
+					//saturday's style
+					style['background-color']=params.saturday.back;
+					style['color']=params.saturday.fore;
+					break;
+				case 1:
+					//sunday's style
+					style['background-color']=params.sunday.back;
+					style['color']=params.sunday.fore;
+					break;
+			}
+			//today's style
+			if(day.format('Y-m-d')==new Date().format('Y-m-d'))
+			{
+				style['background-color']=params.today.back;
+				style['color']=params.today.fore;
+			}
+			//activedate's style
+			if(day.format('Y-m-d')==activedate.format('Y-m-d')) style=active;
+			style['cursor']='pointer';
+			$(this).css(style).text((display+1).toString());
 		});
 		this.cover.show();
 	}

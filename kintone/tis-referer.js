@@ -107,7 +107,7 @@ var Referer=function(options){
 		'z-index':'999999'
 	});
 	this.container=div.clone(true).css({
-		'background-color':'#ffffff',
+		'background-color':'#FFFFFF',
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
@@ -289,7 +289,7 @@ Referer.prototype={
 			});
 			$.each(displaytext,function(index){
 				list.append($('<td>').css({
-					'border':'1px solid #c9c9c9',
+					'border':'1px solid #C9C9C9',
 					'cursor':'pointer',
 					'padding':'5px'
 				})
