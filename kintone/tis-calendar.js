@@ -170,9 +170,9 @@ Calendar.prototype={
 					'cursor':'pointer'
 				};
 				//月初日以前は処理しない
-				if (display<0) {cell.css(style).html('&nbsp;');return;}
+				if (display<0) {$(this).css(style).html('&nbsp;');return;}
 				//翌月初日以降は処理しない
-				if (day.format('Y-m')!=displaymonth.format('Y-m')) {cell.css(style).html('&nbsp;');return;}
+				if (day.format('Y-m')!=displaymonth.format('Y-m')) {$(this).css(style).html('&nbsp;');return;}
 				switch ((index+1)%7)
 				{
 					case 0:

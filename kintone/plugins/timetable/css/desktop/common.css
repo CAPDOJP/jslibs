@@ -68,7 +68,9 @@ p.customview-p{
 }
 span.customview-span{
 	box-sizing:border-box;
+	display:inline-block;
 	line-height:30px;
+	margin:0px;
 	padding:0px 3px;
     vertical-align:top;
 }

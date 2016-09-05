@@ -202,6 +202,7 @@ jQuery.noConflict();
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(date[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
 		/* setup date value */
 		date.text(vars.date.format('Y-m-d'));

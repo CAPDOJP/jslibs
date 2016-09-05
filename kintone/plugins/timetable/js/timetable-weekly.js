@@ -196,6 +196,7 @@ jQuery.noConflict();
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(week[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
 		/* setup date value */
 		vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);
