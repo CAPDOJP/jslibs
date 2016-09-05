@@ -340,6 +340,8 @@ jQuery.fn.referer=function(options){
 		container:null,
 		datasource:null,
 		displaytext:[],
+		searchbuttonclass:'',
+		searchbuttontext:'再検索',
 		searches:[],
 		buttons:[]
 	},options);

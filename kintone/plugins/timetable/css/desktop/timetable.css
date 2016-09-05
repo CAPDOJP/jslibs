@@ -1,17 +1,82 @@
-/* individual style */
-table#timetable thead tr th{
+/* individual style (daily) */
+table.timetable-daily thead tr th{
 	min-width:10px;
 }
-table#timetable thead tr:first-of-type th{
+table.timetable-daily thead tr:first-of-type th{
 	border-bottom:none;
 }
-table#timetable thead tr:last-of-type th{
+table.timetable-daily thead tr:last-of-type th{
 	border-top:none;
 	height:10px;
 }
-table#timetable.timetable-daily thead tr:last-of-type th:nth-of-type(n+2){
+table.timetable-daily thead tr th.timetable-daily-cell{
 	width:1.875%;
 }
-.merge{
-	background-color:#D6A99A;
+table.timetable-daily tbody tr td{
+	cursor:pointer;
+	position:relative;
+}
+table.timetable-daily tbody tr td.timetable-daily-merge{
+	padding-bottom:6px;
+}
+table.timetable-daily tbody tr td.timetable-daily-merge:after{
+	background-color:#FA8273;
+	border-radius:5px;
+	bottom:3px;
+	content:'';
+	display:block;
+	left:0px;
+	position:absolute;
+	height:10px;
+	width:100%;
+}
+/* individual style (weekly) */
+div.timetable-weekly-graphlegend{
+	padding:6px 3px;
+	text-align:center;
+}
+span.timetable-weekly-graphlegend-color{
+	border-radius:5px;
+	display:inline-block;
+	margin:10px 0px;
+	height:10px;
+	width:30px;
+}
+span.timetable-weekly-graphlegend-title{
+	display:inline-block;
+	margin-right:12px;
+	text-align:left;
+}
+div.timetable-weekly-balloon{
+	background-color:#F3F3F3;
+	border:1px solid #C9C9C9;
+	border-radius:5px;
+	box-shadow:0px 0px 3px rgba(0,0,0,0.25);
+	display:none;
+	font-size:13px;
+	margin:15px 0px 0px 15px;
+	padding:5px;
+	position:fixed;
+}
+div.timetable-weekly-balloon-show{
+	display:block;
+}
+div.timetable-weekly-cell{
+	border-radius:5px;
+	cursor:pointer;
+	margin-left:3px;
+	position:absolute;
+	top:0px;
+	width:10px;
+	z-index:1;
+}
+table.timetable-weekly thead tr th:nth-of-type(n+2){
+	width:12.5%;
+}
+table.timetable-weekly tbody tr td{
+	position:relative;
+}
+table.timetable-weekly tbody tr td:first-of-type{
+	padding:0px 3px;
+	text-align:right;
 }

@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "timetable"
+* jQuery-Plugin "timetable-daily"
 * Version: 1.0
 * Copyright (c) 2016 TIS
 *
@@ -15,12 +15,13 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		config:{},
-		fields:[],
 		date:new Date(),
+		calendar:null,
 		route:null,
 		segment:null,
-		table:null
+		table:null,
+		config:{},
+		fields:[]
 	};
 	var events={
 		lists:[
@@ -36,8 +37,6 @@ jQuery.noConflict();
 		build:function(filter,segment,segmentname){
 			/* insert row */
 			vars.table.insertrow(null,function(row){
-				var inserted=0;
-				var insertrow=row;
 				var baserow=row;
 				var inner='';
 				if (vars.config['segment'].length!=0)
@@ -88,7 +87,7 @@ jQuery.noConflict();
 				{
 					for (var i=0;i<filter.length;i++)
 					{
-						/* merge cell */
+						/* create cell */
 						var fromtime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00');
 						var totime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
 						var from=(fromtime.getHours())*2+Math.floor(fromtime.getMinutes()/30);
@@ -100,26 +99,36 @@ jQuery.noConflict();
 							from++;
 							to++;
 						}
-						fromindex=vars.table.mergecellindex(baserow,from);
-						toindex=vars.table.mergecellindex(baserow,to);
 						/* check cell merged */
-						if (baserow.find('td').eq(fromindex).hasClass('merge') || baserow.find('td').eq(toindex).hasClass('merge'))
+						var isinsertrow=true;
+						var mergerow=baserow;
+						var rowindex=vars.table.contents.find('tr').index(baserow);
+						var rowspan=(parseInt('0'+baserow.find('td').eq(0).attr('rowspan'))!=0)?parseInt('0'+baserow.find('td').eq(0).attr('rowspan')):1;
+						for (var i2=rowindex;i2<rowindex+rowspan;i2++)
 						{
-							vars.table.insertrow(insertrow,function(row){
-								insertrow=row;
-								fromindex=vars.table.mergecellindex(insertrow,from);
-								toindex=vars.table.mergecellindex(insertrow,to);
-								functions.mergeaftervalue(insertrow,fromindex,toindex,filter[i]);
-								inserted++;
+							mergerow=vars.table.contents.find('tr').eq(i2);
+							fromindex=vars.table.mergecellindex(mergerow,from);
+							toindex=vars.table.mergecellindex(mergerow,to);
+							if (!mergerow.find('td').eq(fromindex).hasClass('timetable-daily-merge') && !mergerow.find('td').eq(toindex).hasClass('timetable-daily-merge')) {isinsertrow=false;break;}
+						}
+						/* merge cell */
+						if (isinsertrow)
+						{
+							vars.table.insertrow(vars.table.contents.find('tr').eq(rowindex+rowspan-1),function(row){
+								mergerow=row;
+								fromindex=vars.table.mergecellindex(mergerow,from);
+								toindex=vars.table.mergecellindex(mergerow,to);
+								functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
+								rowspan++;
 								/* check row merged */
 								if (vars.config['route']=='1' || vars.config['segment'].length!=0)
 								{
-									baserow.find('td').eq(0).attr('rowspan',inserted+1);
-							        insertrow.find('td').eq(0).html(baserow.find('td').eq(0).html()).hide();
+									baserow.find('td').eq(0).attr('rowspan',rowspan);
+							        mergerow.find('td').eq(0).html(baserow.find('td').eq(0).html()).hide();
 								}
 							});
 						}
-						else functions.mergeaftervalue(baserow,fromindex,toindex,filter[i]);
+						else functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
 					}
 				}
 			});
@@ -144,11 +153,16 @@ jQuery.noConflict();
 		/* reload view */
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
+			var sort='';
 			var body={
 				app:kintone.app.getId(),
-				query:vars.config['date']+'="'+vars.date.format('Y-m-d')+'" order by $id asc',
+				query:vars.config['date']+'="'+vars.date.format('Y-m-d')+'"',
 				fields:vars.fields
 			};
+			sort=' order by ';
+			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			sort+=vars.config['fromtime']+' asc';
+			body.query+=sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				var records=resp.records;
 				/* initialize table */
@@ -178,18 +192,32 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
 		/* check viewid */
-		if (event.viewId!=vars.config.datetimetable && event.viewId!=vars.config.weektimetable) return;
+		if (event.viewId!=vars.config.datetimetable) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container');
 		var date=$('<span id="date" class="customview-span">');
+		var button=$('<button id="datepick" class="customview-button calendar-button">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(date[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
-		/* day feed button */
+		/* setup date value */
 		date.text(vars.date.format('Y-m-d'));
+		/* day pickup button */
+		vars.calendar=$('body').calendar({
+			selected:function(target,value){
+				vars.date=new Date(value);
+				date.text(value);
+				/* reload view */
+				functions.load();
+			}
+		});
+		button.on('click',function(){
+		    vars.calendar.show({active:vars.date});
+		});
+		/* day feed button */
 		$.each([prev,next],function(){
 			$(this).on('click',function(){
 				var days=($(this).attr('id')=='next')?1:-1;
@@ -211,9 +239,8 @@ jQuery.noConflict();
 		}
 		for (var i=0;i<24;i++)
 		{
-			var value=i;
 			head.eq(0).append($('<th colspan="2">').text(i));
-			head.eq(1).append($('<th></th><th></th>'));
+			head.eq(1).append($('<th class="timetable-daily-cell"></th><th class="timetable-daily-cell"></th>'));
 			template.append($('<td></td><td></td>'));
 		}
 		vars.table=$('<table id="timetable" class="customview-table timetable-daily">').mergetable({
@@ -222,7 +249,7 @@ jQuery.noConflict();
 			template:template,
 			merge:true,
 			mergeexclude:((vars.config['route']=='1' || vars.config['segment'].length!=0)?[0]:[]),
-			mergeclass:'merge',
+			mergeclass:'timetable-daily-merge',
 			mergetrigger:function(caller,cell,rowindex,cellfrom,cellto){
 				var query='';
 				var fromhour=Math.floor((caller.cellindex(cell.parent(),cellfrom)-1)/2);

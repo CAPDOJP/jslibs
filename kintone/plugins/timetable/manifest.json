@@ -22,10 +22,12 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-route.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
             "js/sweetalert.min.js",
-            "js/timetable.js"
+            "js/timetable-daily.js",
+            "js/timetable-weekly.js"
         ],
         "css":[
             "css/sweetalert.css",

@@ -12,12 +12,12 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
+		template:null,
 		appIds:{},
 		appFields:{},
 		appNames:{},
 		isTable:{},
 		relations:[],
-		template:null,
 		types:[
 			'DATE',
 			'DATETIME',
