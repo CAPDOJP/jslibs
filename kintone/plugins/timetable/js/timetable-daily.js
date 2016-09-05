@@ -216,7 +216,7 @@ jQuery.noConflict();
 			}
 		});
 		button.on('click',function(){
-		    vars.calendar.show({active:vars.date});
+		    vars.calendar.show({activedate:vars.date});
 		});
 		/* day feed button */
 		$.each([prev,next],function(){

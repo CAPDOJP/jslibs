@@ -213,7 +213,7 @@ jQuery.noConflict();
 			}
 		});
 		button.on('click',function(){
-		    vars.calendar.show({active:vars.fromdate});
+		    vars.calendar.show({activedate:vars.fromdate});
 		});
 		/* day feed button */
 		$.each([prev,next],function(){

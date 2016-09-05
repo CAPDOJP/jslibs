@@ -27,7 +27,7 @@ var Calendar=function(options){
 		normal:{back:'#FFFFFF',fore:'#2B2B2B'},
 		saturday:{back:'#FFFFFF',fore:'#69B4C8'},
 		sunday:{back:'#FFFFFF',fore:'#FA8273'},
-		today:{back:'#B4DC69',fore:'#2B2B2B'},
+		today:{back:'#69B4C8',fore:'#2B2B2B'},
 		selected:null
 	},options);
 	/* property */
@@ -166,7 +166,7 @@ Calendar.prototype={
 			if (targetvalue.match(/^[0-9]{4}(-|\/){1}[0-1]?[0-9]{1}(-|\/){1}[0-3]?[0-9]{1}$/g)!=null)
 			{
 				this.activedate=new Date(targetvalue.replace(/-/g,'\/'));
-				this.displaymonth=new Date(targetvalue.replace(/-/g,'\/'));
+				this.displaymonth=new Date(targetvalue.replace(/-/g,'\/')).calc('first-of-month');
 			}
 		}
 		/* initialize header title */
@@ -223,10 +223,10 @@ jQuery.fn.calendar=function(options){
 	var options=$.extend({
 		container:null,
 		active:{back:'#FFB46E',fore:'#2B2B2B'},
-		normal:{back:'#F3F3F3',fore:'#2B2B2B'},
-		saturday:{back:'#F3F3F3',fore:'#69B4C8'},
-		sunday:{back:'#F3F3F3',fore:'#FA8273'},
-		today:{back:'#B4DC69',fore:'#2B2B2B'},
+		normal:{back:'#FFFFFF',fore:'#2B2B2B'},
+		saturday:{back:'#FFFFFF',fore:'#69B4C8'},
+		sunday:{back:'#FFFFFF',fore:'#FA8273'},
+		today:{back:'#69B4C8',fore:'#2B2B2B'},
 		selected:null
 	},options);
 	options.container=this;
