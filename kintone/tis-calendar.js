@@ -71,7 +71,7 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':'200px',
+		'height':'350px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
@@ -124,7 +124,7 @@ var Calendar=function(options){
 	this.contents.find('tr:gt(0)').find('td').eq(0).css({'background-color':options.sunday.back,'color':options.sunday.fore});
 	this.contents.find('tr:gt(0)').find('td').eq(6).css({'background-color':options.saturday.back,'color':options.saturday.fore});
 	/* create buttons */
-	this.contents.find('tr').first().find('td').first().append($('<button>').css({
+	this.contents.find('tr').first().find('td').first().append(button.clone(true).css({
 		'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/prev.png")',
 	})
 	.on('click',function(){
@@ -133,7 +133,7 @@ var Calendar=function(options){
 		/* display calendar */
 		my.show();
 	}));
-	this.contents.find('tr').first().find('td').last().append($('<button>').css({
+	this.contents.find('tr').first().find('td').last().append(button.clone(true).css({
 		'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/next.png")',
 	})
 	.on('click',function(){
