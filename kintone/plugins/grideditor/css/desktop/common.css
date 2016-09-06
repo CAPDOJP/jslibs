@@ -33,6 +33,10 @@ button.download-button{
 	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/download.png');
 	padding-left:30px;
 }
+button.edit-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
+	padding-left:30px;
+}
 button.next-button{
 	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/next.png');
 	padding-left:30px;

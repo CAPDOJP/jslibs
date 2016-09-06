@@ -33,8 +33,18 @@ table.timetable-daily tbody tr td{
 	cursor:pointer;
 	position:relative;
 }
+table.timetable-daily tbody tr td p{
+	background-color:transparent;
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:20px 20px;
+	font-size:13px;
+	line-height:20px;
+	padding-left:20px;
+}
 table.timetable-daily tbody tr td.timetable-daily-merge{
-	padding-bottom:6px;
+	padding-bottom:13px;
 }
 table.timetable-daily tbody tr td.timetable-daily-merge:after{
 	border-radius:5px;
