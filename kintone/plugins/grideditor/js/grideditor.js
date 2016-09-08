@@ -21,6 +21,7 @@ jQuery.noConflict();
 		header:null,
 		rows:null,
 		template:null,
+		config:{},
 		referer:{},
 		requiredvalue:{},
 		disabled:{
@@ -56,7 +57,7 @@ jQuery.noConflict();
 	};
 	var functions={
 		/* create field */
-		createfield:function(fieldinfo){
+		fieldcreate:function(fieldinfo){
 			var button=null;
 			var cell=null;
 			var classes='';
@@ -98,7 +99,7 @@ jQuery.noConflict();
 						classes='lookupcell';
 						button=$('<button type="button" class="customview-button search-button">');
 						/* setup required value */
-						kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+						kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app,query:'order by $id asc'},function(resp){
 							if (resp.records.length!=0) vars.requiredvalue[fieldinfo.code]=resp.records[0][fieldinfo.lookup.relatedKeyField].value;
 							else vars.requiredvalue[fieldinfo.code]='';
 						},function(error){});
@@ -114,7 +115,7 @@ jQuery.noConflict();
 						classes='lookupcell';
 						button=$('<button type="button" class="customview-button search-button">');
 						/* setup required value */
-						kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+						kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app,query:'order by $id asc'},function(resp){
 							if (resp.records.length!=0) vars.requiredvalue[fieldinfo.code]=resp.records[0][fieldinfo.lookup.relatedKeyField].value;
 							else vars.requiredvalue[fieldinfo.code]='';
 						},function(error){});
@@ -146,47 +147,70 @@ jQuery.noConflict();
 				{
 					var target=$(this);
 					var row=target.closest('tr');
-					var index=row.find('td').first().find('label').text();
-					var method='';
-					var body={};
 					var record={};
-					if (index.length!=0)
+					/* load lookup values */
+					if (fieldinfo.lookup)
 					{
-						/* update */
-						method='PUT';
-						body={
-							app:kintone.app.getId(),
-							id:index,
-							record:{}
+						var body={
+							app:fieldinfo.lookup.relatedApp.app,
+							id:target.val()
 						};
-						record[fieldinfo.code]={value:functions.fieldvalue(target,fieldinfo)};
-					}
-					else
-					{
-						/* register */
-						method='POST';
-						body={
-							app:kintone.app.getId(),
-							record:{}
-						};
-						$.each(vars.fieldinfos,function(index,values){
-							/* check mappings */
-							if ($.inArray(values.code,vars.mappings)<0)
-								record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+						kintone.api(kintone.api.url('/k/v1/record',true),'GET',body,function(resp){
+							$.each(fieldinfo.lookup.fieldMappings,function(index,values){
+								row.find('#'+values.field).val(resp.record[values.relatedField].value);
+							});
+						},function(error){
+							$.each(fieldinfo.lookup.fieldMappings,function(index,values){
+								row.find('#'+values.field).val('');
+							});
 						});
 					}
-					body.record=record;
-					kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
-						row.find('td').first().find('label').text(resp.id);
-					},function(error){
-				    	swal('Error!',error.message,'error');
-						target.focus();
-					});
+					/* check geocode fields */
+					if (fieldinfo.code==vars.config['address'])
+					{
+						$.ajax({
+							url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(target.val()),
+							type:'get',
+							datatype:'json',
+							error:function(){
+								$.each(vars.fieldinfos,function(index,values){
+									if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
+									{
+										row.find('#'+values.code).val('');
+										record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+									}
+								});
+								functions.fieldregist(target,record,fieldinfo);
+							},
+							success:function(json){
+								switch (json.status)
+								{
+									case 'OK':
+										row.find('#'+vars.config['lat']).val(json.results[0].geometry.location.lat);
+										row.find('#'+vars.config['lng']).val(json.results[0].geometry.location.lng);
+										record[vars.config['lat']]={value:row.find('#'+vars.config['lat']).val()};
+										record[vars.config['lng']]={value:row.find('#'+vars.config['lng']).val()};
+										break;
+									default:
+										$.each(vars.fieldinfos,function(index,values){
+											if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
+											{
+												row.find('#'+values.code).val('');
+												record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+											}
+										});
+										break;
+								}
+								functions.fieldregist(target,record,fieldinfo);
+							}
+						});
+					}
+					else functions.fieldregist(target,record,fieldinfo);
 				}
 			});
-			if (button!=null)
+			if (fieldinfo.lookup)
 			{
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app,query:'order by $id asc'},function(resp){
 					/* create reference box */
 					vars.referer[fieldinfo.code]=$('body').referer({
 						datasource:resp.records,
@@ -221,11 +245,7 @@ jQuery.noConflict();
 							}
 						},
 						callback:function(row){
-							target.closest('td').find('#'+fieldinfo.code).val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
-							$.each(fieldinfo.lookup.fieldMappings,function(index,values){
-								target.closest('tr').find('#'+values.field).val(row.find('#'+values.relatedField).val());
-							});
-				        	target.closest('td').find('#'+fieldinfo.code).trigger('change');
+							target.closest('td').find('#'+fieldinfo.code).val(row.find('#'+fieldinfo.lookup.relatedKeyField).val()).trigger('change');
 							/* close the reference box */
 							vars.referer[fieldinfo.code].hide();
 						}
@@ -253,6 +273,45 @@ jQuery.noConflict();
 				}
 			});
 			return codes;
+		},
+		/* register fields */
+		fieldregist:function(target,record,fieldinfo){
+			var row=target.closest('tr');
+			var id=row.find('td').first().find('label').text();
+			var method='';
+			var body={};
+			if (id.length!=0)
+			{
+				/* update */
+				method='PUT';
+				body={
+					app:kintone.app.getId(),
+					id:id,
+					record:record
+				};
+				record[fieldinfo.code]={value:functions.fieldvalue(target,fieldinfo)};
+			}
+			else
+			{
+				/* register */
+				method='POST';
+				body={
+					app:kintone.app.getId(),
+					record:{}
+				};
+				$.each(vars.fieldinfos,function(index,values){
+					/* check mappings */
+					if ($.inArray(values.code,vars.mappings)<0)
+						record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+				});
+			}
+			body.record=record;
+			kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
+				row.find('td').first().find('label').text(resp.id);
+			},function(error){
+		    	swal('Error!',error.message,'error');
+				target.focus();
+			});
 		},
 		/* get field value */
 		fieldvalue:function(cell,fieldinfo){
@@ -327,7 +386,7 @@ jQuery.noConflict();
 							case 'MULTI_LINE_TEXT':
 							case 'SINGLE_LINE_TEXT':
 								if (fieldinfo.lookup) fieldvalue=vars.requiredvalue[fieldinfo.code];
-								else fieldvalue=' ';
+								else fieldvalue='必須項目です';
 								break;
 							case 'NUMBER':
 								if (fieldinfo.lookup) fieldvalue=vars.requiredvalue[fieldinfo.code];
@@ -372,10 +431,10 @@ jQuery.noConflict();
 	 kintone events
 	---------------------------------------------------------------*/
 	kintone.events.on(events.show,function(event){
-		var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		if (!config) return false;
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if (!vars.config) return false;
 		/* check viewid */
-		if (event.viewId!=config.viewId) return;
+		if (event.viewId!=vars.config.grideditorview) return;
 		/* initialize valiable */
 		vars.container=$('div#grideditor-container');
 	   	vars.grid=$('<table id="grideditor" class="customview-table">');
@@ -415,7 +474,7 @@ jQuery.noConflict();
 						/* append header field */
 						vars.header.append($('<th>').text(fieldinfo.label));
 						/* append template field */
-						vars.template.append(functions.createfield(fieldinfo));
+						vars.template.append(functions.fieldcreate(fieldinfo));
 						/* append display fields */
 						displayfields.push(fieldinfo.code);
 						/* append fieldinfo */
@@ -430,31 +489,39 @@ jQuery.noConflict();
 				/* append header field */
 				vars.header.append($('<th>').text(''));
 				/* append button field */
-				vars.template.append($('<td class="buttoncell">').append($('<button class="customview-button close-button">').on('click',function(){
-					var row=$(this).closest('tr');
-					var index=row.find('td').first().find('label').text();
-					if (index.length!=0)
-					{
-						swal({
-							title:'確認',
-							text:'削除します。\n宜しいですか?',
-							type:'warning',
-							showCancelButton:true,
-							confirmButtonText:'OK',
-							cancelButtonText:"Cancel"
-						},
-						function(){
-							var method='DELETE';
-							var body={
-								app:kintone.app.getId(),
-								ids:[index]
-							};
-							kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
-								row.remove();
-							},function(error){});
-						});
-					}
-				})));
+				vars.template.append($('<td class="buttoncell">')
+					.append($('<button class="customview-button edit-button">').on('click',function(){
+						var row=$(this).closest('tr');
+						var index=row.find('td').first().find('label').text();
+						if (index.length==0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?';
+						else window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index+'&mode=edit';
+					}))
+					.append($('<button class="customview-button close-button">').on('click',function(){
+						var row=$(this).closest('tr');
+						var index=row.find('td').first().find('label').text();
+						if (index.length!=0)
+						{
+							swal({
+								title:'確認',
+								text:'削除します。\n宜しいですか?',
+								type:'warning',
+								showCancelButton:true,
+								confirmButtonText:'OK',
+								cancelButtonText:"Cancel"
+							},
+							function(){
+								var method='DELETE';
+								var body={
+									app:kintone.app.getId(),
+									ids:[index]
+								};
+								kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
+									row.remove();
+								},function(error){});
+							});
+						}
+					}))
+				);
 				/* create row */
 				$.each(event.records,function(index,values){
 					var record=values

@@ -130,7 +130,7 @@ jQuery.noConflict();
 			};
 			sort=' order by ';
 			sort+=vars.config['date']+' asc,';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' desc,':'';
+			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
 			sort+=vars.config['fromtime']+' asc';
 			body.query+=sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -270,7 +270,7 @@ jQuery.noConflict();
 			/* get datas of segment */
 			if (vars.config['segment'].length!=0)
 			{
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp']},function(resp){
+				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp'],query:'order by '+vars.config['segmentappfield']+' asc'},function(resp){
 					vars.segment=resp.records;
 					/* append graph legend */
 					$.each(vars.segment,function(index,values){

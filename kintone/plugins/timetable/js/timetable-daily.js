@@ -151,7 +151,7 @@ jQuery.noConflict();
 			);
 			/* cell value switching */
 			var inner='';
-			inner+='<p class="customview-p">'+filter[vars.config['display']].value+'</p>';
+			inner+='<p class="timetable-daily-merge-p">'+filter[vars.config['display']].value+'</p>';
 			$.each(filter,function(key,values){
 				if (values!=null)
 					if (values.value!=null)
@@ -169,7 +169,7 @@ jQuery.noConflict();
 				fields:vars.fields
 			};
 			sort=' order by ';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' desc,':'';
+			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
 			sort+=vars.config['fromtime']+' asc';
 			body.query+=sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -277,7 +277,7 @@ jQuery.noConflict();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
+				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=edit';
 			}
 		});
 		/* create routemap box */
@@ -291,7 +291,7 @@ jQuery.noConflict();
 			/* get datas of segment */
 			if (vars.config['segment'].length!=0)
 			{
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp']},function(resp){
+				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp'],query:'order by '+vars.config['segmentappfield']+' asc'},function(resp){
 					vars.segment=resp.records;
 					/* reload view */
 					functions.load();

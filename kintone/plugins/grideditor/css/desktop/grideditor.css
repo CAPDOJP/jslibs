@@ -1,6 +1,6 @@
 /* individual style */
 table#grideditor tbody td.buttoncell{
-    width:35px;
+    width:75px;
 }
 table#grideditor tbody td.datecell{
     width:125px;

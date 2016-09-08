@@ -125,6 +125,7 @@ table.customview-table textarea{
 table.customview-table input[type=text],
 table.customview-table select{
 	height:30px;
+	min-width:100px;
 }
 table.customview-table input[type=text]:focus,
 table.customview-table select:focus,
