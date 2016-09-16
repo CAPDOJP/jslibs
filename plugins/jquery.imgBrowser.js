@@ -168,7 +168,7 @@ jQuery.fn.imgSlider = function(options){
 		var movePos=0;
 		var startLeft=0;
 		var startPos=0;
-		target.bind({
+		target.on({
 			'touchstart mousedown':function(e){
 				if ($(window).width()<options.limit) return;
 				startLeft=target.scrollLeft();
