@@ -160,8 +160,8 @@ jQuery.fn.calendarAction = function(options){
 			target.calendarShow();
 		});
 		calendar.find('tr').first().find('td').find('div').css({
-			'border-top':'11.5px solid transparent;
-			'border-bottom':'11.5px solid transparent;
+			'border-top':'11.5px solid transparent',
+			'border-bottom':'11.5px solid transparent',
 			'display':'block',
 			'height':'0px',
 			'position':'absolute',
