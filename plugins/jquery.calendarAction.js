@@ -249,8 +249,7 @@ jQuery.fn.calendarShow = function(options){
 			if(day.DateFormat('Y-m-d')==$.data(target[0],'active').DateFormat('Y-m-d'))
 				if (active!=null) cell.css(active);
 			//日付設定
-			style['cursor']='pointer';
-			cell.text((display+1).toString());
+			cell.css({'cursor':'pointer'}).text((display+1).toString());
 		}).delay(index*10).animate({opacity:'1'},150);
 	});
 	//コールバック
