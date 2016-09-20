@@ -123,8 +123,7 @@ jQuery.fn.calendarAction = function(options){
 			}
 			cells.find('tr').last().append(cell.append(cellinner));
 			//追加セルボックス
-			for (var i=0;i<options.box.length;i++)
-			{
+			$.each(options.box,function(index){
 				cell.append($('<div>')
 				.on('click',function(){
 					if ($.isNumeric(cellinner.text()))
@@ -137,8 +136,8 @@ jQuery.fn.calendarAction = function(options){
 						if (options.selected!=null) options.selected($(this).closest('td'),value.DateFormat('Y-m-d'));
 					}
 				})
-				.css(options.box[i]));
-			}
+				.css(options.box[index]));
+			});
 		}
 		target.append(calendar);
 		/*
