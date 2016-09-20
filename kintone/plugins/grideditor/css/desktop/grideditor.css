@@ -1,4 +1,8 @@
 /* individual style */
+table#grideditor td,
+table#grideditor th{
+    white-space:nowrap;
+}
 table#grideditor tbody td.buttoncell{
     width:75px;
 }

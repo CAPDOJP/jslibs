@@ -58,11 +58,12 @@ jQuery.fn.calendarAction = function(options){
 		var header=$('<thead>');
 		var cells=$('<tbody>');
 		var calendar=$('<table>').css({
+			'box-sizing':'border-box',
 			'margin':'0px auto',
 			'max-width':'700px',
 			'position':'relative',
+			'text-align':'center',
 			'width':'100%',
-			'box-sizing':'border-box'
 		})
 		.append(header)
 		.append(cells);

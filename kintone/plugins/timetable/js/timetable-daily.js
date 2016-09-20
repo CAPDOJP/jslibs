@@ -46,7 +46,7 @@ jQuery.noConflict();
 					inner+='<input type="hidden" id="segment" value="'+segment+'" />';
 					baserow.find('td').eq(0).html(inner);
 				}
-				if (vars.config['route'].length!=0)
+				if (vars.config['route']=='1')
 				{
 					baserow.find('td').eq(0).append($('<button class="customview-button compass-button">').text('地図を表示').on('click',function(){
 						/* display routemap */

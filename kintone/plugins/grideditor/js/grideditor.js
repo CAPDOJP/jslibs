@@ -153,11 +153,11 @@ jQuery.noConflict();
 					{
 						var body={
 							app:fieldinfo.lookup.relatedApp.app,
-							id:target.val()
+							query:fieldinfo.lookup.relatedKeyField+'='+target.val()
 						};
-						kintone.api(kintone.api.url('/k/v1/record',true),'GET',body,function(resp){
+						kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 							$.each(fieldinfo.lookup.fieldMappings,function(index,values){
-								row.find('#'+values.field).val(resp.record[values.relatedField].value);
+								row.find('#'+values.field).val(resp.records[0][values.relatedField].value);
 							});
 						},function(error){
 							$.each(fieldinfo.lookup.fieldMappings,function(index,values){
@@ -456,34 +456,37 @@ jQuery.noConflict();
 		   		vars.template.append($('<td>').append($('<label>')));
 		   		$.each(sorted,function(index){
 		   			var fieldinfo=resp.properties[sorted[index]];
-					/* check disabled type */
-					if (fieldinfo.type in vars.disabled)
+					if (fieldinfo)
 					{
-						var message='';
-						message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
-						$.each(vars.disabled,function(key,value){
-							message+=value+'\n';
-						});
-				    	swal('Error!',message,'error');
-						vars.grid.hide();
-						return;
-					}
-					/* check exclude type */
-					if ($.inArray(fieldinfo.type,vars.excludes)<0)
-					{
-						/* append header field */
-						vars.header.append($('<th>').text(fieldinfo.label));
-						/* append template field */
-						vars.template.append(functions.fieldcreate(fieldinfo));
-						/* append display fields */
-						displayfields.push(fieldinfo.code);
-						/* append fieldinfo */
-						vars.fieldinfos.push(fieldinfo);
-						/* append lookup mappings fields */
-						if (fieldinfo.lookup)
-							$.each(fieldinfo.lookup.fieldMappings,function(index,values){
-								vars.mappings.push(values.field);
+						/* check disabled type */
+						if (fieldinfo.type in vars.disabled)
+						{
+							var message='';
+							message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
+							$.each(vars.disabled,function(key,value){
+								message+=value+'\n';
 							});
+					    	swal('Error!',message,'error');
+							vars.grid.hide();
+							return;
+						}
+						/* check exclude type */
+						if ($.inArray(fieldinfo.type,vars.excludes)<0)
+						{
+							/* append header field */
+							vars.header.append($('<th>').text(fieldinfo.label));
+							/* append template field */
+							vars.template.append(functions.fieldcreate(fieldinfo));
+							/* append display fields */
+							displayfields.push(fieldinfo.code);
+							/* append fieldinfo */
+							vars.fieldinfos.push(fieldinfo);
+							/* append lookup mappings fields */
+							if (fieldinfo.lookup)
+								$.each(fieldinfo.lookup.fieldMappings,function(index,values){
+									vars.mappings.push(values.field);
+								});
+						}
 					}
 		   		});
 				/* append header field */
