@@ -12,11 +12,11 @@
 /*
 *--------------------------------------------------------------------
 * parameters
-* options @ active		:対象セルスタイルシート{back,fore}
-*         @ normal		:通常セルスタイルシート{back,fore}
-*         @ saturday	:右列セルスタイルシート{back,fore}
-*         @ sunday		:左列セルスタイルシート{back,fore}
-*         @ today		:当日セルスタイルシート{back,fore}
+* options @ active		:対象セルスタイルシート
+*         @ normal		:通常セルスタイルシート
+*         @ saturday	:右列セルスタイルシート
+*         @ sunday		:左列セルスタイルシート
+*         @ today		:当日セルスタイルシート
 *         @ line		:境界線幅
 *         @ box			:セル内ボックススタイルシート
 *         @ opening		:表示スタイルシート
