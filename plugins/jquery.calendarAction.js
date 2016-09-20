@@ -170,11 +170,11 @@ jQuery.fn.calendarAction = function(options){
 		});
 		header.find('tr').first().find('td').first().find('div').css({
 			'border-left':'20px solid transparent',
-			'border-right':'20px solid '+options.normal.fore,
+			'border-right':'20px solid '+calendar.css('border-color'),
 			'left':'7.5px;'
 		});
 		header.find('tr').first().find('td').last().find('div').css({
-			'border-left':'20px solid '+options.normal.fore,
+			'border-left':'20px solid '+calendar.css('border-color'),
 			'border-right':'20px solid transparent',
 			'left':'17.5px'
 		});
