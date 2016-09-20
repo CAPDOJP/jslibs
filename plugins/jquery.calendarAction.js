@@ -224,10 +224,11 @@ jQuery.fn.calendarShow = function(options){
 			var sunday=$.data(target[0],'options').sunday;
 			var today=$.data(target[0],'options').today;
 			var cell=$(this).find('div').first();
+			if (normal!=null) cell.css(normal);
 			//月初日以前は処理しない
-			if (display<0) {cell.html('&nbsp;').hide();return;}
+			if (display<0) {cell.html('&nbsp;');return;}
 			//翌月初日以降は処理しない
-			if (day.DateFormat('Y-m')!=$.data(target[0],'display').DateFormat('Y-m')) {cell.html('&nbsp;').hide();return;}
+			if (day.DateFormat('Y-m')!=$.data(target[0],'display').DateFormat('Y-m')) {cell.html('&nbsp;');return;}
 			switch ((index+1)%7)
 			{
 				case 0:
@@ -237,9 +238,6 @@ jQuery.fn.calendarShow = function(options){
 				case 1:
 					//日曜日
 					if (sunday!=null) cell.css(sunday);
-					break;
-				default:
-					if (normal!=null) cell.css(normal);
 					break;
 			}
 			//当日
