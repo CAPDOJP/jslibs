@@ -64,12 +64,6 @@ jQuery.fn.calendarAction = function(options){
 		})
 		.append(header)
 		.append(cells);
-		if (options.normal!=null)
-		{
-			calendar.css(options.normal);
-			header.css(options.normal);
-			cells.css(options.normal);
-		}
 		//ヘッダー(年月)
 		header.append($('<tr>'))
 		header.find('tr').last().append($('<td>'));
