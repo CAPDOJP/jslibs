@@ -72,6 +72,7 @@ jQuery.fn.calendarAction = function(options){
 		header.find('tr').last().append($('<td colspan="5">'));
 		header.find('tr').last().append($('<td>'));
 		header.find('tr').last().find('td').css({
+			'border':'none',
 			'cursor':'pointer',
 			'height':'50px'
 		});
