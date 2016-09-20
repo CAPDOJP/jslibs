@@ -169,11 +169,13 @@ jQuery.fn.calendarAction = function(options){
 			'width':'0px'
 		});
 		calendar.find('tr').first().find('td').first().find('div').css({
-			'border-right':'11.5px solid '+options.normal.fore,
+			'border-left':'20px solid transparent',
+			'border-right':'20px solid '+options.normal.fore,
 			'left':'7.5px;'
 		});
 		calendar.find('tr').first().find('td').last().find('div').css({
-			'border-left':'11.5px solid '+options.normal.fore,
+			'border-left':'20px solid '+options.normal.fore,
+			'border-right':'20px solid transparent',
 			'left':'17.5px'
 		});
 	});
