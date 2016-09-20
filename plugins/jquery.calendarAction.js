@@ -175,12 +175,12 @@ jQuery.fn.calendarAction = function(options){
 		header.find('tr').first().find('td').first().find('div').css({
 			'border-left':'20px solid transparent',
 			'border-right':'20px solid '+options.feedcolor,
-			'left':'-7.5px;'
+			'margin-left':'-30px'
 		});
 		header.find('tr').first().find('td').last().find('div').css({
 			'border-left':'20px solid '+options.feedcolor,
 			'border-right':'20px solid transparent',
-			'left':'7.5px'
+			'margin-left':'-10px'
 		});
 	});
 }
