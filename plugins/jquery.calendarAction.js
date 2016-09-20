@@ -168,7 +168,7 @@ jQuery.fn.calendarAction = function(options){
 			'display':'block',
 			'height':'0px',
 			'position':'absolute',
-			'top':'0px',
+			'top':'13.5px',
 			'width':'0px'
 		});
 		header.find('tr').first().find('td').first().find('div').css({
