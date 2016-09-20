@@ -18,6 +18,7 @@
 *         @ sunday		:左列セルスタイルシート
 *         @ today		:当日セルスタイルシート
 *         @ line		:境界線幅
+*         @ feedcolor	:移動ボタン色
 *         @ box			:セル内ボックススタイルシート
 *         @ opening		:表示スタイルシート
 *         @ changed		:表示月変更時コールバック
@@ -32,6 +33,7 @@ jQuery.fn.calendarAction = function(options){
 		sunday:{'background-color':'#ffffff','color':'#dc143c'},
 		today:{'background-color':'#ffb6c1','color':'#2b2b2b'},
 		line:2,
+		feedcolor:'#2b2b2b',
 		box:[],
 		opening:'',
 		changed:null,
@@ -170,11 +172,11 @@ jQuery.fn.calendarAction = function(options){
 		});
 		header.find('tr').first().find('td').first().find('div').css({
 			'border-left':'20px solid transparent',
-			'border-right':'20px solid '+calendar.css('border-color'),
+			'border-right':'20px solid '+options.feedcolor,
 			'left':'7.5px;'
 		});
 		header.find('tr').first().find('td').last().find('div').css({
-			'border-left':'20px solid '+calendar.css('border-color'),
+			'border-left':'20px solid '+options.feedcolor,
 			'border-right':'20px solid transparent',
 			'left':'17.5px'
 		});
