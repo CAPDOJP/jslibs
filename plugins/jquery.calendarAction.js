@@ -160,31 +160,21 @@ jQuery.fn.calendarAction = function(options){
 			target.calendarShow();
 		});
 		calendar.find('tr').first().find('td').find('div').css({
+			'border-top':'11.5px solid transparent;
+			'border-bottom':'11.5px solid transparent;
 			'display':'block',
-			'height':'24px',
-			'left':'50%',
-			'margin':'0px 0px 0px -12px',
+			'height':'0px',
 			'position':'absolute',
-			'top':'15px',
-			'width':'24px',
-			'transform-origin':'center center',
-			'-moz-transform-origin':'center center',
-			'-ms-transform-origin':'center center',
-			'-o-transform-origin':'center center',
-			'-webkit-transform-origin':'center center',
-			'transform':'rotate(-45deg)',
-			'-moz-transform':'rotate(-45deg)',
-			'-ms-transform':'rotate(-45deg)',
-			'-o-transform':'rotate(-45deg)',
-			'-webkit-transform':'rotate(-45deg)'
+			'top':'0px',
+			'width':'0px'
 		});
 		calendar.find('tr').first().find('td').first().find('div').css({
-			'border-left':options.line.toString()+'px solid '+options.normal.fore,
-			'border-top':options.line.toString()+'px solid '+options.normal.fore
+			'border-right':'11.5px solid '+options.normal.fore,
+			'left':'7.5px;'
 		});
 		calendar.find('tr').first().find('td').last().find('div').css({
-			'border-right':options.line.toString()+'px solid '+options.normal.fore,
-			'border-bottom':options.line.toString()+'px solid '+options.normal.fore
+			'border-left':'11.5px solid '+options.normal.fore,
+			'left':'17.5px'
 		});
 	});
 }
