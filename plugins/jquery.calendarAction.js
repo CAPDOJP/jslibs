@@ -167,6 +167,7 @@ jQuery.fn.calendarAction = function(options){
 			'border-bottom':'11.5px solid transparent',
 			'display':'block',
 			'height':'0px',
+			'left':'50%',
 			'position':'absolute',
 			'top':'13.5px',
 			'width':'0px'
@@ -174,12 +175,12 @@ jQuery.fn.calendarAction = function(options){
 		header.find('tr').first().find('td').first().find('div').css({
 			'border-left':'20px solid transparent',
 			'border-right':'20px solid '+options.feedcolor,
-			'left':'7.5px;'
+			'left':'-7.5px;'
 		});
 		header.find('tr').first().find('td').last().find('div').css({
 			'border-left':'20px solid '+options.feedcolor,
 			'border-right':'20px solid transparent',
-			'left':'17.5px'
+			'left':'7.5px'
 		});
 	});
 }
