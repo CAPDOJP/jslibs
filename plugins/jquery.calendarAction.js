@@ -12,25 +12,25 @@
 /*
 *--------------------------------------------------------------------
 * parameters
-* options @ active  　:対象色{back,fore}
-*         @ normal  　:通常色{back,fore}
-*         @ saturday :右列色{back,fore}
-*         @ sunday   :左列色{back,fore}
-*         @ today   　:当日色{back,fore}
-*         @ line    　:境界線幅
-*         @ box     　:セル内ボックススタイルシート
-*         @ opening 　:表示スタイルシート
-*         @ changed  :表示月変更時コールバック
-*         @ selected :日付選択時コールバック
+* options @ active		:対象セルスタイルシート{back,fore}
+*         @ normal		:通常セルスタイルシート{back,fore}
+*         @ saturday	:右列セルスタイルシート{back,fore}
+*         @ sunday		:左列セルスタイルシート{back,fore}
+*         @ today		:当日セルスタイルシート{back,fore}
+*         @ line		:境界線幅
+*         @ box			:セル内ボックススタイルシート
+*         @ opening		:表示スタイルシート
+*         @ changed		:表示月変更時コールバック
+*         @ selected	:日付選択時コールバック
 * -------------------------------------------------------------------
 */
 jQuery.fn.calendarAction = function(options){
 	var options=$.extend({
-		active:{back:'#87cefa',fore:'#2b2b2b'},
-		normal:{back:'#ffffff',fore:'#2b2b2b'},
-		saturday:{back:'#ffffff',fore:'#1e90ff'},
-		sunday:{back:'#ffffff',fore:'#dc143c'},
-		today:{back:'#ffb6c1',fore:'#2b2b2b'},
+		active:{'background-color':'#87cefa','color':'#2b2b2b'},
+		normal:{'background-color':'#ffffff','color':'#2b2b2b'},
+		saturday:{'background-color':'#ffffff','color':'#1e90ff'},
+		sunday:{'background-color':'#ffffff','color':'#dc143c'},
+		today:{'background-color':'#ffb6c1','color':'#2b2b2b'},
 		line:2,
 		box:[],
 		opening:'',
@@ -53,49 +53,52 @@ jQuery.fn.calendarAction = function(options){
 		* カレンダー設定
 		*------------------------------------------------------------
 		*/
+		var header=$('<thead>');
+		var cells=$('<tbody>');
 		var calendar=$('<table>').css({
 			'margin':'0px auto',
 			'max-width':'700px',
 			'position':'relative',
 			'width':'100%',
-			'box-sizing':'border-box',
-			'-moz-box-sizing':'border-box',
-			'-ms-box-sizing':'border-box',
-			'-o-box-sizing':'border-box',
-			'-webkit-box-sizing':'border-box'
+			'box-sizing':'border-box'
+		})
+		.append(header)
+		.append(cells);
+		//ヘッダー(年月)
+		header.append($('<tr>'))
+		header.find('tr').last().append($('<td>'));
+		header.find('tr').last().append($('<td colspan="5">'));
+		header.find('tr').last().append($('<td>'));
+		header.find('tr').last().find('td').css({
+			'cursor':'pointer',
+			'height':'50px'
 		});
-		for (var i=0;i<7*8;i++)
+		//ヘッダー(曜日)
+		var week=['日','月','火','水','木','金','土'];
+		header.append($('<tr>'))
+		for (var i=0;i<week.length;i++)
 		{
-			if (i%7==0) calendar.append($('<tr>'));
-			calendar.find('tr').last()
-			.append($('<td>').css({
-				'border':'none',
-				'color':options.normal.fore,
-				'font-size':'18px',
-				'line-height':'54px',
-				'margin':'0px',
-				'min-height':'54px',
-				'padding':'0px',
-				'position':'relative',
-				'text-align':'center'
-			})
-			.append($('<div>').css({
-				'border':'none',
-				'color':options.normal.fore,
-				'font-size':'18px',
-				'height':'54px',
-				'line-height':'54px',
-				'margin':'3px',
-				'padding':'0px',
-				'position':'relative',
-				'text-align':'center',
-				'border-radius':'3px',
-				'-moz-border-radius':'3px',
-				'-ms-border-radius':'3px',
-				'-o-border-radius':'3px',
-				'-webkit-border-radius':'3px'
-			})
-			.on('click',function(){
+			var cell=$('<td>').text(week[i]);
+			switch (i)
+			{
+				case 0:
+					if (options.sunday!=null) cell.css(options.sunday);
+					break;
+				case 6:
+					if (options.saturday!=null) cell.css(options.saturday);
+					break;
+				default:
+					if (options.normal!=null) cell.css(options.normal);
+					break;
+			}
+			header.find('tr').last().append(cell);
+		}
+		//セル(日付)
+		for (var i=0;i<7*5;i++)
+		{
+			if (i%7==0) cells.append($('<tr>'));
+			var cell=$('<td>');
+			var cellinner=$('<div>').on('click',function(){
 				if ($.isNumeric($(this).text()))
 				{
 					var value=$.data(target[0],'display').DateCalc((parseInt($(this).text())-1).toString()+' day');
@@ -105,28 +108,26 @@ jQuery.fn.calendarAction = function(options){
 					//コールバック
 					if (options.selected!=null) options.selected($(this).closest('td'),value.DateFormat('Y-m-d'));
 				}
-			})));
-		}
-		//ヘッダー(年月)
-		calendar.find('tr').eq(0).find('td').css({'border':'none','cursor':'pointer'});
-		calendar.find('tr').eq(0).find('td').each(function(index){if (index>2) $(this).remove();});
-		calendar.find('tr').eq(0).find('td').eq(1).attr('colspan',5).css('cursor','default');
-		//ヘッダー(曜日)
-		var week=['日','月','火','水','木','金','土'];
-		calendar.find('tr').eq(1).css('border-bottom',options.line.toString()+'px solid '+options.normal.fore);
-		calendar.find('tr').eq(1).find('td').each(function(index){$(this).text(week[index]);});
-		//列(日曜日)
-		calendar.find('tr:gt(0)').find('td').eq(0).css({'background-color':options.sunday.back,'color':options.sunday.fore});
-		//列(土曜日)
-		calendar.find('tr:gt(0)').find('td').eq(6).css({'background-color':options.saturday.back,'color':options.saturday.fore});
-		//セルボックス
-		calendar.find('tr:gt(1)').find('td').each(function(){
-			var cell=$(this).find('div').first();
+			});
+			switch (i)
+			{
+				case 0:
+					if (options.sunday!=null) {cell.css(options.sunday);cellinner.css(options.sunday);}
+					break;
+				case 6:
+					if (options.saturday!=null) {cell.css(options.saturday);cellinner.css(options.saturday);}
+					break;
+				default:
+					if (options.normal!=null) {cell.css(options.normal);cellinner.css(options.normal);}
+					break;
+			}
+			cells.find('tr').last().append(cell.append(cellinner));
+			//追加セルボックス
 			for (var i=0;i<options.box.length;i++)
 			{
-				$(this).append($('<div>')
+				cell.append($('<div>')
 				.on('click',function(){
-					if ($.isNumeric(cell.text()))
+					if ($.isNumeric(cellinner.text()))
 					{
 						var value=$.data(target[0],'display').DateCalc((parseInt(cell.text())-1).toString()+' day');
 						if ($($.data(target[0],'target'))!=null) $($.data(target[0],'target')).val(value.DateFormat('Y-m-d'));
@@ -138,28 +139,28 @@ jQuery.fn.calendarAction = function(options){
 				})
 				.css(options.box[i]));
 			}
-		});
+		}
 		target.append(calendar);
 		/*
 		*------------------------------------------------------------
 		* 移動ボタン設定
 		*------------------------------------------------------------
 		*/
-		calendar.find('tr').first().find('td').first().append($('<div>'))
+		header.find('tr').first().find('td').first().append($('<div>'))
 		.on('click',function(){
 			//月減算
 			$.data(target[0],'display',$.data(target[0],'display').DateCalc('-1 month').DateCalc('first-of-month'));
 			//カレンダー再表示
 			target.calendarShow();
 		});
-		calendar.find('tr').first().find('td').last().append($('<div>'))
+		header.find('tr').first().find('td').last().append($('<div>'))
 		.on('click',function(){
 			//月加算
 			$.data(target[0],'display',$.data(target[0],'display').DateCalc('1 month').DateCalc('first-of-month'));
 			//カレンダー再表示
 			target.calendarShow();
 		});
-		calendar.find('tr').first().find('td').find('div').css({
+		header.find('tr').first().find('td').find('div').css({
 			'border-top':'11.5px solid transparent',
 			'border-bottom':'11.5px solid transparent',
 			'display':'block',
@@ -168,12 +169,12 @@ jQuery.fn.calendarAction = function(options){
 			'top':'0px',
 			'width':'0px'
 		});
-		calendar.find('tr').first().find('td').first().find('div').css({
+		header.find('tr').first().find('td').first().find('div').css({
 			'border-left':'20px solid transparent',
 			'border-right':'20px solid '+options.normal.fore,
 			'left':'7.5px;'
 		});
-		calendar.find('tr').first().find('td').last().find('div').css({
+		header.find('tr').first().find('td').last().find('div').css({
 			'border-left':'20px solid '+options.normal.fore,
 			'border-right':'20px solid transparent',
 			'left':'17.5px'
@@ -210,53 +211,47 @@ jQuery.fn.calendarShow = function(options){
 	*----------------------------------------------------------------
 	*/
 	//タイトル初期化
-	$(this).find('table').find('tr').first().find('td').eq(1).text($.data(target[0],'display').DateFormat('Y-m'));
+	$(this).find('thead').find('tr').first().find('td').eq(1).text($.data(target[0],'display').DateFormat('Y-m'));
 	//日付初期化
 	$.data(target[0],'display',$.data(target[0],'display').DateCalc('first-of-month'));
 	//セル設定
-	target.find('table').find('tr:gt(1)').find('td').each(function(index){
+	target.find('tbody').find('td').each(function(index){
 		$(this).animate({opacity:'0'},50,function(){
 			var display=index-$.data(target[0],'display').getDay();
 			var day=$.data(target[0],'display').DateCalc(display.toString()+' day');
-			var style={
-				'background-color':$.data(target[0],'options').normal.back,
-				'color':$.data(target[0],'options').normal.fore,
-				'cursor':'default'
-			};
-			var active={
-				'background-color':$.data(target[0],'options').active.back,
-				'color':$.data(target[0],'options').active.fore,
-				'cursor':'pointer'
-			};
+			var active=$.data(target[0],'options').active;
+			var normal=$.data(target[0],'options').normal;
+			var saturday=$.data(target[0],'options').saturday;
+			var sunday=$.data(target[0],'options').sunday;
+			var today=$.data(target[0],'options').today;
 			var cell=$(this).find('div').first();
 			//月初日以前は処理しない
-			if (display<0) {cell.css(style).html('&nbsp;');return;}
+			if (display<0) {cell.html('&nbsp;').hide();return;}
 			//翌月初日以降は処理しない
-			if (day.DateFormat('Y-m')!=$.data(target[0],'display').DateFormat('Y-m')) {cell.css(style).html('&nbsp;');return;}
+			if (day.DateFormat('Y-m')!=$.data(target[0],'display').DateFormat('Y-m')) {cell.html('&nbsp;').hide();return;}
 			switch ((index+1)%7)
 			{
 				case 0:
 					//土曜日
-					style['background-color']=$.data(target[0],'options').saturday.back;
-					style['color']=$.data(target[0],'options').saturday.fore;
+					if (saturday!=null) cell.css(saturday);
 					break;
 				case 1:
 					//日曜日
-					style['background-color']=$.data(target[0],'options').sunday.back;
-					style['color']=$.data(target[0],'options').sunday.fore;
+					if (sunday!=null) cell.css(sunday);
+					break;
+				default:
+					if (normal!=null) cell.css(normal);
 					break;
 			}
 			//当日
 			if(day.DateFormat('Y-m-d')==new Date().DateFormat('Y-m-d'))
-			{
-				style['background-color']=$.data(target[0],'options').today.back;
-				style['color']=$.data(target[0],'options').today.fore;
-			}
+				if (today!=null) cell.css(today);
 			//指定日
-			if(day.DateFormat('Y-m-d')==$.data(target[0],'active').DateFormat('Y-m-d')) style=active;
+			if(day.DateFormat('Y-m-d')==$.data(target[0],'active').DateFormat('Y-m-d'))
+				if (active!=null) cell.css(active);
 			//日付設定
 			style['cursor']='pointer';
-			cell.css(style).text((display+1).toString());
+			cell.text((display+1).toString());
 		}).delay(index*10).animate({opacity:'1'},150);
 	});
 	//コールバック
