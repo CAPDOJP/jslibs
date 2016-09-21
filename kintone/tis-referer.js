@@ -124,6 +124,8 @@ var Referer=function(options){
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
+		'max-height':'100%',
+		'max-width':'100%',
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
 		'position':'relative',
@@ -136,6 +138,7 @@ var Referer=function(options){
 		'border-bottom-right-radius':'5px',
 		'bottom':'0px',
 		'left':'0px',
+		'max-width':'100%',
 		'padding':'5px',
 		'position':'absolute',
 		'text-align':'center',
@@ -151,6 +154,7 @@ var Referer=function(options){
 		'border-top-left-radius':'5px',
 		'border-top-right-radius':'5px',
 		'left':'0px',
+		'max-width':'100%',
 		'padding':'5px',
 		'position':'absolute',
 		'text-align':'center',
