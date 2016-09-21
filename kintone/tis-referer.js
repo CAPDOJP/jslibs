@@ -124,6 +124,8 @@ var Referer=function(options){
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
+		'overflow-x':'hidden',
+		'overflow-y':'auto',
 		'position':'relative',
 		'width':'100%',
 		'z-index':'777'
@@ -142,8 +144,6 @@ var Referer=function(options){
 	});
 	this.listblock=table.clone(true).css({
 		'box-sizing':'border-box',
-		'overflow-x':'hidden',
-		'overflow-y':'auto',
 		'width':'100%'
 	}).append('<tbody>');
 	this.searchblock=div.clone(true).css({
@@ -233,12 +233,10 @@ var Referer=function(options){
 			})
 		);
 	}
-	var paddingtop=0;
-	var paddingbottom=0;
 	this.contents.append(this.listblock);
 	this.container.append(this.contents);
-	if (options.buttons.length!=0) {this.container.append(this.buttonblock);paddingbottom+=this.buttonblock.outerHeight(true);}
-	if (options.searches.length!=0) {this.container.append(this.searchblock);paddingtop+=this.searchblock.outerHeight(true);}
+	if (options.buttons.length!=0) this.container.append(this.buttonblock);
+	if (options.searches.length!=0) this.container.append(this.searchblock);
 	this.cover.append(this.container);
 	options.container.append(this.cover);
 	/* reload referer */
@@ -329,7 +327,7 @@ Referer.prototype={
 		this.callback=options.callback;
 		this.cover.show();
 		/* adjust container paddings */
-		this.container.css({
+		this.contents.css({
 			'padding-top':this.searchblock.outerHeight(true)+5+'px',
 			'padding-bottom':this.buttonblock.outerHeight(true)+5+'px'
 		});
