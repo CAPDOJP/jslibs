@@ -124,8 +124,6 @@ var Referer=function(options){
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
-		'overflow-x':'hidden',
-		'overflow-y':'auto',
 		'position':'relative',
 		'width':'100%',
 		'z-index':'777'
@@ -144,6 +142,9 @@ var Referer=function(options){
 	});
 	this.listblock=table.clone(true).css({
 		'box-sizing':'border-box',
+		'height':'100%',
+		'overflow-x':'hidden',
+		'overflow-y':'auto',
 		'width':'100%'
 	}).append('<tbody>');
 	this.searchblock=div.clone(true).css({
