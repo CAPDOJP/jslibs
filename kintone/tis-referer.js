@@ -156,6 +156,7 @@ var Referer=function(options){
 		'text-align':'center',
 		'top':'0px',
 		'width':'100%',
+		'word-break':'break-all',
 		'z-index':'888'
 	});
 	/* valiable */
