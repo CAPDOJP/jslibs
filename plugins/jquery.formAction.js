@@ -481,6 +481,16 @@ jQuery.fn.editortable = function(options){
 				return false;
 			}
 		});
+		table.on('change','select',function(){
+			var my=$(this).closest('table');
+			var rows=my.children('tbody');
+			if (!rows.children('tr').last().isEmpty())
+			{
+				my.addrow(options);
+				if (options.callback!=null) options.callback(my.children('tbody').children('tr').last());
+				return false;
+			}
+		});
 	});
 }
 /*
