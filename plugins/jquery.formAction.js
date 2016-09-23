@@ -497,6 +497,9 @@ jQuery.fn.isEmpty = function(){
 			case 'password':
 				if (!exists) exists=($(this).val().length!=0);
 				break;
+			case 'select':
+				if (!exists) exists=($(this).find('option').index($(this).find('option:selected'))==0);
+				break;
 		}
 	});
 	$(this).find('textarea').each(function(){
