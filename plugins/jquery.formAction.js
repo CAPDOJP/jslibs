@@ -498,7 +498,7 @@ jQuery.fn.isEmpty = function(){
 				if (!exists) exists=($(this).val().length!=0);
 				break;
 			case 'select':
-				if (!exists) exists=($(this).find('option').index($(this).find('option:selected'))==0);
+				if (!exists) exists=($(this).find('option').index($(this).find('option:selected'))!=0);
 				break;
 		}
 	});
