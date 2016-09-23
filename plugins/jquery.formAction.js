@@ -490,7 +490,7 @@ jQuery.fn.editortable = function(options){
 */
 jQuery.fn.isEmpty = function(){
 	var exists=false;
-	$(this).find('input').each(function(){
+	$(this).find('input,select,textarea').each(function(){
 		switch ($(this).prop('type'))
 		{
 			case 'text':
