@@ -139,8 +139,12 @@ jQuery.fn.formAction = function(options){
 						processData:false,
 						contentType:false,
 						dataType:'json',
-						error:function(){
-							alert('データ送信に失敗しました。');
+						error:function(XMLHttpRequest, textStatus, errorThrown){
+            alert("XMLHttpRequest : " + XMLHttpRequest.status);
+            alert("textStatus : " + textStatus);
+            alert("errorThrown : " + errorThrown.message);
+							
+							//alert('データ送信に失敗しました。');
 							//ローディング消去
 							if ($('div#loading')!=null) $('div#loading').css('display','none');
 						},

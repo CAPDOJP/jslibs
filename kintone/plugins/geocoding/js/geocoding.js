@@ -59,7 +59,7 @@ jQuery.noConflict();
 								var latlng=json.results[0].geometry.location.lat+','+json.results[0].geometry.location.lng;
 								var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
 								vars.map.empty();
-								vars.map.append('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>');
+								vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
 								if (options.callback!=null) options.callback(json);
 								break;
 						}
@@ -69,7 +69,7 @@ jQuery.noConflict();
 			{
 				var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
 				vars.map.empty();
-				vars.map.append('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>');
+				vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
 			}
 		}
 	};
@@ -83,7 +83,7 @@ jQuery.noConflict();
 		kintone.app.record.setFieldShown(config['lat'],false);
 		kintone.app.record.setFieldShown(config['lng'],false);
 		/* map action  */
-		vars.map=$('<div id="map">');
+		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
 		/* the initial display when editing */
 		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record.lat.value+','+event.record.lng.value});
 		/* display map in value change event */
