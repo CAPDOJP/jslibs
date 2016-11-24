@@ -98,7 +98,7 @@ jQuery.fn.calendarAction = function(options){
 			header.find('tr').last().append(cell);
 		}
 		//セル(日付)
-		for (var i=0;i<7*5;i++)
+		for (var i=0;i<7*6;i++)
 		{
 			if (i%7==0) cells.append($('<tr>'));
 			var cell=$('<td>');
