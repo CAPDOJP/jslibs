@@ -292,7 +292,7 @@ Referer.prototype={
 					if ($.data($(this)[0],'multi'))
 					{
 						var pattern=searchesvalue.replace(/[ 　]+/g,' ');
-						patterns=pattern.split(' ');
+						var patterns=pattern.split(' ');
 						pattern='';
 						$.each(patterns,function(index){
 						    pattern+='(?=.*'+patterns[index]+')';
