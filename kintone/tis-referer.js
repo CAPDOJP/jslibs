@@ -236,6 +236,7 @@ var Referer=function(options){
 			})
 		);
 		$('input[type=text],select',searchblock).on('keydown',function(e){
+			alert('aaa');
 			var code=e.keyCode||e.which;
 			if (code==13)
 			{
