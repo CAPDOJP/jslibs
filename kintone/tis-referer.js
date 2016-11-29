@@ -363,6 +363,8 @@ Referer.prototype={
 			'height':(this.container.height()-this.searchblock.outerHeight(true)-this.buttonblock.outerHeight(true)).toString()+'px',
 			'margin-top':(this.searchblock.outerHeight(true)).toString()+'px'
 		});
+		var searchfields=this.searchblock.find('input[type=text]:visible:not(:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)');
+		if (searchfields.length!=0) searchfields.eq(0).focus();
 	},
 	/* hide referer */
 	hide:function(){
