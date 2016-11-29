@@ -239,7 +239,7 @@ var Referer=function(options){
 			var code=e.keyCode||e.which;
 			if (code==13)
 			{
-				var targets=containerblock.find('input[type=text],select,button,table');
+				var targets=containerblock.find('button,input[type=text],select,table');
 				var total=targets.length;
 				var index=targets.index(this);
 				if (e.shiftKey)
