@@ -235,6 +235,27 @@ var Referer=function(options){
 				my.search();
 			})
 		);
+		searchblock.on('keydown','input[type=text],select',function(e){
+			var code=e.keyCode||e.which;
+			if (code==13)
+			{
+				var targets=containerblock.find('input[type=text]:visible:not(:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)');
+				var total=targets.length;
+				var index=targets.index(this);
+				if (e.shiftKey)
+				{
+					if (index==0) index=total;
+					index--;
+				}
+				else
+				{
+					index++;
+					if (index==total) index=0;
+				}
+				targets.eq(index).focus();
+				return false;
+			}
+		});
 	}
 	this.contents.append(this.listblock);
 	this.container.append(this.contents);
@@ -310,6 +331,7 @@ Referer.prototype={
 			});
 			listblock.find('tbody').append(list);
 		}
+		listblock.focus();
 	},
 	/* display referer */
 	show:function(options){
