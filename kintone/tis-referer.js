@@ -331,8 +331,6 @@ Referer.prototype={
 			});
 			listblock.find('tbody').append(list);
 		}
-		/* focus in list row */
-		if (filtersearch.length!=0) listblock.find('tbody').find('tr').eq(0).focus();
 	},
 	/* display referer */
 	show:function(options){
