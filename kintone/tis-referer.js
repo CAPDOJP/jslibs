@@ -316,7 +316,9 @@ Referer.prototype={
 		for (var i=0;i<filtersearch.length;i++)
 		{
 			var filter=filtersearch[i];
-			var list=$('<tr>');
+			var list=$('<tr>')
+			.on('mouseover',function(){$(this).css({'background-color':'#F8BBD0'});})
+			.on('mouseout',function(){$(this).css({'background-color':'none'});});
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
@@ -327,9 +329,7 @@ Referer.prototype={
 					'padding':'5px'
 				})
 				.text(filter[displaytext[index]].value))
-				.on('click',function(){if (callback!=null) callback(list);})
-				.on('focus',function(){alert('aa');list.css({'background-color':'#F8BBD0'});})
-				.on('blur',function(){list.css({'background-color':'none'});});
+				.on('click',function(){if (callback!=null) callback(list);});
 			});
 			listblock.find('tbody').append(list);
 		}
