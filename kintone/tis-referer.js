@@ -239,7 +239,7 @@ var Referer=function(options){
 			var code=e.keyCode||e.which;
 			if (code==13)
 			{
-				var targets=containerblock.find('input[type=text]:visible:not(:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)');
+				var targets=containerblock.find('input[type=text],select');
 				var total=targets.length;
 				var index=targets.index(this);
 				alert(targets.length);
