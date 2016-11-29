@@ -318,7 +318,7 @@ Referer.prototype={
 			var filter=filtersearch[i];
 			var list=$('<tr>')
 			.on('mouseover',function(){$(this).css({'background-color':'#F8BBD0'});})
-			.on('mouseout',function(){$(this).css({'background-color':'none'});});
+			.on('mouseout',function(){$(this).css({'background-color':'transparent'});});
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
