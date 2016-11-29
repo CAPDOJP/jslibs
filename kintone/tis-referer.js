@@ -236,13 +236,13 @@ var Referer=function(options){
 			})
 		);
 		$('input[type=text],select',searchblock).on('keydown',function(e){
-			alert('aaa');
 			var code=e.keyCode||e.which;
 			if (code==13)
 			{
 				var targets=containerblock.find('input[type=text]:visible:not(:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)');
 				var total=targets.length;
 				var index=targets.index(this);
+				alert(targets.length);
 				if (e.shiftKey)
 				{
 					if (index==0) index=total;
