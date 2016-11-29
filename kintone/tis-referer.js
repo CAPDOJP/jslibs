@@ -316,7 +316,13 @@ Referer.prototype={
 		for (var i=0;i<filtersearch.length;i++)
 		{
 			var filter=filtersearch[i];
-			var list=$('<tr>');
+			var list=$('<tr>')
+			.focusin(function(e){
+			  $(this).css('background-color','#F8BBD0');
+			})
+			.focusout(function(e){
+			  $(this).css('background-color','none');
+			});			
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
