@@ -328,8 +328,8 @@ Referer.prototype={
 				})
 				.text(filter[displaytext[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);})
-				.on('focus',function(){$(this).css({'background-color':'#F8BBD0'});})
-				.on('blur',function(){$(this).css({'background-color':'none'});});
+				.on('focus',function(){$(this).closest('tr').css({'background-color':'#F8BBD0'});})
+				.on('blur',function(){$(this).closest('tr').css({'background-color':'none'});});
 			});
 			listblock.find('tbody').append(list);
 		}
