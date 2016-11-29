@@ -139,20 +139,11 @@ jQuery.fn.formAction = function(options){
 						processData:false,
 						contentType:false,
 						dataType:'json',
-						//Test Start
-						error:function(XMLHttpRequest, textStatus, errorThrown){
-				            alert("XMLHttpRequest : " + XMLHttpRequest.status);
-				            alert("textStatus : " + textStatus);
-				            alert("errorThrown : " + errorThrown.message);
+						error:function(){
+							alert('データ送信に失敗しました。');
 							//ローディング消去
 							if ($('div#loading')!=null) $('div#loading').css('display','none');
 						},
-						//Test End
-						//error:function(){
-						//	alert('データ送信に失敗しました。');
-						//	//ローディング消去
-						//	if ($('div#loading')!=null) $('div#loading').css('display','none');
-						//},
 						success:function(json){
 							if ('error' in json)
 								if (json.error.length!=0)
