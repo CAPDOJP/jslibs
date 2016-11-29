@@ -336,6 +336,11 @@ Referer.prototype={
 		});
 		this.callback=options.callback;
 		this.cover.show();
+		/* adjust container height */
+		this.contents.css({
+			'height':(this.container.height()-this.searchblock.outerHeight(true)-this.buttonblock.outerHeight(true)).toString()+'px',
+			'margin-top':(this.searchblock.outerHeight(true)).toString()+'px'
+		});
 	},
 	/* hide referer */
 	hide:function(){
