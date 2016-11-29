@@ -161,6 +161,8 @@ var Referer=function(options){
 	});
 	/* valiable */
 	var buttons=this.buttons;
+	var containerblock=this.container;
+	var contentsblock=this.contents;
 	var buttonblock=this.buttonblock;
 	var searchblock=this.searchblock;
 	/* append elements */
@@ -242,9 +244,9 @@ var Referer=function(options){
 	options.container.append(this.cover);
 	/* adjust container height */
 	$(window).on('load resize',function(){
-		this.contents.css({
-			'height':(this.container.height()-this.searchblock.outerHeight(true)-this.buttonblock.outerHeight(true)).toString()+'px',
-			'margin-top':(this.searchblock.outerHeight(true)).toString()+'px'
+		contentsblock.css({
+			'height':(containerblock.height()-searchblock.outerHeight(true)-buttonblock.outerHeight(true)).toString()+'px',
+			'margin-top':(searchblock.outerHeight(true)).toString()+'px'
 		});
 	});
 	/* reload referer */
