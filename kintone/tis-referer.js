@@ -365,7 +365,7 @@ Referer.prototype={
 			'margin-top':(this.searchblock.outerHeight(true)).toString()+'px'
 		});
 		/* focus in search field */
-		var searchfields=this.searchblock.find('input[type=text]:visible:not(:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)');
+		var searchfields=this.searchblock.find('input[type=text],select');
 		if (searchfields.length!=0) searchfields.eq(0).focus();
 	},
 	/* hide referer */
