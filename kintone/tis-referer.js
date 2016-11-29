@@ -240,6 +240,13 @@ var Referer=function(options){
 	if (options.searches.length!=0) this.container.append(this.searchblock);
 	this.cover.append(this.container);
 	options.container.append(this.cover);
+	/* adjust container height */
+	$(window).on('load resize',function(){
+		this.contents.css({
+			'height':(this.container.height()-this.searchblock.outerHeight(true)-this.buttonblock.outerHeight(true)).toString()+'px',
+			'margin-top':(this.searchblock.outerHeight(true)).toString()+'px'
+		});
+	});
 	/* reload referer */
 	my.search();
 };
@@ -327,11 +334,6 @@ Referer.prototype={
 		});
 		this.callback=options.callback;
 		this.cover.show();
-		/* adjust container height */
-		this.contents.css({
-			'height':(this.container.height()-this.searchblock.outerHeight(true)-this.buttonblock.outerHeight(true)).toString()+'px',
-			'margin-top':(this.searchblock.outerHeight(true)).toString()+'px'
-		});
 	},
 	/* hide referer */
 	hide:function(){
