@@ -235,7 +235,7 @@ var Referer=function(options){
 				my.search();
 			})
 		);
-		searchblock.on('keydown','input[type=text],select',function(e){
+		$(document).on('keydown',$('input[type=text],select',searchblock),function(e){
 			var code=e.keyCode||e.which;
 			if (code==13)
 			{
