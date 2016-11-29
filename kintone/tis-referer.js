@@ -126,6 +126,7 @@ var Referer=function(options){
 		'height':'100%',
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
+		'padding':'5px',
 		'position':'relative',
 		'width':'100%',
 		'z-index':'777'
@@ -326,11 +327,8 @@ Referer.prototype={
 		});
 		this.callback=options.callback;
 		this.cover.show();
-		/* adjust container paddings */
-		this.contents.css({
-			'padding-top':this.searchblock.outerHeight(true)+5+'px',
-			'padding-bottom':this.buttonblock.outerHeight(true)+5+'px'
-		});
+		/* adjust container height */
+		this.contents.height(this.container.height()-this.searchblock.outerHeight(true)-this.buttonblock.outerHeight(true));
 	},
 	/* hide referer */
 	hide:function(){
