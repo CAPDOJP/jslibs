@@ -328,7 +328,7 @@ Referer.prototype={
 				})
 				.text(filter[displaytext[index]].value))
 				.on('click',function(){if (callback!=null) callback(list);})
-				.on('focus',function(){list.css({'background-color':'#F8BBD0'});})
+				.on('focus',function(){alert('aa');list.css({'background-color':'#F8BBD0'});})
 				.on('blur',function(){list.css({'background-color':'none'});});
 			});
 			listblock.find('tbody').append(list);
