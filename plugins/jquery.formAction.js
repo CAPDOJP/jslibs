@@ -1130,7 +1130,7 @@ jQuery.fn.positionLeft = function(parent){
 		pos+=target.position().left;
 		target=target.parent();
 	}
-	pos+=target.position().left;
+	if (pos==0) pos+=target.position().left;
 	return pos;
 }
 jQuery.fn.positionTop = function(parent){
@@ -1141,7 +1141,7 @@ jQuery.fn.positionTop = function(parent){
 		pos+=target.position().top;
 		target=target.parent();
 	}
-	pos+=target.position().top;
+	if (pos==0) pos+=target.position().top;
 	return pos;
 }
 })(jQuery);
