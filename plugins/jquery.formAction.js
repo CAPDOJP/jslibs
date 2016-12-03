@@ -1129,10 +1129,12 @@ jQuery.fn.positionLeft = function(parent){
 	{
 		pos+=target.position().left;
 		pos+=target.parent().scrollLeft;
+		alert(target.parent().scrollLeft);
 		target=target.parent();
 	}
 	pos+=target.position().left;
 	pos+=target.parent().scrollLeft;
+	alert(target.parent().scrollLeft);
 	return pos;
 }
 jQuery.fn.positionTop = function(parent){
