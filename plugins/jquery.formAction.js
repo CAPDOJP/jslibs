@@ -1117,4 +1117,29 @@ jQuery.fn.toQuery = function(){
 	query=query.replace(/%5B/g,'[').replace(/%5D/g,']');
 	return query;
 }
+/*
+*--------------------------------------------------------------------
+* 相対位置取得
+* -------------------------------------------------------------------
+*/
+jQuery.fn.positionLeft = function(parent){
+	var target=$(this);
+	var pos=target.position().left;
+	while (parent!=target.parent())
+	{
+		pos+=target.position().left;
+		target=target.parent();
+	}
+	return pos;
+}
+jQuery.fn.positionTop = function(parent){
+	var target=$(this);
+	var pos=target.position().top;
+	while (parent!=target.parent())
+	{
+		pos+=target.position().top;
+		target=target.parent();
+	}
+	return pos;
+}
 })(jQuery);
