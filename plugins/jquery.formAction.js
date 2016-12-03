@@ -1125,23 +1125,21 @@ jQuery.fn.toQuery = function(){
 jQuery.fn.positionLeft = function(parent){
 	var target=$(this);
 	var pos=0;
-	while (parent[0]!=target.parent()[0])
+	while (parent[0]!=target.closest()[0])
 	{
-		alert(target.position().left);
 		pos+=target.position().left;
-		target=target.parent();
+		target=target.closest();
 	}
 	pos+=target.position().left;
-	alert(target.position().left);
 	return pos;
 }
 jQuery.fn.positionTop = function(parent){
 	var target=$(this);
 	var pos=0;
-	while (parent[0]!=target.parent()[0])
+	while (parent[0]!=target.closest()[0])
 	{
 		pos+=target.position().top;
-		target=target.parent();
+		target=target.closest();
 	}
 	pos+=target.position().top;
 	return pos;
