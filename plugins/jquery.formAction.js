@@ -1127,10 +1127,12 @@ jQuery.fn.positionLeft = function(parent){
 	var pos=0;
 	while (parent[0]!=target.parent()[0])
 	{
-		pos+=target.position().left+target.scrollLeft();
+		pos+=target.position().left;
+		pos+=target.scrollLeft;
 		target=target.parent();
 	}
-	pos+=target.position().left+target.scrollLeft();
+	pos+=target.position().left;
+	pos+=target.scrollLeft;
 	return pos;
 }
 jQuery.fn.positionTop = function(parent){
@@ -1138,10 +1140,12 @@ jQuery.fn.positionTop = function(parent){
 	var pos=0;
 	while (parent[0]!=target.parent()[0])
 	{
-		pos+=target.position().top+target.scrollTop();
+		pos+=target.position().top;
+		pos+=target.scrollTop;
 		target=target.parent();
 	}
-	pos+=target.position().top+target.scrollTop();
+	pos+=target.position().top;
+	pos+=target.scrollTop;
 	return pos;
 }
 })(jQuery);
