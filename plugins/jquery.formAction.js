@@ -1128,6 +1128,7 @@ jQuery.fn.positionLeft = function(parent){
 	while (parent[0]!=target.parent()[0])
 	{
 		alert(target.position().left);
+		alert(parseFloat(target.css('left')));
 		pos+=target.position().left;
 		target=target.parent();
 	}
