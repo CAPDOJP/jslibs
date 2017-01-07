@@ -812,7 +812,8 @@ jQuery.fn.reset = function(options){
 		images:{},
 		callback:null
 	},options);
-	$.each($(options.images,this),function(key,values){$(key).attr('src',values);});
+	var container=$(this);
+	$.each(options.images,function(key,values){$(key,container).attr('src',values);});
 	$(this).find('input[type=file]').each(function(){$(this).val('');});
 	$(this).find('input[type=text]').each(function(){$(this).val('');});
 	$(this).find('input[type=password]').each(function(){$(this).val('');});
