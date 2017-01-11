@@ -813,45 +813,58 @@ jQuery.fn.reset = function(options){
 		callback:null
 	},options);
 	var container=$(this);
-	$.each(options.images,function(key,values){$(key,container).attr('src',values);});
-	$(this).find('input[type=file]').each(function(){$(this).val('');});
-	$(this).find('input[type=text]').each(function(){$(this).val('');});
-	$(this).find('input[type=password]').each(function(){$(this).val('');});
-	$(this).find('input[type=hidden]').each(function(){$(this).val('');});
-	$(this).find('input[type=checkbox]').each(function(){$(this).prop('checked',false);});
-	$(this).find('label').each(function(){
-		if ($(this).attr('id')!=null) $(this).text('');
-	});
-	$(this).find('span').each(function(){
-		if ($(this).attr('id')!=null) $(this).text('');
-	});
-	$(this).find('select').each(function(){
-		if ($.data(this,'options')!=null)
-		{
-			//動的コンボボックスは項目を初期化
-			if ($.data(this,'options').parent.length!=0)
-			{
-				var option='';
-				if ($.data(this,'options').top.value.length!=0)
-					option='<option value="'+$.data(this,'options').top.value+'">'+$.data(this,'options').top.label+'</option>';
-				$(this).html(option);
-			}
-		}
-		if ($(this).children('option').length!=0) $(this).val($(this).children('option').first().val());
-	});
-	$(this).find('textarea').each(function(){$(this).val('');});
-	//入力されている値が空のテキストボックスはtitle内容を初期表示にする
-	$(this).find('input[type=text],textarea').each(function(){
-		if ($(this).val().length==0) $(this).val($.data(this,'display'));
-	});
-	//要素内テーブル初期化
-	$(this).find('table').each(function(index){
-		$(this).children('tbody').children('tr').each(function(index){
-			if (index==0) $(this).reset();
-			else $(this).remove();
-		});
-	});
-	if (options.callback!=null) options.callback($(this));
+	switch (container.prop('tagName').toLowerCase())
+	{
+		case 'table':
+			//テーブル初期化
+			container.children('tbody').children('tr').each(function(index){
+				if (index==0) $(this).reset({images:options.images});
+				else $(this).remove();
+			});
+			if (options.callback!=null) options.callback($(this));
+			break;
+		default:
+			$.each(options.images,function(key,values){$(key,container).attr('src',values);});
+			$(this).find('input[type=file]').each(function(){$(this).val('');});
+			$(this).find('input[type=text]').each(function(){$(this).val('');});
+			$(this).find('input[type=password]').each(function(){$(this).val('');});
+			$(this).find('input[type=hidden]').each(function(){$(this).val('');});
+			$(this).find('input[type=checkbox]').each(function(){$(this).prop('checked',false);});
+			$(this).find('label').each(function(){
+				if ($(this).attr('id')!=null) $(this).text('');
+			});
+			$(this).find('span').each(function(){
+				if ($(this).attr('id')!=null) $(this).text('');
+			});
+			$(this).find('select').each(function(){
+				if ($.data(this,'options')!=null)
+				{
+					//動的コンボボックスは項目を初期化
+					if ($.data(this,'options').parent.length!=0)
+					{
+						var option='';
+						if ($.data(this,'options').top.value.length!=0)
+							option='<option value="'+$.data(this,'options').top.value+'">'+$.data(this,'options').top.label+'</option>';
+						$(this).html(option);
+					}
+				}
+				if ($(this).children('option').length!=0) $(this).val($(this).children('option').first().val());
+			});
+			$(this).find('textarea').each(function(){$(this).val('');});
+			//入力されている値が空のテキストボックスはtitle内容を初期表示にする
+			$(this).find('input[type=text],textarea').each(function(){
+				if ($(this).val().length==0) $(this).val($.data(this,'display'));
+			});
+			//要素内テーブル初期化
+			$(this).find('table').each(function(index){
+				$(this).children('tbody').children('tr').each(function(index){
+					if (index==0) $(this).reset({images:options.images});
+					else $(this).remove();
+				});
+			});
+			if (options.callback!=null) options.callback($(this));
+			break;
+	}
 }
 /*
 *--------------------------------------------------------------------
