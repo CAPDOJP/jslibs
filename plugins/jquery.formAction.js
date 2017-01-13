@@ -1257,18 +1257,18 @@ jQuery.fn.messageShow = function(title,message,confirm){
 	height+=parseInt(target.children('div').css('padding-bottom'));
 	target.children('div').height(height);
 	if ($.data(target[0],'close'))
-		target.on('click',$.data(target[0],'close'),function(){
-			target.off('click');
+		$.data(target[0],'close').on('click',function(){
+			$.data(target[0],'close').off('click');
 	 		target.hide();
 	 	});
 	if ($.data(target[0],'cancel'))
-		target.on('click',$.data(target[0],'cancel'),function(){
-			target.off('click');
+		$.data(target[0],'cancel').on('click',function(){
+			$.data(target[0],'cancel').off('click');
 	 		target.hide();
 	 	});
 	if ($.data(target[0],'ok'))
-		target.on('ok',$.data(target[0],'ok'),function(){
-			target.off('click');
+		$.data(target[0],'ok').on('click',function(){
+			$.data(target[0],'ok').off('click');
 	 		target.hide();
 			if (confirm!=null) confirm();
 	 	});
