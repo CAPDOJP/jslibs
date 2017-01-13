@@ -1268,9 +1268,9 @@ jQuery.fn.messageShow = function(title,message,confirm){
 	 	});
 	if ($.data(target[0],'ok'))
 		target.on('ok',$.data(target[0],'ok'),function(){
-			if (confirm!=null) confirm();
 			target.off('click');
 	 		target.hide();
+			if (confirm!=null) confirm();
 	 	});
 }
 })(jQuery);
