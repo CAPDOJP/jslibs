@@ -114,7 +114,8 @@ jQuery.fn.formAction = function(options){
 			var values=$.extend({
 				url:'',
 				name:'',
-				callback:null
+				callback:null,
+				messagecallback:null
 			},values);
 			//要素チェック
 			if (values.name.length==0) {alert('filesにはnameを指定して下さい。');return;}
@@ -140,7 +141,8 @@ jQuery.fn.formAction = function(options){
 						contentType:false,
 						dataType:'json',
 						error:function(){
-							alert('データ送信に失敗しました。');
+							if (values.messagecallback!=null) values.messagecallback('データ送信に失敗しました。');
+							else alert('データ送信に失敗しました。');
 							//ローディング消去
 							if ($('div#loading')!=null) $('div#loading').css('display','none');
 						},
@@ -148,7 +150,8 @@ jQuery.fn.formAction = function(options){
 							if ('error' in json)
 								if (json.error.length!=0)
 								{
-									alert(json.error);
+									if (values.messagecallback!=null) values.messagecallback(json.error);
+									else alert(json.error);
 									//ローディング消去
 									if ($('div#loading')!=null) $('div#loading').css('display','none');
 									return;
@@ -170,7 +173,8 @@ jQuery.fn.formAction = function(options){
 				}
 				catch(e)
 				{
-					alert('お使いのブラウザでは利用出来ません。');
+					if (values.messagecallback!=null) values.messagecallback('お使いのブラウザでは利用出来ません。');
+					else alert('お使いのブラウザでは利用出来ません。');
 					//ローディング消去
 					if ($('div#loading')!=null) $('div#loading').css('display','none');
 				}
@@ -546,7 +550,8 @@ jQuery.fn.loaddatas = function(options){
 		message:'',
 		silent:false,
 		initialimage:'',
-		callback:null
+		callback:null,
+		messagecallback:null
 	},options);
 	var form=$(this);
 	var errors=(options.message.length!=0)?options.message:'データの取得に失敗しました。';
@@ -559,7 +564,8 @@ jQuery.fn.loaddatas = function(options){
 		type:'get',
 		dataType:'json',
 		error:function(){
-			alert(errors);
+			if (options.messagecallback!=null) options.messagecallback(errors);
+			else alert(errors);
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
 		},
@@ -568,8 +574,10 @@ jQuery.fn.loaddatas = function(options){
 			var existshead=('head' in json)?json.head.length:0;
 			var existsdetail=('detail' in json)?json.detail.length:0;
 			if (existsconditions+existshead+existsdetail==0)
-				if (options.message.length!=0) {
-					alert(errors);
+				if (options.message.length!=0)
+				{
+					if (options.messagecallback!=null) options.messagecallback(errors);
+					else alert(errors);
 					//ローディング消去
 					if ($('div#loading')!=null) $('div#loading').css('display','none');
 					return;
@@ -620,7 +628,11 @@ jQuery.fn.loaddatas = function(options){
 								}
 							}
 						}
-						else alert('グリッドのIDを確認して下さい。');
+						else
+						{
+							if (options.messagecallback!=null) options.messagecallback('グリッドのIDを確認して下さい。');
+							else alert('グリッドのIDを確認して下さい。');
+						}
 					}
 				});
 			//入力されている値が空のテキストボックスはtitle内容を初期表示にする
@@ -779,7 +791,8 @@ jQuery.fn.loadparts = function(options){
 	var options=$.extend({
 		url:'',
 		message:'',
-		callback:null
+		callback:null,
+		messagecallback:null
 	},options);
 	var target=$(this);
 	var errors=(options.message.length!=0)?options.message:'データの取得に失敗しました。';
@@ -788,12 +801,20 @@ jQuery.fn.loadparts = function(options){
 		url:options.url,
 		type:'get',
 		dataType:'json',
-		error:function(){alert(errors);},
+		error:function(){
+			if (options.messagecallback!=null) options.messagecallback(errors);
+			else alert(errors);
+		},
 		success:function(json){
 			var existsconditions=('conditions' in json)?json.conditions.length:0;
 			var existshead=('head' in json)?json.head.length:0;
 			var existsdetail=('detail' in json)?json.detail.length:0;
-			if (existsconditions+existshead+existsdetail==0) if (options.message.length!=0) {alert(errors);return;}
+			if (existsconditions+existshead+existsdetail==0) if (options.message.length!=0)
+			{
+				if (options.messagecallback!=null) options.messagecallback(errors);
+				else alert(errors);
+				return;
+			}
 			if (options.callback!=null) options.callback(json);
 		}
 	});
@@ -881,7 +902,8 @@ jQuery.fn.senddatas = function(options){
 		message:'',
 		silent:false,
 		empty:true,
-		callback:null
+		callback:null,
+		messagecallback:null
 	},options);
 	var form=$(this);
 	//確認ダイアログ表示
@@ -935,21 +957,30 @@ jQuery.fn.senddatas = function(options){
 		dataType:'json',
 		timeout:60000,
 		error:function(){
-			alert('データ送信に失敗しました。');
+			if (options.messagecallback!=null) options.messagecallback('データ送信に失敗しました。');
+			else alert('データ送信に失敗しました。');
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
 		},
 		success:function(json){
 			var error='';
 			if ('error' in json) if (json.error.length!=0) error=json.error;
-			if (error.length!=0) alert(error);
+			if (error.length!=0)
+			{
+				if (options.messagecallback!=null) options.messagecallback(error);
+				else alert(error);
+			}
 			else
 			{
 				//入力されている値が空のテキストボックスはtitle内容を初期表示にする
 				form.find('input[type=text],textarea').each(function(){
 					if ($(this).val().length==0) $(this).val($.data(this,'display'));
 				});
-				if (options.message.length!=0) alert(options.message);
+				if (options.message.length!=0)
+				{
+					if (options.messagecallback!=null) options.messagecallback(options.message);
+					else alert(options.message);
+				}
 				if (options.callback!=null) options.callback(json);
 			}
 			//ローディング消去
@@ -971,7 +1002,8 @@ jQuery.fn.sendparts = function(options){
 	var options=$.extend({
 		url:'',
 		values:{},
-		callback:null
+		callback:null,
+		messagecallback:null
 	},options);
 	var filedata = null;
 	try
@@ -989,11 +1021,18 @@ jQuery.fn.sendparts = function(options){
 			contentType:false,
 			dataType:'json',
 			timeout:60000,
-			error:function(){alert('データ送信に失敗しました。');},
+			error:function(){
+				if (options.messagecallback!=null) options.messagecallback('データ送信に失敗しました。');
+				else alert('データ送信に失敗しました。');
+			},
 			success:function(json){
 				var error='';
 				if ('error' in json) if (json.error.length!=0) error=json.error;
-				if (error.length!=0) alert(error);
+				if (error.length!=0)
+				{
+					if (options.messagecallback!=null) options.messagecallback(error);
+					else alert(error);
+				}
 				else
 				{
 					if (options.callback!=null) options.callback(json);
@@ -1014,11 +1053,18 @@ jQuery.fn.sendparts = function(options){
 			mimeType:$(this).prop('enctype'),
 			dataType:'json',
 			timeout:60000,
-			error:function(){alert('データ送信に失敗しました。');},
+			error:function(){
+				if (options.messagecallback!=null) options.messagecallback('データ送信に失敗しました。');
+				else alert('データ送信に失敗しました。');
+			},
 			success:function(json){
 				var error='';
 				if ('error' in json) if (json.error.length!=0) error=json.error;
-				if (error.length!=0) alert(error);
+				if (error.length!=0)
+				{
+					if (options.messagecallback!=null) options.messagecallback(error);
+					else alert(error);
+				}
 				else
 				{
 					if (options.callback!=null) options.callback(json);
