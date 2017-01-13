@@ -141,7 +141,7 @@ jQuery.fn.formAction = function(options){
 						contentType:false,
 						dataType:'json',
 						error:function(){
-							if (values.messagecallback!=null) values.messagecallback('データ送信に失敗しました。');
+							if (values.messagecallback!=null) values.messagecallback('エラー','データ送信に失敗しました。');
 							else alert('データ送信に失敗しました。');
 							//ローディング消去
 							if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -150,7 +150,7 @@ jQuery.fn.formAction = function(options){
 							if ('error' in json)
 								if (json.error.length!=0)
 								{
-									if (values.messagecallback!=null) values.messagecallback(json.error);
+									if (values.messagecallback!=null) values.messagecallback('エラー',json.error);
 									else alert(json.error);
 									//ローディング消去
 									if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -173,7 +173,7 @@ jQuery.fn.formAction = function(options){
 				}
 				catch(e)
 				{
-					if (values.messagecallback!=null) values.messagecallback('お使いのブラウザでは利用出来ません。');
+					if (values.messagecallback!=null) values.messagecallback('エラー','お使いのブラウザでは利用出来ません。');
 					else alert('お使いのブラウザでは利用出来ません。');
 					//ローディング消去
 					if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -564,7 +564,7 @@ jQuery.fn.loaddatas = function(options){
 		type:'get',
 		dataType:'json',
 		error:function(){
-			if (options.messagecallback!=null) options.messagecallback(errors);
+			if (options.messagecallback!=null) options.messagecallback('エラー',errors);
 			else alert(errors);
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -576,7 +576,7 @@ jQuery.fn.loaddatas = function(options){
 			if (existsconditions+existshead+existsdetail==0)
 				if (options.message.length!=0)
 				{
-					if (options.messagecallback!=null) options.messagecallback(errors);
+					if (options.messagecallback!=null) options.messagecallback('エラー',errors);
 					else alert(errors);
 					//ローディング消去
 					if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -630,7 +630,7 @@ jQuery.fn.loaddatas = function(options){
 						}
 						else
 						{
-							if (options.messagecallback!=null) options.messagecallback('グリッドのIDを確認して下さい。');
+							if (options.messagecallback!=null) options.messagecallback('エラー','グリッドのIDを確認して下さい。');
 							else alert('グリッドのIDを確認して下さい。');
 						}
 					}
@@ -802,7 +802,7 @@ jQuery.fn.loadparts = function(options){
 		type:'get',
 		dataType:'json',
 		error:function(){
-			if (options.messagecallback!=null) options.messagecallback(errors);
+			if (options.messagecallback!=null) options.messagecallback('エラー',errors);
 			else alert(errors);
 		},
 		success:function(json){
@@ -811,7 +811,7 @@ jQuery.fn.loadparts = function(options){
 			var existsdetail=('detail' in json)?json.detail.length:0;
 			if (existsconditions+existshead+existsdetail==0) if (options.message.length!=0)
 			{
-				if (options.messagecallback!=null) options.messagecallback(errors);
+				if (options.messagecallback!=null) options.messagecallback('エラー',errors);
 				else alert(errors);
 				return;
 			}
@@ -957,7 +957,7 @@ jQuery.fn.senddatas = function(options){
 		dataType:'json',
 		timeout:60000,
 		error:function(){
-			if (options.messagecallback!=null) options.messagecallback('データ送信に失敗しました。');
+			if (options.messagecallback!=null) options.messagecallback('エラー','データ送信に失敗しました。');
 			else alert('データ送信に失敗しました。');
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -967,7 +967,7 @@ jQuery.fn.senddatas = function(options){
 			if ('error' in json) if (json.error.length!=0) error=json.error;
 			if (error.length!=0)
 			{
-				if (options.messagecallback!=null) options.messagecallback(error);
+				if (options.messagecallback!=null) options.messagecallback('エラー',error);
 				else alert(error);
 			}
 			else
@@ -978,7 +978,7 @@ jQuery.fn.senddatas = function(options){
 				});
 				if (options.message.length!=0)
 				{
-					if (options.messagecallback!=null) options.messagecallback(options.message);
+					if (options.messagecallback!=null) options.messagecallback('メッセージ',options.message);
 					else alert(options.message);
 				}
 				if (options.callback!=null) options.callback(json);
@@ -1022,7 +1022,7 @@ jQuery.fn.sendparts = function(options){
 			dataType:'json',
 			timeout:60000,
 			error:function(){
-				if (options.messagecallback!=null) options.messagecallback('データ送信に失敗しました。');
+				if (options.messagecallback!=null) options.messagecallback('エラー','データ送信に失敗しました。');
 				else alert('データ送信に失敗しました。');
 			},
 			success:function(json){
@@ -1030,7 +1030,7 @@ jQuery.fn.sendparts = function(options){
 				if ('error' in json) if (json.error.length!=0) error=json.error;
 				if (error.length!=0)
 				{
-					if (options.messagecallback!=null) options.messagecallback(error);
+					if (options.messagecallback!=null) options.messagecallback('エラー',error);
 					else alert(error);
 				}
 				else
@@ -1054,7 +1054,7 @@ jQuery.fn.sendparts = function(options){
 			dataType:'json',
 			timeout:60000,
 			error:function(){
-				if (options.messagecallback!=null) options.messagecallback('データ送信に失敗しました。');
+				if (options.messagecallback!=null) options.messagecallback('エラー','データ送信に失敗しました。');
 				else alert('データ送信に失敗しました。');
 			},
 			success:function(json){
@@ -1062,7 +1062,7 @@ jQuery.fn.sendparts = function(options){
 				if ('error' in json) if (json.error.length!=0) error=json.error;
 				if (error.length!=0)
 				{
-					if (options.messagecallback!=null) options.messagecallback(error);
+					if (options.messagecallback!=null) options.messagecallback('エラー',error);
 					else alert(error);
 				}
 				else
@@ -1207,5 +1207,64 @@ jQuery.fn.positionTop = function(parent){
 	pos+=target.position().top;
 	pos+=target.parent().scrollTop();
 	return pos;
+}
+/*
+*--------------------------------------------------------------------
+* メッセージウインドウ
+*--------------------------------------------------------------------
+* parameters
+* options @ title     :タイトルバー
+*         @ message   :メッセージブロック
+*         @ close     :Closeボタン
+*         @ ok        :OKボタン
+*         @ cancel    :キャンセルボタン
+* -------------------------------------------------------------------
+*/
+jQuery.fn.messageWindow = function(options){
+	var options=$.extend({
+		title:null,
+		message:null,
+		close:null,
+		ok:null,
+		cancel:null
+	},options);
+	return $(this).each(function(){
+		var target=$(this);
+		//引数を変数に代入
+		$.data(target[0],'title',options.title);
+		$.data(target[0],'message',options.message);
+		$.data(target[0],'close',options.close);
+		$.data(target[0],'ok',options.ok);
+		$.data(target[0],'cancel',options.cancel);
+	});
+}
+jQuery.fn.messageShow = function(title,message,confirm){
+	var target=$(this);
+	var height=0;
+	if ($.data(target[0],'cancel'))
+	{
+		if (confirm!=null) $.data(target[0],'cancel').show();
+		else $.data(target[0],'cancel').hide();
+	}
+	if ($.data(target[0],'title')) $.data(target[0],'title').html(title);
+	if ($.data(target[0],'message')) $.data(target[0],'message').html(message);
+	target.show();
+	if ($.data(target[0],'close'))  height+=$.data(target[0],'close').outerHeight(true);
+	if ($.data(target[0],'title'))  height+=$.data(target[0],'title').outerHeight(true);
+	if ($.data(target[0],'message'))  height+=$.data(target[0],'message').outerHeight(true);
+	if ($.data(target[0],'ok'))  height+=$.data(target[0],'ok').outerHeight(true);
+	height+=parseInt(target.children('div').css('padding-top'));
+	height+=parseInt(target.children('div').css('padding-bottom'));
+	target.children('div').height(height);
+	target.off('click').on('click',$.data(target[0],'close'),function(){
+ 		target.hide();
+ 	});
+	target.off('click').on('click',$.data(target[0],'cancel'),function(){
+ 		target.hide();
+ 	});
+	target.off('click').on('ok',$.data(target[0],'ok'),function(){
+		if (confirm!=null) confirm();
+ 		target.hide();
+ 	});
 }
 })(jQuery);
