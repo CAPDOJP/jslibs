@@ -1249,22 +1249,28 @@ jQuery.fn.messageShow = function(title,message,confirm){
 	if ($.data(target[0],'title')) $.data(target[0],'title').html(title);
 	if ($.data(target[0],'message')) $.data(target[0],'message').html(message);
 	target.show();
-	if ($.data(target[0],'close'))  height+=$.data(target[0],'close').outerHeight(true);
-	if ($.data(target[0],'title'))  height+=$.data(target[0],'title').outerHeight(true);
-	if ($.data(target[0],'message'))  height+=$.data(target[0],'message').outerHeight(true);
+	if ($.data(target[0],'close')) height+=$.data(target[0],'close').outerHeight(true);
+	if ($.data(target[0],'title')) height+=$.data(target[0],'title').outerHeight(true);
+	if ($.data(target[0],'message')) height+=$.data(target[0],'message').outerHeight(true);
 	if ($.data(target[0],'ok'))  height+=$.data(target[0],'ok').outerHeight(true);
 	height+=parseInt(target.children('div').css('padding-top'));
 	height+=parseInt(target.children('div').css('padding-bottom'));
 	target.children('div').height(height);
-	target.off('click').on('click',$.data(target[0],'close'),function(){
- 		target.hide();
- 	});
-	target.off('click').on('click',$.data(target[0],'cancel'),function(){
- 		target.hide();
- 	});
-	target.off('click').on('ok',$.data(target[0],'ok'),function(){
-		if (confirm!=null) confirm();
- 		target.hide();
- 	});
+	if ($.data(target[0],'close'))
+		target.on('click',$.data(target[0],'close'),function(){
+			target.off('click');
+	 		target.hide();
+	 	});
+	if ($.data(target[0],'cancel'))
+		target.on('click',$.data(target[0],'cancel'),function(){
+			target.off('click');
+	 		target.hide();
+	 	});
+	if ($.data(target[0],'ok'))
+		target.on('ok',$.data(target[0],'ok'),function(){
+			if (confirm!=null) confirm();
+			target.off('click');
+	 		target.hide();
+	 	});
 }
 })(jQuery);
