@@ -21,6 +21,7 @@
     "desktop":{
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery.inview.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "js/keytransition.js"
         ]
