@@ -49,7 +49,7 @@ jQuery.fn.formAction = function(options){
 		}
 		if (code==13)
 		{
-			var targets=$(this).closest('form').find('button,input[type=text],input[type=password],input[type=button],textarea,select');
+			var targets=$(this).closest('form').find('button:visible,input[type=text]:visible,input[type=password]:visible,input[type=button]:visible,textarea:visible,select:visible');
 			var total=targets.length;
 			var index=targets.index(this);
 			targets.eq(index+(e.shiftKey?(index>0?-1:0):(index<total?+1:total))).focus();
