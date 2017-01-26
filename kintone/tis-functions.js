@@ -97,11 +97,11 @@ jQuery.extend({
 	queries:function(){
 		var queries=[];
 		var hash=null;
-		var hashes=decodeURI(window.location.search).substring(1).split('&');
+		var hashes=window.location.search.substring(1).split('&');
 		for(var i=0;i<hashes.length;i++)
 		{
 			hash=hashes[i].split('=');
-			queries[hash[0]]=hash[1];
+			queries[hash[0]]=decodeURI(hash[1]);
 		}
 		return queries;
 	}

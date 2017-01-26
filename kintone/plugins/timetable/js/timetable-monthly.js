@@ -97,8 +97,8 @@ jQuery.noConflict();
 						.append($('<button class="customview-button time-button">').text('タイムテーブルを表示').on('click',function(){
 							var query='';
 							query+='view='+vars.config.datetimetable;
-							query+='&'+vars.config['date']+'='+day.format('Y-m-d');
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+encodeURI(query);
+							query+='&'+encodeURI(vars.config['date'])+'='+day.format('Y-m-d');
+							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
 						}))
 					);
 					switch ((index+1)%7)
