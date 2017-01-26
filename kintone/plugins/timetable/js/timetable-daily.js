@@ -274,7 +274,7 @@ jQuery.noConflict();
 				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
 				if (vars.config['segment'].length!=0)
 					query+='&'+vars.config['segment']+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(0).find('input#segment').val();
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
+				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+encodeURI(query);
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=edit';

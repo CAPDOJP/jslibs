@@ -294,7 +294,7 @@ jQuery.noConflict();
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});
-    $('button#cancel').click(function(){
+    $('button#cancel').on('click',function(e){
         history.back();
     });
 })(jQuery,kintone.$PLUGIN_ID);

@@ -150,7 +150,7 @@ jQuery.noConflict();
 						var query='';
 						query+='view='+vars.config.datetimetable;
 						query+='&'+vars.config['date']+'='+$(this).closest('th').find('p').text();
-						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+encodeURI(query);
 					}));
 					if (vars.config['segment'].length!=0)
 					{

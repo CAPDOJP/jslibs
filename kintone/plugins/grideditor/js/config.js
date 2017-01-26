@@ -106,4 +106,7 @@ jQuery.noConflict();
 			},function(error){});
 		},function(error){});
 	});
+    $('button#cancel').on('click',function(e){
+        history.back();
+    });
 })(jQuery,kintone.$PLUGIN_ID);

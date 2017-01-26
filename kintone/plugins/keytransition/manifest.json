@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone コントロール遷移キー追加プラグイン",
+        "ja":"kintone フィールド遷移キー追加プラグイン",
         "en":"kintone Key Transition plug-in",
-        "zh":"kintone コントロール遷移キー追加プラグイン"
+        "zh":"kintone フィールド遷移キー追加プラグイン"
     },
     "description":{
-        "ja":"エンターキー/矢印キー操作で入力コントロール間を移動するプラグインです。",
+        "ja":"エンターキー/上下矢印キー操作で入力フィールド間を移動させるプラグインです。",
         "en":"This plug-in to moves between input controls by key operation",
-        "zh":"エンターキー/矢印キー操作で入力コントロール間を移動するプラグインです。"
+        "zh":"エンターキー/上下矢印キー操作で入力フィールド間を移動させるプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -21,7 +21,6 @@
     "desktop":{
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery.inview.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "js/keytransition.js"
         ]

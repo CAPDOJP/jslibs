@@ -50,6 +50,14 @@
   border-left: 4px solid #989898;
 }
 
+/* 注意書き */
+/*
+<div class="kintoneplugin-caution">設定項目の注意書き</div>
+*/
+.kintoneplugin-caution {
+  color: #d80000;
+}
+
 /* 必須項目 */
 /*
 <div class="kintoneplugin-label">必須項目の見出し<span class="kintoneplugin-require">*</span></div>

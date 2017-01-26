@@ -98,7 +98,7 @@ jQuery.noConflict();
 							var query='';
 							query+='view='+vars.config.datetimetable;
 							query+='&'+vars.config['date']+'='+day.format('Y-m-d');
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+encodeURI(query);
 						}))
 					);
 					switch ((index+1)%7)
