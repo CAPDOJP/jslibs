@@ -101,7 +101,7 @@ jQuery.extend({
 		for(var i=0;i<hashes.length;i++)
 		{
 			hash=hashes[i].split('=');
-			queries[hash[0]]=decodeURI(hash[1]);
+			queries[hash[0]]=hash[1];
 		}
 		return queries;
 	}
