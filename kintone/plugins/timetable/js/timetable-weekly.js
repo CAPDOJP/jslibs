@@ -149,7 +149,7 @@ jQuery.noConflict();
 					vars.table.head.find('th').eq(i+1).append($('<button class="customview-button time-button">').text('タイムテーブルを表示').on('click',function(){
 						var query='';
 						query+='view='+vars.config.datetimetable;
-						query+='&'+encodeURI(vars.config['date'])+'='+$(this).closest('th').find('p').text();
+						query+='&'+vars.config['date']+'='+$(this).closest('th').find('p').text();
 						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
 					}));
 					if (vars.config['segment'].length!=0)

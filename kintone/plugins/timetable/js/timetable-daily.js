@@ -269,11 +269,11 @@ jQuery.noConflict();
 				var tohour=Math.floor(caller.cellindex(cell.parent(),cellto)/2);
 				var fromminute=(caller.cellindex(cell.parent(),cellfrom)-1)%2*30;
 				var tominute=caller.cellindex(cell.parent(),cellto)%2*30;
-				query+=encodeURI(vars.config['date'])+'='+vars.date.format('Y-m-d');
-				query+='&'+encodeURI(vars.config['fromtime'])+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
-				query+='&'+encodeURI(vars.config['totime'])+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
+				query+=vars.config['date']+'='+vars.date.format('Y-m-d');
+				query+='&'+vars.config['fromtime']+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
+				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
 				if (vars.config['segment'].length!=0)
-					query+='&'+encodeURI(vars.config['segment'])+'='+encodeURI(caller.contents.find('tr').eq(rowindex).find('td').eq(0).find('input#segment').val());
+					query+='&'+vars.config['segment']+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(0).find('input#segment').val();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
