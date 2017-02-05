@@ -1242,7 +1242,7 @@ jQuery.fn.refererAction = function(options){
 					if (options.search.callback!=null) options.search.callback(source);
 				});
 			//リスト操作
-			if (options.search.lists.length!=0) source.formAction({lists:options.lists});
+			if (options.lists.length!=0) source.formAction({lists:options.lists});
 			//データ決定時操作
 			source.on('click',options.rows,function(){
 				//値セット
