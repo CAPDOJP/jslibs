@@ -1222,9 +1222,9 @@ jQuery.fn.positionTop = function(parent){
 */
 jQuery.fn.refererAction = function(options){
 	var options=$.extend({
-		sources:[],
+		sources:null,
 		search:{
-			button:null,
+			button:'',
 			callback:null
 		},
 		rows:''
@@ -1236,7 +1236,7 @@ jQuery.fn.refererAction = function(options){
 		$.each(options.sources,function(index){
 			var source=$(this);
 			//ボタン操作
-			if (options.search.button!=null)
+			if (options.search.button.length!=0)
 				source.on('click',options.search.button,function(){
 					if (options.search.callback!=null) options.search.callback(source);
 				});
