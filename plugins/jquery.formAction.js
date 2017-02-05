@@ -1232,7 +1232,7 @@ jQuery.fn.refererAction = function(options){
 	return $(this).each(function(){
 		//要素チェック
 		if ($(this).find('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
-		var form=$(this).find('form');
+		var form=$(this);
 		$.each(options.sources,function(index){
 			var source=$(this);
 			//ボタン操作
@@ -1247,7 +1247,7 @@ jQuery.fn.refererAction = function(options){
 				var rowindex=$.data(source[0],'rowindex');
 				if (rowindex!=null)
 				{
-					$(this).closest('tr').find('input[type=hidden]').each(function(){
+					$(this).find('input[type=hidden]').each(function(){
 						if (table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
 							table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).text($(this).toVal());
 						if (table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
@@ -1260,7 +1260,7 @@ jQuery.fn.refererAction = function(options){
 				}
 				else
 				{
-					$(this).closest('tr').find('input[type=hidden]').each(function(){
+					$(this).find('input[type=hidden]').each(function(){
 						if (form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')).text($(this).toVal());
 						if (form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')).val($(this).toVal());
 					});
