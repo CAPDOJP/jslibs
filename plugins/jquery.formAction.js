@@ -1210,6 +1210,90 @@ jQuery.fn.positionTop = function(parent){
 }
 /*
 *--------------------------------------------------------------------
+* データ参照ウインドウ
+*--------------------------------------------------------------------
+* parameters
+* options @ title     :タイトルバー
+*         @ message   :メッセージブロック
+*         @ close     :Closeボタン
+*         @ ok        :OKボタン
+*         @ cancel    :キャンセルボタン
+* -------------------------------------------------------------------
+*/
+jQuery.fn.refererAction = function(options){
+	var options=$.extend({
+		sources:[],
+		search:{
+			button:null,
+			callback:null
+		},
+		rows:''
+	},options);
+	return $(this).each(function(){
+		//要素チェック
+		if ($(this).find('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
+		var form=$(this).find('form');
+		$.each(options.sources,function(index){
+			var source=$(this);
+			//ボタン操作
+			if (options.search.button!=null)
+				source.on('click',options.search.button,function(){
+					if (options.search.callback!=null) options.search.callback(source);
+				});
+			//データ決定時操作
+			source.on('click',options.rows,function(){
+				//値セット
+				var table=$.data(source[0],'table');
+				var rowindex=$.data(source[0],'rowindex');
+				if (rowindex!=null)
+				{
+					$(this).find('input[type=hidden]').each(function(){
+						if (table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
+							table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).text($(this).toVal());
+						if (table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
+							table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).val($(this).toVal());
+					});
+					//強制行追加
+					$.each(table.find('tbody').find('tr').eq(rowindex-1).find('input[type=text],textarea'),function(){
+						$(this).trigger('keyup');
+					});
+				}
+				else
+				{
+					$(this).find('input[type=hidden]').each(function(){
+						if (form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')).text($(this).toVal());
+						if (form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')).val($(this).toVal());
+					});
+				}
+				source.parents('div').last().hide();
+			});
+		});
+	});
+}
+jQuery.fn.refererShow = function(target,table,rowindex){
+	var form=$(this);
+	$.data(form[0],'table',table);
+	$.data(form[0],'rowindex',rowindex);
+	//クエリ生成
+	var query='';
+	$.each(form.find('input[id^=keys]'),function(){
+		var keys=$(this).attr('id').replace('keys','');
+		if (!$('input#'+keys,target)) return;
+		query+='&keys['+keys+']='+$('input#'+keys,target).toVal();
+	});
+	form.loaddatas({
+		url:form.attr('action')+query,
+		append:false,
+		callback:function(json){
+			//明細表示判定
+			if (json.detail[form.attr('id')].length==0) $('table#'+form.attr('id')).hide();
+			else $('table#'+form.attr('id')).show();
+			form.parents('div').last().show();
+		}
+	});
+}
+/*
+*--------------------------------------------------------------------
 * メッセージウインドウ
 *--------------------------------------------------------------------
 * parameters
