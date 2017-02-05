@@ -1227,6 +1227,7 @@ jQuery.fn.refererAction = function(options){
 			button:'',
 			callback:null
 		},
+		lists:{},
 		rows:''
 	},options);
 	return $(this).each(function(){
@@ -1240,6 +1241,8 @@ jQuery.fn.refererAction = function(options){
 				source.on('click',options.search.button,function(){
 					if (options.search.callback!=null) options.search.callback(source);
 				});
+			//リスト操作
+			if (options.search.lists.length!=0) source.formAction({lists:options.lists});
 			//データ決定時操作
 			source.on('click',options.rows,function(){
 				//値セット
