@@ -1228,7 +1228,10 @@ jQuery.fn.refererAction = function(options){
 			callback:null
 		},
 		lists:{},
-		rows:''
+		rows:{
+			row:'',
+			callback:null
+		}
 	},options);
 	return $(this).each(function(){
 		//要素チェック
@@ -1244,7 +1247,7 @@ jQuery.fn.refererAction = function(options){
 			//リスト操作
 			if (options.lists.length!=0) source.formAction({lists:options.lists});
 			//データ決定時操作
-			source.on('click',options.rows,function(){
+			source.on('click',options.rows.row,function(){
 				//値セット
 				var table=$.data(source[0],'table');
 				var rowindex=$.data(source[0],'rowindex');
@@ -1268,6 +1271,7 @@ jQuery.fn.refererAction = function(options){
 						if (form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')).val($(this).toVal());
 					});
 				}
+				if (options.rows.callback!=null) options.rows.callback(source);
 				source.parents('div').last().hide();
 			});
 		});
