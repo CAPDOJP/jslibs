@@ -1329,12 +1329,12 @@ jQuery.fn.messageWindow = function(options){
 		$.data(target[0],'cancel',options.cancel);
 	});
 }
-jQuery.fn.messageShow = function(title,message,confirm){
+jQuery.fn.messageShow = function(title,message,confirmcallback,okcallback){
 	var target=$(this);
 	var height=0;
 	if ($.data(target[0],'cancel'))
 	{
-		if (confirm!=null) $.data(target[0],'cancel').show();
+		if (confirmcallback!=null) $.data(target[0],'cancel').show();
 		else $.data(target[0],'cancel').hide();
 	}
 	if ($.data(target[0],'title')) $.data(target[0],'title').html(title);
@@ -1361,7 +1361,8 @@ jQuery.fn.messageShow = function(title,message,confirm){
 		$.data(target[0],'ok').on('click',function(){
 			$.data(target[0],'ok').off('click');
 	 		target.hide();
-			if (confirm!=null) confirm();
+			if (confirmcallback!=null) confirmcallback();
+			if (okcallback!=null) okcallback();
 	 	});
 }
 })(jQuery);
