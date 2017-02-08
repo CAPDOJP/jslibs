@@ -452,6 +452,7 @@ jQuery.fn.editortable = function(options){
 		initialimage:'',
 		delete:{
 			button:'',
+			silent:false,
 			resetoptions:{},
 			callback:null
 		},
@@ -467,7 +468,7 @@ jQuery.fn.editortable = function(options){
 		}
 		if (options.delete.button.length!=0)
 			table.on('click',options.delete.button,function(){
-				if (!confirm('削除します。\nよろしいですか？')) return;
+				if (!options.delete.silent) if (!confirm('削除します。\nよろしいですか？')) return;
 				var my=$(this).closest('table');
 				var row=$(this).closest('tr');
 				var rows=my.children('tbody').children('tr');
