@@ -121,6 +121,7 @@ jQuery.fn.formAction = function(options){
 			if (values.name.length==0) {alert('filesにはnameを指定して下さい。');return;}
 			//イベント追加
 			if (values.url.length!=0) form.on('change',key,function(){
+				$(this).off('change');
 				var target=$(this);
 				//ローディング表示
 				if ($('div#loading')!=null) $('div#loading').css('display','block');
