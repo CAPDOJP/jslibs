@@ -1351,11 +1351,13 @@ jQuery.fn.messageShow = function(title,message,confirmcallback,okcallback){
 	if ($.data(target[0],'close'))
 		$.data(target[0],'close').on('click',function(){
 			$.data(target[0],'close').off('click');
+			$.data(target[0],'ok').off('click');
 	 		target.hide();
 	 	});
 	if ($.data(target[0],'cancel'))
 		$.data(target[0],'cancel').on('click',function(){
 			$.data(target[0],'cancel').off('click');
+			$.data(target[0],'ok').off('click');
 	 		target.hide();
 	 	});
 	if ($.data(target[0],'ok'))
