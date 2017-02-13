@@ -144,10 +144,14 @@ jQuery.fn.formAction = function(options){
 						error:function(){
 							if (values.messagecallback!=null) values.messagecallback('エラー','データ送信に失敗しました。');
 							else alert('データ送信に失敗しました。');
+							//値初期化
+							target.replaceWith(target.clone());
 							//ローディング消去
 							if ($('div#loading')!=null) $('div#loading').css('display','none');
 						},
 						success:function(json){
+							//値初期化
+							target.replaceWith(target.clone());
 							if ('error' in json)
 								if (json.error.length!=0)
 								{
