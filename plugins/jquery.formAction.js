@@ -114,6 +114,7 @@ jQuery.fn.formAction = function(options){
 			var values=$.extend({
 				url:'',
 				name:'',
+				iscontinue:false,
 				callback:null,
 				messagecallback:null
 			},values);
@@ -172,7 +173,8 @@ jQuery.fn.formAction = function(options){
 								else values.callback(target,json.file[0]);
 							}
 							//ローディング消去
-							if ($('div#loading')!=null) $('div#loading').css('display','none');
+							if (!values.iscontinue)
+								if ($('div#loading')!=null) $('div#loading').css('display','none');
 						}
 					});
 				}
@@ -908,6 +910,7 @@ jQuery.fn.senddatas = function(options){
 		message:'',
 		silent:false,
 		empty:true,
+		iscontinue:false,
 		callback:null,
 		messagecallback:null
 	},options);
@@ -975,6 +978,9 @@ jQuery.fn.senddatas = function(options){
 			{
 				if (options.messagecallback!=null) options.messagecallback('エラー',error);
 				else alert(error);
+				//ローディング消去
+				if ($('div#loading')!=null) $('div#loading').css('display','none');
+				return;
 			}
 			else
 			{
@@ -990,7 +996,8 @@ jQuery.fn.senddatas = function(options){
 				if (options.callback!=null) options.callback(json);
 			}
 			//ローディング消去
-			if ($('div#loading')!=null) $('div#loading').css('display','none');
+			if (!options.iscontinue)
+				if ($('div#loading')!=null) $('div#loading').css('display','none');
 		}
 	});
 }

@@ -150,14 +150,14 @@ jQuery.noConflict();
 				to
 			);
 			/* cell value switching */
-			var inner='';
-			inner+='<p class="timetable-daily-merge-p">'+filter[vars.config['display']].value+'</p>';
+			var inner=$('<p>').addClass('timetable-daily-merge-p');
+			inner.html(filter[vars.config['display']].value);
+			row.find('td').eq(from).append(inner);
 			$.each(filter,function(key,values){
 				if (values!=null)
 					if (values.value!=null)
-						inner+='<input type="hidden" id="'+key+'" value="'+values.value+'" />';
+						row.find('td').eq(from).append($('<input type="hidden">').attr('id',key).val(values.value));
 			})
-			row.find('td').eq(from).html(inner);
 		},
 		/* reload view */
 		load:function(){
