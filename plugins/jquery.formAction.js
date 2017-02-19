@@ -84,7 +84,7 @@ jQuery.fn.formAction = function(options){
 		*/
 		$.each(options.buttons,function(key,values){
 			//イベント追加
-			if (values!=null) form.on('click',key,function(){values($(this));});
+			if (values!=null) form.on('click',key,function(e){values($(this),e);});
 		});
 		/*
 		*------------------------------------------------------------
