@@ -132,7 +132,7 @@ jQuery.fn.formAction = function(options){
 					//データセット
 					filedata = new FormData();
 					$.each(target.prop('files'),function(index,file){
-						filedata.append(values.name+'['+index+']',file);
+						if (file) filedata.append(values.name+'['+index+']',file);
 					});
 					if (filedata==null) return;
 					//送信
