@@ -129,7 +129,7 @@ jQuery.fn.formAction = function(options){
 				var filedata = null;
 				try
 				{
-					if (target.files.length==0)
+					if (target[0].files.length==0)
 					{
 						//値初期化
 						target.replaceWith(target.clone());
