@@ -129,12 +129,19 @@ jQuery.fn.formAction = function(options){
 				var filedata = null;
 				try
 				{
+					if (target.files.length==0)
+					{
+						//値初期化
+						target.replaceWith(target.clone());
+						//ローディング消去
+						if ($('div#loading')!=null) $('div#loading').css('display','none');
+						return;
+					}
 					//データセット
 					filedata = new FormData();
 					$.each(target.prop('files'),function(index,file){
-						if (file) filedata.append(values.name+'['+index+']',file);
+						filedata.append(values.name+'['+index+']',file);
 					});
-					if (filedata==null) return;
 					//送信
 					$.ajax({
 						url:values.url+values.name,
