@@ -134,6 +134,7 @@ jQuery.fn.formAction = function(options){
 					$.each(target.prop('files'),function(index,file){
 						filedata.append(values.name+'['+index+']',file);
 					});
+					if (filedata==null) return;
 					//送信
 					$.ajax({
 						url:values.url+values.name,
