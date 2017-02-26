@@ -209,7 +209,7 @@ jQuery.fn.imgSlider = function(options){
 				if (!capture) return;
 				target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(movePos,2))*((movePos<0)?-1:1)},350,'easeOutCirc');
 				capture=false;
-				$.data(target[0],'dragged',true);
+				$.data(target[0],'dragged',(movePos!=0));
 				e.preventDefault();
 			}
 		});
