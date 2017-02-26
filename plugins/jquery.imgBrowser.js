@@ -168,8 +168,10 @@ jQuery.fn.imgSlider = function(options){
 		var movePos=0;
 		var startLeft=0;
 		var startPos=0;
+		$.data(target[0],'dragged',false);
 		target.on({
 			'touchstart mousedown':function(e){
+				$.data(target[0],'dragged',false);
 				if ($(window).width()<options.limit) return;
 				startLeft=target.scrollLeft();
 				if (e.type=='touchstart')
@@ -186,6 +188,7 @@ jQuery.fn.imgSlider = function(options){
 				e.preventDefault();
 			},
 			'touchmove mousemove':function(e){
+				$.data(target[0],'dragged',true);
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				if (e.type=='touchmove')
@@ -201,7 +204,6 @@ jQuery.fn.imgSlider = function(options){
 					moveLeft=e.pageX;
 				}
 				e.preventDefault();
-				e.stopPropagation();
 			},
 			'touchend mouseup':function(e){
 				if ($(window).width()<options.limit) return;
@@ -209,7 +211,6 @@ jQuery.fn.imgSlider = function(options){
 				target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(movePos,2))*((movePos<0)?-1:1)},350,'easeOutCirc');
 				capture=false;
 				e.preventDefault();
-				e.stopPropagation();
 			}
 		});
 		/* スクロールバー表示判定 */
