@@ -184,6 +184,7 @@ jQuery.fn.imgSlider = function(options){
 					moveLeft=e.pageX;
 				}
 				capture=true;
+				movePos=0;
 				$.data(target[0],'dragged',false);
 				e.preventDefault();
 			},
