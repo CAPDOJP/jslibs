@@ -168,6 +168,7 @@ jQuery.fn.imgSlider = function(options){
 		var movePos=0;
 		var startLeft=0;
 		var startPos=0;
+		$.data(target[0],'dragging',false);
 		target.on({
 			'touchstart mousedown':function(e){
 				if ($(window).width()<options.limit) return;
@@ -200,6 +201,7 @@ jQuery.fn.imgSlider = function(options){
 					movePos=moveLeft-e.pageX;
 					moveLeft=e.pageX;
 				}
+				$.data(target[0],'dragging',true);
 				e.preventDefault();
 			},
 			'touchend mouseup':function(e){
@@ -207,6 +209,7 @@ jQuery.fn.imgSlider = function(options){
 				if (!capture) return;
 				target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(movePos,2))*((movePos<0)?-1:1)},350,'easeOutCirc');
 				capture=false;
+				$.data(target[0],'dragging',false);
 				e.preventDefault();
 			}
 		});
