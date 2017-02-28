@@ -25,7 +25,8 @@ jQuery.fn.formAction = function(options){
 		files:{},
 		lists:{},
 		pagers:{},
-		texts:{}
+		texts:{},
+		submit:null
 	},options);
 	//キー制御
 	$(document).on('keydown','input[type=text],input[type=password],select',function(e){
@@ -271,6 +272,12 @@ jQuery.fn.formAction = function(options){
 				form.on('blur',key,function(){if ($.data(this,'focus')!=$(this).val()) values($(this),'blur');});
 			}
 		});
+		/*
+		*------------------------------------------------------------
+		* サブミット操作(指定関数を実行)
+		*------------------------------------------------------------
+		*/
+		if (options.submit!=null) form.on('submit',function(){options.submit(form);return false;});
 	});
 }
 //行追加
