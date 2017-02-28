@@ -639,7 +639,7 @@ jQuery.fn.loaddatas = function(options){
 							{
 								var ahead=options.append;
 								var counter=0;
-								if (options.detailreset)
+								if (!options.detailreset)
 								{
 									var row=container.children('tbody').children('tr').last();
 									if (!row.isEmpty())
