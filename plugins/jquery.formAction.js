@@ -637,10 +637,28 @@ jQuery.fn.loaddatas = function(options){
 							//データセット
 							if (values.length!=0)
 							{
+								var counter=0;
+								if (options.detailreset)
+								{
+									var row=container.children('tbody').children('tr').last();
+									if (!row.isEmpty())
+									{
+										row.find('img,input,textarea,select,label,span').each(function(){
+											var index='0';
+											var target=$(this);
+											if (target.attr('id')!=null)
+											{
+												counter=target.attr('id').replace(/[^0-9]+/g,'');
+												return;
+											}
+										});
+									}
+									if (counter=='') counter=0;
+								}
 								for (var i=0;i<values.length;i++)
 								{
 									if (options.append) container.addrow({initialimage:options.initialimage});
-									attach(container,values[i],(i+1).toString());
+									attach(container,values[i],(i+counter+1).toString());
 									if (!options.append && i<values.length-1) container.addrow({initialimage:options.initialimage});
 								}
 							}
