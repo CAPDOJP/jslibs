@@ -563,6 +563,7 @@ jQuery.fn.loaddatas = function(options){
 		url:'',
 		append:true,
 		reset:true,
+		detailreset:true,
 		message:'',
 		silent:false,
 		initialimage:'',
@@ -625,7 +626,7 @@ jQuery.fn.loaddatas = function(options){
 						{
 							var container=form.find('table#'+key);
 							//明細初期化
-							if ($.inArray(key,inits)<0)
+							if (options.detailreset && $.inArray(key,inits)<0)
 							{
 								container.children('tbody').children('tr').each(function(index){
 									if (index==0) $(this).reset();
