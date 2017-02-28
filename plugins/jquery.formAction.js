@@ -637,6 +637,7 @@ jQuery.fn.loaddatas = function(options){
 							//データセット
 							if (values.length!=0)
 							{
+								var ahead=options.append;
 								var counter=0;
 								if (options.detailreset)
 								{
@@ -652,14 +653,15 @@ jQuery.fn.loaddatas = function(options){
 												return;
 											}
 										});
+										ahead=true;
 									}
 									if (counter=='') counter=0;
 								}
 								for (var i=0;i<values.length;i++)
 								{
-									if (options.append) container.addrow({initialimage:options.initialimage});
+									if (ahead) container.addrow({initialimage:options.initialimage});
 									attach(container,values[i],(i+counter+1).toString());
-									if (!options.append && i<values.length-1) container.addrow({initialimage:options.initialimage});
+									if (!ahead && i<values.length-1) container.addrow({initialimage:options.initialimage});
 								}
 							}
 						}
