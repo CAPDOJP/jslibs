@@ -1338,7 +1338,8 @@ jQuery.fn.messageWindow = function(options){
 		message:null,
 		close:null,
 		ok:null,
-		cancel:null
+		cancel:null,
+		extend:null
 	},options);
 	return $(this).each(function(){
 		var target=$(this);
@@ -1348,9 +1349,10 @@ jQuery.fn.messageWindow = function(options){
 		$.data(target[0],'close',options.close);
 		$.data(target[0],'ok',options.ok);
 		$.data(target[0],'cancel',options.cancel);
+		$.data(target[0],'extend',options.extend);
 	});
 }
-jQuery.fn.messageShow = function(title,message,confirmcallback,okcallback){
+jQuery.fn.messageShow = function(title,message,confirmcallback,okcallback,extend){
 	var target=$(this);
 	var height=0;
 	if ($.data(target[0],'cancel'))
@@ -1368,6 +1370,19 @@ jQuery.fn.messageShow = function(title,message,confirmcallback,okcallback){
 	height+=parseInt(target.children('div').css('padding-top'));
 	height+=parseInt(target.children('div').css('padding-bottom'));
 	target.children('div').height(height);
+	if ($.data(target[0],'extend'))
+	{
+		if (extend)
+		{
+			$.data(target[0],'ok').hide();
+			$.data(target[0],'extend').show();
+		}
+		else
+		{
+			$.data(target[0],'ok').show();
+			$.data(target[0],'extend').hide();
+		}
+	}
 	if ($.data(target[0],'close'))
 		$.data(target[0],'close').on('click',function(){
 			$.data(target[0],'close').off('click');
