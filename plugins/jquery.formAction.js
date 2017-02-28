@@ -653,7 +653,7 @@ jQuery.fn.loaddatas = function(options){
 										alert('detailreset設定時にはid属性を付与して下さい。');
 										return;
 									}
-									counter--;
+									if (!options.append) counter--;
 								}
 								for (var i=0;i<values.length;i++)
 								{
