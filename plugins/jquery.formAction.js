@@ -637,31 +637,29 @@ jQuery.fn.loaddatas = function(options){
 							//データセット
 							if (values.length!=0)
 							{
-								var ahead=options.append;
 								var counter=0;
 								if (!options.detailreset)
 								{
-									var row=container.children('tbody').children('tr').last();
-									if (!row.isEmpty())
+									container.children('tbody').children('tr').last().find('img,input,textarea,select,label,span').each(function(){
+										var target=$(this);
+										if (target.attr('id')!=null)
+										{
+											counter=target.attr('id').replace(/[^0-9]+/g,'');
+											if (counter!='') return;
+										}
+									});
+									if (counter=='')
 									{
-										row.find('img,input,textarea,select,label,span').each(function(){
-											var index='0';
-											var target=$(this);
-											if (target.attr('id')!=null)
-											{
-												counter=target.attr('id').replace(/[^0-9]+/g,'');
-												return;
-											}
-										});
-										ahead=true;
+										alert('detailreset設定時にはid属性を付与して下さい。');
+										return;
 									}
-									if (counter=='') counter=0;
+									if (!options.append) counter--;
 								}
 								for (var i=0;i<values.length;i++)
 								{
-									if (ahead) container.addrow({initialimage:options.initialimage});
+									if (options.append) container.addrow({initialimage:options.initialimage});
 									attach(container,values[i],(i+counter+1).toString());
-									if (!ahead && i<values.length-1) container.addrow({initialimage:options.initialimage});
+									if (!options.append && i<values.length-1) container.addrow({initialimage:options.initialimage});
 								}
 							}
 						}
