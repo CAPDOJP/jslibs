@@ -1317,7 +1317,7 @@ jQuery.fn.refererAction = function(options){
 		});
 	});
 }
-jQuery.fn.refererShow = function(target,table,rowindex){
+jQuery.fn.refererShow = function(target,table,rowindex,callback){
 	var form=$(this);
 	$.data(form[0],'table',table);
 	$.data(form[0],'rowindex',rowindex);
@@ -1336,6 +1336,7 @@ jQuery.fn.refererShow = function(target,table,rowindex){
 			if (json.detail[form.attr('id')].length==0) $('table#'+form.attr('id')).hide();
 			else $('table#'+form.attr('id')).show();
 			form.parents('div').last().show();
+			if (callback!=null) callback(json);
 		}
 	});
 }
