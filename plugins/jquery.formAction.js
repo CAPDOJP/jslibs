@@ -1335,8 +1335,8 @@ jQuery.fn.refererShow = function(target,table,rowindex,callback){
 			//明細表示判定
 			if (json.detail[form.attr('id')].length==0) $('table#'+form.attr('id')).hide();
 			else $('table#'+form.attr('id')).show();
-			form.parents('div').last().show();
 			if (callback!=null) callback(json);
+			form.parents('div').last().show();
 		}
 	});
 }
