@@ -490,6 +490,7 @@ jQuery.fn.editortable = function(options){
 				if (options.delete.callback!=null) options.delete.callback(row);
 				my.removerow({row:rows.index(row),resetoptions:options.resetoptions});
 				if (!my.children('tbody').children('tr').last().isEmpty()) my.addrow(options);
+				if (options.callback!=null) options.callback(my.children('tbody').children('tr').last());
 			});
 		table.on('keyup','input,select,textarea',function(){
 			var my=$(this).closest('table');
