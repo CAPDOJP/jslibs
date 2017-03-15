@@ -115,6 +115,7 @@ jQuery.fn.formAction = function(options){
 				url:'',
 				name:'',
 				iscontinue:false,
+				showdetailerror:false,
 				callback:null,
 				messagecallback:null
 			},values);
@@ -150,9 +151,17 @@ jQuery.fn.formAction = function(options){
 						processData:false,
 						contentType:false,
 						dataType:'json',
-						error:function(){
-							if (values.messagecallback!=null) values.messagecallback('エラー','アップロードに失敗しました。');
-							else alert('アップロードに失敗しました。');
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							var errormessage='アップロードに失敗しました。';
+							if (values.showdetailerror)
+							{
+								errormessage='';
+								errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
+								errormessage+='【textStatus】'+textStatus+' ';
+								errormessage+='【errorThrown】'+errorThrown.message;
+							}
+							if (values.messagecallback!=null) values.messagecallback('エラー',errormessage);
+							else alert(errormessage);
 							//値初期化
 							target.replaceWith(target.clone());
 							//ローディング消去
