@@ -151,8 +151,8 @@ jQuery.fn.formAction = function(options){
 						contentType:false,
 						dataType:'json',
 						error:function(){
-							if (values.messagecallback!=null) values.messagecallback('エラー','データ送信に失敗しました。');
-							else alert('データ送信に失敗しました。');
+							if (values.messagecallback!=null) values.messagecallback('エラー','アップロードに失敗しました。');
+							else alert('アップロードに失敗しました。');
 							//値初期化
 							target.replaceWith(target.clone());
 							//ローディング消去
