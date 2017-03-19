@@ -297,7 +297,7 @@ jQuery.fn.addrow = function(options){
 		//行追加
 		container.append(row);
 		//要素属性修正
-		container.children('tr').last().find('iframe,img,input,textarea,select,label,span').each(function(){
+		container.children('tr').last().find('iframe,img,input:not(:file),textarea,select,label,span').each(function(){
 			var index='0';
 			var target=$(this);
 			//ID修正
@@ -358,7 +358,7 @@ jQuery.fn.removerow = function(options){
 				//要素値移動
 				for (var i=options.row;i<container.children('tr').length-1;i++)
 				{
-					container.children('tr').eq(i).find('iframe,img,input,textarea,select,label,span,table').each(function(){
+					container.children('tr').eq(i).find('iframe,img,input:not(:file),textarea,select,label,span,table').each(function(){
 						var target=$(this);
 						if (target.attr('id')!=null)
 						{
@@ -379,8 +379,8 @@ jQuery.fn.removerow = function(options){
 									var fromelements=null;
 									var toelements=null;
 									totable.html(fromtable.html());
-									fromelements=fromtable.find('iframe,img,input,textarea,select,label,span');
-									toelements=totable.find('iframe,img,input,textarea,select,label,span');
+									fromelements=fromtable.find('iframe,img,input:not(:file),textarea,select,label,span');
+									toelements=totable.find('iframe,img,input:not(:file),textarea,select,label,span');
 									$.each(fromelements,function(index){
 										var target=$(this);
 										switch (target.prop('tagName').toLowerCase())
@@ -430,7 +430,7 @@ jQuery.fn.moverow = function(options){
 			if (container.children('tr').length!=1)
 			{
 				//要素値移動
-				container.children('tr').eq(options.row).find('iframe,img,input,textarea,select,label,span').each(function(){
+				container.children('tr').eq(options.row).find('iframe,img,input:not(:file),textarea,select,label,span').each(function(){
 					var target=$(this);
 					if (target.attr('id')!=null)
 					{
@@ -450,7 +450,7 @@ jQuery.fn.moverow = function(options){
 						}
 					}
 				});
-				container.children('tr').eq(options.row+moveto).find('iframe,img,input,textarea,select,label,span').each(function(){
+				container.children('tr').eq(options.row+moveto).find('iframe,img,input:not(:file),textarea,select,label,span').each(function(){
 					var target=$(this);
 					if (target.attr('id')!=null)
 					{
