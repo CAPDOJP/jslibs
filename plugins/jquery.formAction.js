@@ -285,6 +285,7 @@ jQuery.fn.formAction = function(options){
 //行追加
 jQuery.fn.addrow = function(options){
 	var options=$.extend({
+		initialframe:'',
 		initialimage:''
 	},options);
 	return $(this).each(function(){
@@ -296,7 +297,7 @@ jQuery.fn.addrow = function(options){
 		//行追加
 		container.append(row);
 		//要素属性修正
-		container.children('tr').last().find('img,input,textarea,select,label,span').each(function(){
+		container.children('tr').last().find('iframe,img,input,textarea,select,label,span').each(function(){
 			var index='0';
 			var target=$(this);
 			//ID修正
@@ -308,6 +309,9 @@ jQuery.fn.addrow = function(options){
 			//個別対応
 			switch (target.prop('tagName').toLowerCase())
 			{
+				case 'iframe':
+					if (options.initialframe.length!=0) target.attr('src',options.initialframe);
+					break;
 				case 'img':
 					if (options.initialimage.length!=0) target.attr('src',options.initialimage);
 					break;
@@ -354,12 +358,13 @@ jQuery.fn.removerow = function(options){
 				//要素値移動
 				for (var i=options.row;i<container.children('tr').length-1;i++)
 				{
-					container.children('tr').eq(i).find('img,input,textarea,select,label,span,table').each(function(){
+					container.children('tr').eq(i).find('iframe,img,input,textarea,select,label,span,table').each(function(){
 						var target=$(this);
 						if (target.attr('id')!=null)
 						{
 							switch (target.prop('tagName').toLowerCase())
 							{
+								case 'iframe':
 								case 'img':
 									target.attr('src',container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').attr('src'));
 									break;
@@ -374,12 +379,13 @@ jQuery.fn.removerow = function(options){
 									var fromelements=null;
 									var toelements=null;
 									totable.html(fromtable.html());
-									fromelements=fromtable.find('img,input,textarea,select,label,span');
-									toelements=totable.find('img,input,textarea,select,label,span');
+									fromelements=fromtable.find('iframe,img,input,textarea,select,label,span');
+									toelements=totable.find('iframe,img,input,textarea,select,label,span');
 									$.each(fromelements,function(index){
 										var target=$(this);
 										switch (target.prop('tagName').toLowerCase())
 										{
+											case 'iframe':
 											case 'img':
 												toelements.eq(index).attr('src',fromelements.eq(index).attr('src'));
 												break;
@@ -424,12 +430,13 @@ jQuery.fn.moverow = function(options){
 			if (container.children('tr').length!=1)
 			{
 				//要素値移動
-				container.children('tr').eq(options.row).find('img,input,textarea,select,label,span').each(function(){
+				container.children('tr').eq(options.row).find('iframe,img,input,textarea,select,label,span').each(function(){
 					var target=$(this);
 					if (target.attr('id')!=null)
 					{
 						switch (target.prop('tagName').toLowerCase())
 						{
+							case 'iframe':
 							case 'img':
 								target.attr('src',container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').attr('src'));
 								break;
@@ -443,12 +450,13 @@ jQuery.fn.moverow = function(options){
 						}
 					}
 				});
-				container.children('tr').eq(options.row+moveto).find('img,input,textarea,select,label,span').each(function(){
+				container.children('tr').eq(options.row+moveto).find('iframe,img,input,textarea,select,label,span').each(function(){
 					var target=$(this);
 					if (target.attr('id')!=null)
 					{
 						switch (target.prop('tagName').toLowerCase())
 						{
+							case 'iframe':
 							case 'img':
 								target.attr('src',movefrom.find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').attr('src'));
 								break;
