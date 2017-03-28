@@ -173,7 +173,7 @@ jQuery.fn.imgSlider = function(options){
 		var scrollbar=$('<div>').css({
 			'background-color':'rgba(0,0,0,0.75)',
 			'border-radius':'5px',
-			'bottom':'5px',
+			'bottom':'3px',
 			'height':'10px',
 			'left':'0px',
 			'margin':'0px',
@@ -222,7 +222,7 @@ jQuery.fn.imgSlider = function(options){
 				/* スクロールバー位置初期化 */
 				scrollPos=scrollbar[0].getBoundingClientRect();
 				scrollbar.css({
-					'bottom':'5px',
+					'bottom':'3px',
 					'left':(scrollPos.left+target.scrollLeft()).toString()+'px',
 					'top':'auto',
 					'position':'absolute'
