@@ -230,8 +230,7 @@ jQuery.fn.imgSlider = function(options){
 				/* キャプチャ終了 */
 				capture=false;
 				/* スクロールバー非表示 */
-				if (!$(':hover').has(scrollbar)) scrollbar.fadeOut('slow');
-				/* if (!scrollbar.positionContains(e.clientX,e.clientX)) scrollbar.fadeOut('slow'); */
+				if (!target.positionContains(e.clientX,e.clientX)) scrollbar.fadeOut('slow');
 				e.preventDefault();
 				e.stopPropagation();
 			}
