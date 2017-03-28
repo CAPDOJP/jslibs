@@ -164,58 +164,69 @@ jQuery.fn.imgSlider = function(options){
 	return $(this).each(function(){
 		var target=$(this);
 		var capture=false;
-		var moveLeft=0;
-		var movePos=0;
-		var startLeft=0;
-		var startPos=0;
-		$.data(target[0],'dragged',false);
-		target.on({
-			'touchstart mousedown':function(e){
+		var ratio=0;
+		var targetLeft=0;
+		var scrollLeft=0;
+		var scrollPos=0;
+		var scrollbar=$('<div>').css({
+			'background-color':'rgba(0,0,0,0.75)',
+			'border-radius':'5px',
+			'bottom':'0px',
+			'height':'10px',
+			'left':'0px',
+			'margin':'0px',
+			'padding':'0px',
+			'position':'fixed',
+			'width':'100%',
+			'z-index':'9999'
+		})
+		.on({
+			'mousedown':function(e){
 				if ($(window).width()<options.limit) return;
-				startLeft=target.scrollLeft();
-				if (e.type=='touchstart')
-				{
-					startPos=e.originalEvent.touches[0].pageX;
-					moveLeft=e.originalEvent.touches[0].pageX;
-				}
-				else
-				{
-					startPos=e.pageX;
-					moveLeft=e.pageX;
-				}
+				targetLeft=target.scrollLeft();
+				scrollLeft=scrollbar.offset().left;
+				scrollPos=e.pageX;
 				capture=true;
-				movePos=0;
-				$.data(target[0],'dragged',false);
 				e.preventDefault();
+				e.stopPropagation();
 			},
-			'touchmove mousemove':function(e){
+			'mousemove':function(e){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
-				if (e.type=='touchmove')
-				{
-					target.scrollLeft(startLeft+startPos-e.originalEvent.touches[0].pageX);
-					movePos=moveLeft-e.originalEvent.touches[0].pageX;
-					moveLeft=e.originalEvent.touches[0].pageX;
-				}
-				else
-				{
-					target.scrollLeft(startLeft+startPos-e.pageX);
-					movePos=moveLeft-e.pageX;
-					moveLeft=e.pageX;
-				}
+				scrollLeft+=(e.pageX-scrollPos);
+				if (scrollLeft<0) scrollLeft=0;
+				if (scrollLeft>$(window).width()-scrollbar.outerWidth(true)) scrollLeft=$(window).width()-scrollbar.outerWidth(true);
+				scrollbar.css({'left':scrollLeft.toString()+'px'});
+				target.scrollLeft(targetLeft+(e.pageX-scrollPos)/ratio);
 				e.preventDefault();
+				e.stopPropagation();
 			},
-			'touchend mouseup':function(e){
+			'mouseup':function(e){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
-				target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(movePos,2))*((movePos<0)?-1:1)},350,'easeOutCirc');
 				capture=false;
-				$.data(target[0],'dragged',(movePos!=0));
 				e.preventDefault();
+				e.stopPropagation();
+			}
+		}).hide();
+		target.on({
+			'mouseenter':function(){
+				if (ratio>1) return;
+				scrollbar.show('slow'); 
+			},
+			'mouseleave':function(){
+			   scrollbar.hide('slow'); 
 			}
 		});
+		/* スクロールバー配置 */
+		$('body').append(scrollbar);
 		/* スクロールバー表示判定 */
-		$(window).on('load resize',function(){
+		$(window).on('load resize scroll',function(){
+			ratio=$(window).width()/target.outerWidth(false);
+			scrollbar.css({
+				'bottom':(target.offset().top+target.outerHeight(true)-5).toString()+'px',
+				'width':($(window).width()*ratio).toString()+'px'
+			});
 			if ($(window).width()<options.limit)
 			{
 				target.css({
