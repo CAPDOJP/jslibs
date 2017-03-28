@@ -159,100 +159,70 @@ jQuery.fn.imgBrowser = function(options){
 */
 jQuery.fn.imgSlider = function(options){
 	var options=$.extend({
-		limit:0
+		limit:0,
+		type:'drag'
 	},options);
 	return $(this).each(function(){
 		var target=$(this);
 		var capture=false;
-		var ratio=0;
-		var rect=null;
-		var scrollPos=null;
-		var targetPos=0;
-		var mousedownPos=0;
-		var mousemovePos=0;
-		var scrollbar=$('<div>').css({
-			'background-color':'rgba(0,0,0,0.75)',
-			'border-radius':'5px',
-			'bottom':'3px',
-			'height':'10px',
-			'left':'0px',
-			'margin':'0px',
-			'padding':'0px',
-			'position':'absolute',
-			'transition':'none',
-			'width':'100%',
-			'z-index':'9999999'
-		})
-		.on('mousedown',function(e){
-			if ($(window).width()<options.limit) return;
-			/* スクロールバーキャプチャ */
-			scrollPos=scrollbar[0].getBoundingClientRect();
-			scrollbar.css({
-				'bottom':'auto',
-				'left':scrollPos.left.toString()+'px',
-				'top':scrollPos.top.toString()+'px',
-				'position':'fixed'
-			});
-			/* コンテナスクロール位置保持 */
-			targetPos=target.scrollLeft();
-			/* ドラッグ開始位置保持 */
-			mousedownPos=e.clientX;
-			/* キャプチャ開始 */
-			capture=true;
-			e.preventDefault();
-			e.stopPropagation();
-		}).hide();
-		$(window).on({
-			'mousemove':function(e){
-				if ($(window).width()<options.limit) return;
-				if (!capture) return;
-				/* スクロールバー移動 */
-				mousemovePos=scrollPos.left+(e.clientX-mousedownPos);
-				if (mousemovePos<0) mousemovePos=0;
-				if (mousemovePos>$(window).width()-scrollbar.outerWidth(true)) mousemovePos=$(window).width()-scrollbar.outerWidth(true);
-				scrollbar.css({'left':mousemovePos.toString()+'px'});
-				/* コンテナ移動 */
-				target.scrollLeft(targetPos+(e.clientX-mousedownPos)/ratio);
-				e.preventDefault();
-				e.stopPropagation();
+		var targetvalues={
+			mousedown:{
+				left:0
 			},
-			'mouseup':function(e){
+			mousemove:{
+				amount:0,
+				left:0,
+				start:0
+			}
+		};
+		$.data(target[0],'dragged',false);
+		target.on({
+			'touchstart mousedown':function(e){
+				if ($(window).width()<options.limit) return;
+				targetvalues.mousedown.left=target.scrollLeft();
+				if (e.type=='touchstart')
+				{
+					targetvalues.mousemove.start=e.originalEvent.touches[0].pageX;
+					targetvalues.mousemove.left=e.originalEvent.touches[0].pageX;
+				}
+				else
+				{
+					targetvalues.mousemove.start=e.pageX;
+					targetvalues.mousemove.left=e.pageX;
+				}
+				capture=true;
+				targetvalues.mousemove.amount=0;
+				$.data(target[0],'dragged',false);
+				e.preventDefault();
+			},
+			'touchmove mousemove':function(e){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
-				/* スクロールバー位置初期化 */
-				scrollPos=scrollbar[0].getBoundingClientRect();
-				scrollbar.css({
-					'bottom':'3px',
-					'left':(scrollPos.left+target.scrollLeft()).toString()+'px',
-					'top':'auto',
-					'position':'absolute'
-				});
-				/* キャプチャ終了 */
-				capture=false;
-				/* スクロールバー非表示 */
-				scrollbar.fadeOut();
+				if (e.type=='touchmove')
+				{
+					target.scrollLeft(targetvalues.mousedown.left+targetvalues.mousemove.start-e.originalEvent.touches[0].pageX);
+					targetvalues.mousemove.amount=targetvalues.mousemove.left-e.originalEvent.touches[0].pageX;
+					targetvalues.mousemove.left=e.originalEvent.touches[0].pageX;
+				}
+				else
+				{
+					target.scrollLeft(targetvalues.mousedown.left+targetvalues.mousemove.start-e.pageX);
+					targetvalues.mousemove.amount=targetvalues.mousemove.left-e.pageX;
+					targetvalues.mousemove.left=e.pageX;
+				}
 				e.preventDefault();
-				e.stopPropagation();
+			},
+			'touchend mouseup':function(e){
+				if ($(window).width()<options.limit) return;
+				if (!capture) return;
+				target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(targetvalues.mousemove.amount,2))*((targetvalues.mousemove.amount<0)?-1:1)},350,'easeOutCirc');
+				capture=false;
+				$.data(target[0],'dragged',(targetvalues.mousemove.amount!=0));
+				e.preventDefault();
 			}
 		});
-		/* スクロールバー配置 */
-		target.on({
-			'mousemove':function(){
-				if ($(window).width()<options.limit) return;
-				if (ratio>=1) return;
-				/* スクロールバー表示 */
-				if (!scrollbar.is(':visible')) scrollbar.fadeIn();
-			},
-			'mouseleave':function(){
-				if (capture) return;
-				/* スクロールバー非表示 */
-				scrollbar.fadeOut();
-			}
-		}).append(scrollbar);
 		/* スクロールバー表示判定 */
-		$(window).on('load resize scroll',function(){
-			ratio=$(window).width()/target[0].scrollWidth;
-			scrollbar.css({'width':($(window).width()*ratio).toString()+'px'});
+		$(window).on('load resize',function(){
 			if ($(window).width()<options.limit)
 			{
 				target.css({
