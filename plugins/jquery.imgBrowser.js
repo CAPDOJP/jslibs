@@ -189,7 +189,7 @@ jQuery.fn.imgSlider = function(options){
 			scrollPos=scrollbar[0].getBoundingClientRect();
 			scrollbar.css({
 				'bottom':'auto',
-				'left':scrollPos.left.toString()+'px',
+				'left':scrollbar.offset().left.toString()+'px',
 				'top':scrollPos.top.toString()+'px',
 				'position':'fixed'
 			});
@@ -223,7 +223,7 @@ jQuery.fn.imgSlider = function(options){
 				scrollPos=scrollbar[0].getBoundingClientRect();
 				scrollbar.css({
 					'bottom':'3px',
-					'left':(scrollPos.left+target.scrollLeft()).toString()+'px',
+					'left':(scrollbar.offset().left+target.scrollLeft()).toString()+'px',
 					'top':'auto',
 					'position':'absolute'
 				});
