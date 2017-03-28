@@ -230,7 +230,7 @@ jQuery.fn.imgSlider = function(options){
 				/* キャプチャ終了 */
 				capture=false;
 				/* スクロールバー非表示 */
-				scrollbar.fadeOut('slow');
+				scrollbar.fadeOut();
 				e.preventDefault();
 				e.stopPropagation();
 			}
@@ -241,12 +241,12 @@ jQuery.fn.imgSlider = function(options){
 				if ($(window).width()<options.limit) return;
 				if (ratio>=1) return;
 				/* スクロールバー表示 */
-				if (!scrollbar.is(':visible')) scrollbar.fadeIn('slow');
+				if (!scrollbar.is(':visible')) scrollbar.fadeIn();
 			},
 			'mouseleave':function(){
 				if (capture) return;
 				/* スクロールバー非表示 */
-				scrollbar.fadeOut('slow');
+				scrollbar.fadeOut();
 			}
 		}).append(scrollbar);
 		/* スクロールバー表示判定 */
