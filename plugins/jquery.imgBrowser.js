@@ -241,7 +241,7 @@ jQuery.fn.imgSlider = function(options){
 				if ($(window).width()<options.limit) return;
 				if (ratio>=1) return;
 				/* スクロールバー表示 */
-				if (scrollbar.is(':visible')) scrollbar.fadeIn('slow');
+				if (!scrollbar.is(':visible')) scrollbar.fadeIn('slow');
 			},
 			'mouseleave':function(){
 				if (capture) return;
