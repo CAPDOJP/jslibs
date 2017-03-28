@@ -165,9 +165,10 @@ jQuery.fn.imgSlider = function(options){
 		var target=$(this);
 		var capture=false;
 		var ratio=0;
-		var targetLeft=0;
-		var scrollLeft=0;
-		var scrollPos=0;
+		var targetStart=0;
+		var scrollStart=0;
+		var mousedownPos=0;
+		var mousemovePos=0;
 		var scrollbar=$('<div>').css({
 			'background-color':'rgba(0,0,0,0.75)',
 			'border-radius':'5px',
@@ -183,9 +184,9 @@ jQuery.fn.imgSlider = function(options){
 		.on({
 			'mousedown':function(e){
 				if ($(window).width()<options.limit) return;
-				targetLeft=target.scrollLeft();
-				scrollLeft=scrollbar.offset().left;
-				scrollPos=e.pageX;
+				targetStart=target.scrollLeft();
+				scrollStart=parseInt(scrollbar.css('left'));
+				mousedownPos=e.pageX;
 				capture=true;
 				e.preventDefault();
 				e.stopPropagation();
@@ -193,11 +194,11 @@ jQuery.fn.imgSlider = function(options){
 			'mousemove':function(e){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
-				scrollLeft+=(e.pageX-scrollPos);
-				if (scrollLeft<0) scrollLeft=0;
-				if (scrollLeft>$(window).width()-scrollbar.outerWidth(true)) scrollLeft=$(window).width()-scrollbar.outerWidth(true);
-				scrollbar.css({'left':scrollLeft.toString()+'px'});
-				target.scrollLeft(targetLeft+(e.pageX-scrollPos)/ratio);
+				mousemovePos=scrollStart+(e.pageX-mousedownPos);
+				if (mousemovePos<0) mousemovePos=0;
+				if (mousemovePos>$(window).width()-scrollbar.outerWidth(true)) mousemovePos=$(window).width()-scrollbar.outerWidth(true);
+				scrollbar.css({'left':mousemovePos.toString()+'px'});
+				target.scrollLeft(targetStart+(e.pageX-mousedownPos)/ratio);
 				e.preventDefault();
 				e.stopPropagation();
 			},
