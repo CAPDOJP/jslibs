@@ -230,18 +230,18 @@ jQuery.fn.imgSlider = function(options){
 				/* キャプチャ終了 */
 				capture=false;
 				/* スクロールバー非表示 */
-				scrollbar.fadeOut('slow');
+				if (!scrollbar.is(':hover')) scrollbar.fadeOut('slow');
 				e.preventDefault();
 				e.stopPropagation();
 			}
 		});
 		/* スクロールバー配置 */
 		target.on({
-			'mouseover':function(){
+			'mouseenter':function(){
 				if ($(window).width()<options.limit) return;
 				if (ratio>=1) return;
 				/* スクロールバー表示 */
-				if (!scrollbar.is(':visible')) scrollbar.fadeIn('slow');
+				scrollbar.fadeIn('slow');
 			},
 			'mouseleave':function(){
 				if (capture) return;
