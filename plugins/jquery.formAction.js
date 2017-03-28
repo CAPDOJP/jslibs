@@ -1241,10 +1241,11 @@ jQuery.fn.toQuery = function(){
 * 相対位置取得
 * -------------------------------------------------------------------
 */
-jQuery.fn.positionLeft = function(parent){
+jQuery.fn.positionLeft = function(){
+	var target=$(this);
 	return target[0].getBoundingClientRect().left;
 }
-jQuery.fn.positionTop = function(parent){
+jQuery.fn.positionTop = function(){
 	var target=$(this);
 	return target[0].getBoundingClientRect().top;
 }
