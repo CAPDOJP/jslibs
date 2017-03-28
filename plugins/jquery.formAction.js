@@ -1267,6 +1267,15 @@ jQuery.fn.positionTop = function(parent){
 	pos+=target.parent().scrollTop();
 	return pos;
 }
+jQuery.fn.positionContains = function(x,y){
+	var target=$(this);
+	var rect=target.getBoundingClientRect();
+	var left=rect.left;
+	var right=rect.left+rect.width;
+	var top=rect.top;
+	var bottom=rect.top+rect.height;
+	return (x>left && x<right && y>top && y<bottom);
+}
 /*
 *--------------------------------------------------------------------
 * データ参照ウインドウ
