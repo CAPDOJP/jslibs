@@ -207,7 +207,7 @@ jQuery.fn.imgSlider = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				/* スクロールバー移動 */
-				mousemovePos=scrollPos.left+(e.clientX-mousedownPos);
+				mousemovePos=scrollPos+(e.clientX-mousedownPos);
 				if (mousemovePos<0) mousemovePos=0;
 				if (mousemovePos>$(window).width()-scrollbar.outerWidth(true)) mousemovePos=$(window).width()-scrollbar.outerWidth(true);
 				scrollbar.css({'left':mousemovePos.toString()+'px'});
