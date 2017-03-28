@@ -694,7 +694,8 @@ jQuery.fn.loaddatas = function(options){
 			});
 			if (options.callback!=null) options.callback(json);
 			//ローディング消去
-			if ($('div#loading')!=null) $('div#loading').css('display','none');
+			if (!options.silent)
+				if ($('div#loading')!=null) $('div#loading').css('display','none');
 		}
 	});
 	function attach(container,json,index)
