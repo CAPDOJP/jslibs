@@ -164,74 +164,58 @@ jQuery.fn.imgSlider = function(options){
 	return $(this).each(function(){
 		var target=$(this);
 		var capture=false;
-		var ratio=0;
-		var rect=null;
-		var targetStart=0;
-		var scrollStart=0;
-		var mousedownPos=0;
-		var mousemovePos=0;
-		var scrollbar=$('<div>').css({
-			'background-color':'rgba(0,0,0,0.75)',
-			'border-radius':'5px',
-			'bottom':'0px',
-			'height':'10px',
-			'left':'0px',
-			'margin':'0px',
-			'padding':'0px',
-			'position':'fixed',
-			'width':'100%',
-			'z-index':'9999'
-		})
-		.on({
-			'mousedown':function(e){
-				if ($(window).width()<options.limit) return;
-				targetStart=target.scrollLeft();
-				scrollStart=parseInt(scrollbar.css('left'));
-				mousedownPos=e.clientX;
-				capture=true;
-				e.preventDefault();
-				e.stopPropagation();
-			},
-			'mousemove':function(e){
-				if ($(window).width()<options.limit) return;
-				if (!capture) return;
-				mousemovePos=scrollStart+(e.clientX-mousedownPos);
-				if (mousemovePos<0) mousemovePos=0;
-				if (mousemovePos>$(window).width()-scrollbar.outerWidth(true)) mousemovePos=$(window).width()-scrollbar.outerWidth(true);
-				scrollbar.css({'left':mousemovePos.toString()+'px'});
-				target.scrollLeft(targetStart+(e.clientX-mousedownPos)/ratio);
-				e.preventDefault();
-				e.stopPropagation();
-			},
-			'mouseup':function(e){
-				if ($(window).width()<options.limit) return;
-				if (!capture) return;
-				capture=false;
-				e.preventDefault();
-				e.stopPropagation();
-			}
-		}).hide();
-		/* スクロールバー配置 */
+		var moveLeft=0;
+		var movePos=0;
+		var startLeft=0;
+		var startPos=0;
+		$.data(target[0],'dragged',false);
 		target.on({
-			'mouseenter':function(){
-				if (ratio>1) return;
-				scrollbar.show('slow'); 
+			'touchstart mousedown':function(e){
+				if ($(window).width()<options.limit) return;
+				startLeft=target.scrollLeft();
+				if (e.type=='touchstart')
+				{
+					startPos=e.originalEvent.touches[0].pageX;
+					moveLeft=e.originalEvent.touches[0].pageX;
+				}
+				else
+				{
+					startPos=e.pageX;
+					moveLeft=e.pageX;
+				}
+				capture=true;
+				movePos=0;
+				$.data(target[0],'dragged',false);
+				e.preventDefault();
 			},
-			'mouseleave':function(){
+			'touchmove mousemove':function(e){
+				if ($(window).width()<options.limit) return;
+				if (!capture) return;
+				if (e.type=='touchmove')
+				{
+					target.scrollLeft(startLeft+startPos-e.originalEvent.touches[0].pageX);
+					movePos=moveLeft-e.originalEvent.touches[0].pageX;
+					moveLeft=e.originalEvent.touches[0].pageX;
+				}
+				else
+				{
+					target.scrollLeft(startLeft+startPos-e.pageX);
+					movePos=moveLeft-e.pageX;
+					moveLeft=e.pageX;
+				}
+				e.preventDefault();
+			},
+			'touchend mouseup':function(e){
+				if ($(window).width()<options.limit) return;
+				if (!capture) return;
+				target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(movePos,2))*((movePos<0)?-1:1)},350,'easeOutCirc');
 				capture=false;
-				scrollbar.hide('slow'); 
+				$.data(target[0],'dragged',(movePos!=0));
+				e.preventDefault();
 			}
-		}).append(scrollbar);
+		});
 		/* スクロールバー表示判定 */
-			rect=target[0].getBoundingClientRect();
-		alert(rect.top+rect.height+window.pageYOffset);
-		$(window).on('load resize scroll',function(){
-			ratio=$(window).width()/target[0].scrollWidth;
-			rect=target[0].getBoundingClientRect();
-			scrollbar.css({
-				'bottom':(rect.top+rect.height+window.pageYOffset-5).toString()+'px',
-				'width':($(window).width()*ratio).toString()+'px'
-			});
+		$(window).on('load resize',function(){
 			if ($(window).width()<options.limit)
 			{
 				target.css({
