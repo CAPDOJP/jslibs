@@ -186,11 +186,11 @@ jQuery.fn.imgSlider = function(options){
 		.on('mousedown',function(e){
 			if ($(window).width()<options.limit) return;
 			/* スクロールバーキャプチャ */
-			scrollPos=scrollbar.offset().left;
+			scrollPos=scrollbar[0].getBoundingClientRect();
 			scrollbar.css({
 				'bottom':'auto',
-				'left':scrollbar.offset().left.toString()+'px',
-				'top':scrollbar.offset().top.toString()+'px',
+				'left':scrollPos.left.toString()+'px',
+				'top':scrollPos.top.toString()+'px',
 				'position':'fixed'
 			});
 			/* コンテナスクロール位置保持 */
@@ -207,7 +207,7 @@ jQuery.fn.imgSlider = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				/* スクロールバー移動 */
-				mousemovePos=scrollPos+(e.clientX-mousedownPos);
+				mousemovePos=scrollPos.left+(e.clientX-mousedownPos);
 				if (mousemovePos<0) mousemovePos=0;
 				if (mousemovePos>$(window).width()-scrollbar.outerWidth(true)) mousemovePos=$(window).width()-scrollbar.outerWidth(true);
 				scrollbar.css({'left':mousemovePos.toString()+'px'});
@@ -220,9 +220,10 @@ jQuery.fn.imgSlider = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				/* スクロールバー位置初期化 */
+				scrollPos=scrollbar[0].getBoundingClientRect();
 				scrollbar.css({
 					'bottom':'3px',
-					'left':(scrollbar.offset().left+target.scrollLeft()).toString()+'px',
+					'left':(scrollPos.left+target.scrollLeft()).toString()+'px',
 					'top':'auto',
 					'position':'absolute'
 				});
