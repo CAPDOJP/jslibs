@@ -1243,25 +1243,11 @@ jQuery.fn.toQuery = function(){
 */
 jQuery.fn.positionLeft = function(parent){
 	var target=$(this);
-	var pos=0;
-	while (parent[0]!=target.parent()[0])
-	{
-		pos+=target.position().left;
-		target=target.parent();
-	}
-	pos+=target.position().left;
-	return pos;
+	return window.pageXOffset+target[0].left;
 }
-jQuery.fn.positionTop = function(parent){
+jQuery.fn.positionTop = function(){
 	var target=$(this);
-	var pos=0;
-	while (parent[0]!=target.parent()[0])
-	{
-		pos+=target.position().top;
-		target=target.parent();
-	}
-	pos+=target.position().top;
-	return pos;
+	return window.pageYOffset+target[0].top;
 }
 /*
 *--------------------------------------------------------------------
