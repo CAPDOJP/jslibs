@@ -221,7 +221,7 @@ jQuery.fn.imgSlider = function(options){
 		}).append(scrollbar);
 		/* スクロールバー表示判定 */
 		$(window).on('load resize scroll',function(){
-			ratio=$(window).width()/target.outerWidth(false);
+			ratio=$(window).width()/target[0].scrollWidth;
 			scrollbar.css({
 				'bottom':(target.positionTop($('body'))+target.outerHeight(false)-5).toString()+'px',
 				'width':($(window).width()*ratio).toString()+'px'
