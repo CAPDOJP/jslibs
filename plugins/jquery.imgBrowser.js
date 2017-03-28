@@ -236,11 +236,18 @@ jQuery.fn.imgSlider = function(options){
 			}
 		});
 		/* スクロールバー配置 */
-		target.on('mouseenter',function(){
-			if ($(window).width()<options.limit) return;
-			if (ratio>=1) return;
-			/* スクロールバー表示 */
-			scrollbar.fadeIn('slow');
+		target.on({
+			'mouseenter':function(){
+				if ($(window).width()<options.limit) return;
+				if (ratio>=1) return;
+				/* スクロールバー表示 */
+				scrollbar.fadeIn('slow');
+			},
+			'mouseleave':function(){
+				if (capture) return;
+				/* スクロールバー非表示 */
+				scrollbar.fadeOut('slow');
+			}
 		}).append(scrollbar);
 		/* スクロールバー表示判定 */
 		$(window).on('load resize scroll',function(){
