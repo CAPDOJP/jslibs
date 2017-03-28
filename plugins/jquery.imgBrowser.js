@@ -181,7 +181,7 @@ jQuery.fn.imgSlider = function(options){
 			'position':'absolute',
 			'transition':'none',
 			'width':'100%',
-			'z-index':'9999'
+			'z-index':'9999999'
 		})
 		.on('mousedown',function(e){
 			if ($(window).width()<options.limit) return;
