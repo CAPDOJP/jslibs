@@ -1269,7 +1269,7 @@ jQuery.fn.positionTop = function(parent){
 }
 jQuery.fn.positionContains = function(x,y){
 	var target=$(this);
-	var rect=target.getBoundingClientRect();
+	var rect=target[0].getBoundingClientRect();
 	var left=rect.left;
 	var right=rect.left+rect.width;
 	var top=rect.top;
