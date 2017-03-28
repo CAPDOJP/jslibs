@@ -186,7 +186,7 @@ jQuery.fn.imgSlider = function(options){
 		.on('mousedown',function(e){
 			if ($(window).width()<options.limit) return;
 			/* スクロールバーキャプチャ */
-			scrollPos=scrollbar[0].getBoundingClientRect();
+			scrollPos=scrollbar.offset().left;
 			scrollbar.css({
 				'bottom':'auto',
 				'left':scrollbar.offset().left.toString()+'px',
@@ -220,7 +220,6 @@ jQuery.fn.imgSlider = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				/* スクロールバー位置初期化 */
-				scrollPos=scrollbar[0].getBoundingClientRect();
 				scrollbar.css({
 					'bottom':'3px',
 					'left':(scrollbar.offset().left+target.scrollLeft()).toString()+'px',
