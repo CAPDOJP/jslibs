@@ -189,8 +189,8 @@ jQuery.fn.imgSlider = function(options){
 			scrollPos=scrollbar.positionPage();
 			scrollbar.css({
 				'bottom':'auto',
-				'left':(scrollPos.x+window.pageXOffset).toString()+'px',
-				'top':(scrollPos.y+window.pageYOffset).toString()+'px',
+				'left':scrollPos.x.toString()+'px',
+				'top':scrollPos.y.toString()+'px',
 				'position':'fixed'
 			});
 			/* コンテナスクロール位置保持 */
@@ -223,7 +223,7 @@ jQuery.fn.imgSlider = function(options){
 				scrollPos=scrollbar.positionPage();
 				scrollbar.css({
 					'bottom':'3px',
-					'left':(scrollPos.x+window.pageXOffset+target.scrollLeft()).toString()+'px',
+					'left':(scrollPos.x+target.scrollLeft()).toString()+'px',
 					'top':'auto',
 					'position':'absolute'
 				});
