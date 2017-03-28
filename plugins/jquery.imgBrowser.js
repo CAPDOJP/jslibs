@@ -186,11 +186,11 @@ jQuery.fn.imgSlider = function(options){
 		.on('mousedown',function(e){
 			if ($(window).width()<options.limit) return;
 			/* スクロールバーキャプチャ */
-			scrollPos=scrollbar[0].getBoundingClientRect();
+			scrollPos=scrollbar.positionPage();
 			scrollbar.css({
 				'bottom':'auto',
-				'left':scrollPos.left.toString()+'px',
-				'top':scrollPos.top.toString()+'px',
+				'left':(scrollPos.x+window.pageXOffset).toString()+'px',
+				'top':(scrollPos.y+window.pageYOffset).toString()+'px',
 				'position':'fixed'
 			});
 			/* コンテナスクロール位置保持 */
@@ -220,10 +220,10 @@ jQuery.fn.imgSlider = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				/* スクロールバー位置初期化 */
-				scrollPos=scrollbar[0].getBoundingClientRect();
+				scrollPos=scrollbar.positionPage();
 				scrollbar.css({
 					'bottom':'3px',
-					'left':(scrollPos.left+target.scrollLeft()).toString()+'px',
+					'left':(scrollPos.x+window.pageXOffset+target.scrollLeft()).toString()+'px',
 					'top':'auto',
 					'position':'absolute'
 				});
