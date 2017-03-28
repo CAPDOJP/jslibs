@@ -171,7 +171,7 @@ jQuery.fn.imgSlider = function(options){
 		var scrollbar=$('<div>').css({
 			'background-color':'rgba(0,0,0,0.75)',
 			'border-radius':'5px',
-			'bottom':'5px',
+			'bottom':'0px',
 			'height':'10px',
 			'left':'0px',
 			'margin':'0px',
@@ -222,7 +222,10 @@ jQuery.fn.imgSlider = function(options){
 		/* スクロールバー表示判定 */
 		$(window).on('load resize scroll',function(){
 			ratio=$(window).width()/target.outerWidth(false);
-			scrollbar.css({'width':($(window).width()*ratio).toString()+'px'});
+			scrollbar.css({
+				'bottom':(target.positionTop($('body'))+target.outerHeight(false)-5).toString()+'px',
+				'width':($(window).width()*ratio).toString()+'px'
+			});
 			if ($(window).width()<options.limit)
 			{
 				target.css({
