@@ -186,7 +186,7 @@ jQuery.fn.imgSlider = function(options){
 				if ($(window).width()<options.limit) return;
 				targetStart=target.scrollLeft();
 				scrollStart=parseInt(scrollbar.css('left'));
-				mousedownPos=e.pageX;
+				mousedownPos=e.clientX;
 				capture=true;
 				e.preventDefault();
 				e.stopPropagation();
@@ -194,11 +194,11 @@ jQuery.fn.imgSlider = function(options){
 			'mousemove':function(e){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
-				mousemovePos=scrollStart+(e.pageX-mousedownPos);
+				mousemovePos=scrollStart+(e.clientX-mousedownPos);
 				if (mousemovePos<0) mousemovePos=0;
 				if (mousemovePos>$(window).width()-scrollbar.outerWidth(true)) mousemovePos=$(window).width()-scrollbar.outerWidth(true);
 				scrollbar.css({'left':mousemovePos.toString()+'px'});
-				target.scrollLeft(targetStart+(e.pageX-mousedownPos)/ratio);
+				target.scrollLeft(targetStart+(e.clientX-mousedownPos)/ratio);
 				e.preventDefault();
 				e.stopPropagation();
 			},
