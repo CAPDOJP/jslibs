@@ -237,6 +237,7 @@ jQuery.fn.imgSlider = function(options){
 		});
 		/* スクロールバー配置 */
 		target.on('mouseenter',function(){
+			if ($(window).width()<options.limit) return;
 			if (ratio>=1) return;
 			/* スクロールバー表示 */
 			scrollbar.fadeIn('slow');
