@@ -165,6 +165,7 @@ jQuery.fn.imgSlider = function(options){
 		var target=$(this);
 		var capture=false;
 		var ratio=0;
+		var rect=null;
 		var targetStart=0;
 		var scrollStart=0;
 		var mousedownPos=0;
@@ -224,8 +225,9 @@ jQuery.fn.imgSlider = function(options){
 		/* スクロールバー表示判定 */
 		$(window).on('load resize scroll',function(){
 			ratio=$(window).width()/target[0].scrollWidth;
+			rect=target[0].getBoundingClientRect();
 			scrollbar.css({
-				'bottom':(target[0].getBoundingClientRect().top+target.outerHeight(false)-window.pageYOffset-5).toString()+'px',
+				'bottom':(rect.top+rect.height+window.pageYOffset-5).toString()+'px',
 				'width':($(window).width()*ratio).toString()+'px'
 			});
 			if ($(window).width()<options.limit)
