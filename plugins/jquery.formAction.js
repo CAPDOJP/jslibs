@@ -1269,16 +1269,6 @@ jQuery.fn.positionTop = function(parent){
 }
 /*
 *--------------------------------------------------------------------
-* 要素内座標判定
-* -------------------------------------------------------------------
-*/
-jQuery.fn.positionContains = function(x,y){
-	var target=$(this);
-	var rect=target[0].getBoundingClientRect();
-	return (x>rect.left && x<rect.right && y>rect.top && y<rect.bottom);
-}
-/*
-*--------------------------------------------------------------------
 * データ参照ウインドウ
 *--------------------------------------------------------------------
 * parameters
