@@ -217,7 +217,8 @@ jQuery.fn.imgSlider = function(options){
 				scrollbar.show('slow'); 
 			},
 			'mouseleave':function(){
-			   scrollbar.hide('slow'); 
+				capture=false;
+				scrollbar.hide('slow'); 
 			}
 		}).append(scrollbar);
 		/* スクロールバー表示判定 */
