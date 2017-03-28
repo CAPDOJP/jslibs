@@ -1242,30 +1242,11 @@ jQuery.fn.toQuery = function(){
 * -------------------------------------------------------------------
 */
 jQuery.fn.positionLeft = function(parent){
-	var target=$(this);
-	var pos=0;
-	while (parent[0]!=target.parent()[0])
-	{
-		pos+=target.position().left;
-		pos+=target.parent().scrollLeft();
-		target=target.parent();
-	}
-	pos+=target.position().left;
-	pos+=target.parent().scrollLeft();
-	return pos;
+	return target[0].getBoundingClientRect().left;
 }
 jQuery.fn.positionTop = function(parent){
 	var target=$(this);
-	var pos=0;
-	while (parent[0]!=target.parent()[0])
-	{
-		pos+=target.position().top;
-		pos+=target.parent().scrollTop();
-		target=target.parent();
-	}
-	pos+=target.position().top;
-	pos+=target.parent().scrollTop();
-	return pos;
+	return target[0].getBoundingClientRect().top;
 }
 jQuery.fn.positionContains = function(x,y){
 	var target=$(this);
