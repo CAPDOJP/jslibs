@@ -225,7 +225,7 @@ jQuery.fn.imgSlider = function(options){
 		$(window).on('load resize scroll',function(){
 			ratio=$(window).width()/target[0].scrollWidth;
 			scrollbar.css({
-				'bottom':(window.pageYOffset+target[0].getBoundingClientRect().top+target.outerHeight(false)-5).toString()+'px',
+				'bottom':(target[0].getBoundingClientRect().top+target.outerHeight(false)-window.pageYOffset-5).toString()+'px',
 				'width':($(window).width()*ratio).toString()+'px'
 			});
 			if ($(window).width()<options.limit)
