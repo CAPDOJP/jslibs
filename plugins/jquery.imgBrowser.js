@@ -223,11 +223,13 @@ jQuery.fn.imgSlider = function(options){
 			}
 		}).append(scrollbar);
 		/* スクロールバー表示判定 */
+			rect=target[0].getBoundingClientRect();
+		alert(rect.top+rect.height+window.pageYOffset);
 		$(window).on('load resize scroll',function(){
 			ratio=$(window).width()/target[0].scrollWidth;
 			rect=target[0].getBoundingClientRect();
 			scrollbar.css({
-				'bottom':(rect.top+rect.height-5).toString()+'px',
+				'bottom':(rect.top+rect.height+window.pageYOffset-5).toString()+'px',
 				'width':($(window).width()*ratio).toString()+'px'
 			});
 			if ($(window).width()<options.limit)
