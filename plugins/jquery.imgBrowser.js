@@ -190,7 +190,7 @@ jQuery.fn.imgSlider = function(options){
 			scrollbar.css({
 				'bottom':'auto',
 				'left':scrollbar.offset().left.toString()+'px',
-				'top':scrollPos.top.toString()+'px',
+				'top':scrollbar.offset().top.toString()+'px',
 				'position':'fixed'
 			});
 			/* コンテナスクロール位置保持 */
