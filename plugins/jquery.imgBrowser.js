@@ -189,7 +189,7 @@ jQuery.fn.imgSlider = function(options){
 			scrollPos=scrollbar[0].getBoundingClientRect();
 			scrollbar.css({
 				'bottom':'auto',
-				'left':(scrollPos.left++target.scrollLeft()).toString()+'px',
+				'left':(scrollPos.left+target.scrollLeft()).toString()+'px',
 				'top':scrollPos.top.toString()+'px',
 				'position':'fixed'
 			});
