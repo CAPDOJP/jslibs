@@ -1270,7 +1270,7 @@ jQuery.fn.positionTop = function(parent){
 jQuery.fn.positionContains = function(x,y){
 	var target=$(this);
 	var rect=target[0].getBoundingClientRect();
-	return (x>rect.left-window.pageXOffset && x<rect.right-window.pageXOffset && y>rect.top-window.pageYOffset && y<rect.bottom-window.pageYOffset);
+	return (x>rect.left+window.pageXOffset && x<rect.right+window.pageXOffset && y>rect.top+window.pageYOffset && y<rect.bottom+window.pageYOffset);
 }
 /*
 *--------------------------------------------------------------------
