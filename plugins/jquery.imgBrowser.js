@@ -171,7 +171,7 @@ jQuery.fn.imgSlider = function(options){
 		var scrollbar=$('<div>').css({
 			'background-color':'rgba(0,0,0,0.75)',
 			'border-radius':'5px',
-			'bottom':'0px',
+			'bottom':'5px',
 			'height':'10px',
 			'left':'0px',
 			'margin':'0px',
@@ -209,6 +209,7 @@ jQuery.fn.imgSlider = function(options){
 				e.stopPropagation();
 			}
 		}).hide();
+		/* スクロールバー配置 */
 		target.on({
 			'mouseenter':function(){
 				if (ratio>1) return;
@@ -217,16 +218,11 @@ jQuery.fn.imgSlider = function(options){
 			'mouseleave':function(){
 			   scrollbar.hide('slow'); 
 			}
-		});
-		/* スクロールバー配置 */
-		$('body').append(scrollbar);
+		}).append(scrollbar);
 		/* スクロールバー表示判定 */
 		$(window).on('load resize scroll',function(){
 			ratio=$(window).width()/target.outerWidth(false);
-			scrollbar.css({
-				'bottom':(target.positionTop($('body'))+target.outerHeight(false)-5).toString()+'px',
-				'width':($(window).width()*ratio).toString()+'px'
-			});
+			scrollbar.css({'width':($(window).width()*ratio).toString()+'px'});
 			if ($(window).width()<options.limit)
 			{
 				target.css({
