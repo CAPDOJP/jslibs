@@ -1267,6 +1267,11 @@ jQuery.fn.positionTop = function(parent){
 	pos+=target.parent().scrollTop();
 	return pos;
 }
+/*
+*--------------------------------------------------------------------
+* 要素内座標判定
+* -------------------------------------------------------------------
+*/
 jQuery.fn.positionContains = function(x,y){
 	var target=$(this);
 	var rect=target[0].getBoundingClientRect();
