@@ -1267,20 +1267,6 @@ jQuery.fn.positionTop = function(parent){
 	pos+=target.parent().scrollTop();
 	return pos;
 }
-jQuery.fn.positionPage = function(){
-	var target=$(this);
-	var rect=target[0].getBoundingClientRect();
-    var style=window.getComputedStyle(target[0]);
-    if (style.transform.length==6)
-    {
-        var det=style.transform[0]*style.transform[3]-style.transform[1]*style.transform[2];
-        return {
-            x:(rect.left*style.transform[3]-rect.top*style.transform[2]+style.transform[2]*style.transform[5]-style.transform[4]*style.transform[3])/det,
-            y:(-rect.left*style.transform[1]+rect.top*style.transform[0]+style.transform[4]*style.transform[1]-style.transform[0]*style.transform[5])/det
-        };
-    }
-    else return {x:rect.left,y:rect.top};
-}
 /*
 *--------------------------------------------------------------------
 * データ参照ウインドウ
