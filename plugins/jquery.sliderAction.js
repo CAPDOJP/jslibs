@@ -180,6 +180,7 @@ jQuery.fn.sliderAction = function(options){
 			switch (options.direction)
 			{
 				case 'vertical':
+					alert(container.height());
 					/* スライダーサイズ調整 */
 					ratio=container.height()/target[0].scrollHeight;
 					if (slider!=null) slider.css({'height':(container.height()*ratio).toString()+'px'});
