@@ -221,8 +221,8 @@ jQuery.fn.imgSlider = function(options){
 					if ($(window).width()<options.limit) return;
 					if (capture) return;
 					capture=true;
-					prev.css({'position':'fixed','left':(prev[0].getBoundingClientRect().left)+'px','top':(prev[0].getBoundingClientRect().top)+'px'});
-					next.css({'position':'fixed','left':(next[0].getBoundingClientRect().left)+'px','top':(next[0].getBoundingClientRect().top)+'px'});
+					prev.hide();
+					next.hide();
 					targetvalues.move.left=target.scrollLeft();
 					switch ($.data($(this)[0],'type'))
 					{
@@ -237,8 +237,8 @@ jQuery.fn.imgSlider = function(options){
 					if (targetvalues.move.left>target[0].scrollWidth-target.outerWidth(false)) targetvalues.move.left=target[0].scrollWidth-target.outerWidth(false);
 					target.animate({scrollLeft:targetvalues.move.left},350,'swing',function(){
 						capture=false;
-						prev.css({'position':'absolute','left':targetvalues.move.left.toString()+'px','top':'0px'});
-						next.css({'position':'absolute','left':(targetvalues.move.left+target.outerWidth(false)-next.outerWidth(false)).toString()+'px','top':'0px'});
+						prev.css({'left':targetvalues.move.left.toString()+'px','top':'0px'}).show();
+						next.css({'left':(targetvalues.move.left+target.outerWidth(false)-next.outerWidth(false)).toString()+'px','top':'0px'}).show();
 					});
 					e.preventDefault();
 					e.stopPropagation();
