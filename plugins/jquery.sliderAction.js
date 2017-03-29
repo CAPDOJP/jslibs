@@ -27,7 +27,6 @@ jQuery.fn.sliderAction = function(options){
 	},options);
 	return $(this).each(function(){
 		var capture=false;
-		var container=null;
 		var down={
 				left:0,
 				top:0
@@ -47,7 +46,6 @@ jQuery.fn.sliderAction = function(options){
 		};
 		var slider=null;
 		var target=$(this);
-		container=target.parent();
 		/* スライダー生成 */
 		switch (options.direction)
 		{
@@ -185,8 +183,8 @@ jQuery.fn.sliderAction = function(options){
 			{
 				case 'vertical':
 					/* スライダーサイズ調整 */
-					ratio=container.height()/target[0].scrollHeight;
-					if (slider!=null) slider.css({'height':(container.height()*ratio).toString()+'px'});
+					ratio=target.height()/target[0].scrollHeight;
+					if (slider!=null) slider.css({'height':(target.height()*ratio).toString()+'px'});
 					/* スタイルシート調整 */
 					if ($(window).width()<options.limit)
 					{
@@ -206,8 +204,8 @@ jQuery.fn.sliderAction = function(options){
 					break;
 				case 'holizontal':
 					/* スライダーサイズ調整 */
-					ratio=container.width()/target[0].scrollWidth;
-					if (slider!=null) slider.css({'width':(container.width()*ratio).toString()+'px'});
+					ratio=target.width()/target[0].scrollWidth;
+					if (slider!=null) slider.css({'width':(target.width()*ratio).toString()+'px'});
 					/* スタイルシート調整 */
 					if ($(window).width()<options.limit)
 					{
