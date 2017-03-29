@@ -221,35 +221,37 @@ jQuery.fn.imgSlider = function(options){
 					if ($(window).width()<options.limit) return;
 					if (capture) return;
 					capture=true;
-					prev.css({'position':'fixed','top':($(this)[0].getBoundingClientRect().top)+'px'});
-					next.css({'position':'fixed','top':($(this)[0].getBoundingClientRect().top)+'px'});
+					prev.css({'position':'fixed','left':(prev[0].getBoundingClientRect().left)+'px','top':(prev[0].getBoundingClientRect().top)+'px'});
+					next.css({'position':'fixed','left':(next[0].getBoundingClientRect().left)+'px','top':(next[0].getBoundingClientRect().top)+'px'});
 					targetvalues.move.left=target.scrollLeft();
 					switch ($.data($(this)[0],'type'))
 					{
 						case 'prev':
-							targetvalues.move.left-=$(window).width();
+							targetvalues.move.left-=target.outerWidth(false);
 							break;
 						case 'next':
-							targetvalues.move.left+=$(window).width();
+							targetvalues.move.left+=target.outerWidth(false);
 							break;
 					}
 					if (targetvalues.move.left<0) targetvalues.move.left=0;
-					if (targetvalues.move.left>target[0].scrollWidth-target.outerWidth(true)) targetvalues.move.left=target[0].scrollWidth-target.outerWidth(true);
+					if (targetvalues.move.left>target[0].scrollWidth-target.outerWidth(false)) targetvalues.move.left=target[0].scrollWidth-target.outerWidth(false);
 					target.animate({scrollLeft:targetvalues.move.left},350,'swing',function(){
 						capture=false;
-						prev.css({'position':'absolute','top':'0px'});
-						next.css({'position':'absolute','top':'0px'});
+						prev.css({'position':'absolute','left':targetvalues.move.left.toString()+'px','top':'0px'});
+						next.css({'position':'absolute','left':(targetvalues.move.left+target.outerWidth(false)-next.outerWidth(false)).toString()+'px','top':'0px'});
 					});
 					e.preventDefault();
 					e.stopPropagation();
 				}).hide();
-				prev=button.clone(true).css({'left':'0px'}).append(arrow.clone().css({'border-left':'2px solid rgba(255,255,255,0.75)','border-bottom':'2px solid rgba(255,255,255,0.75)'}));
-				next=button.clone(true).css({'right':'0px'}).append(arrow.clone().css({'border-right':'2px solid rgba(255,255,255,0.75)','border-top':'2px solid rgba(255,255,255,0.75)'}));
+				prev=button.clone(true).append(arrow.clone().css({'border-left':'2px solid rgba(255,255,255,0.75)','border-bottom':'2px solid rgba(255,255,255,0.75)'}));
+				next=button.clone(true).append(arrow.clone().css({'border-right':'2px solid rgba(255,255,255,0.75)','border-top':'2px solid rgba(255,255,255,0.75)'}));
 				$.data(prev[0],'type','prev');
 				$.data(next[0],'type','next');
 				target.on({
 					'mousemove':function(){
 						if ($(window).width()<options.limit) return;
+						prev.css({'left':targetvalues.move.left.toString()+'px'});
+						next.css({'left':(targetvalues.move.left+target.outerWidth(false)-next.outerWidth(false)).toString()+'px'});
 						if (!prev.is(':visible')) prev.fadeIn();
 						if (!next.is(':visible')) next.fadeIn();
 					},
@@ -261,6 +263,8 @@ jQuery.fn.imgSlider = function(options){
 				})
 				.append(prev)
 				.append(next);
+				$.data(prev[0],'type','prev');
+				$.data(next[0],'type','next');
 				break;
 			case 'drag':
 				target.on({
