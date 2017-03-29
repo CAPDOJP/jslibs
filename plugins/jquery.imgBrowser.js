@@ -62,7 +62,6 @@ jQuery.fn.imgBrowser = function(options){
 			'white-space':'nowrap'
 		});
 		var header=$('<div>').css({
-			'background-color':'rgba(0,0,0,0.95)',
 			'border-bottom':'1px solid rgba(255,255,255,0.25)',
 			'height':'3em',
 			'margin':'0px',
@@ -73,7 +72,6 @@ jQuery.fn.imgBrowser = function(options){
 			'width':'100%'
 		});
 		var footer=$('<div>').css({
-			'background-color':'rgba(0,0,0,0.95)',
 			'border-top':'1px solid rgba(255,255,255,0.25)',
 			'bottom':'0px',
 			'height':'3em',
