@@ -171,10 +171,10 @@ jQuery.fn.sliderAction = function(options){
 		}).append(slider);
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
-			var css=null;
+			var display=null;
 			if (!container.is(':visible'))
 			{
-				css=container.clone();
+				display=container.css('display');
 				container.css({'display':'block','visibility':'hidden'});
 			}
 			switch (options.direction)
@@ -224,7 +224,7 @@ jQuery.fn.sliderAction = function(options){
 					}
 					break;
 			}
-			if (css!=null) container.css(css.css());
+			if (display!=null) container.css({'display':display});
 		});
 	});
 };
