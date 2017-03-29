@@ -165,6 +165,9 @@ jQuery.fn.imgSlider = function(options){
 	return $(this).each(function(){
 		var capture=false;
 		var ratio=0;
+		var button=null;
+		var prev=null;
+		var next=null;
 		var scrollbar=null;
 		var scrollbarvalues={
 			down:{
@@ -191,6 +194,54 @@ jQuery.fn.imgSlider = function(options){
 		switch (options.type)
 		{
 			case 'button':
+				button=$('<div>').css({
+					'background-color':'rgba(0,0,0,0.75)',
+					'height':'100%',
+					'margin':'0px',
+					'padding':'0px',
+					'position':'absolute',
+					'top':'0px',
+					'width':'30px',
+					'z-index':'9999'
+				})
+				.on('click',function(e){
+					if ($(window).width()<options.limit) return;
+					if (capture) return;
+					capture=true;
+					targetvalues.move.left=target.scrollLeft();
+					switch ($.data($(this)[0],'type'))
+					{
+						case 'prev':
+							targetvalues.move.left-=$(window).width();
+							break;
+						case 'next':
+							targetvalues.move.left+=$(window).width();
+							break;
+					}
+					if (targetvalues.move.left<0) targetvalues.move.left=0;
+					if (targetvalues.move.left>target[0].scrollWidth-target.outerWidth(true)) targetvalues.move.left=target[0].scrollWidth-scrollbar.outerWidth(true);
+					target.animate({scrollLeft:targetvalues.move.left},350,'swing',function(){capture=false;});
+					e.preventDefault();
+					e.stopPropagation();
+				}).hide();
+				prev=button.clone().css({'left':'0px'});
+				next=button.clone().css({'right':'0px'});
+				$.data(prev[0],'type','prev');
+				$.data(next[0],'type','next');
+				target.on({
+					'mousemove':function(){
+						if ($(window).width()<options.limit) return;
+						if (!prev.is(':visible')) prev.fadeIn();
+						if (!next.is(':visible')) next.fadeIn();
+					},
+					'mouseleave':function(){
+						if (capture) return;
+						prev.fadeOut();
+						next.fadeOut();
+					}
+				})
+				.append(prev)
+				.append(next);
 				break;
 			case 'drag':
 				target.on({
@@ -251,7 +302,7 @@ jQuery.fn.imgSlider = function(options){
 					'position':'absolute',
 					'transition':'none',
 					'width':'100%',
-					'z-index':'9999999'
+					'z-index':'9999'
 				})
 				.on('mousedown',function(e){
 					if ($(window).width()<options.limit) return;
