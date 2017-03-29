@@ -201,7 +201,7 @@ jQuery.fn.imgSlider = function(options){
 					'left':'50%',
 					'position':'absolute',
 					'top':'50%',
-					'width':'50px',
+					'width':'20px',
 					'-webkit-transform':'translate(-50%,-50%) rotate(45deg)',
 					'-ms-transform':'translate(-50%,-50%) rotate(45deg)',
 					'transform':'translate(-50%,-50%) rotate(45deg)'
@@ -211,9 +211,8 @@ jQuery.fn.imgSlider = function(options){
 					'height':'100%',
 					'margin':'0px',
 					'padding':'0px',
-					'position':'absolute',
-					'top':'0px',
-					'width':'30px',
+					'position':'fixed',
+					'width':'50px',
 					'z-index':'9999'
 				})
 				.on('click',function(e){
@@ -231,18 +230,20 @@ jQuery.fn.imgSlider = function(options){
 							break;
 					}
 					if (targetvalues.move.left<0) targetvalues.move.left=0;
-					if (targetvalues.move.left>target[0].scrollWidth-target.outerWidth(true)) targetvalues.move.left=target[0].scrollWidth-scrollbar.outerWidth(true);
+					if (targetvalues.move.left>target[0].scrollWidth-target.outerWidth(true)) targetvalues.move.left=target[0].scrollWidth-target.outerWidth(true);
 					target.animate({scrollLeft:targetvalues.move.left},350,'swing',function(){capture=false;});
 					e.preventDefault();
 					e.stopPropagation();
 				}).hide();
-				prev=button.clone().css({'left':'0px'}).append(arrow.clone().css({'border-left':'2px solid rgba(255,255,255,0.75)','border-bottom':'2px solid rgba(255,255,255,0.75)'}));
-				next=button.clone().css({'right':'0px'}).append(arrow.clone().css({'border-right':'2px solid rgba(255,255,255,0.75)','border-top':'2px solid rgba(255,255,255,0.75)'}));
+				prev=button.clone(true).css({'left':'0px'}).append(arrow.clone().css({'border-left':'2px solid rgba(255,255,255,0.75)','border-bottom':'2px solid rgba(255,255,255,0.75)'}));
+				next=button.clone(true).css({'right':'0px'}).append(arrow.clone().css({'border-right':'2px solid rgba(255,255,255,0.75)','border-top':'2px solid rgba(255,255,255,0.75)'}));
 				$.data(prev[0],'type','prev');
 				$.data(next[0],'type','next');
 				target.on({
 					'mousemove':function(){
 						if ($(window).width()<options.limit) return;
+						prev.css({'top':(target[0].getBoundingClientRect().top)+'px'});
+						next.css({'top':(target[0].getBoundingClientRect().top)+'px'});
 						if (!prev.is(':visible')) prev.fadeIn();
 						if (!next.is(':visible')) next.fadeIn();
 					},
