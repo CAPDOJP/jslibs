@@ -36,8 +36,8 @@ jQuery.fn.sliderAction = function(options){
 			top:0
 		};
 		var keep={
-				left:0,
-				top:0
+			left:0,
+			top:0
 		};
 		var ratio=0;
 		var rect={
@@ -135,20 +135,21 @@ jQuery.fn.sliderAction = function(options){
 				capture=false;
 				/* スクロール終了 */
 				rect.slider=slider[0].getBoundingClientRect();
+				rect.target=target[0].getBoundingClientRect();
 				switch (options.direction)
 				{
 					case 'vertical':
 						slider.css({
 							'left':'auto',
 							'right':'2px',
-							'top':(rect.slider.top+target.scrollTop()).toString()+'px',
+							'top':(rect.slider.top-rect.target.top+target.scrollTop()).toString()+'px',
 							'position':'absolute'
 						});
 						break;
 					case 'holizontal':
 						slider.css({
 							'bottom':'2px',
-							'left':(rect.slider.left+target.scrollLeft()).toString()+'px',
+							'left':(rect.slider.left-rect.target.left+target.scrollLeft()).toString()+'px',
 							'top':'auto',
 							'position':'absolute'
 						});
