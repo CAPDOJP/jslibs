@@ -211,7 +211,9 @@ jQuery.fn.imgSlider = function(options){
 					'height':'100%',
 					'margin':'0px',
 					'padding':'0px',
-					'position':'fixed',
+					'position':'absolute',
+					'top':'0px',
+					'transition':'none',
 					'width':'50px',
 					'z-index':'9999'
 				})
@@ -219,6 +221,8 @@ jQuery.fn.imgSlider = function(options){
 					if ($(window).width()<options.limit) return;
 					if (capture) return;
 					capture=true;
+					prev.css({'position':'fixed','top':($(this)[0].getBoundingClientRect().top)+'px'});
+					next.css({'position':'fixed','top':($(this)[0].getBoundingClientRect().top)+'px'});
 					targetvalues.move.left=target.scrollLeft();
 					switch ($.data($(this)[0],'type'))
 					{
@@ -231,7 +235,11 @@ jQuery.fn.imgSlider = function(options){
 					}
 					if (targetvalues.move.left<0) targetvalues.move.left=0;
 					if (targetvalues.move.left>target[0].scrollWidth-target.outerWidth(true)) targetvalues.move.left=target[0].scrollWidth-target.outerWidth(true);
-					target.animate({scrollLeft:targetvalues.move.left},350,'swing',function(){capture=false;});
+					target.animate({scrollLeft:targetvalues.move.left},350,'swing',function(){
+						capture=false;
+						prev.css({'position':'absolute','top':'0px'});
+						next.css({'position':'absolute','top':'0px'});
+					});
 					e.preventDefault();
 					e.stopPropagation();
 				}).hide();
@@ -242,8 +250,6 @@ jQuery.fn.imgSlider = function(options){
 				target.on({
 					'mousemove':function(){
 						if ($(window).width()<options.limit) return;
-						prev.css({'top':(target[0].getBoundingClientRect().top)+'px'});
-						next.css({'top':(target[0].getBoundingClientRect().top)+'px'});
 						if (!prev.is(':visible')) prev.fadeIn();
 						if (!next.is(':visible')) next.fadeIn();
 					},
