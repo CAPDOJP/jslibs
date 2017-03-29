@@ -195,7 +195,7 @@ jQuery.fn.imgSlider = function(options){
 		switch (options.type)
 		{
 			case 'button':
-				arrow=$('span').css({
+				arrow=$('<span>').css({
 					'border-left':'2px solid rgba(255,255,255,0.75)',
 					'border-bottom':'2px solid rgba(255,255,255,0.75)',
 					'display':'block',
