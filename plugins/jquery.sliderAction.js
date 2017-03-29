@@ -34,11 +34,17 @@ jQuery.fn.sliderAction = function(options){
 		};
 		var drag={
 			left:0,
-			start:0,
 			top:0
 		};
+		var keep={
+				left:0,
+				top:0
+		};
 		var ratio=0;
-		var rect=null;
+		var rect={
+			slider:null,
+			target:null
+		};
 		var slider=null;
 		var target=$(this);
 		container=target.parent();
@@ -83,25 +89,20 @@ jQuery.fn.sliderAction = function(options){
 			if ($(window).width()<options.limit) return;
 			capture=true;
 			/* 各種変数初期化 */
-			rect=slider[0].getBoundingClientRect();
-			slider.css({
-				'bottom':'auto',
-				'left':rect.left.toString()+'px',
-				'right':'auto',
-				'top':rect.top.toString()+'px',
-				'position':'fixed'
-			});
 			down.left=target.scrollLeft();
 			down.top=target.scrollTop();
-			switch (options.direction)
-			{
-				case 'vertical':
-					drag.start=e.clientY;
-					break;
-				case 'holizontal':
-					drag.start=e.clientX;
-					break;
-			}
+			keep.left=e.clientX;
+			keep.top=e.clientY;
+			/* スクロール開始 */
+			rect.slider=slider[0].getBoundingClientRect();
+			rect.target=target[0].getBoundingClientRect();
+			slider.css({
+				'bottom':'auto',
+				'left':rect.slider.left.toString()+'px',
+				'right':'auto',
+				'top':rect.slider.top.toString()+'px',
+				'position':'fixed'
+			});
 			e.preventDefault();
 			e.stopPropagation();
 		}).hide();
@@ -109,22 +110,22 @@ jQuery.fn.sliderAction = function(options){
 			'mousemove':function(e){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
-				/* 各種変数初期化 */
+				/* スクロール */
 				switch (options.direction)
 				{
 					case 'vertical':
-						drag.top=rect.top+(e.clientY-drag.start);
-						if (drag.top<0) drag.top=0;
-						if (drag.top>container.height()-slider.outerHeight(true)) drag.top=container.height()-slider.outerHeight(true);
+						drag.top=rect.slider.top+(e.clientY-keep.top);
+						if (drag.top<rect.target.top) drag.top=rect.target.top;
+						if (drag.top>rect.target.bottom-slider.outerHeight(true)) drag.top=rect.target.bottom-slider.outerHeight(true);
 						slider.css({'top':drag.top.toString()+'px'});
-						target.scrollTop(down.top+(e.clientY-drag.start)/ratio);
+						target.scrollTop(down.top+(e.clientY-keep.top)/ratio);
 						break;
 					case 'holizontal':
-						drag.left=rect.left+(e.clientX-drag.start);
-						if (drag.left<0) drag.left=0;
-						if (drag.left>container.width()-slider.outerWidth(true)) drag.left=container.width()-slider.outerWidth(true);
+						drag.left=rect.slider.left+(e.clientX-keep.left);
+						if (drag.left<rect.target.left) drag.left=rect.target.left;
+						if (drag.left>rect.target.right-slider.outerWidth(true)) drag.left=rect.target.right-slider.outerWidth(true);
 						slider.css({'left':drag.left.toString()+'px'});
-						target.scrollLeft(down.left+(e.clientX-drag.start)/ratio);
+						target.scrollLeft(down.left+(e.clientX-keep.left)/ratio);
 						break;
 				}
 				e.preventDefault();
@@ -134,21 +135,22 @@ jQuery.fn.sliderAction = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				capture=false;
-				rect=slider[0].getBoundingClientRect();
+				/* スクロール終了 */
+				rect.slider=slider[0].getBoundingClientRect();
 				switch (options.direction)
 				{
 					case 'vertical':
 						slider.css({
 							'left':'auto',
 							'right':'2px',
-							'top':(rect.top+target.scrollTop()).toString()+'px',
+							'top':(rect.slider.top+target.scrollTop()).toString()+'px',
 							'position':'absolute'
 						});
 						break;
 					case 'holizontal':
 						slider.css({
 							'bottom':'2px',
-							'left':(rect.left+target.scrollLeft()).toString()+'px',
+							'left':(rect.slider.left+target.scrollLeft()).toString()+'px',
 							'top':'auto',
 							'position':'absolute'
 						});
