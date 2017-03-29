@@ -27,6 +27,7 @@ jQuery.fn.sliderAction = function(options){
 	},options);
 	return $(this).each(function(){
 		var capture=false;
+		var sizecheck=false;
 		var down={
 			left:0,
 			top:0
@@ -164,6 +165,7 @@ jQuery.fn.sliderAction = function(options){
 		target.on({
 			'mousemove':function(){
 				if ($(window).width()<options.limit) return;
+				if (!sizecheck) checkslidersize();
 				if (ratio>=1) return;
 				if (!slider.is(':visible')) slider.fadeIn();
 			},
@@ -174,23 +176,12 @@ jQuery.fn.sliderAction = function(options){
 		}).append(slider);
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
-			var sizecheck=false;
-			var display=null;
-			var zindex=null;
-			if (!options.hidden!=null && !options.hidden.is(':visible'))
-			{
-				sizecheck=true;
-				display=options.hidden.css('display');
-				zindex=options.hidden.css('z-index');
-				options.hidden.css({'display':'block','visibility':'hidden','z-index':'-1'});
-			}
+			if (!options.hidden!=null && !options.hidden.is(':visible')) {sizecheck=false;return;}
+			checkslidersize();
+			/* スタイルシート調整 */
 			switch (options.direction)
 			{
 				case 'vertical':
-					/* スライダーサイズ調整 */
-					ratio=target.height()/target[0].scrollHeight;
-					if (slider!=null) slider.css({'height':(target.height()*ratio).toString()+'px'});
-					/* スタイルシート調整 */
 					if ($(window).width()<options.limit)
 					{
 						target.css({
@@ -208,10 +199,6 @@ jQuery.fn.sliderAction = function(options){
 					}
 					break;
 				case 'holizontal':
-					/* スライダーサイズ調整 */
-					ratio=target.width()/target[0].scrollWidth;
-					if (slider!=null) slider.css({'width':(target.width()*ratio).toString()+'px'});
-					/* スタイルシート調整 */
 					if ($(window).width()<options.limit)
 					{
 						target.css({
@@ -231,8 +218,22 @@ jQuery.fn.sliderAction = function(options){
 					}
 					break;
 			}
-			if (sizecheck) options.hidden.css({'display':display,'visibility':'','z-index':zindex});
 		});
+		function checkslidersize(){
+			/* スライダーサイズ調整 */
+			switch (options.direction)
+			{
+				case 'vertical':
+					ratio=target.height()/target[0].scrollHeight;
+					if (slider!=null) slider.css({'height':(target.height()*ratio).toString()+'px'});
+					break;
+				case 'holizontal':
+					ratio=target.width()/target[0].scrollWidth;
+					if (slider!=null) slider.css({'width':(target.width()*ratio).toString()+'px'});
+					break;
+			}
+			sizecheck=true;
+		};
 	});
 };
 })(jQuery);
