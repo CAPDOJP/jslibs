@@ -28,8 +28,8 @@ jQuery.fn.sliderAction = function(options){
 	return $(this).each(function(){
 		var capture=false;
 		var down={
-				left:0,
-				top:0
+			left:0,
+			top:0
 		};
 		var drag={
 			left:0,

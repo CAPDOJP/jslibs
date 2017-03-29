@@ -164,35 +164,25 @@ jQuery.fn.imgSlider = function(options){
 	},options);
 	return $(this).each(function(){
 		var capture=false;
-		var container=null;
 		var ratio=0;
 		var arrow=null;
 		var button=null;
 		var prev=null;
 		var next=null;
-		var scrollbar=null;
-		var scrollbarvalues={
-			down:{
-				rect:null
-			},
-			move:{
-				amount:0,
-				left:0,
-				start:0
-			}
+		var slider=null;
+		var slidervalues={
+			rect:null
 		};
 		var target=$(this);
 		var targetvalues={
-			down:{
-				left:0
-			},
+			rect:null,
+			down:0,
+			keep:0,
 			move:{
 				amount:0,
-				left:0,
-				start:0
+				left:0
 			}
 		};
-		container=target.parent();
 		$.data(target[0],'dragged',false);
 		switch (options.type)
 		{
@@ -230,18 +220,18 @@ jQuery.fn.imgSlider = function(options){
 					switch ($.data($(this)[0],'type'))
 					{
 						case 'prev':
-							targetvalues.move.left-=target.outerWidth(false);
+							targetvalues.move.left-=target.width();
 							break;
 						case 'next':
-							targetvalues.move.left+=target.outerWidth(false);
+							targetvalues.move.left+=target.width();
 							break;
 					}
 					if (targetvalues.move.left<0) targetvalues.move.left=0;
-					if (targetvalues.move.left>target[0].scrollWidth-target.outerWidth(false)) targetvalues.move.left=target[0].scrollWidth-target.outerWidth(false);
+					if (targetvalues.move.left>target[0].scrollWidth-target.width()) targetvalues.move.left=target[0].scrollWidth-target.width();
 					target.animate({scrollLeft:targetvalues.move.left},350,'swing',function(){
 						capture=false;
 						prev.css({'left':targetvalues.move.left.toString()+'px','top':'0px'}).show();
-						next.css({'left':(targetvalues.move.left+target.outerWidth(false)-next.outerWidth(false)).toString()+'px','top':'0px'}).show();
+						next.css({'left':(targetvalues.move.left+target.innerWidth()-next.outerWidth(false)).toString()+'px','top':'0px'}).show();
 					});
 					e.preventDefault();
 					e.stopPropagation();
@@ -254,7 +244,7 @@ jQuery.fn.imgSlider = function(options){
 					'mousemove':function(){
 						if ($(window).width()<options.limit) return;
 						prev.css({'left':targetvalues.move.left.toString()+'px'});
-						next.css({'left':(targetvalues.move.left+target.outerWidth(false)-next.outerWidth(false)).toString()+'px'});
+						next.css({'left':(targetvalues.move.left+target.innerWidth()-next.outerWidth(false)).toString()+'px'});
 						if (!prev.is(':visible')) prev.fadeIn();
 						if (!next.is(':visible')) next.fadeIn();
 					},
@@ -274,17 +264,17 @@ jQuery.fn.imgSlider = function(options){
 					'touchstart mousedown':function(e){
 						if ($(window).width()<options.limit) return;
 						capture=true;
-						targetvalues.down.left=target.scrollLeft();
+						targetvalues.down=target.scrollLeft();
 						targetvalues.move.amount=0;
 						if (e.type=='touchstart')
 						{
+							targetvalues.keep=e.originalEvent.touches[0].pageX;
 							targetvalues.move.left=e.originalEvent.touches[0].pageX;
-							targetvalues.move.start=e.originalEvent.touches[0].pageX;
 						}
 						else
 						{
+							targetvalues.keep=e.pageX;
 							targetvalues.move.left=e.pageX;
-							targetvalues.move.start=e.pageX;
 						}
 						$.data(target[0],'dragged',false);
 						e.preventDefault();
@@ -294,13 +284,13 @@ jQuery.fn.imgSlider = function(options){
 						if (!capture) return;
 						if (e.type=='touchmove')
 						{
-							target.scrollLeft(targetvalues.down.left+targetvalues.move.start-e.originalEvent.touches[0].pageX);
+							target.scrollLeft(targetvalues.down+targetvalues.keep-e.originalEvent.touches[0].pageX);
 							targetvalues.move.amount=targetvalues.move.left-e.originalEvent.touches[0].pageX;
 							targetvalues.move.left=e.originalEvent.touches[0].pageX;
 						}
 						else
 						{
-							target.scrollLeft(targetvalues.down.left+targetvalues.move.start-e.pageX);
+							target.scrollLeft(targetvalues.down+targetvalues.keep-e.pageX);
 							targetvalues.move.amount=targetvalues.move.left-e.pageX;
 							targetvalues.move.left=e.pageX;
 						}
@@ -317,7 +307,7 @@ jQuery.fn.imgSlider = function(options){
 				});
 				break;
 			case 'scroll':
-				scrollbar=$('<div>').css({
+				slider=$('<div>').css({
 					'background-color':'rgba(0,0,0,0.75)',
 					'border-radius':'3px',
 					'bottom':'2px',
@@ -333,15 +323,16 @@ jQuery.fn.imgSlider = function(options){
 				.on('mousedown',function(e){
 					if ($(window).width()<options.limit) return;
 					capture=true;
-					scrollbarvalues.down.rect=scrollbar[0].getBoundingClientRect();
-					scrollbar.css({
+					slidervalues.rect=slider[0].getBoundingClientRect();
+					targetvalues.rect=target[0].getBoundingClientRect();
+					slider.css({
 						'bottom':'auto',
-						'left':scrollbarvalues.down.rect.left.toString()+'px',
-						'top':scrollbarvalues.down.rect.top.toString()+'px',
+						'left':slidervalues.rect.left.toString()+'px',
+						'top':slidervalues.rect.top.toString()+'px',
 						'position':'fixed'
 					});
-					targetvalues.down.left=target.scrollLeft();
-					targetvalues.move.start=e.clientX;
+					targetvalues.down=target.scrollLeft();
+					targetvalues.keep=e.clientX;
 					e.preventDefault();
 					e.stopPropagation();
 				}).hide();
@@ -349,11 +340,11 @@ jQuery.fn.imgSlider = function(options){
 					'mousemove':function(e){
 						if ($(window).width()<options.limit) return;
 						if (!capture) return;
-						targetvalues.move.left=scrollbarvalues.down.rect.left+(e.clientX-targetvalues.move.start);
-						if (targetvalues.move.left<0) targetvalues.move.left=0;
-						if (targetvalues.move.left>container.width()-scrollbar.outerWidth(true)) targetvalues.move.left=container.width()-scrollbar.outerWidth(true);
-						scrollbar.css({'left':targetvalues.move.left.toString()+'px'});
-						target.scrollLeft(targetvalues.down.left+(e.clientX-targetvalues.move.start)/ratio);
+						targetvalues.move.left=slidervalues.rect.left+(e.clientX-targetvalues.keep);
+						if (targetvalues.move.left<targetvalues.rect.left) targetvalues.move.left=targetvalues.rect.left;
+						if (targetvalues.move.left>targetvalues.rect.right-slider.outerWidth(true)) targetvalues.move.left=targetvalues.rect.right-slider.outerWidth(true);
+						slider.css({'left':targetvalues.move.left.toString()+'px'});
+						target.scrollLeft(targetvalues.down+(e.clientX-targetvalues.keep)/ratio);
 						e.preventDefault();
 						e.stopPropagation();
 					},
@@ -361,14 +352,15 @@ jQuery.fn.imgSlider = function(options){
 						if ($(window).width()<options.limit) return;
 						if (!capture) return;
 						capture=false;
-						scrollbarvalues.down.rect=scrollbar[0].getBoundingClientRect();
-						scrollbar.css({
+						slidervalues.rect=slider[0].getBoundingClientRect();
+						targetvalues.rect=target[0].getBoundingClientRect();
+						slider.css({
 							'bottom':'2px',
-							'left':(scrollbarvalues.down.rect.left+target.scrollLeft()).toString()+'px',
+							'left':(slidervalues.rect.left-targetvalues.rect.left+target.scrollLeft()).toString()+'px',
 							'top':'auto',
 							'position':'absolute'
 						});
-						scrollbar.fadeOut();
+						slider.fadeOut();
 						e.preventDefault();
 						e.stopPropagation();
 					}
@@ -377,21 +369,21 @@ jQuery.fn.imgSlider = function(options){
 					'mousemove':function(){
 						if ($(window).width()<options.limit) return;
 						if (ratio>=1) return;
-						if (!scrollbar.is(':visible')) scrollbar.fadeIn();
+						if (!slider.is(':visible')) slider.fadeIn();
 					},
 					'mouseleave':function(){
 						if (capture) return;
-						scrollbar.fadeOut();
+						slider.fadeOut();
 					}
-				}).append(scrollbar);
+				}).append(slider);
 				break;
 		}
 		/* スクロールバー表示判定 */
 		$(window).on('load resize scroll',function(){
 			if (options.type=='scroll')
 			{
-				ratio=container.width()/target[0].scrollWidth;
-				if (scrollbar!=null) scrollbar.css({'width':(container.width()*ratio).toString()+'px'});
+				ratio=target.width()/target[0].scrollWidth;
+				if (slider!=null) slider.css({'width':(target.width()*ratio).toString()+'px'});
 			}
 			if ($(window).width()<options.limit)
 			{
