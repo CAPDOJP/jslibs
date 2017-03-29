@@ -30,33 +30,31 @@ jQuery.fn.imgBrowser = function(options){
 		*------------------------------------------------------------
 		*/
 		var target=$(this).css({
-			'background-color':'rgba(0,0,0,0.95)',
+			'background-color':'rgba(0,0,0,0.5)',
+			'box-sizing':'border-box',
 			'cursor':'pointer',
 			'display':'none',
 			'height':'100%',
 			'left':'0px',
-			'padding':'75px 0px',
+			'padding':'4em 1em',
 			'position':'fixed',
 			'text-align':'center',
 			'top':'0px',
 			'vertical-align':'middle',
 			'width':'100%',
-			'z-index':'10000000',
-			'box-sizing':'border-box',
-			'-moz-box-sizing':'border-box',
-			'-ms-box-sizing':'border-box',
-			'-o-box-sizing':'border-box',
-			'-webkit-box-sizing':'border-box'
+			'z-index':'10000000'
 		})
 		.imgSlider({limit:options.limit})
 		.empty();
 		var container=$('<div>').css({
+			'box-sizing':'border-box',
 			'display':'table',
 			'height':'100%',
 			'margin':'0px auto',
 			'position':'relative'
 		});
 		var contents=$('<div>').css({
+			'box-sizing':'border-box',
 			'display':'table-cell',
 			'height':'100%',
 			'position':'relative',
@@ -66,7 +64,7 @@ jQuery.fn.imgBrowser = function(options){
 		var header=$('<div>').css({
 			'background-color':'rgba(0,0,0,0.95)',
 			'border-bottom':'1px solid rgba(255,255,255,0.25)',
-			'height':'74px',
+			'height':'3em',
 			'margin':'0px',
 			'padding':'0px',
 			'position':'fixed',
@@ -78,7 +76,7 @@ jQuery.fn.imgBrowser = function(options){
 			'background-color':'rgba(0,0,0,0.95)',
 			'border-top':'1px solid rgba(255,255,255,0.25)',
 			'bottom':'0px',
-			'height':'74px',
+			'height':'3em',
 			'margin':'0px',
 			'padding':'0px',
 			'position':'fixed',
@@ -87,15 +85,15 @@ jQuery.fn.imgBrowser = function(options){
 		});
 		var close=$('<div>').css({
 			'color':'rgba(255,255,255,0.75)',
-			'font-size':'36px',
-			'height':'74px',
-			'line-height':'74px',
+			'font-size':'1.5em',
+			'height':'3em',
+			'line-height':'3em',
 			'margin':'0px',
 			'padding':'0px',
 			'position':'fixed',
 			'right':'0px',
 			'top':'0px',
-			'width':'74px'
+			'width':'3em'
 		})
 		.text('x')
 		.on('click',function(){target.hide();});
@@ -119,16 +117,12 @@ jQuery.fn.imgBrowser = function(options){
 					});
 					contents.html(images);
 					contents.find('img').css({
-						'margin-right':'25px',
+						'box-sizing':'border-box',
+						'margin-right':'1em',
 						'max-height':'100%',
 						'max-width':'100%',
 						'position':'relative',
-						'vertical-align':'middle',
-						'box-sizing':'border-box',
-						'-moz-box-sizing':'border-box',
-						'-ms-box-sizing':'border-box',
-						'-o-box-sizing':'border-box',
-						'-webkit-box-sizing':'border-box'
+						'vertical-align':'middle'
 					});
 					contents.find('img').last().css('margin-right','0px');
 					//表示
@@ -164,15 +158,10 @@ jQuery.fn.imgSlider = function(options){
 	},options);
 	return $(this).each(function(){
 		var capture=false;
-		var ratio=0;
 		var arrow=null;
 		var button=null;
 		var prev=null;
 		var next=null;
-		var slider=null;
-		var slidervalues={
-			rect:null
-		};
 		var target=$(this);
 		var targetvalues={
 			rect:null,
@@ -306,85 +295,9 @@ jQuery.fn.imgSlider = function(options){
 					}
 				});
 				break;
-			case 'scroll':
-				slider=$('<div>').css({
-					'background-color':'rgba(0,0,0,0.75)',
-					'border-radius':'3px',
-					'bottom':'2px',
-					'height':'6px',
-					'left':'0px',
-					'margin':'0px',
-					'padding':'0px',
-					'position':'absolute',
-					'transition':'none',
-					'width':'100%',
-					'z-index':'9999'
-				})
-				.on('mousedown',function(e){
-					if ($(window).width()<options.limit) return;
-					capture=true;
-					slidervalues.rect=slider[0].getBoundingClientRect();
-					targetvalues.rect=target[0].getBoundingClientRect();
-					slider.css({
-						'bottom':'auto',
-						'left':slidervalues.rect.left.toString()+'px',
-						'top':slidervalues.rect.top.toString()+'px',
-						'position':'fixed'
-					});
-					targetvalues.down=target.scrollLeft();
-					targetvalues.keep=e.clientX;
-					e.preventDefault();
-					e.stopPropagation();
-				}).hide();
-				$(window).on({
-					'mousemove':function(e){
-						if ($(window).width()<options.limit) return;
-						if (!capture) return;
-						targetvalues.move.left=slidervalues.rect.left+(e.clientX-targetvalues.keep);
-						if (targetvalues.move.left<targetvalues.rect.left) targetvalues.move.left=targetvalues.rect.left;
-						if (targetvalues.move.left>targetvalues.rect.right-slider.outerWidth(true)) targetvalues.move.left=targetvalues.rect.right-slider.outerWidth(true);
-						slider.css({'left':targetvalues.move.left.toString()+'px'});
-						target.scrollLeft(targetvalues.down+(e.clientX-targetvalues.keep)/ratio);
-						e.preventDefault();
-						e.stopPropagation();
-					},
-					'mouseup':function(e){
-						if ($(window).width()<options.limit) return;
-						if (!capture) return;
-						capture=false;
-						slidervalues.rect=slider[0].getBoundingClientRect();
-						targetvalues.rect=target[0].getBoundingClientRect();
-						slider.css({
-							'bottom':'2px',
-							'left':(slidervalues.rect.left-targetvalues.rect.left+target.scrollLeft()).toString()+'px',
-							'top':'auto',
-							'position':'absolute'
-						});
-						slider.fadeOut();
-						e.preventDefault();
-						e.stopPropagation();
-					}
-				});
-				target.on({
-					'mousemove':function(){
-						if ($(window).width()<options.limit) return;
-						if (ratio>=1) return;
-						if (!slider.is(':visible')) slider.fadeIn();
-					},
-					'mouseleave':function(){
-						if (capture) return;
-						slider.fadeOut();
-					}
-				}).append(slider);
-				break;
 		}
 		/* スクロールバー表示判定 */
 		$(window).on('load resize scroll',function(){
-			if (options.type=='scroll')
-			{
-				ratio=target.width()/target[0].scrollWidth;
-				if (slider!=null) slider.css({'width':(target.width()*ratio).toString()+'px'});
-			}
 			if ($(window).width()<options.limit)
 			{
 				target.css({
