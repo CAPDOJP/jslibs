@@ -196,6 +196,7 @@ jQuery.fn.imgSlider = function(options){
 		{
 			case 'button':
 				arrow=$('<span>').css({
+					'box-sizing':'border-box',
 					'display':'block',
 					'height':'20px',
 					'left':'50%',
@@ -243,8 +244,8 @@ jQuery.fn.imgSlider = function(options){
 					e.preventDefault();
 					e.stopPropagation();
 				}).hide();
-				prev=button.clone(true).append(arrow.clone().css({'border-left':'2px solid rgba(255,255,255,0.75)','border-bottom':'2px solid rgba(255,255,255,0.75)'}));
-				next=button.clone(true).append(arrow.clone().css({'border-right':'2px solid rgba(255,255,255,0.75)','border-top':'2px solid rgba(255,255,255,0.75)'}));
+				prev=button.clone(true).append(arrow.clone().css({'border-left':'2px solid rgba(255,255,255,0.75)','border-bottom':'2px solid rgba(255,255,255,0.75)','margin-left':'4px'}));
+				next=button.clone(true).append(arrow.clone().css({'border-right':'2px solid rgba(255,255,255,0.75)','border-top':'2px solid rgba(255,255,255,0.75)','margin-left':'-4px'}));
 				$.data(prev[0],'type','prev');
 				$.data(next[0],'type','next');
 				target.on({
