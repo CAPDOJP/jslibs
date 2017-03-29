@@ -178,7 +178,7 @@ jQuery.fn.sliderAction = function(options){
 			if (!options.hidden!=null && !options.hidden.is(':visible'))
 			{
 				display=options.hidden.css('display');
-				options.hidden.css({'display':'block','visibility':'hidden'});
+				options.hidden.css({'display':'block','opacity':'0'});
 			}
 			switch (options.direction)
 			{
@@ -227,7 +227,7 @@ jQuery.fn.sliderAction = function(options){
 					}
 					break;
 			}
-			if (display!=null) options.hidden.css({'display':display,'visibility':''});
+			if (display!=null) options.hidden.css({'display':display,'opacity':'1'});
 		});
 	});
 };
