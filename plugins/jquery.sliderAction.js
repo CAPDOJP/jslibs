@@ -176,7 +176,7 @@ jQuery.fn.sliderAction = function(options){
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
 			var display=null;
-			if (!options.hidden!=null)
+			if (!options.hidden!=null && !options.hidden.is(':visible'))
 			{
 				display=options.hidden.css('display');
 				options.hidden.css({'display':'block','visibility':'hidden'});
