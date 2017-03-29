@@ -164,6 +164,7 @@ jQuery.fn.imgSlider = function(options){
 	},options);
 	return $(this).each(function(){
 		var capture=false;
+		var container=null;
 		var ratio=0;
 		var arrow=null;
 		var button=null;
@@ -191,6 +192,7 @@ jQuery.fn.imgSlider = function(options){
 				start:0
 			}
 		};
+		container=target.parent();
 		$.data(target[0],'dragged',false);
 		switch (options.type)
 		{
@@ -317,9 +319,9 @@ jQuery.fn.imgSlider = function(options){
 			case 'scroll':
 				scrollbar=$('<div>').css({
 					'background-color':'rgba(0,0,0,0.75)',
-					'border-radius':'5px',
+					'border-radius':'3px',
 					'bottom':'2px',
-					'height':'10px',
+					'height':'6px',
 					'left':'0px',
 					'margin':'0px',
 					'padding':'0px',
@@ -349,7 +351,7 @@ jQuery.fn.imgSlider = function(options){
 						if (!capture) return;
 						targetvalues.move.left=scrollbarvalues.down.rect.left+(e.clientX-targetvalues.move.start);
 						if (targetvalues.move.left<0) targetvalues.move.left=0;
-						if (targetvalues.move.left>$(window).width()-scrollbar.outerWidth(true)) targetvalues.move.left=$(window).width()-scrollbar.outerWidth(true);
+						if (targetvalues.move.left>container.width()-scrollbar.outerWidth(true)) targetvalues.move.left=container.width()-scrollbar.outerWidth(true);
 						scrollbar.css({'left':targetvalues.move.left.toString()+'px'});
 						target.scrollLeft(targetvalues.down.left+(e.clientX-targetvalues.move.start)/ratio);
 						e.preventDefault();
@@ -388,8 +390,8 @@ jQuery.fn.imgSlider = function(options){
 		$(window).on('load resize scroll',function(){
 			if (options.type=='scroll')
 			{
-				ratio=$(window).width()/target[0].scrollWidth;
-				if (scrollbar!=null) scrollbar.css({'width':($(window).width()*ratio).toString()+'px'});
+				ratio=container.width()/target[0].scrollWidth;
+				if (scrollbar!=null) scrollbar.css({'width':(container.width()*ratio).toString()+'px'});
 			}
 			if ($(window).width()<options.limit)
 			{

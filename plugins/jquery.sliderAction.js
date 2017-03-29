@@ -27,15 +27,12 @@ jQuery.fn.sliderAction = function(options){
 		var capture=false;
 		var container=null;
 		var down={
-			left:0,
-			top:0
+				left:0,
+				top:0
 		};
 		var drag={
 			left:0,
-			start:{
-				left:0,
-				top:0
-			},
+			start:0,
 			top:0
 		};
 		var ratio=0;
@@ -84,11 +81,6 @@ jQuery.fn.sliderAction = function(options){
 			if ($(window).width()<options.limit) return;
 			capture=true;
 			/* 各種変数初期化 */
-			drag.start.left=e.clientX;
-			drag.start.top=e.clientY;
-			down.left=target.scrollLeft();
-			down.top=target.scrollTop();
-			/* スライダー移動開始 */
 			rect=slider[0].getBoundingClientRect();
 			slider.css({
 				'bottom':'auto',
@@ -97,6 +89,17 @@ jQuery.fn.sliderAction = function(options){
 				'top':rect.top.toString()+'px',
 				'position':'fixed'
 			});
+			down.left=target.scrollLeft();
+			down.top=target.scrollTop();
+			switch (options.direction)
+			{
+				case 'vertical':
+					drag.start=e.clientY;
+					break;
+				case 'holizontal':
+					drag.start=e.clientX;
+					break;
+			}
 			e.preventDefault();
 			e.stopPropagation();
 		}).hide();
@@ -104,22 +107,22 @@ jQuery.fn.sliderAction = function(options){
 			'mousemove':function(e){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
-				/* スライダー移動 */
+				/* 各種変数初期化 */
 				switch (options.direction)
 				{
 					case 'vertical':
-						drag.top=rect.top+(e.clientY-drag.start.top);
+						drag.top=rect.top+(e.clientY-drag.start);
 						if (drag.top<0) drag.top=0;
-						if (drag.top>container.innerHeight()-slider.outerHeight(true)) drag.top=container.innerHeight()-slider.outerHeight(true);
+						if (drag.top>container.height()-slider.outerHeight(true)) drag.top=container.height()-slider.outerHeight(true);
 						slider.css({'top':drag.top.toString()+'px'});
-						target.scrollTop(down.top+(e.clientY-drag.start.top)/ratio);
+						target.scrollTop(down.top+(e.clientY-drag.start)/ratio);
 						break;
 					case 'holizontal':
-						drag.left=rect.left+(e.clientX-drag.start.left);
+						drag.left=rect.left+(e.clientX-drag.start);
 						if (drag.left<0) drag.left=0;
-						if (drag.left>container.innerWidth()-slider.outerWidth(true)) drag.left=container.innerWidth()-slider.outerWidth(true);
+						if (drag.left>container.width()-slider.outerWidth(true)) drag.left=container.width()-slider.outerWidth(true);
 						slider.css({'left':drag.left.toString()+'px'});
-						target.scrollLeft(down.left+(e.clientX-drag.start.left)/ratio);
+						target.scrollLeft(down.left+(e.clientX-drag.start)/ratio);
 						break;
 				}
 				e.preventDefault();
@@ -129,7 +132,6 @@ jQuery.fn.sliderAction = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				capture=false;
-				/* スライダー移動終了 */
 				rect=slider[0].getBoundingClientRect();
 				switch (options.direction)
 				{
@@ -173,8 +175,8 @@ jQuery.fn.sliderAction = function(options){
 			{
 				case 'vertical':
 					/* スライダーサイズ調整 */
-					ratio=container.innerHeight()/target[0].scrollHeight;
-					if (slider!=null) slider.css({'height':(container.innerHeight()*ratio).toString()+'px'});
+					ratio=container.height()/target[0].scrollHeight;
+					if (slider!=null) slider.css({'height':(container.height()*ratio).toString()+'px'});
 					/* スタイルシート調整 */
 					if ($(window).width()<options.limit)
 					{
@@ -194,8 +196,8 @@ jQuery.fn.sliderAction = function(options){
 					break;
 				case 'holizontal':
 					/* スライダーサイズ調整 */
-					ratio=container.innerWidth()/target[0].scrollWidth;
-					if (slider!=null) slider.css({'width':(container.innerWidth()*ratio).toString()+'px'});
+					ratio=container.width()/target[0].scrollWidth;
+					if (slider!=null) slider.css({'width':(container.width()*ratio).toString()+'px'});
 					/* スタイルシート調整 */
 					if ($(window).width()<options.limit)
 					{
