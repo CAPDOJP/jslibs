@@ -224,7 +224,7 @@ jQuery.fn.sliderAction = function(options){
 					}
 					break;
 			}
-			if (display!=null) container.css({'display':display});
+			if (display!=null) container.css({'display':display,'visibility':'visible'});
 		});
 	});
 };
