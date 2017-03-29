@@ -176,8 +176,6 @@ jQuery.fn.sliderAction = function(options){
 		}).append(slider);
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
-			if (!options.hidden!=null && !options.hidden.is(':visible')) {sizecheck=false;return;}
-			checkslidersize();
 			/* スタイルシート調整 */
 			switch (options.direction)
 			{
@@ -218,9 +216,12 @@ jQuery.fn.sliderAction = function(options){
 					}
 					break;
 			}
-		});
-		function checkslidersize(){
 			/* スライダーサイズ調整 */
+			if (!options.hidden!=null && !options.hidden.is(':visible')) {sizecheck=false;return;}
+			checkslidersize();
+		});
+		/* スライダーサイズ調整 */
+		function checkslidersize(){
 			switch (options.direction)
 			{
 				case 'vertical':
