@@ -163,66 +163,159 @@ jQuery.fn.imgSlider = function(options){
 		type:'drag'
 	},options);
 	return $(this).each(function(){
-		var target=$(this);
 		var capture=false;
+		var ratio=0;
+		var scrollbar=null;
+		var scrollbarvalues={
+			down:{
+				rect:null
+			},
+			move:{
+				amount:0,
+				left:0,
+				start:0
+			}
+		};
+		var target=$(this);
 		var targetvalues={
-			mousedown:{
+			down:{
 				left:0
 			},
-			mousemove:{
+			move:{
 				amount:0,
 				left:0,
 				start:0
 			}
 		};
 		$.data(target[0],'dragged',false);
-		target.on({
-			'touchstart mousedown':function(e){
-				if ($(window).width()<options.limit) return;
-				targetvalues.mousedown.left=target.scrollLeft();
-				if (e.type=='touchstart')
-				{
-					targetvalues.mousemove.start=e.originalEvent.touches[0].pageX;
-					targetvalues.mousemove.left=e.originalEvent.touches[0].pageX;
-				}
-				else
-				{
-					targetvalues.mousemove.start=e.pageX;
-					targetvalues.mousemove.left=e.pageX;
-				}
-				capture=true;
-				targetvalues.mousemove.amount=0;
-				$.data(target[0],'dragged',false);
-				e.preventDefault();
-			},
-			'touchmove mousemove':function(e){
-				if ($(window).width()<options.limit) return;
-				if (!capture) return;
-				if (e.type=='touchmove')
-				{
-					target.scrollLeft(targetvalues.mousedown.left+targetvalues.mousemove.start-e.originalEvent.touches[0].pageX);
-					targetvalues.mousemove.amount=targetvalues.mousemove.left-e.originalEvent.touches[0].pageX;
-					targetvalues.mousemove.left=e.originalEvent.touches[0].pageX;
-				}
-				else
-				{
-					target.scrollLeft(targetvalues.mousedown.left+targetvalues.mousemove.start-e.pageX);
-					targetvalues.mousemove.amount=targetvalues.mousemove.left-e.pageX;
-					targetvalues.mousemove.left=e.pageX;
-				}
-				e.preventDefault();
-			},
-			'touchend mouseup':function(e){
-				if ($(window).width()<options.limit) return;
-				if (!capture) return;
-				target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(targetvalues.mousemove.amount,2))*((targetvalues.mousemove.amount<0)?-1:1)},350,'easeOutCirc');
-				capture=false;
-				$.data(target[0],'dragged',(targetvalues.mousemove.amount!=0));
-				e.preventDefault();
-			}
-		});
+		switch (options.type)
+		{
+			case 'button':
+				break;
+			case 'drag':
+				target.on({
+					'touchstart mousedown':function(e){
+						if ($(window).width()<options.limit) return;
+						capture=true;
+						targetvalues.down.left=target.scrollLeft();
+						targetvalues.move.amount=0;
+						if (e.type=='touchstart')
+						{
+							targetvalues.move.left=e.originalEvent.touches[0].pageX;
+							targetvalues.move.start=e.originalEvent.touches[0].pageX;
+						}
+						else
+						{
+							targetvalues.move.left=e.pageX;
+							targetvalues.move.start=e.pageX;
+						}
+						$.data(target[0],'dragged',false);
+						e.preventDefault();
+					},
+					'touchmove mousemove':function(e){
+						if ($(window).width()<options.limit) return;
+						if (!capture) return;
+						if (e.type=='touchmove')
+						{
+							target.scrollLeft(targetvalues.down.left+targetvalues.move.start-e.originalEvent.touches[0].pageX);
+							targetvalues.move.amount=targetvalues.move.left-e.originalEvent.touches[0].pageX;
+							targetvalues.move.left=e.originalEvent.touches[0].pageX;
+						}
+						else
+						{
+							target.scrollLeft(targetvalues.down.left+targetvalues.move.start-e.pageX);
+							targetvalues.move.amount=targetvalues.move.left-e.pageX;
+							targetvalues.move.left=e.pageX;
+						}
+						e.preventDefault();
+					},
+					'touchend mouseup':function(e){
+						if ($(window).width()<options.limit) return;
+						if (!capture) return;
+						capture=false;
+						target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(targetvalues.move.amount,2))*((targetvalues.move.amount<0)?-1:1)},350,'easeOutCirc');
+						$.data(target[0],'dragged',(targetvalues.move.amount!=0));
+						e.preventDefault();
+					}
+				});
+				break;
+			case 'scroll':
+				scrollbar=$('<div>').css({
+					'background-color':'rgba(0,0,0,0.75)',
+					'border-radius':'5px',
+					'bottom':'3px',
+					'height':'10px',
+					'left':'0px',
+					'margin':'0px',
+					'padding':'0px',
+					'position':'absolute',
+					'transition':'none',
+					'width':'100%',
+					'z-index':'9999999'
+				})
+				.on('mousedown',function(e){
+					if ($(window).width()<options.limit) return;
+					capture=true;
+					scrollbarvalues.down.rect=scrollbar[0].getBoundingClientRect();
+					scrollbar.css({
+						'bottom':'auto',
+						'left':scrollbarvalues.down.rect.left.toString()+'px',
+						'top':scrollbarvalues.down.rect.top.toString()+'px',
+						'position':'fixed'
+					});
+					targetvalues.down.left=target.scrollLeft();
+					targetvalues.move.start=e.clientX;
+					e.preventDefault();
+					e.stopPropagation();
+				}).hide();
+				$(window).on({
+					'mousemove':function(e){
+						if ($(window).width()<options.limit) return;
+						if (!capture) return;
+						targetvalues.move.left=scrollbarvalues.down.rect.left+(e.clientX-targetvalues.move.start);
+						if (targetvalues.move.left<0) targetvalues.move.left=0;
+						if (targetvalues.move.left>$(window).width()-scrollbar.outerWidth(true)) targetvalues.move.left=$(window).width()-scrollbar.outerWidth(true);
+						scrollbar.css({'left':targetvalues.move.left.toString()+'px'});
+						target.scrollLeft(targetvalues.down.left+(e.clientX-targetvalues.move.start)/ratio);
+						e.preventDefault();
+						e.stopPropagation();
+					},
+					'mouseup':function(e){
+						if ($(window).width()<options.limit) return;
+						if (!capture) return;
+						capture=false;
+						scrollbarvalues.down.rect=scrollbar[0].getBoundingClientRect();
+						scrollbar.css({
+							'bottom':'3px',
+							'left':(scrollbarvalues.down.rect.left+target.scrollLeft()).toString()+'px',
+							'top':'auto',
+							'position':'absolute'
+						});
+						scrollbar.fadeOut();
+						e.preventDefault();
+						e.stopPropagation();
+					}
+				});
+				target.on({
+					'mousemove':function(){
+						if ($(window).width()<options.limit) return;
+						if (ratio>=1) return;
+						if (!scrollbar.is(':visible')) scrollbar.fadeIn();
+					},
+					'mouseleave':function(){
+						if (capture) return;
+						scrollbar.fadeOut();
+					}
+				}).append(scrollbar);
+				break;
+		}
 		/* スクロールバー表示判定 */
-		$(window).on('load resize',function(){
+		$(window).on('load resize scroll',function(){
+			if (options.type=='scroll')
+			{
+				ratio=$(window).width()/target[0].scrollWidth;
+				if (scrollbar!=null) scrollbar.css({'width':($(window).width()*ratio).toString()+'px'});
+			}
 			if ($(window).width()<options.limit)
 			{
 				target.css({
