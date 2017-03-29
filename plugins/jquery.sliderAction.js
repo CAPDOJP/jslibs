@@ -174,6 +174,16 @@ jQuery.fn.sliderAction = function(options){
 		}).append(slider);
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
+			var sizecheck=false;
+			var display=null;
+			var zindex=null;
+			if (!options.hidden!=null && !options.hidden.is(':visible'))
+			{
+				sizecheck=true;
+				display=options.hidden.css('display');
+				zindex=options.hidden.css('z-index');
+				options.hidden.css({'display':'block','visibility':'hidden','z-index':'-1'});
+			}
 			switch (options.direction)
 			{
 				case 'vertical':
@@ -221,6 +231,7 @@ jQuery.fn.sliderAction = function(options){
 					}
 					break;
 			}
+			if (sizecheck) options.hidden.css({'display':display,'visibility':'','z-index':zindex});
 		});
 	});
 };
