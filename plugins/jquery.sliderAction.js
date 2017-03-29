@@ -14,6 +14,7 @@
 * parameters
 * options @ direction	:スクロール向き[vertical:holizontal]
 *         @ color		:スクロールバー背景色
+*         @ hidden		:非表示親要素
 *         @ limit		:スクロールバー表示最小ブラウザサイズ
 * -------------------------------------------------------------------
 */
@@ -21,6 +22,7 @@ jQuery.fn.sliderAction = function(options){
 	var options=$.extend({
 		direction:'vertical',
 		color:'rgba(0,0,0,0.75)',
+		hidden:null,
 		limit:0
 	},options);
 	return $(this).each(function(){
@@ -172,15 +174,14 @@ jQuery.fn.sliderAction = function(options){
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
 			var display=null;
-			if (!container.is(':visible'))
+			if (!options.hidden!=null)
 			{
-				display=container.css('display');
-				container.css({'display':'block','visibility':'hidden'});
+				display=options.hidden.css('display');
+				options.hidden.css({'display':'block','visibility':'hidden'});
 			}
 			switch (options.direction)
 			{
 				case 'vertical':
-					alert(container.height());
 					/* スライダーサイズ調整 */
 					ratio=container.height()/target[0].scrollHeight;
 					if (slider!=null) slider.css({'height':(container.height()*ratio).toString()+'px'});
@@ -225,7 +226,7 @@ jQuery.fn.sliderAction = function(options){
 					}
 					break;
 			}
-			if (display!=null) container.css({'display':display,'visibility':'visible'});
+			if (display!=null) options.hidden.css({'display':display,'visibility':'visible'});
 		});
 	});
 };
