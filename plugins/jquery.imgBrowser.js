@@ -36,7 +36,7 @@ jQuery.fn.imgBrowser = function(options){
 			'display':'none',
 			'height':'100%',
 			'left':'0px',
-			'padding':'4em 1em',
+			'padding':'3em 1em',
 			'position':'fixed',
 			'text-align':'center',
 			'top':'0px',
@@ -61,26 +61,6 @@ jQuery.fn.imgBrowser = function(options){
 			'vertical-align':'middle',
 			'white-space':'nowrap'
 		});
-		var header=$('<div>').css({
-			'border-bottom':'1px solid rgba(255,255,255,0.25)',
-			'height':'3em',
-			'margin':'0px',
-			'padding':'0px',
-			'position':'fixed',
-			'left':'0px',
-			'top':'0px',
-			'width':'100%'
-		});
-		var footer=$('<div>').css({
-			'border-top':'1px solid rgba(255,255,255,0.25)',
-			'bottom':'0px',
-			'height':'3em',
-			'margin':'0px',
-			'padding':'0px',
-			'position':'fixed',
-			'left':'0px',
-			'width':'100%'
-		});
 		var close=$('<div>').css({
 			'color':'rgba(255,255,255,0.75)',
 			'font-size':'1.5em',
@@ -96,8 +76,7 @@ jQuery.fn.imgBrowser = function(options){
 		.text('x')
 		.on('click',function(){target.hide();});
 		target.append(container.append(contents));
-		target.append(header.append(close));
-		target.append(footer);
+		target.append(close);
 		/*
 		*------------------------------------------------------------
 		* コンテンツ設定
