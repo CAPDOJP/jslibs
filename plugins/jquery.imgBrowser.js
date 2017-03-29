@@ -306,7 +306,7 @@ jQuery.fn.imgSlider = function(options){
 				scrollbar=$('<div>').css({
 					'background-color':'rgba(0,0,0,0.75)',
 					'border-radius':'5px',
-					'bottom':'3px',
+					'bottom':'2px',
 					'height':'10px',
 					'left':'0px',
 					'margin':'0px',
