@@ -196,17 +196,15 @@ jQuery.fn.imgSlider = function(options){
 		{
 			case 'button':
 				arrow=$('<span>').css({
-					'border-left':'2px solid rgba(255,255,255,0.75)',
-					'border-bottom':'2px solid rgba(255,255,255,0.75)',
 					'display':'block',
 					'height':'20px',
 					'left':'50%',
 					'position':'absolute',
 					'top':'50%',
-					'width':'20px',
-					'-webkit-transform':'rotate(45deg) translate(-50%,-50%)',
-					'-ms-transform':'rotate(45deg) translate(-50%,-50%)',
-					'transform':'rotate(45deg) translate(-50%,-50%)'
+					'width':'50px',
+					'-webkit-transform':'translate(-50%,-50%) rotate(45deg)',
+					'-ms-transform':'translate(-50%,-50%) rotate(45deg)',
+					'transform':'translate(-50%,-50%) rotate(45deg)'
 				});
 				button=$('<div>').css({
 					'background-color':'rgba(0,0,0,0.75)',
@@ -238,8 +236,8 @@ jQuery.fn.imgSlider = function(options){
 					e.preventDefault();
 					e.stopPropagation();
 				}).hide();
-				prev=button.clone().css({'left':'0px'}).append(arrow.clone().css({'border-left':'2px solid rgba(255,255,255,0.75)'}));
-				next=button.clone().css({'right':'0px'}).append(arrow.clone().css({'border-right':'2px solid rgba(255,255,255,0.75)'}));
+				prev=button.clone().css({'left':'0px'}).append(arrow.clone().css({'border-left':'2px solid rgba(255,255,255,0.75)','border-bottom':'2px solid rgba(255,255,255,0.75)'}));
+				next=button.clone().css({'right':'0px'}).append(arrow.clone().css({'border-right':'2px solid rgba(255,255,255,0.75)','border-top':'2px solid rgba(255,255,255,0.75)'}));
 				$.data(prev[0],'type','prev');
 				$.data(next[0],'type','next');
 				target.on({
