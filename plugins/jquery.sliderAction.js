@@ -220,6 +220,60 @@ jQuery.fn.sliderAction = function(options){
 			if (!options.hidden!=null && !options.hidden.is(':visible')) {sizecheck=false;return;}
 			checkslidersize();
 		});
+		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
+			if (!slider.is(':visible')) return;
+			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY*-1:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail*-1;
+			delta=(delta<0)?-150:150;
+			rect.slider=slider[0].getBoundingClientRect();
+			rect.target=target[0].getBoundingClientRect();
+			slider.css({
+				'bottom':'auto',
+				'left':rect.slider.left.toString()+'px',
+				'right':'auto',
+				'top':rect.slider.top.toString()+'px',
+				'position':'fixed'
+			});
+			switch (options.direction)
+			{
+				case 'vertical':
+					drag.top=rect.slider.top+delta;
+					if (drag.top<rect.target.top) drag.top=rect.target.top;
+					if (drag.top>rect.target.bottom-slider.outerHeight(true)) drag.top=rect.target.bottom-slider.outerHeight(true);
+					slider.css({'top':drag.top.toString()+'px'});
+					target.scrollTop(down.top+delta/ratio);
+					break;
+				case 'holizontal':
+					drag.left=rect.slider.left+delta;
+					if (drag.left<rect.target.left) drag.left=rect.target.left;
+					if (drag.left>rect.target.right-slider.outerWidth(true)) drag.left=rect.target.right-slider.outerWidth(true);
+					slider.css({'left':drag.left.toString()+'px'});
+					target.scrollLeft(down.left+delta/ratio);
+					break;
+			}
+			rect.slider=slider[0].getBoundingClientRect();
+			rect.target=target[0].getBoundingClientRect();
+			switch (options.direction)
+			{
+				case 'vertical':
+					slider.css({
+						'left':'auto',
+						'right':'2px',
+						'top':(rect.slider.top-rect.target.top+target.scrollTop()).toString()+'px',
+						'position':'absolute'
+					});
+					break;
+				case 'holizontal':
+					slider.css({
+						'bottom':'2px',
+						'left':(rect.slider.left-rect.target.left+target.scrollLeft()).toString()+'px',
+						'top':'auto',
+						'position':'absolute'
+					});
+					break;
+			}
+			e.preventDefault();
+			e.stopPropagation();
+		});
 		/* スライダーサイズ調整 */
 		function checkslidersize(){
 			switch (options.direction)
