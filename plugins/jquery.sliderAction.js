@@ -240,34 +240,27 @@ jQuery.fn.sliderAction = function(options){
 					if (drag.top<rect.target.top) drag.top=rect.target.top;
 					if (drag.top>rect.target.bottom-slider.outerHeight(true)) drag.top=rect.target.bottom-slider.outerHeight(true);
 					slider.css({'top':drag.top.toString()+'px'});
-					target.scrollTop(down.top+delta/ratio);
+					target.scrollTop(target.scrollTop()+delta/ratio,function(){
+						slider.css({
+							'left':'auto',
+							'right':'2px',
+							'top':(drag.top-rect.target.top+target.scrollTop()+delta/ratio).toString()+'px',
+							'position':'absolute'
+						});
+					});
 					break;
 				case 'holizontal':
 					drag.left=rect.slider.left+delta;
 					if (drag.left<rect.target.left) drag.left=rect.target.left;
 					if (drag.left>rect.target.right-slider.outerWidth(true)) drag.left=rect.target.right-slider.outerWidth(true);
 					slider.css({'left':drag.left.toString()+'px'});
-					target.scrollLeft(down.left+delta/ratio);
-					break;
-			}
-			rect.slider=slider[0].getBoundingClientRect();
-			rect.target=target[0].getBoundingClientRect();
-			switch (options.direction)
-			{
-				case 'vertical':
-					slider.css({
-						'left':'auto',
-						'right':'2px',
-						'top':(rect.slider.top-rect.target.top+target.scrollTop()).toString()+'px',
-						'position':'absolute'
-					});
-					break;
-				case 'holizontal':
-					slider.css({
-						'bottom':'2px',
-						'left':(rect.slider.left-rect.target.left+target.scrollLeft()).toString()+'px',
-						'top':'auto',
-						'position':'absolute'
+					target.scrollLeft(target.scrollLeft()+delta/ratio,function(){
+						slider.css({
+							'bottom':'2px',
+							'left':(drag.left-rect.target.left+target.scrollLeft()+delta/ratio).toString()+'px',
+							'top':'auto',
+							'position':'absolute'
+						});
 					});
 					break;
 			}
