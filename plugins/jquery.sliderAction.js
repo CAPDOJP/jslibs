@@ -14,7 +14,6 @@
 * parameters
 * options @ direction	:スクロール向き[vertical:holizontal]
 *         @ color		:スクロールバー背景色
-*         @ hidden		:非表示親要素
 *         @ limit		:スクロールバー表示最小ブラウザサイズ
 * -------------------------------------------------------------------
 */
@@ -22,7 +21,6 @@ jQuery.fn.sliderAction = function(options){
 	var options=$.extend({
 		direction:'vertical',
 		color:'rgba(0,0,0,0.75)',
-		hidden:null,
 		limit:0
 	},options);
 	return $(this).each(function(){
@@ -93,15 +91,7 @@ jQuery.fn.sliderAction = function(options){
 			keep.left=e.clientX;
 			keep.top=e.clientY;
 			/* スクロール開始 */
-			rect.slider=slider[0].getBoundingClientRect();
-			rect.target=target[0].getBoundingClientRect();
-			slider.css({
-				'bottom':'auto',
-				'left':rect.slider.left.toString()+'px',
-				'right':'auto',
-				'top':rect.slider.top.toString()+'px',
-				'position':'fixed'
-			});
+			slidestart();
 			e.preventDefault();
 			e.stopPropagation();
 		}).hide();
@@ -113,18 +103,10 @@ jQuery.fn.sliderAction = function(options){
 				switch (options.direction)
 				{
 					case 'vertical':
-						drag.top=rect.slider.top+(e.clientY-keep.top);
-						if (drag.top<rect.target.top) drag.top=rect.target.top;
-						if (drag.top>rect.target.bottom-slider.outerHeight(true)) drag.top=rect.target.bottom-slider.outerHeight(true);
-						slider.css({'top':drag.top.toString()+'px'});
-						target.scrollTop(down.top+(e.clientY-keep.top)/ratio);
+						slidemove(e.clientY-keep.top,null);
 						break;
 					case 'holizontal':
-						drag.left=rect.slider.left+(e.clientX-keep.left);
-						if (drag.left<rect.target.left) drag.left=rect.target.left;
-						if (drag.left>rect.target.right-slider.outerWidth(true)) drag.left=rect.target.right-slider.outerWidth(true);
-						slider.css({'left':drag.left.toString()+'px'});
-						target.scrollLeft(down.left+(e.clientX-keep.left)/ratio);
+						slidemove(e.clientX-keep.left,null);
 						break;
 				}
 				e.preventDefault();
@@ -135,27 +117,7 @@ jQuery.fn.sliderAction = function(options){
 				if (!capture) return;
 				capture=false;
 				/* スクロール終了 */
-				rect.slider=slider[0].getBoundingClientRect();
-				rect.target=target[0].getBoundingClientRect();
-				switch (options.direction)
-				{
-					case 'vertical':
-						slider.css({
-							'left':'auto',
-							'right':'2px',
-							'top':(rect.slider.top-rect.target.top+target.scrollTop()).toString()+'px',
-							'position':'absolute'
-						});
-						break;
-					case 'holizontal':
-						slider.css({
-							'bottom':'2px',
-							'left':(rect.slider.left-rect.target.left+target.scrollLeft()).toString()+'px',
-							'top':'auto',
-							'position':'absolute'
-						});
-						break;
-				}
+				slideend();
 				slider.fadeOut();
 				e.preventDefault();
 				e.stopPropagation();
@@ -217,7 +179,7 @@ jQuery.fn.sliderAction = function(options){
 					break;
 			}
 			/* スライダーサイズ調整 */
-			if (!options.hidden!=null && !options.hidden.is(':visible')) {sizecheck=false;return;}
+			if (!target.is(':visible')) {sizecheck=false;return;}
 			checkslidersize();
 		});
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
@@ -225,46 +187,13 @@ jQuery.fn.sliderAction = function(options){
 			/* マウスホイールスクロール */
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail;
 			delta=(delta<0)?-100:100;
-			rect.slider=slider[0].getBoundingClientRect();
-			rect.target=target[0].getBoundingClientRect();
-			slider.css({
-				'bottom':'auto',
-				'left':rect.slider.left.toString()+'px',
-				'right':'auto',
-				'top':rect.slider.top.toString()+'px',
-				'position':'fixed'
-			});
-			switch (options.direction)
-			{
-				case 'vertical':
-					drag.top=rect.slider.top+delta;
-					if (drag.top<rect.target.top) drag.top=rect.target.top;
-					if (drag.top>rect.target.bottom-slider.outerHeight(true)) drag.top=rect.target.bottom-slider.outerHeight(true);
-					slider.css({'top':drag.top.toString()+'px'});
-					target.scrollTop(target.scrollTop()+delta/ratio,function(){
-						slider.css({
-							'left':'auto',
-							'right':'2px',
-							'top':(drag.top-rect.target.top+target.scrollTop()+delta/ratio).toString()+'px',
-							'position':'absolute'
-						});
-					});
-					break;
-				case 'holizontal':
-					drag.left=rect.slider.left+delta;
-					if (drag.left<rect.target.left) drag.left=rect.target.left;
-					if (drag.left>rect.target.right-slider.outerWidth(true)) drag.left=rect.target.right-slider.outerWidth(true);
-					slider.css({'left':drag.left.toString()+'px'});
-					target.scrollLeft(target.scrollLeft()+delta/ratio,function(){
-						slider.css({
-							'bottom':'2px',
-							'left':(drag.left-rect.target.left+target.scrollLeft()+delta/ratio).toString()+'px',
-							'top':'auto',
-							'position':'absolute'
-						});
-					});
-					break;
-			}
+			/* 各種変数初期化 */
+			down.left=target.scrollLeft();
+			down.top=target.scrollTop();
+			/* スクロール開始 */
+			slidestart();
+			/* スクロール */
+			slidemove(delta,slideend);
 			e.preventDefault();
 			e.stopPropagation();
 		});
@@ -282,6 +211,62 @@ jQuery.fn.sliderAction = function(options){
 					break;
 			}
 			sizecheck=true;
+		};
+		/* スクロール開始 */
+		function slidestart(){
+			rect.slider=slider[0].getBoundingClientRect();
+			rect.target=target[0].getBoundingClientRect();
+			slider.css({
+				'bottom':'auto',
+				'left':rect.slider.left.toString()+'px',
+				'right':'auto',
+				'top':rect.slider.top.toString()+'px',
+				'position':'fixed'
+			});
+		};
+		/* スクロール */
+		function slidemove(amount,callback){
+			switch (options.direction)
+			{
+				case 'vertical':
+					drag.top=rect.slider.top+amount;
+					if (drag.top<rect.target.top) drag.top=rect.target.top;
+					if (drag.top>rect.target.bottom-slider.outerHeight(true)) drag.top=rect.target.bottom-slider.outerHeight(true);
+					slider.css({'top':drag.top.toString()+'px'});
+					target.scrollTop(down.top+amount/ratio,callback);
+					break;
+				case 'holizontal':
+					drag.left=rect.slider.left+amount;
+					if (drag.left<rect.target.left) drag.left=rect.target.left;
+					if (drag.left>rect.target.right-slider.outerWidth(true)) drag.left=rect.target.right-slider.outerWidth(true);
+					slider.css({'left':drag.left.toString()+'px'});
+					target.scrollLeft(down.left+amount/ratio,callback);
+					break;
+			}
+		};
+		/* スクロール終了 */
+		function slideend(){
+			rect.slider=slider[0].getBoundingClientRect();
+			rect.target=target[0].getBoundingClientRect();
+			switch (options.direction)
+			{
+				case 'vertical':
+					slider.css({
+						'left':'auto',
+						'right':'2px',
+						'top':(rect.slider.top-rect.target.top+target.scrollTop()).toString()+'px',
+						'position':'absolute'
+					});
+					break;
+				case 'holizontal':
+					slider.css({
+						'bottom':'2px',
+						'left':(rect.slider.left-rect.target.left+target.scrollLeft()).toString()+'px',
+						'top':'auto',
+						'position':'absolute'
+					});
+					break;
+			}
 		};
 	});
 };
