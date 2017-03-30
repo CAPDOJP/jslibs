@@ -222,8 +222,9 @@ jQuery.fn.sliderAction = function(options){
 		});
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
 			if (!slider.is(':visible')) return;
+			/* マウスホイールスクロール */
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY*-1:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail*-1;
-			delta=(delta<0)?-150:150;
+			delta=(delta<0)?-100:100;
 			rect.slider=slider[0].getBoundingClientRect();
 			rect.target=target[0].getBoundingClientRect();
 			slider.css({
