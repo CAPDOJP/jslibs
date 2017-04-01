@@ -1273,10 +1273,10 @@ jQuery.fn.positionTop = function(parent){
 * -------------------------------------------------------------------
 */
 String.prototype.bytelength = function(){
-	var res=0; 
-	for (var i=0;i<$(this).length;i++)
+	var res=0;
+	for (var i=0;i<this.length;i++)
 	{
-		var char=$(this).charCodeAt(i);
+		var char=this.charCodeAt(i);
 		if ((char>=0x0 && char<0x81) || (char==0xf8f0) || (char>=0xff61 && char<0xffa0) || (char>= 0xf8f1 && char< 0xf8f4)) res+=1;
 		else res+=2;
 	}
