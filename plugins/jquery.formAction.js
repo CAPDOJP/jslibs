@@ -297,7 +297,7 @@ jQuery.fn.addrow = function(options){
 		//行追加
 		container.append(row);
 		//要素属性修正
-		container.children('tr').last().find('iframe,img,input:not(:file),textarea,select,label,span').each(function(){
+		container.children('tr').last().find('iframe,img,input,textarea,select,label,span').each(function(){
 			var index='0';
 			var target=$(this);
 			//ID修正
