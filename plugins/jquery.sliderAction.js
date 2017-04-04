@@ -202,12 +202,12 @@ jQuery.fn.sliderAction = function(options){
 			switch (options.direction)
 			{
 				case 'vertical':
-					ratio=target.height()/target[0].scrollHeight;
-					if (slider!=null) slider.css({'height':(target.height()*ratio).toString()+'px'});
+					ratio=target[0].clientHeight/target[0].scrollHeight;
+					if (slider!=null) slider.css({'height':(target[0].clientHeight*ratio).toString()+'px'});
 					break;
 				case 'holizontal':
-					ratio=target.width()/target[0].scrollWidth;
-					if (slider!=null) slider.css({'width':(target.width()*ratio).toString()+'px'});
+					ratio=target[0].clientWidth/target[0].scrollWidth;
+					if (slider!=null) slider.css({'width':(target[0].clientWidth*ratio).toString()+'px'});
 					break;
 			}
 			sizecheck=true;
