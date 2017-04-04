@@ -1297,6 +1297,11 @@ String.prototype.bytelength = function(){
 jQuery.fn.refererAction = function(options){
 	var options=$.extend({
 		sources:null,
+		multi:false,
+		ok:{
+			button:'',
+			callback:null
+		},
 		search:{
 			button:'',
 			callback:null
@@ -1308,6 +1313,8 @@ jQuery.fn.refererAction = function(options){
 		}
 	},options);
 	return $(this).each(function(){
+		//引数チェック
+		if (options.multi && options.ok.callback==null) {alert('マルチ選択の場合は、OKコールバックを指定して下さい。。');return;}
 		//要素チェック
 		if ($(this).find('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
 		var form=$(this);
@@ -1318,36 +1325,41 @@ jQuery.fn.refererAction = function(options){
 				source.on('click',options.search.button,function(){
 					if (options.search.callback!=null) options.search.callback(source);
 				});
+			if (options.ok.button!=null)
+				source.on('click',options.ok.button,function(){
+					if (options.ok.callback!=null) options.ok.callback(source);
+				});
 			//リスト操作
 			if (options.lists.length!=0) source.formAction({lists:options.lists});
 			//データ決定時操作
-			source.on('click',options.rows.row,function(){
-				//値セット
-				var table=$.data(source[0],'table');
-				var rowindex=$.data(source[0],'rowindex');
-				if (rowindex!=null)
-				{
-					$(this).find('input[type=hidden]').each(function(){
-						if (table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
-							table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).text($(this).toVal());
-						if (table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
-							table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).val($(this).toVal());
-					});
-					//強制行追加
-					$.each(table.find('tbody').find('tr').eq(rowindex-1).find('input[type=text],textarea'),function(){
-						$(this).trigger('keyup');
-					});
-				}
-				else
-				{
-					$(this).find('input[type=hidden]').each(function(){
-						if (form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')).text($(this).toVal());
-						if (form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')).val($(this).toVal());
-					});
-				}
-				if (options.rows.callback!=null) options.rows.callback(source);
-				source.parents('div').last().hide();
-			});
+			if (!options.multi)
+				source.on('click',options.rows.row,function(){
+					//値セット
+					var table=$.data(source[0],'table');
+					var rowindex=$.data(source[0],'rowindex');
+					if (rowindex!=null)
+					{
+						$(this).find('input[type=hidden]').each(function(){
+							if (table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
+								table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).text($(this).toVal());
+							if (table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
+								table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).val($(this).toVal());
+						});
+						//強制行追加
+						$.each(table.find('tbody').find('tr').eq(rowindex-1).find('input[type=text],textarea'),function(){
+							$(this).trigger('keyup');
+						});
+					}
+					else
+					{
+						$(this).find('input[type=hidden]').each(function(){
+							if (form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')).text($(this).toVal());
+							if (form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')).val($(this).toVal());
+						});
+					}
+					if (options.rows.callback!=null) options.rows.callback(source);
+					source.parents('div').last().hide();
+				});
 		});
 	});
 }
