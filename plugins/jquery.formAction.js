@@ -885,7 +885,6 @@ jQuery.fn.loadparts = function(options){
 jQuery.fn.reset = function(options){
 	var options=$.extend({
 		images:{},
-		detailreset:true,
 		callback:null
 	},options);
 	var container=$(this);
@@ -932,13 +931,12 @@ jQuery.fn.reset = function(options){
 				if ($(this).val().length==0) $(this).val($.data(this,'display'));
 			});
 			//要素内テーブル初期化
-			if (options.detailreset)
-				$(this).find('table').each(function(index){
-					$(this).children('tbody').children('tr').each(function(index){
-						if (index==0) $(this).reset({images:options.images});
-						else $(this).remove();
-					});
+			$(this).find('table').each(function(index){
+				$(this).children('tbody').children('tr').each(function(index){
+					if (index==0) $(this).reset({images:options.images});
+					else $(this).remove();
 				});
+			});
 			if (options.callback!=null) options.callback($(this));
 			break;
 	}
