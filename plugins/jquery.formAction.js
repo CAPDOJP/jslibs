@@ -1325,7 +1325,7 @@ jQuery.fn.refererAction = function(options){
 				source.on('click',options.search.button,function(){
 					if (options.search.callback!=null) options.search.callback(source);
 				});
-			if (options.ok.button!=null)
+			if (options.ok.button.length!=0)
 				source.on('click',options.ok.button,function(){
 					if (options.ok.callback!=null) options.ok.callback(source);
 				});
