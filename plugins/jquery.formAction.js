@@ -1291,7 +1291,7 @@ var oldshow = $.fn.show;
 jQuery.fn.show = function()
 {
     var ret=oldshow.apply(this, arguments);
-    if (!this.parent(':hidden').size()) this.css({'visibility':'visible'});
+    if (this.parent(':hidden').length==0) this.css({'visibility':'visible'});
     return ret;
 };
 /*
