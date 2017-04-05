@@ -1292,10 +1292,10 @@ jQuery.fn.show = function()
 {
     var ret=oldshow.apply(this, arguments);
 	var hidden=false;
-	$.each(this.parents(),function(){
-		if (this.css('visibility')=='hidden') hidden=true;
+	$.each($(this).parents(),function(){
+		if ($(this).css('visibility')=='hidden') hidden=true;
 	});
-    if (!hidden) this.css({'visibility':'visible'});
+    if (!hidden) $(this).css({'visibility':'visible'});
     return ret;
 };
 /*
