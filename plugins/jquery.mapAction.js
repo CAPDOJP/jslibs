@@ -199,7 +199,7 @@ DynamicMap.prototype={
 			var marker=new google.maps.Marker({
 				map:map,
 				position:latlng,
-				icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter_withshadow&chld='+childindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+				icon:'https://chart.apis.google.com/chart?chst=d_map_pin_letter_withshadow&chld='+childindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
 			});
 			markers.push(marker);
 			/*吹き出し配置*/
@@ -369,7 +369,7 @@ DynamicMap.prototype={
 			callback:null
 		},options);
 		$.ajax({
-			url:'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&latlng='+options.lat+','+options.lng,
+			url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&latlng='+options.lat+','+options.lng,
 			type:'get',
 			datatype:'json',
 			error:function(){alert('地図座標取得に失敗しました。');},
