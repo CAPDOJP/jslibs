@@ -1284,6 +1284,22 @@ String.prototype.bytelength = function(){
 }
 /*
 *--------------------------------------------------------------------
+* jQuery関数拡張
+* -------------------------------------------------------------------
+*/
+var oldshow = $.fn.show;
+jQuery.fn.show = function()
+{
+    var ret=oldshow.apply(this, arguments);
+	var hidden=false;
+	$.each($(this).parents(),function(){
+		if ($(this).css('visibility')=='hidden') hidden=true;
+	});
+    if (!hidden) $(this).css({'visibility':'visible'});
+    return ret;
+};
+/*
+*--------------------------------------------------------------------
 * データ参照ウインドウ
 *--------------------------------------------------------------------
 * parameters
