@@ -1323,10 +1323,12 @@ jQuery.fn.refererAction = function(options){
 			//ボタン操作
 			if (options.search.button.length!=0)
 				source.on('click',options.search.button,function(){
+					if (form!=$.data(source[0],'active')) return;
 					if (options.search.callback!=null) options.search.callback(source);
 				});
 			if (options.ok.button.length!=0)
 				source.on('click',options.ok.button,function(){
+					if (form!=$.data(source[0],'active')) return;
 					if (options.ok.callback!=null) options.ok.callback(source);
 				});
 			//リスト操作
@@ -1334,6 +1336,7 @@ jQuery.fn.refererAction = function(options){
 			//データ決定時操作
 			if (!options.multi)
 				source.on('click',options.rows.row,function(){
+					if (form!=$.data(source[0],'active')) return;
 					//値セット
 					var table=$.data(source[0],'table');
 					var rowindex=$.data(source[0],'rowindex');
@@ -1365,6 +1368,7 @@ jQuery.fn.refererAction = function(options){
 }
 jQuery.fn.refererShow = function(target,table,rowindex,callback){
 	var form=$(this);
+	$.data(form[0],'active',target);
 	$.data(form[0],'table',table);
 	$.data(form[0],'rowindex',rowindex);
 	//クエリ生成
