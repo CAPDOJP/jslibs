@@ -1337,7 +1337,7 @@ jQuery.fn.refererAction = function(options){
 			//ボタン操作
 			if (options.search.button.length!=0)
 			{
-				$.data(source[0],'search',$(options.search.button));
+				$.data(source[0],'search',options.search.button);
 				source.on('click',options.search.button,function(){
 					if (form[0]!=$.data(source[0],'active')[0]) return;
 					if (options.search.callback!=null) options.search.callback(source);
@@ -1412,8 +1412,8 @@ jQuery.fn.refererShowAndSearch = function(target,table,rowindex,callback){
 	$.data(form[0],'active',target);
 	$.data(form[0],'table',table);
 	$.data(form[0],'rowindex',rowindex);
-	if (!$.data(form[0],'search')) alert('参照ブロックに検索ボタンがありません。');
-	else $.data(form[0],'search').trigger('click');
+	if ($.data(form[0],'search').length==0) alert('参照ブロックに検索ボタンがありません。');
+	else $($.data(form[0],'search'),form).trigger('click');
 }
 /*
 *--------------------------------------------------------------------
