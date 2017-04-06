@@ -1328,7 +1328,7 @@ jQuery.fn.refererAction = function(options){
 	},options);
 	return $(this).each(function(){
 		//引数チェック
-		if (options.multi && options.ok.callback==null) {alert('マルチ選択の場合は、OKコールバックを指定して下さい。。');return;}
+		if (options.multi && options.ok.callback==null) {alert('マルチ選択の場合は、OKコールバックを指定して下さい。');return;}
 		//要素チェック
 		if ($(this).find('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
 		var form=$(this);
@@ -1336,15 +1336,16 @@ jQuery.fn.refererAction = function(options){
 			var source=$(this);
 			//ボタン操作
 			if (options.search.button.length!=0)
+			{
+				$.data(form[0],'search',options.search.button);
 				source.on('click',options.search.button,function(){
-					if ($.data(source[0],'active'))
-						if (form[0]!=$.data(source[0],'active')[0]) return;
+					if (form[0]!=$.data(source[0],'active')[0]) return;
 					if (options.search.callback!=null) options.search.callback(source);
 				});
+			}
 			if (options.ok.button.length!=0)
 				source.on('click',options.ok.button,function(){
-					if ($.data(source[0],'active'))
-						if (form[0]!=$.data(source[0],'active')[0]) return;
+					if (form[0]!=$.data(source[0],'active')[0]) return;
 					if (options.ok.callback!=null) options.ok.callback(source);
 				});
 			//リスト操作
@@ -1352,8 +1353,7 @@ jQuery.fn.refererAction = function(options){
 			//データ決定時操作
 			if (!options.multi)
 				source.on('click',options.rows.row,function(){
-					if ($.data(source[0],'active'))
-						if (form[0]!=$.data(source[0],'active')[0]) return;
+					if (form[0]!=$.data(source[0],'active')[0]) return;
 					//値セット
 					var table=$.data(source[0],'table');
 					var rowindex=$.data(source[0],'rowindex');
@@ -1406,6 +1406,14 @@ jQuery.fn.refererShow = function(target,table,rowindex,callback){
 			form.parents('div').last().show();
 		}
 	});
+}
+jQuery.fn.refererShowAndSearch = function(target,table,rowindex,callback){
+	var form=$(this);
+	$.data(form[0],'active',target);
+	$.data(form[0],'table',table);
+	$.data(form[0],'rowindex',rowindex);
+	if (!$.data(form[0],'search')) alert('参照ブロックに検索ボタンがありません。');
+	else $.data(form[0],'search').trigger('click');
 }
 /*
 *--------------------------------------------------------------------
