@@ -1293,8 +1293,7 @@ jQuery.fn.show = function()
     var ret=oldshow.apply(this, arguments);
 	if ($(this).prop('tagName').toLowerCase()=='div')
 		if ($(this).hasClass('floating'))
-			if (parseInt($(this).css('top'))!=0)
-				$(this).css({'top':'0px'});
+			if (parseInt($(this).css('top'))!=0) $(this).css({'top':'0px'});
     return ret;
 };
 /*
