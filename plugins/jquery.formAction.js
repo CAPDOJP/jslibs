@@ -1385,15 +1385,15 @@ jQuery.fn.refererAction = function(options){
 }
 jQuery.fn.refererShow = function(target,table,rowindex,callback){
 	var form=$(this);
-	$.data(form[0],'active',target);
-	$.data(form[0],'table',table);
-	$.data(form[0],'rowindex',rowindex);
+	if (target!=null) $.data(form[0],'active',target);
+	if (table!=null) $.data(form[0],'table',table);
+	if (rowindex!=null) $.data(form[0],'rowindex',rowindex);
 	//クエリ生成
 	var query='';
 	$.each(form.find('input[id^=keys]'),function(){
 		var keys=$(this).attr('id').replace('keys','');
-		if (!$('input#'+keys,target)) return;
-		query+='&keys['+keys+']='+$('input#'+keys,target).toVal();
+		if (!$('input#'+keys,$.data(form[0],'active'))) return;
+		query+='&keys['+keys+']='+$('input#'+keys,$.data(form[0],'active')).toVal();
 	});
 	form.loaddatas({
 		url:form.attr('action')+query,
@@ -1407,11 +1407,11 @@ jQuery.fn.refererShow = function(target,table,rowindex,callback){
 		}
 	});
 }
-jQuery.fn.refererShowAndSearch = function(target,table,rowindex,callback){
+jQuery.fn.refererShowAndSearch = function(target,table,rowindex){
 	var form=$(this);
-	$.data(form[0],'active',target);
-	$.data(form[0],'table',table);
-	$.data(form[0],'rowindex',rowindex);
+	if (target!=null) $.data(form[0],'active',target);
+	if (table!=null) $.data(form[0],'table',table);
+	if (rowindex!=null) $.data(form[0],'rowindex',rowindex);
 	if ($.data(form[0],'search').length==0) alert('参照ブロックに検索ボタンがありません。');
 	else $($.data(form[0],'search'),form).trigger('click');
 }
