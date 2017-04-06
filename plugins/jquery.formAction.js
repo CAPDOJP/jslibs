@@ -1337,7 +1337,7 @@ jQuery.fn.refererAction = function(options){
 			//ボタン操作
 			if (options.search.button.length!=0)
 			{
-				$.data(form[0],'search',options.search.button);
+				$.data(form[0],'search',$(options.search.button));
 				source.on('click',options.search.button,function(){
 					if (form[0]!=$.data(source[0],'active')[0]) return;
 					if (options.search.callback!=null) options.search.callback(source);
