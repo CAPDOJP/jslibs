@@ -1377,7 +1377,7 @@ jQuery.fn.refererAction = function(options){
 							if (form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')).val($(this).toVal());
 						});
 					}
-					if (options.rows.callback!=null) options.rows.callback(source);
+					if (options.rows.callback!=null) options.rows.callback(source,$(this));
 					source.parents('div').last().hide();
 				});
 		});
