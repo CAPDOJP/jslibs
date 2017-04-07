@@ -1296,6 +1296,15 @@ jQuery.fn.show = function()
 			if (parseInt($(this).css('top'))!=0) $(this).css({'top':'0px'});
     return ret;
 };
+jQuery.fn.isVisible = function()
+{
+	if ($(this).prop('tagName').toLowerCase()=='div')
+	{
+		if ($(this).hasClass('floating')) return ($(this).is(':visible') && parseInt($(this).css('top'))==0);
+		else $(this).is(':visible');
+	}
+    else return $(this).is(':visible');
+};
 /*
 *--------------------------------------------------------------------
 * データ参照ウインドウ
