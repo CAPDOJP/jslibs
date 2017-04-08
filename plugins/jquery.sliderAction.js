@@ -135,10 +135,10 @@ jQuery.fn.sliderAction = function(options){
 					switch (options.direction)
 					{
 						case 'vertical':
-							slider.css({'left':'auto','right':'2px','position':'absolute'});
+							slider.css({'left':'auto','right':'2px','top':(target.scrollTop()*ratio+target.scrollTop()).toString()+'px','position':'absolute'});
 							break;
 						case 'holizontal':
-							slider.css({'bottom':'2px','top':'auto','position':'absolute'});
+							slider.css({'bottom':'2px','top':'auto','left':(target.scrollLeft()*ratio+target.scrollLeft()).toString()+'px','position':'absolute'});
 							break;
 					}
 					slider.fadeIn();
