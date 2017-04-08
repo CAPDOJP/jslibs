@@ -129,7 +129,20 @@ jQuery.fn.sliderAction = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!sizecheck) checkslidersize();
 				if (ratio>=1) return;
-				if (!slider.is(':visible')) slider.fadeIn();
+				if (!slider.is(':visible'))
+				{
+					/* リサイズに伴う位置調整 */
+					switch (options.direction)
+					{
+						case 'vertical':
+							slider.css({'left':'auto','right':'2px','position':'absolute'});
+							break;
+						case 'holizontal':
+							slider.css({'bottom':'2px','top':'auto','position':'absolute'});
+							break;
+					}
+					slider.fadeIn();
+				}
 			},
 			'mouseleave':function(){
 				if (capture) return;
