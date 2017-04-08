@@ -38,47 +38,51 @@ jQuery.fn.sliderAction = function(options){
 			left:0,
 			top:0
 		};
-		var ratiovertical=1;
-		var ratioholizontal=1;
+		var ratio=0;
 		var rect={
 			slider:null,
 			target:null
 		};
 		var slider=null;
-		var slidervertical=null;
-		var sliderholizontal=null;
 		var target=$(this);
 		/* スライダー生成 */
-		slidervertical=$('<div id="slidervertical">').css({
-			'background-color':options.color,
-			'border-radius':'3px',
-			'cursor':'pointer',
-			'height':'100%',
-			'margin':'0px',
-			'padding':'0px',
-			'position':'absolute',
-			'right':'2px',
-			'top':'0px',
-			'transition':'none',
-			'width':'6px',
-			'z-index':'9999'
-		});
-		sliderholizontal=$('<div id="sliderholizontal">').css({
-			'background-color':options.color,
-			'border-radius':'3px',
-			'bottom':'2px',
-			'cursor':'pointer',
-			'height':'6px',
-			'left':'0px',
-			'margin':'0px',
-			'padding':'0px',
-			'position':'absolute',
-			'transition':'none',
-			'width':'100%',
-			'z-index':'9999'
-		});
+		switch (options.direction)
+		{
+			case 'vertical':
+				slider=$('<div>').css({
+					'background-color':options.color,
+					'border-radius':'3px',
+					'cursor':'pointer',
+					'height':'100%',
+					'margin':'0px',
+					'padding':'0px',
+					'position':'absolute',
+					'right':'2px',
+					'top':'0px',
+					'transition':'none',
+					'width':'6px',
+					'z-index':'9999'
+				});
+				break;
+			case 'holizontal':
+				slider=$('<div>').css({
+					'background-color':options.color,
+					'border-radius':'3px',
+					'bottom':'2px',
+					'cursor':'pointer',
+					'height':'6px',
+					'left':'0px',
+					'margin':'0px',
+					'padding':'0px',
+					'position':'absolute',
+					'transition':'none',
+					'width':'100%',
+					'z-index':'9999'
+				});
+				break;
+		}
 		/* スライダーイベント定義 */
-		$([slidervertical,sliderholizontal]).on('mousedown',function(e){
+		slider.on('mousedown',function(e){
 			if ($(window).width()<options.limit) return;
 			capture=true;
 			/* 各種変数初期化 */
@@ -86,7 +90,6 @@ jQuery.fn.sliderAction = function(options){
 			down.top=target.scrollTop();
 			keep.left=e.clientX;
 			keep.top=e.clientY;
-			slider=$(this);
 			/* スクロール開始 */
 			slidestart();
 			e.preventDefault();
@@ -97,7 +100,7 @@ jQuery.fn.sliderAction = function(options){
 				if ($(window).width()<options.limit) return;
 				if (!capture) return;
 				/* スクロール */
-				switch (slider.attr('id').replace(/slier/g,''))
+				switch (options.direction)
 				{
 					case 'vertical':
 						slidemove(e.clientY-keep.top,null);
@@ -125,36 +128,14 @@ jQuery.fn.sliderAction = function(options){
 			'mousemove':function(){
 				if ($(window).width()<options.limit) return;
 				if (!sizecheck) checkslidersize();
-				switch (options.direction)
-				{
-					case 'vertical':
-						if (ratiovertical>=1) return;
-						else if (!slidervertical.is(':visible')) slidervertical.fadeIn();
-						break;
-					case 'holizontal':
-						if (ratioholizontal>=1) return;
-						else if (!sliderholizontal.is(':visible')) sliderholizontal.fadeIn();
-						break;
-					case 'both':
-						if (ratiovertical>=1 && ratioholizontal>=1) return;
-						else
-						{
-							if (ratiovertical<1)
-								if (!slidervertical.is(':visible')) slidervertical.fadeIn();
-							if (ratioholizontal<1)
-								if (!sliderholizontal.is(':visible')) sliderholizontal.fadeIn();
-						}
-						break;
-				}
+				if (ratio>=1) return;
+				if (!slider.is(':visible')) slider.fadeIn();
 			},
 			'mouseleave':function(){
 				if (capture) return;
-				slidervertical.fadeOut();
-				sliderholizontal.fadeOut();
+				slider.fadeOut();
 			}
-		})
-		.append(slidervertical)
-		.append(sliderholizontal);
+		}).append(slider);
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
 			/* スタイルシート調整 */
@@ -196,47 +177,19 @@ jQuery.fn.sliderAction = function(options){
 						});
 					}
 					break;
-				case 'both':
-					if ($(window).width()<options.limit)
-					{
-						target.css({
-							'overflow':'auto',
-							'-webkit-overflow-scrolling':'touch'
-						});
-					}
-					else
-					{
-						target.css({
-							'overflow':'hidden',
-							'-webkit-overflow-scrolling':'touch'
-						});
-					}
-					break;
 			}
 			/* スライダーサイズ調整 */
 			if (!target.is(':visible')) {sizecheck=false;return;}
 			checkslidersize();
 		});
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
+			if (!slider.is(':visible')) return;
 			/* マウスホイールスクロール */
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail;
 			delta=(delta<0)?-100:100;
 			/* 各種変数初期化 */
 			down.left=target.scrollLeft();
 			down.top=target.scrollTop();
-			switch (options.direction)
-			{
-				case 'vertical':
-					slider=slidervertical;
-					break;
-				case 'holizontal':
-					slider=sliderholizontal;
-					break;
-				case 'both':
-					slider=slidervertical;
-					break;
-			}
-			if (!slider.is(':visible')) return;
 			/* スクロール開始 */
 			slidestart();
 			/* スクロール */
@@ -249,18 +202,12 @@ jQuery.fn.sliderAction = function(options){
 			switch (options.direction)
 			{
 				case 'vertical':
-					ratiovertical=target[0].clientHeight/target[0].scrollHeight;
-					slidervertical.css({'height':(target[0].clientHeight*ratiovertical).toString()+'px'});
+					ratio=target[0].clientHeight/target[0].scrollHeight;
+					if (slider!=null) slider.css({'height':(target[0].clientHeight*ratio).toString()+'px'});
 					break;
 				case 'holizontal':
-					ratioholizontal=target[0].clientWidth/target[0].scrollWidth;
-					sliderholizontal.css({'width':(target[0].clientWidth*ratioholizontal).toString()+'px'});
-					break;
-				case 'both':
-					ratiovertical=target[0].clientHeight/target[0].scrollHeight;
-					slidervertical.css({'height':(target[0].clientHeight*ratiovertical).toString()+'px'});
-					ratioholizontal=target[0].clientWidth/target[0].scrollWidth;
-					sliderholizontal.css({'width':(target[0].clientWidth*ratioholizontal).toString()+'px'});
+					ratio=target[0].clientWidth/target[0].scrollWidth;
+					if (slider!=null) slider.css({'width':(target[0].clientWidth*ratio).toString()+'px'});
 					break;
 			}
 			sizecheck=true;
@@ -279,21 +226,21 @@ jQuery.fn.sliderAction = function(options){
 		};
 		/* スクロール */
 		function slidemove(amount,callback){
-			switch (slider.attr('id').replace(/slier/g,''))
+			switch (options.direction)
 			{
 				case 'vertical':
 					drag.top=rect.slider.top+amount;
 					if (drag.top<rect.target.top) drag.top=rect.target.top;
 					if (drag.top>rect.target.bottom-slider.outerHeight(true)) drag.top=rect.target.bottom-slider.outerHeight(true);
 					slider.css({'top':drag.top.toString()+'px'});
-					target.scrollTop(down.top+amount/ratiovertical,callback);
+					target.scrollTop(down.top+amount/ratio,callback);
 					break;
 				case 'holizontal':
 					drag.left=rect.slider.left+amount;
 					if (drag.left<rect.target.left) drag.left=rect.target.left;
 					if (drag.left>rect.target.right-slider.outerWidth(true)) drag.left=rect.target.right-slider.outerWidth(true);
 					slider.css({'left':drag.left.toString()+'px'});
-					target.scrollLeft(down.left+amount/ratioholizontal,callback);
+					target.scrollLeft(down.left+amount/ratio,callback);
 					break;
 			}
 		};
@@ -301,7 +248,7 @@ jQuery.fn.sliderAction = function(options){
 		function slideend(){
 			rect.slider=slider[0].getBoundingClientRect();
 			rect.target=target[0].getBoundingClientRect();
-			switch (slider.attr('id').replace(/slier/g,''))
+			switch (options.direction)
 			{
 				case 'vertical':
 					slider.css({
