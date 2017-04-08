@@ -57,8 +57,6 @@ jQuery.fn.sliderAction = function(options){
 					'margin':'0px',
 					'padding':'0px',
 					'position':'absolute',
-					'right':'2px',
-					'top':'0px',
 					'transition':'none',
 					'width':'6px',
 					'z-index':'9999'
@@ -68,10 +66,8 @@ jQuery.fn.sliderAction = function(options){
 				slider=$('<div>').css({
 					'background-color':options.color,
 					'border-radius':'3px',
-					'bottom':'2px',
 					'cursor':'pointer',
 					'height':'6px',
-					'left':'0px',
 					'margin':'0px',
 					'padding':'0px',
 					'position':'absolute',
@@ -135,10 +131,18 @@ jQuery.fn.sliderAction = function(options){
 					switch (options.direction)
 					{
 						case 'vertical':
-							slider.css({'left':'auto','right':'2px','top':(target.scrollTop()*ratio+target.scrollTop()).toString()+'px','position':'absolute'});
+							slider.css({
+								'left':(target.scrollLeft()+target[0].clientWidth-8).toString()+'px',
+								'position':'absolute',
+								'top':(target.scrollTop()*ratio+target.scrollTop()).toString()+'px'
+							});
 							break;
 						case 'holizontal':
-							slider.css({'bottom':'2px','top':'auto','left':(target.scrollLeft()*ratio+target.scrollLeft()).toString()+'px','position':'absolute'});
+							slider.css({
+								'left':(target.scrollLeft()*ratio+target.scrollLeft()).toString()+'px',
+								'position':'absolute',
+								'top':(target.scrollTop()+target[0].clientHeight-8).toString()+'px'
+							});
 							break;
 					}
 					slider.fadeIn();
@@ -232,11 +236,9 @@ jQuery.fn.sliderAction = function(options){
 			rect.slider=slider[0].getBoundingClientRect();
 			rect.target=target[0].getBoundingClientRect();
 			slider.css({
-				'bottom':'auto',
 				'left':rect.slider.left.toString()+'px',
-				'right':'auto',
-				'top':rect.slider.top.toString()+'px',
-				'position':'fixed'
+				'position':'fixed',
+				'top':rect.slider.top.toString()+'px'
 			});
 		};
 		/* スクロール */
@@ -267,18 +269,16 @@ jQuery.fn.sliderAction = function(options){
 			{
 				case 'vertical':
 					slider.css({
-						'left':'auto',
-						'right':'2px',
-						'top':(rect.slider.top-rect.target.top+target.scrollTop()).toString()+'px',
-						'position':'absolute'
+						'left':(target.scrollLeft()+target[0].clientWidth-8).toString()+'px',
+						'position':'absolute',
+						'top':(rect.slider.top-rect.target.top+target.scrollTop()).toString()+'px'
 					});
 					break;
 				case 'holizontal':
 					slider.css({
-						'bottom':'2px',
 						'left':(rect.slider.left-rect.target.left+target.scrollLeft()).toString()+'px',
-						'top':'auto',
-						'position':'absolute'
+						'position':'absolute',
+						'top':(target.scrollTop()+target[0].clientHeight-8).toString()+'px'
 					});
 					break;
 			}
