@@ -179,7 +179,9 @@ jQuery.fn.sliderAction = function(options){
 					break;
 			}
 			/* スライダーサイズ調整 */
-			if (!target.is(':visible')) {sizecheck=false;return;}
+			var checker=target;
+			if (target.parents('.floating')) checker=target.parents('.floating').first();
+			if (!checker.isVisible()) {sizecheck=false;return;}
 			checkslidersize();
 		});
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
