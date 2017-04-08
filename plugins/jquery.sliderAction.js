@@ -38,8 +38,8 @@ jQuery.fn.sliderAction = function(options){
 			left:0,
 			top:0
 		};
-		var ratiovertical=0;
-		var ratioholizontal=0;
+		var ratiovertical=1;
+		var ratioholizontal=1;
 		var rect={
 			slider:null,
 			target:null
@@ -149,12 +149,12 @@ jQuery.fn.sliderAction = function(options){
 			},
 			'mouseleave':function(){
 				if (capture) return;
-				if (slidervertical!=null) slidervertical.fadeOut();
-				if (sliderholizontal!=null) sliderholizontal.fadeOut();
+				slidervertical.fadeOut();
+				sliderholizontal.fadeOut();
 			}
-		});
-		if (slidervertical!=null) target.append(slidervertical);
-		if (sliderholizontal!=null) target.append(sliderholizontal);
+		})
+		.append(slidervertical)
+		.append(sliderholizontal);
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
 			/* スタイルシート調整 */
@@ -250,17 +250,17 @@ jQuery.fn.sliderAction = function(options){
 			{
 				case 'vertical':
 					ratiovertical=target[0].clientHeight/target[0].scrollHeight;
-					if (slidervertical!=null) slidervertical.css({'height':(target[0].clientHeight*ratiovertical).toString()+'px'});
+					slidervertical.css({'height':(target[0].clientHeight*ratiovertical).toString()+'px'});
 					break;
 				case 'holizontal':
 					ratioholizontal=target[0].clientWidth/target[0].scrollWidth;
-					if (sliderholizontal!=null) sliderholizontal.css({'width':(target[0].clientWidth*ratioholizontal).toString()+'px'});
+					sliderholizontal.css({'width':(target[0].clientWidth*ratioholizontal).toString()+'px'});
 					break;
 				case 'both':
 					ratiovertical=target[0].clientHeight/target[0].scrollHeight;
-					if (slidervertical!=null) slidervertical.css({'height':(target[0].clientHeight*ratiovertical).toString()+'px'});
+					slidervertical.css({'height':(target[0].clientHeight*ratiovertical).toString()+'px'});
 					ratioholizontal=target[0].clientWidth/target[0].scrollWidth;
-					if (sliderholizontal!=null) sliderholizontal.css({'width':(target[0].clientWidth*ratioholizontal).toString()+'px'});
+					sliderholizontal.css({'width':(target[0].clientWidth*ratioholizontal).toString()+'px'});
 					break;
 			}
 			sizecheck=true;
