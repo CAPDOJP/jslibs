@@ -1303,11 +1303,13 @@ jQuery.fn.val = function()
     if (!arguments.length)
 		if ($(this).prop('tagName').toLowerCase()=='input')
 			if ($(this).prop('type').toLowerCase()=='file')
+			{
+				console.log(arguments[0]);
 				if (arguments[0].length==0)
 				{
-					console.log('test');
 					$(this).replaceWith($(this).clone(true));
 				}
+			}
     return ret;
 };
 jQuery.fn.isVisible = function()
