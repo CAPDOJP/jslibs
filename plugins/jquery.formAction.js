@@ -1296,16 +1296,6 @@ jQuery.fn.show = function()
 			if (parseInt($(this).css('top'))!=0) $(this).css({'top':'0px'});
     return ret;
 };
-jQuery.fn.isVisible = function()
-{
-	if ($(this).size())
-		if ($(this).prop('tagName').toLowerCase()=='div')
-		{
-			if ($(this).hasClass('floating')) return ($(this).is(':visible') && parseInt($(this).css('top'))==0);
-			else $(this).is(':visible');
-		}
-    else return $(this).is(':visible');
-};
 var oldval = $.fn.val;
 jQuery.fn.val = function(values)
 {
@@ -1318,6 +1308,16 @@ jQuery.fn.val = function(values)
 					$(this).replaceWith($(this).clone(true));
 				}
     return ret;
+};
+jQuery.fn.isVisible = function()
+{
+	if ($(this).size())
+		if ($(this).prop('tagName').toLowerCase()=='div')
+		{
+			if ($(this).hasClass('floating')) return ($(this).is(':visible') && parseInt($(this).css('top'))==0);
+			else $(this).is(':visible');
+		}
+    else return $(this).is(':visible');
 };
 /*
 *--------------------------------------------------------------------
