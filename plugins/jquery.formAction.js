@@ -1305,7 +1305,7 @@ jQuery.fn.val = function()
 			if ($(this).prop('type').toLowerCase()=='file')
 				if (arguments[0].length==0)
 				{
-					alert('test');
+					console.log('test');
 					$(this).replaceWith($(this).clone(true));
 				}
     return ret;
