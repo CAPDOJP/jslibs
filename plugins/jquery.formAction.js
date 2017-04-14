@@ -143,8 +143,6 @@ jQuery.fn.formAction = function(options){
 					$.each(target.prop('files'),function(index,file){
 						filedata.append(values.name+'['+index+']',file);
 					});
-					//値初期化
-					target.replaceWith(target.clone(true));
 					//送信
 					$.ajax({
 						url:values.url+values.name,
@@ -164,10 +162,14 @@ jQuery.fn.formAction = function(options){
 							}
 							if (values.messagecallback!=null) values.messagecallback('エラー',errormessage);
 							else alert(errormessage);
+							//値初期化
+							target.replaceWith(target.clone(true));
 							//ローディング消去
 							if ($('div#loading')!=null) $('div#loading').css('display','none');
 						},
 						success:function(json){
+							//値初期化
+							target.replaceWith(target.clone(true));
 							if ('error' in json)
 								if (json.error.length!=0)
 								{
