@@ -1302,15 +1302,17 @@ jQuery.fn.val = function()
     var ret=oldval.apply(this, arguments);
     if (!arguments.length)
 		if ($(this).prop('tagName').toLowerCase()=='input')
+		{
+			console.log('val:'+$(this).val());
+			console.log('arguments:'+arguments[0]);
 			if ($(this).prop('type').toLowerCase()=='file')
 			{
-				console.log('val:'+$(this).val());
-				console.log('arguments:'+arguments[0]);
 				if (arguments[0].length==0)
 				{
 					$(this).replaceWith($(this).clone(true));
 				}
 			}
+		}
     return ret;
 };
 jQuery.fn.isVisible = function()
