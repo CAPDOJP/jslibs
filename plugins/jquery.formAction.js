@@ -1310,12 +1310,13 @@ var oldval = $.fn.val;
 jQuery.fn.val = function(values)
 {
     var ret=oldval.apply(this, arguments);
-	if ($(this).prop('tagName').toLowerCase()=='input')
-		if ($(this).prop('type').toLowerCase()=='file')
-			if (values.length==0)
-			{
-				$(this).replaceWith($(this).clone(true));
-			}
+    if (!arguments.length)
+		if ($(this).prop('tagName').toLowerCase()=='input')
+			if ($(this).prop('type').toLowerCase()=='file')
+				if (values.length==0)
+				{
+					$(this).replaceWith($(this).clone(true));
+				}
     return ret;
 };
 /*
