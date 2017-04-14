@@ -993,7 +993,7 @@ jQuery.fn.senddatas = function(options){
 			var container=$(this).children('tbody');
 			//行数取得
 			var rows=container.children('tr').length;
-			//明細行を最終行からチェックし、空行なら登録対象から外す
+			//明細行をチェックし、空行なら登録対象から外す
 			if (options.empty) $.each(container.children('tr'),function(index){if ($(this).isEmpty()) rows--;});
 			//行数設定
 			if ($(this).find('input[type=hidden][name='+containerID+'rows]').size())
