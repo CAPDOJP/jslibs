@@ -123,7 +123,6 @@ jQuery.fn.formAction = function(options){
 			if (values.name.length==0) {alert('filesにはnameを指定して下さい。');return;}
 			//イベント追加
 			if (values.url.length!=0) form.on('change',key,function(){
-				$(this).off('change');
 				var target=$(this);
 				//ローディング表示
 				if ($('div#loading')!=null) $('div#loading').css('display','block');
@@ -132,8 +131,6 @@ jQuery.fn.formAction = function(options){
 				{
 					if (target[0].files.length==0)
 					{
-						//値初期化
-						target.replaceWith(target.clone(true));
 						//ローディング消去
 						if ($('div#loading')!=null) $('div#loading').css('display','none');
 						return;
@@ -162,14 +159,10 @@ jQuery.fn.formAction = function(options){
 							}
 							if (values.messagecallback!=null) values.messagecallback('エラー',errormessage);
 							else alert(errormessage);
-							//値初期化
-							target.replaceWith(target.clone(true));
 							//ローディング消去
 							if ($('div#loading')!=null) $('div#loading').css('display','none');
 						},
 						success:function(json){
-							//値初期化
-							target.replaceWith(target.clone(true));
 							if ('error' in json)
 								if (json.error.length!=0)
 								{
