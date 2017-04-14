@@ -958,7 +958,8 @@ jQuery.fn.senddatas = function(options){
 		empty:true,
 		iscontinue:false,
 		callback:null,
-		messagecallback:null
+		messagecallback:null,
+		showdetailerror:false
 	},options);
 	var form=$(this);
 	//確認ダイアログ表示
@@ -1011,9 +1012,17 @@ jQuery.fn.senddatas = function(options){
 		mimeType:form.prop('enctype'),
 		dataType:'json',
 		timeout:60000,
-		error:function(){
-			if (options.messagecallback!=null) options.messagecallback('エラー','データ送信に失敗しました。');
-			else alert('データ送信に失敗しました。');
+		error:function(XMLHttpRequest,textStatus,errorThrown){
+			var errormessage='データ送信に失敗しました。';
+			if (options.showdetailerror)
+			{
+				errormessage='';
+				errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
+				errormessage+='【textStatus】'+textStatus+' ';
+				errormessage+='【errorThrown】'+errorThrown.message;
+			}
+			if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
+			else alert(errormessage);
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
 		},
@@ -1062,7 +1071,8 @@ jQuery.fn.sendparts = function(options){
 		url:'',
 		values:{},
 		callback:null,
-		messagecallback:null
+		messagecallback:null,
+		showdetailerror:false
 	},options);
 	var filedata = null;
 	try
@@ -1080,9 +1090,19 @@ jQuery.fn.sendparts = function(options){
 			contentType:false,
 			dataType:'json',
 			timeout:60000,
-			error:function(){
-				if (options.messagecallback!=null) options.messagecallback('エラー','データ送信に失敗しました。');
-				else alert('データ送信に失敗しました。');
+			error:function(XMLHttpRequest,textStatus,errorThrown){
+				var errormessage='データ送信に失敗しました。';
+				if (options.showdetailerror)
+				{
+					errormessage='';
+					errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
+					errormessage+='【textStatus】'+textStatus+' ';
+					errormessage+='【errorThrown】'+errorThrown.message;
+				}
+				if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
+				else alert(errormessage);
+				//ローディング消去
+				if ($('div#loading')!=null) $('div#loading').css('display','none');
 			},
 			success:function(json){
 				var error='';
@@ -1112,9 +1132,19 @@ jQuery.fn.sendparts = function(options){
 			mimeType:$(this).prop('enctype'),
 			dataType:'json',
 			timeout:60000,
-			error:function(){
-				if (options.messagecallback!=null) options.messagecallback('エラー','データ送信に失敗しました。');
-				else alert('データ送信に失敗しました。');
+			error:function(XMLHttpRequest,textStatus,errorThrown){
+				var errormessage='データ送信に失敗しました。';
+				if (options.showdetailerror)
+				{
+					errormessage='';
+					errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
+					errormessage+='【textStatus】'+textStatus+' ';
+					errormessage+='【errorThrown】'+errorThrown.message;
+				}
+				if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
+				else alert(errormessage);
+				//ローディング消去
+				if ($('div#loading')!=null) $('div#loading').css('display','none');
 			},
 			success:function(json){
 				var error='';
