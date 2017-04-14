@@ -1296,25 +1296,6 @@ jQuery.fn.show = function()
 			if (parseInt($(this).css('top'))!=0) $(this).css({'top':'0px'});
     return ret;
 };
-var oldval = $.fn.val;
-jQuery.fn.val = function()
-{
-    var ret=oldval.apply(this, arguments);
-    if (!arguments.length)
-		if ($(this).prop('tagName').toLowerCase()=='input')
-		{
-			console.log('val:'+$(this).val());
-			console.log('arguments:'+arguments[0]);
-			if ($(this).prop('type').toLowerCase()=='file')
-			{
-				if (arguments[0].length==0)
-				{
-					$(this).replaceWith($(this).clone(true));
-				}
-			}
-		}
-    return ret;
-};
 jQuery.fn.isVisible = function()
 {
 	if ($(this).size())
