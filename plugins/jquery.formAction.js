@@ -132,6 +132,7 @@ jQuery.fn.formAction = function(options){
 				{
 					if (target[0].files.length==0)
 					{
+						alert('delete!');
 						//値初期化
 						target.replaceWith(target.clone(true));
 						//ローディング消去
