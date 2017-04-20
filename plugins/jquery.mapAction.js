@@ -28,7 +28,7 @@ jQuery.fn.staticMapAction = function(options){
 	var target=$(this);
 	if (options.address.length!=0)
 		$.ajax({
-			url:'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
+			url:window.location.protocol+'//maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
 			type:'get',
 			datatype:'json',
 			error:function(){alert('地図座標取得に失敗しました。');},
@@ -48,7 +48,7 @@ jQuery.fn.staticMapAction = function(options){
 						break;
 					case 'OK':
 						var latlng=json.results[0].geometry.location.lat+','+json.results[0].geometry.location.lng;
-						var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
+						var src=window.location.protocol+'//maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
 						target.empty();
 						target.append('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>');
 						if (options.callback!=null) options.callback(json);
@@ -58,7 +58,7 @@ jQuery.fn.staticMapAction = function(options){
 		});
 	if (options.latlng.length!=0)
 	{
-		var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
+		var src=window.location.protocol+'//maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
 		target.empty();
 		target.append('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>');
 	}

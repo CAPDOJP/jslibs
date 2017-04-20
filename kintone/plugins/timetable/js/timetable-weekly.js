@@ -131,7 +131,7 @@ jQuery.noConflict();
 			sort=' order by ';
 			sort+=vars.config['date']+' asc,';
 			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
-			sort+=vars.config['fromtime']+' asc';
+			sort+=vars.config['fromtime']+' asc limit 500';
 			body.query+=sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				var records=resp.records;
