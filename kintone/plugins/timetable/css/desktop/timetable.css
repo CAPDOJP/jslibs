@@ -113,28 +113,32 @@ table.timetable-daily tbody tr td.timetable-daily-merge11:after{
 	background-color:#B473B4;
 }
 div.guidefrom{
-	background-color:#FFFFFF;
-	border-radius:50%;
-    box-shadow:0px 0px 2px rgba(0,0,0,0.5);
+	background-color:#3498DB;
+	border-radius:0.25em;
+    box-shadow:0px 0px 3px rgba(0,0,0,0.5);
+    color:#FFFFFF;
 	display:none;
 	font-size:0.75em;
 	height:2em;
 	line-height:2em;
-	padding:0px 0.5em;
+	padding:0px 1em;
 	position:fixed;
+	transition:all 0.35s ease-out 0s;
 	width:auto;
 	z-index:999;
 }
 div.guideto{
-	background-color:#FFFFFF;
-	border-radius:50%;
-    box-shadow:0px 0px 2px rgba(0,0,0,0.5);
+	background-color:#3498DB;
+	border-radius:0.25em;
+    box-shadow:0px 0px 3px rgba(0,0,0,0.5);
+    color:#FFFFFF;
 	display:none;
 	font-size:0.75em;
 	height:2em;
 	line-height:2em;
-	padding:0px 0.5em;
+	padding:0px 1em;
 	position:fixed;
+	transition:all 0.35s ease-out 0s;
 	width:auto;
 	z-index:999;
 }

@@ -111,8 +111,14 @@ jQuery.fn.tableAction = function(options){
 		        	}
 				});
 				if (options.callback.guidestart!=null)
-					if (hitrow!=null && hitcell!=null) options.callback.guidestart(e,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
+				{
+					if (options.mergeexclude.indexOf(container.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
+					{
+						if (hitrow!=null && hitcell!=null) options.callback.guidestart(e,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
+						else options.callback.guidestart(e,container,null,null);
+					}
 					else options.callback.guidestart(e,container,null,null);
+				}
 				return;
 			}
 			/* マウスオーバーセル取得 */

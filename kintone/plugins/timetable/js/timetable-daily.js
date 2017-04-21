@@ -289,14 +289,13 @@ jQuery.noConflict();
 			callback:{
 				guidestart:function(e,caller,table,rowindex,cellindex){
 					if (rowindex==null) {guidefrom.hide();return;}
-					console.log(rowindex);
 					var row=table.find('tbody').find('tr').eq(rowindex);
 					var hour=Math.floor((caller.cellindex(row,cellindex)-1)/parseInt(vars.config['scale']));
 					var minute=(caller.cellindex(row,cellindex)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
-					guidefrom.css({
-				      'right':row.find('td').eq(cellindex).offset().left.toString()+'px',
-				      'bottom':row.offset().top.toString()+'px'
-					}).text(hour.toString().lpad('0',2)+':'+minute.toString().lpad('0',2)).show();
+					guidefrom.text(hour.toString().lpad('0',2)+':'+minute.toString().lpad('0',2)).show().css({
+				      'left':row.find('td').eq(cellindex).offset().left.toString()+'px',
+				      'top':(row.offset().top-guidefrom.outerHeight(true)).toString()+'px'
+					});
 				},
 				guide:function(e,caller,table,rowindex,cellfrom,cellto){
 					var row=table.find('tbody').find('tr').eq(rowindex);
@@ -304,14 +303,14 @@ jQuery.noConflict();
 					var tohour=Math.floor(caller.cellindex(row,cellto)/parseInt(vars.config['scale']));
 					var fromminute=(caller.cellindex(row,cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					var tominute=caller.cellindex(row,cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
-					guidefrom.css({
-				      'right':row.find('td').eq(cellfrom).offset().left.toString()+'px',
-				      'bottom':row.offset().top.toString()+'px'
-					}).text(fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2)).show();
-					guideto.css({
-				      'left':(row.find('td').eq(cellto).offset().left+row.outerWidth(true)).toString()+'px',
+					guidefrom.text(fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2)).show().css({
+				      'left':row.find('td').eq(cellfrom).offset().left.toString()+'px',
+				      'top':(row.offset().top-guidefrom.outerHeight(true)).toString()+'px'
+					});
+					guideto.text(tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2)).show().css({
+				      'left':(row.find('td').eq(cellto).offset().left+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
 				      'top':(row.offset().top+row.outerHeight(true)).toString()+'px'
-					}).text(tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2)).show();
+					});
 				},
 				guideend:function(e){
 					guidefrom.hide();
