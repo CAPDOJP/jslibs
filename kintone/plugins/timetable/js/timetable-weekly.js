@@ -1,7 +1,7 @@
 /*
 *--------------------------------------------------------------------
 * jQuery-Plugin "timetable-weekly"
-* Version: 1.0
+* Version: 3.0
 * Copyright (c) 2016 TIS
 *
 * Released under the MIT License.

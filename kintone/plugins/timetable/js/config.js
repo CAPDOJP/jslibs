@@ -1,7 +1,7 @@
 /*
 *--------------------------------------------------------------------
 * jQuery-Plugin "timetable -config.js-"
-* Version: 1.0
+* Version: 3.0
 * Copyright (c) 2016 TIS
 *
 * Released under the MIT License.
@@ -99,6 +99,7 @@ jQuery.noConflict();
         	$('select#totime').val(config['totime']);
         	$('select#display').val(config['display']);
         	$('select#segment').val(config['segment']);
+        	$('select#scale').val(config['scale']);
         	$('select#lat').val(config['lat']);
         	$('select#lng').val(config['lng']);
         	$('input#apikey').val(config['apikey']);
@@ -147,6 +148,11 @@ jQuery.noConflict();
 		    	return;
 		    }
 	    }
+	    if ($('select#scale').val()=='')
+	    {
+	    	swal('Error!','目盛り間隔を選択して下さい。','error');
+	    	return;
+	    }
 	    if ($('input#route').prop('checked'))
 	    {
 		    if ($('select#lat').val()=='')
@@ -177,6 +183,7 @@ jQuery.noConflict();
         config['display']=$('select#display').val();
         config['segment']=$('select#segment').val();
         config['segmentdisplay']=$('select#segmentdisplay').val();
+        config['scale']=$('select#scale').val();
         if ($('select#segment').val().length!=0)
         {
 		    config['segmentapp']=vars.appIds[$('select#segment').val()];

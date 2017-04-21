@@ -26,8 +26,24 @@ table.timetable-daily thead tr:last-of-type th{
 	border-top:none;
 	height:10px;
 }
-table.timetable-daily thead tr th.timetable-daily-cell{
+table.timetable-daily thead tr th.timetable-daily-cellhead{
+	min-width:10%;
+	width:10%;
+}
+table.timetable-daily thead tr th.timetable-daily-cell30{
 	width:1.875%;
+}
+table.timetable-daily thead tr th.timetable-daily-cell20{
+	width:1.25%;
+}
+table.timetable-daily thead tr th.timetable-daily-cell15{
+	width:0.9375%;
+}
+table.timetable-daily thead tr th.timetable-daily-cell10{
+	width:0.625%;
+}
+table.timetable-daily thead tr th.timetable-daily-cell5{
+	width:0.3125%;
 }
 table.timetable-daily tbody tr td{
 	cursor:pointer;
@@ -94,6 +110,12 @@ table.timetable-daily tbody tr td.timetable-daily-merge10:after{
 }
 table.timetable-daily tbody tr td.timetable-daily-merge11:after{
 	background-color:#B473B4;
+}
+div.balloonfrom{
+	
+}
+div.balloonto{
+	
 }
 /* individual style (weekly) */
 div.timetable-weekly-balloon{

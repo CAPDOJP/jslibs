@@ -1,7 +1,7 @@
 /*
 *--------------------------------------------------------------------
 * jQuery-Plugin "timetable-daily"
-* Version: 1.0
+* Version: 3.0
 * Copyright (c) 2016 TIS
 *
 * Released under the MIT License.
@@ -91,8 +91,8 @@ jQuery.noConflict();
 						/* create cell */
 						var fromtime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00');
 						var totime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
-						var from=(fromtime.getHours())*2+Math.floor(fromtime.getMinutes()/30);
-						var to=(totime.getHours())*2+Math.ceil(totime.getMinutes()/30)-1;
+						var from=(fromtime.getHours())*parseInt(vars.config['scale'])+Math.floor(fromtime.getMinutes()/(60/parseInt(vars.config['scale'])));
+						var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])))-1;
 						var fromindex=0;
 						var toindex=0;
 						if (vars.config['route']=='1' || vars.config['segment'].length!=0)
@@ -247,14 +247,17 @@ jQuery.noConflict();
 		if (vars.config['route']=='1' || vars.config['segment'].length!=0)
 		{
 			head.eq(0).append($('<th>'));
-			head.eq(1).append($('<th>'));
+			head.eq(1).append($('<th class="timetable-daily-cellhead">'));
 			template.append($('<td>'));
 		}
 		for (var i=0;i<24;i++)
 		{
-			head.eq(0).append($('<th colspan="2">').text(i));
-			head.eq(1).append($('<th class="timetable-daily-cell"></th><th class="timetable-daily-cell"></th>'));
-			template.append($('<td></td><td></td>'));
+			head.eq(0).append($('<th colspan="'+vars.config['scale']+'">').text(i));
+			for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
+			{
+				head.eq(1).append($('<th class="timetable-daily-cell'+vars.config['scale']+'">'));
+				template.append($('<td>'));
+			}
 		}
 		vars.table=$('<table id="timetable" class="customview-table timetable-daily">').mergetable({
 			container:container,
@@ -265,10 +268,10 @@ jQuery.noConflict();
 			mergeclass:'timetable-daily-merge',
 			mergetrigger:function(caller,cell,rowindex,cellfrom,cellto){
 				var query='';
-				var fromhour=Math.floor((caller.cellindex(cell.parent(),cellfrom)-1)/2);
-				var tohour=Math.floor(caller.cellindex(cell.parent(),cellto)/2);
-				var fromminute=(caller.cellindex(cell.parent(),cellfrom)-1)%2*30;
-				var tominute=caller.cellindex(cell.parent(),cellto)%2*30;
+				var fromhour=Math.floor((caller.cellindex(cell.parent(),cellfrom)-1)/parseInt(vars.config['scale']));
+				var tohour=Math.floor(caller.cellindex(cell.parent(),cellto)/parseInt(vars.config['scale']));
+				var fromminute=(caller.cellindex(cell.parent(),cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
+				var tominute=caller.cellindex(cell.parent(),cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 				query+=vars.config['date']+'='+vars.date.format('Y-m-d');
 				query+='&'+vars.config['fromtime']+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
 				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
