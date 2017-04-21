@@ -27,7 +27,10 @@ jQuery.fn.tableAction = function(options){
 		mergeexclude:[],
 		mergeclass:'merge',
 		mergetrigger:null,
-		unmergetrigger:null
+		unmergetrigger:null,
+		mousedowncallback:null,
+		mousemovecallback:null,
+		mouseupcallback:null
 	},options);
 	return $(this).each(function(){
 		if ($(this).find('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
@@ -85,6 +88,7 @@ jQuery.fn.tableAction = function(options){
 				}
 				if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.mergeclass);
 				else merged=true;
+				if (options.mousedowncallback!=null) options.mousedowncallback(e,container,mergerow,mergefrom);
 				e.preventDefault();
 			}
 		});
@@ -118,6 +122,7 @@ jQuery.fn.tableAction = function(options){
 				if (i>mergefrom-1 && i<mergeto+1) cell.addClass(options.mergeclass);
 				else cell.removeClass(options.mergeclass);
 			}
+			if (options.mousemovecallback!=null) options.mousemovecallback(e,container,mergerow,mergefrom,mergeto);
 			e.preventDefault();
 		});
 		$(window).on('mouseup touchend',function(e){
@@ -154,6 +159,7 @@ jQuery.fn.tableAction = function(options){
 			mergeto=-1;
 			mergelimitfrom=-1;
 			mergelimitto=-1;
+			if (options.mouseupcallback!=null) options.mouseupcallback(e);
 			e.preventDefault();
 		});
 	});

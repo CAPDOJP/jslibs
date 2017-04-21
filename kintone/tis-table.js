@@ -33,7 +33,10 @@ var Table=function(options){
 		mergeexclude:[],
 		mergeclass:'merge',
 		mergetrigger:null,
-		unmergetrigger:null
+		unmergetrigger:null,
+		mousedowncallback:null,
+		mousemovecallback:null,
+		mouseupcallback:null
 	},options);
 	/* property */
 	this.container=options.table;
@@ -82,6 +85,7 @@ var Table=function(options){
 			}
 			if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.mergeclass);
 			else merged=true;
+			if (options.mousedowncallback!=null) options.mousedowncallback(e,my,mergerow,mergefrom);
 			e.preventDefault();
 		}
 	});
@@ -115,6 +119,7 @@ var Table=function(options){
 			if (i>mergefrom-1 && i<mergeto+1) cell.addClass(options.mergeclass);
 			else cell.removeClass(options.mergeclass);
 		}
+		if (options.mousemovecallback!=null) options.mousemovecallback(e,my,mergerow,mergefrom,mergeto);
 		e.preventDefault();
 	});
 	$(window).on('mouseup touchend',function(e){
@@ -151,6 +156,7 @@ var Table=function(options){
 		mergeto=-1;
 		mergelimitfrom=-1;
 		mergelimitto=-1;
+		if (options.mouseupcallback!=null) options.mouseupcallback(e);
 		e.preventDefault();
 	});
 };
@@ -213,7 +219,10 @@ jQuery.fn.mergetable=function(options){
 		mergeexclude:[],
 		mergeclass:'merge',
 		mergetrigger:null,
-		unmergetrigger:null
+		unmergetrigger:null,
+		mousedowncallback:null,
+		mousemovecallback:null,
+		mouseupcallback:null
 	},options);
 	options.table=this;
 	return new Table(options);
