@@ -32,9 +32,10 @@ jQuery.fn.tableAction = function(options){
 			guidestart:null,
 			guide:null,
 			guideend:null
-		}
+		},
+		tables:null
 	},options);
-	var tables=$(this);
+	options.tables=$(this);
 	return $(this).each(function(){
 		if ($(this).find('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
 		var container=$(this);
@@ -103,8 +104,8 @@ jQuery.fn.tableAction = function(options){
 				var hittable=null;
 				var hitrow=null;
 				var hitcell=null;
-				$.each(tables,function(index){
-					var hittable=tables[index];
+				$.each(options.tables,function(index){
+					var hittable=$(this);
 					$.each(hittable.find('tbody').find('tr'),function(){
 			        	if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
 			        	{
