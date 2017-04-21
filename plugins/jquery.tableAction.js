@@ -69,8 +69,8 @@ jQuery.fn.tableAction = function(options){
 		container.on('mousedown touchstart','td',function(e){
 			if (!options.merge) return;
 			var row=$(this).parent();
-			var cellindex=row.find('td').index($(this));
 			var rowindex=contents.find('tr').index(row);
+			var cellindex=row.find('td').index($(this));
 			if (options.mergeexclude.indexOf(container.cellindex(row,cellindex))==-1)
 			{
 				/* ドラッグスタート */
