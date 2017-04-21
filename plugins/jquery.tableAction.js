@@ -34,6 +34,7 @@ jQuery.fn.tableAction = function(options){
 			guideend:null
 		}
 	},options);
+	var tables=$(this);
 	return $(this).each(function(){
 		if ($(this).find('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
 		var container=$(this);
@@ -99,28 +100,32 @@ jQuery.fn.tableAction = function(options){
 			/* ドラッグ中以外は処理しない */
 			if (mergerow==-1)
 			{
+				var hittable=null;
 				var hitrow=null;
 				var hitcell=null;
-				$.each(contents.find('tr'),function(){
-		        	if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
-		        	{
-	        			hitrow=$(this);
-						$.each(hitrow.find('td'),function(){
-				        	if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX) hitcell=$(this);
-						});
-		        	}
+				$.each(tables,function(index){
+					var hittable=$(this);
+					$.each(hittable.find('tbody').find('tr'),function(){
+			        	if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
+			        	{
+		        			hitrow=$(this);
+							$.each(hitrow.find('td'),function(){
+					        	if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX) hitcell=$(this);
+							});
+			        	}
+					});
 				});
 				if (options.callback.guidestart!=null)
 				{
-					if (hitrow!=null && hitcell!=null)
+					if (hitcell!=null)
 					{
-						if (options.mergeexclude.indexOf(container.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
+						if (options.mergeexclude.indexOf(hittable.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
 						{
-							options.callback.guidestart(e,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
+							options.callback.guidestart(e,hittable,hittable.find('tbody').find('tr').index(hitrow),hitrow.find('td').index(hitcell));
 						}
-						else options.callback.guidestart(e,container,null,null);
+						else options.callback.guidestart(e,hittable,null,null);
 					}
-					else options.callback.guidestart(e,container,null,null);
+					else options.callback.guidestart(e,hittable,null,null);
 				}
 				return;
 			}

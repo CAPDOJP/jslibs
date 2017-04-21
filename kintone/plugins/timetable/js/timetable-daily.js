@@ -252,7 +252,7 @@ jQuery.noConflict();
 		{
 			head.eq(0).append($('<th>'));
 			head.eq(1).append($('<th class="timetable-daily-cellhead">'));
-			template.append($('<td>'));
+			template.append($('<td class="nowrap">'));
 		}
 		for (var i=0;i<24;i++)
 		{
@@ -294,7 +294,7 @@ jQuery.noConflict();
 					var minute=(caller.cellindex(row,cellindex)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.text(hour.toString().lpad('0',2)+':'+minute.toString().lpad('0',2)).show().css({
 				      'left':row.find('td').eq(cellindex).offset().left.toString()+'px',
-				      'top':(row.offset().top-guidefrom.outerHeight(true)).toString()+'px'
+				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
 					});
 				},
 				guide:function(e,caller,table,rowindex,cellfrom,cellto){
@@ -305,11 +305,11 @@ jQuery.noConflict();
 					var tominute=caller.cellindex(row,cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.text(fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2)).show().css({
 				      'left':row.find('td').eq(cellfrom).offset().left.toString()+'px',
-				      'top':(row.offset().top-guidefrom.outerHeight(true)).toString()+'px'
+				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
 					});
 					guideto.text(tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2)).show().css({
 				      'left':(row.find('td').eq(cellto).offset().left+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
-				      'top':(row.offset().top+row.outerHeight(true)).toString()+'px'
+				      'top':(row.offset().top-$(window).scrollTop()+row.outerHeight(true)).toString()+'px'
 					});
 				},
 				guideend:function(e){

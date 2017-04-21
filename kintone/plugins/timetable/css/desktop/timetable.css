@@ -27,8 +27,6 @@ table.timetable-daily thead tr:last-of-type th{
 	height:10px;
 }
 table.timetable-daily thead tr th.timetable-daily-cellhead{
-	min-width:10%;
-	white-space:nowrap;
 	width:10%;
 }
 table.timetable-daily thead tr th.timetable-daily-cell30{
@@ -49,6 +47,9 @@ table.timetable-daily thead tr th.timetable-daily-cell5{
 table.timetable-daily tbody tr td{
 	cursor:pointer;
 	position:relative;
+}
+table.timetable-daily tbody tr td.nowrap{
+	white-space:nowrap;
 }
 table.timetable-daily tbody tr td p.timetable-daily-merge-p{
 	background-color:transparent;
