@@ -109,11 +109,14 @@ jQuery.fn.tableAction = function(options){
 						{
 							hitrow=$(this);
 							$.each(hitrow.find('td'),function(){
-								if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX) hitcell=$(this);
+								if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX)
+								{
+									hittable=tables[index];
+									hitcell=$(this);
+								}
 							});
 						}
 					});
-					if (hitcell!=null) hittable=$(this);
 				});
 				if (options.callback.guidestart!=null)
 				{
