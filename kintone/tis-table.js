@@ -35,9 +35,9 @@ var Table=function(options){
 		mergetrigger:null,
 		unmergetrigger:null,
 		callback:{
-			mousedown:null,
-			mousemove:null,
-			mouseup:null
+			guidestart:null,
+			guide:null,
+			guideend:null
 		}
 	},options);
 	/* property */
@@ -87,12 +87,14 @@ var Table=function(options){
 			}
 			if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.mergeclass);
 			else merged=true;
-			if (options.callback.mousedown!=null) options.callback.mousedown(e,my,container,mergerow,mergefrom);
+			if (options.callback.guidestart!=null) options.callback.guidestart(e,my,container,mergerow,mergefrom);
 			e.preventDefault();
 		}
 	});
 	$(window).on('mousemove touchmove',function(e){
-		if (!options.merge)
+		if (!options.merge) return;
+		/* return except during merge */
+		if (mergerow==-1)
 		{
 			var hitrow=null;
 			var hitcell=null;
@@ -105,13 +107,11 @@ var Table=function(options){
 					});
 	        	}
 			});
-			if (options.callback.mousedown!=null)
-				if (hitrow!=null && hitcell!=null) options.callback.mousedown(e,my,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
-				else options.callback.mousedown(e,my,null,null);
+			if (options.callback.guidestart!=null)
+				if (hitrow!=null && hitcell!=null) options.callback.guidestart(e,my,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
+				else options.callback.guidestart(e,my,null,null);
 			return;
 		}
-		/* return except during merge */
-		if (mergerow==-1) return;
 		/* get hover cell */
 		var posX=(e.type=='touchmove')?e.originalEvent.touches[0].pageX:e.pageX;
 		var hit=-1;
@@ -138,7 +138,7 @@ var Table=function(options){
 			if (i>mergefrom-1 && i<mergeto+1) cell.addClass(options.mergeclass);
 			else cell.removeClass(options.mergeclass);
 		}
-		if (options.callback.mousemove!=null) options.callback.mousemove(e,my,container,mergerow,mergefrom,mergeto);
+		if (options.callback.guide!=null) options.callback.guide(e,my,container,mergerow,mergefrom,mergeto);
 		e.preventDefault();
 	});
 	$(window).on('mouseup touchend',function(e){
@@ -175,7 +175,7 @@ var Table=function(options){
 		mergeto=-1;
 		mergelimitfrom=-1;
 		mergelimitto=-1;
-		if (options.callback.mouseup!=null) options.callback.mouseup(e);
+		if (options.callback.guideend!=null) options.callback.guideend(e);
 		e.preventDefault();
 	});
 };
@@ -240,9 +240,9 @@ jQuery.fn.mergetable=function(options){
 		mergetrigger:null,
 		unmergetrigger:null,
 		callback:{
-			mousedown:null,
-			mousemove:null,
-			mouseup:null
+			guidestart:null,
+			guide:null,
+			guideend:null
 		}
 	},options);
 	options.table=this;

@@ -287,7 +287,7 @@ jQuery.noConflict();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=edit';
 			},
 			callback:{
-				mousedown:function(e,caller,table,rowindex,cellindex){
+				guidestart:function(e,caller,table,rowindex,cellindex){
 					if (rowindex==null) {guidefrom.hide();return;}
 					console.log(rowindex);
 					var row=table.find('tbody').find('tr').eq(rowindex);
@@ -298,7 +298,7 @@ jQuery.noConflict();
 				      'top':row.offset().top.toString()+'px'
 					}).text(hour.toString()+':'+minute.toString()).show();
 				},
-				mousemove:function(e,caller,table,rowindex,cellfrom,cellto){
+				guide:function(e,caller,table,rowindex,cellfrom,cellto){
 					var row=table.find('tbody').find('tr').eq(rowindex);
 					var fromhour=Math.floor((caller.cellindex(row,cellfrom)-1)/parseInt(vars.config['scale']));
 					var tohour=Math.floor(caller.cellindex(row,cellto)/parseInt(vars.config['scale']));
@@ -313,7 +313,7 @@ jQuery.noConflict();
 				      'top':row.offset().top.toString()+'px'
 					}).text(tohour.toString()+':'+tominute.toString()).show();
 				},
-				mouseup:function(e){
+				guideend:function(e){
 					guidefrom.hide();
 					guideto.hide();
 				}
