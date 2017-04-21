@@ -287,14 +287,35 @@ jQuery.noConflict();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=edit';
 			},
 			callback:{
-				mousedown:function(e,caller,mergerow,mergefrom){
-					guidefrom.show();
+				mousedown:function(e,caller,table,rowindex,cellindex){
+					if (rowindex==null) {guidefrom.hide();return;}
+					console.log(rowindex);
+					var row=table.find('tbody').find('tr').eq(rowindex);
+					var hour=Math.floor((caller.cellindex(row,cellindex)-1)/parseInt(vars.config['scale']));
+					var minute=(caller.cellindex(row,cellindex)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
+					guidefrom.css({
+				      'left':row.find('td').eq(cellindex).offset().left.toString()+'px',
+				      'top':row.offset().top.toString()+'px'
+					}).text(hour.toString()+':'+minute.toString()).show();
 				},
-				mousemove:function(e,caller,mergerow,mergefrom,mergeto){
-					
+				mousemove:function(e,caller,table,rowindex,cellfrom,cellto){
+					var row=table.find('tbody').find('tr').eq(rowindex);
+					var fromhour=Math.floor((caller.cellindex(row,cellfrom)-1)/parseInt(vars.config['scale']));
+					var tohour=Math.floor(caller.cellindex(row,cellto)/parseInt(vars.config['scale']));
+					var fromminute=(caller.cellindex(row,cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
+					var tominute=caller.cellindex(row,cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
+					guidefrom.css({
+				      'left':row.find('td').eq(cellfrom).offset().left.toString()+'px',
+				      'top':row.offset().top.toString()+'px'
+					}).text(fromhour.toString()+':'+fromminute.toString()).show();
+					guideto.css({
+				      'left':row.find('td').eq(cellto).offset().left.toString()+'px',
+				      'top':row.offset().top.toString()+'px'
+					}).text(tohour.toString()+':'+tominute.toString()).show();
 				},
 				mouseup:function(e){
-					
+					guidefrom.hide();
+					guideto.hide();
 				}
 			}
 		});

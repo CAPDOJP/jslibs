@@ -87,7 +87,7 @@ var Table=function(options){
 			}
 			if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.mergeclass);
 			else merged=true;
-			if (options.callback.mousedown!=null) options.callback.mousedown(e,container,mergerow,mergefrom);
+			if (options.callback.mousedown!=null) options.callback.mousedown(e,my,container,mergerow,mergefrom);
 			e.preventDefault();
 		}
 	});
@@ -106,7 +106,7 @@ var Table=function(options){
 	        	}
 			});
 			if (options.callback.mousedown!=null)
-				if (hitrow!=null && hitcell!=null) options.callback.mousedown(e,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
+				if (hitrow!=null && hitcell!=null) options.callback.mousedown(e,my,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
 				else options.callback.mousedown(e,my,null,null);
 			return;
 		}
@@ -138,7 +138,7 @@ var Table=function(options){
 			if (i>mergefrom-1 && i<mergeto+1) cell.addClass(options.mergeclass);
 			else cell.removeClass(options.mergeclass);
 		}
-		if (options.callback.mousemove!=null) options.callback.mousemove(e,container,mergerow,mergefrom,mergeto);
+		if (options.callback.mousemove!=null) options.callback.mousemove(e,my,container,mergerow,mergefrom,mergeto);
 		e.preventDefault();
 	});
 	$(window).on('mouseup touchend',function(e){
