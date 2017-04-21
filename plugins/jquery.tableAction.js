@@ -93,7 +93,23 @@ jQuery.fn.tableAction = function(options){
 			}
 		});
 		$(window).on('mousemove touchmove',function(e){
-			if (!options.merge) return;
+			if (!options.merge)
+			{
+				var hitrow=null;
+				var hitcell=null;
+				$.each(contents.children('tr'),function(){
+		        	if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
+		        	{
+	        			hitrow=$(this);
+						$.each(hitrow.children('td'),function(){
+				        	if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX) hitcell=$(this);
+						});
+		        	}
+				});
+				if (hitrow!=null && hitcell!=null)
+					if (options.mousedowncallback!=null) options.mousedowncallback(e,container,contents.children('tr').index(hitrow),hitrow.children('td').index(hitcell));
+				return;
+			}
 			/* ドラッグ中以外は処理しない */
 			if (mergerow==-1) return;
 			/* マウスオーバーセル取得 */
