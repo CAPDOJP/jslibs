@@ -117,7 +117,7 @@ jQuery.fn.tableAction = function(options){
 				});
 				if (options.callback.guidestart!=null)
 				{
-					if (hitcell!=null)
+					if (hittable!=null)
 					{
 						if (options.mergeexclude.indexOf(hittable.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
 						{
