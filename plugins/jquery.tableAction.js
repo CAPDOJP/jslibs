@@ -105,7 +105,7 @@ jQuery.fn.tableAction = function(options){
 				var hitcell=null;
 				$.each(tables,function(index){
 					var table=$(this);
-					$.each($(this).find('tbody').find('tr'),function(){
+					$.each(table.find('tbody').find('tr'),function(){
 						if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
 						{
 							hitrow=$(this);
@@ -123,6 +123,7 @@ jQuery.fn.tableAction = function(options){
 				{
 					if (hittable!=null)
 					{
+						if (hittable[0]!=container[0]) return;
 						if (options.mergeexclude.indexOf(hittable.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
 						{
 							options.callback.guidestart(e,hittable,hittable.find('tbody').find('tr').index(hitrow),hitrow.find('td').index(hitcell));
