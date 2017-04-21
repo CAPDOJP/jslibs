@@ -104,6 +104,7 @@ jQuery.fn.tableAction = function(options){
 				var hitrow=null;
 				var hitcell=null;
 				$.each(tables,function(index){
+					var table=$(this);
 					$.each($(this).find('tbody').find('tr'),function(){
 						if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
 						{
@@ -111,7 +112,7 @@ jQuery.fn.tableAction = function(options){
 							$.each(hitrow.find('td'),function(){
 								if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX)
 								{
-									hittable=tables.eq(index);
+									hittable=table;
 									hitcell=$(this);
 								}
 							});
