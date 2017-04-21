@@ -294,9 +294,9 @@ jQuery.noConflict();
 					var hour=Math.floor((caller.cellindex(row,cellindex)-1)/parseInt(vars.config['scale']));
 					var minute=(caller.cellindex(row,cellindex)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.css({
-				      'left':row.find('td').eq(cellindex).offset().left.toString()+'px',
-				      'top':row.offset().top.toString()+'px'
-					}).text(hour.toString()+':'+minute.toString()).show();
+				      'right':row.find('td').eq(cellindex).offset().left.toString()+'px',
+				      'bottom':row.offset().top.toString()+'px'
+					}).text(hour.toString().lpad('0',2)+':'+minute.toString().lpad('0',2)).show();
 				},
 				guide:function(e,caller,table,rowindex,cellfrom,cellto){
 					var row=table.find('tbody').find('tr').eq(rowindex);
@@ -305,13 +305,13 @@ jQuery.noConflict();
 					var fromminute=(caller.cellindex(row,cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					var tominute=caller.cellindex(row,cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.css({
-				      'left':row.find('td').eq(cellfrom).offset().left.toString()+'px',
-				      'top':row.offset().top.toString()+'px'
-					}).text(fromhour.toString()+':'+fromminute.toString()).show();
+				      'right':row.find('td').eq(cellfrom).offset().left.toString()+'px',
+				      'bottom':row.offset().top.toString()+'px'
+					}).text(fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2)).show();
 					guideto.css({
-				      'left':row.find('td').eq(cellto).offset().left.toString()+'px',
-				      'top':row.offset().top.toString()+'px'
-					}).text(tohour.toString()+':'+tominute.toString()).show();
+				      'left':(row.find('td').eq(cellto).offset().left+row.outerWidth(true)).toString()+'px',
+				      'top':(row.offset().top+row.outerHeight(true)).toString()+'px'
+					}).text(tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2)).show();
 				},
 				guideend:function(e){
 					guidefrom.hide();
