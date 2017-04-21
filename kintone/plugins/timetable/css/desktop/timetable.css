@@ -28,6 +28,7 @@ table.timetable-daily thead tr:last-of-type th{
 }
 table.timetable-daily thead tr th.timetable-daily-cellhead{
 	min-width:10%;
+	white-space:nowrap;
 	width:10%;
 }
 table.timetable-daily thead tr th.timetable-daily-cell30{
@@ -111,11 +112,21 @@ table.timetable-daily tbody tr td.timetable-daily-merge10:after{
 table.timetable-daily tbody tr td.timetable-daily-merge11:after{
 	background-color:#B473B4;
 }
-div.balloonfrom{
-	
+div.guidefrom{
+	background-color:#FFFFFF;
+	display:none;
+	height:2em;
+	line-height:2em;
+	position:fixed;
+	width:auto;
 }
-div.balloonto{
-	
+div.guideto{
+	background-color:#FFFFFF;
+	display:none;
+	height:2em;
+	line-height:2em;
+	position:fixed;
+	width:auto;
 }
 /* individual style (weekly) */
 div.timetable-weekly-balloon{

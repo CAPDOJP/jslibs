@@ -211,11 +211,15 @@ jQuery.noConflict();
 		var button=$('<button id="datepick" class="customview-button calendar-button">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
+		var next=$('<button id="next" class="customview-button next-button">');
+		var guidefrom=$('<div class="guidefrom">');
+		var guideto=$('<div class="guideto">');
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(date[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
+		$('body').append(guidefrom).append(guideto);
 		/* setup date value */
 		date.text(vars.date.format('Y-m-d'));
 		/* day pickup button */
@@ -281,6 +285,17 @@ jQuery.noConflict();
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=edit';
+			},
+			callback:{
+				mousedown:function(e,caller,mergerow,mergefrom){
+					guidefrom.show();
+				},
+				mousemove:function(e,caller,mergerow,mergefrom,mergeto){
+					
+				},
+				mouseup:function(e){
+					
+				}
 			}
 		});
 		/* create routemap box */

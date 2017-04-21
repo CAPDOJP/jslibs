@@ -105,8 +105,9 @@ var Table=function(options){
 					});
 	        	}
 			});
-			if (hitrow!=null && hitcell!=null)
-				if (options.callback.mousedown!=null) options.callback.mousedown(e,my,contents.children('tr').index(hitrow),hitrow.children('td').index(hitcell));
+			if (options.callback.mousedown!=null)
+				if (hitrow!=null && hitcell!=null) options.callback.mousedown(e,my,contents.children('tr').index(hitrow),hitrow.children('td').index(hitcell));
+				else options.callback.mousedown(e,my,null,null);
 			return;
 		}
 		/* return except during merge */
