@@ -96,17 +96,17 @@ var Table=function(options){
 		{
 			var hitrow=null;
 			var hitcell=null;
-			$.each(contents.children('tr'),function(){
+			$.each(contents.find('tr'),function(){
 	        	if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
 	        	{
         			hitrow=$(this);
-					$.each(hitrow.children('td'),function(){
+					$.each(hitrow.find('td'),function(){
 			        	if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX) hitcell=$(this);
 					});
 	        	}
 			});
 			if (options.callback.mousedown!=null)
-				if (hitrow!=null && hitcell!=null) options.callback.mousedown(e,container,contents.children('tr').index(hitrow),hitrow.children('td').index(hitcell));
+				if (hitrow!=null && hitcell!=null) options.callback.mousedown(e,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
 				else options.callback.mousedown(e,my,null,null);
 			return;
 		}
