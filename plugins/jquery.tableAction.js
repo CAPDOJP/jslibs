@@ -104,7 +104,6 @@ jQuery.fn.tableAction = function(options){
 				var hitrow=null;
 				var hitcell=null;
 				$.each(tables,function(index){
-					var hittable=$(this);
 					$.each(hittable.find('tbody').find('tr'),function(){
 			        	if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
 			        	{
@@ -114,12 +113,13 @@ jQuery.fn.tableAction = function(options){
 							});
 			        	}
 					});
+					if (hitcell!=null) hittable=$(this);
 				});
 				if (options.callback.guidestart!=null)
 				{
 					if (hitcell!=null)
 					{
-						if (options.mergeexclude.indexOf(container.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
+						if (options.mergeexclude.indexOf(hittable.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
 						{
 							options.callback.guidestart(e,hittable,hittable.find('tbody').find('tr').index(hitrow),hitrow.find('td').index(hitcell));
 						}
