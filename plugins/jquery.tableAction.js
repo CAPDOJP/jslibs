@@ -111,7 +111,7 @@ jQuery.fn.tableAction = function(options){
 							$.each(hitrow.find('td'),function(){
 								if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX)
 								{
-									hittable=tables[index];
+									hittable=tables.eq(index);
 									hitcell=$(this);
 								}
 							});
