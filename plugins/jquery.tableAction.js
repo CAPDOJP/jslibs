@@ -28,9 +28,11 @@ jQuery.fn.tableAction = function(options){
 		mergeclass:'merge',
 		mergetrigger:null,
 		unmergetrigger:null,
-		mousedowncallback:null,
-		mousemovecallback:null,
-		mouseupcallback:null
+		callback:{
+			mousedown:null,
+			mousemove:null,
+			mouseup:null
+		}
 	},options);
 	return $(this).each(function(){
 		if ($(this).find('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
@@ -88,7 +90,7 @@ jQuery.fn.tableAction = function(options){
 				}
 				if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.mergeclass);
 				else merged=true;
-				if (options.mousedowncallback!=null) options.mousedowncallback(e,container,mergerow,mergefrom);
+				if (options.callback.mousedown!=null) options.callback.mousedown(e,container,mergerow,mergefrom);
 				e.preventDefault();
 			}
 		});
@@ -107,7 +109,7 @@ jQuery.fn.tableAction = function(options){
 		        	}
 				});
 				if (hitrow!=null && hitcell!=null)
-					if (options.mousedowncallback!=null) options.mousedowncallback(e,container,contents.children('tr').index(hitrow),hitrow.children('td').index(hitcell));
+					if (options.callback.mousedown!=null) options.callback.mousedown(e,container,contents.children('tr').index(hitrow),hitrow.children('td').index(hitcell));
 				return;
 			}
 			/* ドラッグ中以外は処理しない */
@@ -138,7 +140,7 @@ jQuery.fn.tableAction = function(options){
 				if (i>mergefrom-1 && i<mergeto+1) cell.addClass(options.mergeclass);
 				else cell.removeClass(options.mergeclass);
 			}
-			if (options.mousemovecallback!=null) options.mousemovecallback(e,container,mergerow,mergefrom,mergeto);
+			if (options.callback.mousemove!=null) options.callback.mousemove(e,container,mergerow,mergefrom,mergeto);
 			e.preventDefault();
 		});
 		$(window).on('mouseup touchend',function(e){
@@ -175,7 +177,7 @@ jQuery.fn.tableAction = function(options){
 			mergeto=-1;
 			mergelimitfrom=-1;
 			mergelimitto=-1;
-			if (options.mouseupcallback!=null) options.mouseupcallback(e);
+			if (options.callback.mouseup!=null) options.callback.mouseup(e);
 			e.preventDefault();
 		});
 	});

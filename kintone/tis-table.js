@@ -34,9 +34,11 @@ var Table=function(options){
 		mergeclass:'merge',
 		mergetrigger:null,
 		unmergetrigger:null,
-		mousedowncallback:null,
-		mousemovecallback:null,
-		mouseupcallback:null
+		callback:{
+			mousedown:null,
+			mousemove:null,
+			mouseup:null
+		}
 	},options);
 	/* property */
 	this.container=options.table;
@@ -85,7 +87,7 @@ var Table=function(options){
 			}
 			if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.mergeclass);
 			else merged=true;
-			if (options.mousedowncallback!=null) options.mousedowncallback(e,my,mergerow,mergefrom);
+			if (options.callback.mousedown!=null) options.callback.mousedown(e,my,mergerow,mergefrom);
 			e.preventDefault();
 		}
 	});
@@ -104,7 +106,7 @@ var Table=function(options){
 	        	}
 			});
 			if (hitrow!=null && hitcell!=null)
-				if (options.mousedowncallback!=null) options.mousedowncallback(e,my,contents.children('tr').index(hitrow),hitrow.children('td').index(hitcell));
+				if (options.callback.mousedown!=null) options.callback.mousedown(e,my,contents.children('tr').index(hitrow),hitrow.children('td').index(hitcell));
 			return;
 		}
 		/* return except during merge */
@@ -135,7 +137,7 @@ var Table=function(options){
 			if (i>mergefrom-1 && i<mergeto+1) cell.addClass(options.mergeclass);
 			else cell.removeClass(options.mergeclass);
 		}
-		if (options.mousemovecallback!=null) options.mousemovecallback(e,my,mergerow,mergefrom,mergeto);
+		if (options.callback.mousemove!=null) options.callback.mousemove(e,my,mergerow,mergefrom,mergeto);
 		e.preventDefault();
 	});
 	$(window).on('mouseup touchend',function(e){
@@ -172,7 +174,7 @@ var Table=function(options){
 		mergeto=-1;
 		mergelimitfrom=-1;
 		mergelimitto=-1;
-		if (options.mouseupcallback!=null) options.mouseupcallback(e);
+		if (options.callback.mouseup!=null) options.callback.mouseup(e);
 		e.preventDefault();
 	});
 };
@@ -236,9 +238,11 @@ jQuery.fn.mergetable=function(options){
 		mergeclass:'merge',
 		mergetrigger:null,
 		unmergetrigger:null,
-		mousedowncallback:null,
-		mousemovecallback:null,
-		mouseupcallback:null
+		callback:{
+			mousedown:null,
+			mousemove:null,
+			mouseup:null
+		}
 	},options);
 	options.table=this;
 	return new Table(options);
