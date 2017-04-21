@@ -109,7 +109,7 @@ var Table=function(options){
 			});
 			if (options.callback.guidestart!=null)
 			{
-				if (hitrow!=null && hitcell!=null)
+				if (hitcell!=null)
 				{
 					if (options.mergeexclude.indexOf(my.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
 					{

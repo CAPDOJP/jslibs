@@ -100,7 +100,7 @@ jQuery.fn.tableAction = function(options){
 			/* ドラッグ中以外は処理しない */
 			if (mergerow==-1)
 			{
-				var hittable=null;
+				var hittable=false;
 				var hitrow=null;
 				var hitcell=null;
 				$.each(tables,function(index){
@@ -112,7 +112,7 @@ jQuery.fn.tableAction = function(options){
 							$.each(hitrow.find('td'),function(){
 								if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX)
 								{
-									hittable=table;
+									hittable=(table[0]==container[0]);
 									hitcell=$(this);
 								}
 							});
@@ -121,16 +121,16 @@ jQuery.fn.tableAction = function(options){
 				});
 				if (options.callback.guidestart!=null)
 				{
-					if (hittable!=null)
+					if (hitcell!=null)
 					{
-						if (hittable[0]!=container[0]) return;
-						if (options.mergeexclude.indexOf(hittable.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
+						if (!hittable) return;
+						if (options.mergeexclude.indexOf(container.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
 						{
-							options.callback.guidestart(e,hittable,hittable.find('tbody').find('tr').index(hitrow),hitrow.find('td').index(hitcell));
+							options.callback.guidestart(e,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
 						}
-						else options.callback.guidestart(e,hittable,null,null);
+						else options.callback.guidestart(e,container,null,null);
 					}
-					else options.callback.guidestart(e,hittable,null,null);
+					else options.callback.guidestart(e,container,null,null);
 				}
 				return;
 			}
