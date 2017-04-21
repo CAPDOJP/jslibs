@@ -108,8 +108,7 @@ jQuery.fn.tableAction = function(options){
 				var isthistable=false;
 				$.each(tables,function(index){
 					var table=$(this);
-					ismerging=$.data(table[0],'merging');
-					if (ismerging) return;
+					if ($.data(table[0],'merging')) {ismerging=true;return;}
 					$.each(table.find('tbody').find('tr'),function(){
 						if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
 						{
@@ -124,8 +123,7 @@ jQuery.fn.tableAction = function(options){
 						}
 					});
 				});
-				if (ismerging) return;
-				if (options.callback.guidestart!=null)
+				if (options.callback.guidestart!=null && !ismerging)
 				{
 					if (hitcell!=null)
 					{
