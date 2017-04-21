@@ -40,6 +40,7 @@ jQuery.fn.tableAction = function(options){
 		var container=$(this);
 		var contents=container.find('tbody');
 		$.data(container[0],'options',options);
+		$.data(container[0],'merging',false);
 		/*
 		*------------------------------------------------------------
 		* ボタン操作(指定関数を実行)
@@ -91,6 +92,7 @@ jQuery.fn.tableAction = function(options){
 				}
 				if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.mergeclass);
 				else merged=true;
+				$.data(container[0],'merging',true);
 				if (options.callback.guidestart!=null) options.callback.guidestart(e,container,mergerow,mergefrom);
 				e.preventDefault();
 			}
@@ -100,11 +102,14 @@ jQuery.fn.tableAction = function(options){
 			/* ドラッグ中以外は処理しない */
 			if (mergerow==-1)
 			{
-				var hittable=false;
 				var hitrow=null;
 				var hitcell=null;
+				var ismerging=false;
+				var isthistable=false;
 				$.each(tables,function(index){
 					var table=$(this);
+					ismerging=$.data(table[0],'merging');
+					if (ismerging) return;
 					$.each(table.find('tbody').find('tr'),function(){
 						if ($(this).offset().top<e.pageY && $(this).offset().top+$(this).outerHeight(true)>e.pageY)
 						{
@@ -112,18 +117,19 @@ jQuery.fn.tableAction = function(options){
 							$.each(hitrow.find('td'),function(){
 								if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX)
 								{
-									hittable=(table[0]==container[0]);
+									isthistable=(table[0]==container[0]);
 									hitcell=$(this);
 								}
 							});
 						}
 					});
 				});
+				if (ismerging) return;
 				if (options.callback.guidestart!=null)
 				{
 					if (hitcell!=null)
 					{
-						if (!hittable) return;
+						if (!isthistable) return;
 						if (options.mergeexclude.indexOf(container.cellindex(hitrow,hitrow.find('td').index(hitcell)))==-1)
 						{
 							options.callback.guidestart(e,container,contents.find('tr').index(hitrow),hitrow.find('td').index(hitcell));
@@ -197,6 +203,7 @@ jQuery.fn.tableAction = function(options){
 			mergeto=-1;
 			mergelimitfrom=-1;
 			mergelimitto=-1;
+			$.data(container[0],'merging',false);
 			if (options.callback.guideend!=null) options.callback.guideend(e);
 			e.preventDefault();
 		});
