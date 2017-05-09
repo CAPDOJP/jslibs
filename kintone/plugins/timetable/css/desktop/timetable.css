@@ -1,4 +1,7 @@
 /* individual style (common) */
+*.hide{
+	display:none;
+}
 div.timetable-graphlegend{
 	padding:6px 3px;
 	text-align:center;
@@ -16,8 +19,12 @@ span.timetable-graphlegend-title{
 	text-align:left;
 }
 /* individual style (daily) */
-table.timetable-daily thead tr th{
-	min-width:10px;
+table.timetable-daily{
+	table-layout:fixed;
+	width:100%;
+}
+table.timetable-daily thead tr th.timetable-daily-cellhead{
+	width:10em;
 }
 table.timetable-daily thead tr:first-of-type th{
 	border-bottom:none;
@@ -26,30 +33,9 @@ table.timetable-daily thead tr:last-of-type th{
 	border-top:none;
 	height:10px;
 }
-table.timetable-daily thead tr th.timetable-daily-cellhead{
-	width:10%;
-}
-table.timetable-daily thead tr th.timetable-daily-cell30{
-	width:1.875%;
-}
-table.timetable-daily thead tr th.timetable-daily-cell20{
-	width:1.25%;
-}
-table.timetable-daily thead tr th.timetable-daily-cell15{
-	width:0.9375%;
-}
-table.timetable-daily thead tr th.timetable-daily-cell10{
-	width:0.625%;
-}
-table.timetable-daily thead tr th.timetable-daily-cell5{
-	width:0.3125%;
-}
 table.timetable-daily tbody tr td{
 	cursor:pointer;
 	position:relative;
-}
-table.timetable-daily tbody tr td.nowrap{
-	white-space:nowrap;
 }
 table.timetable-daily tbody tr td p.timetable-daily-merge-p{
 	background-color:transparent;
@@ -171,6 +157,7 @@ table.timetable-weekly thead tr th:nth-of-type(n+2){
 	width:12.5%;
 }
 table.timetable-weekly tbody tr td{
+	padding:1px;
 	position:relative;
 }
 table.timetable-weekly tbody tr td:first-of-type{

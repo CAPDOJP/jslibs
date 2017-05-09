@@ -163,15 +163,19 @@ jQuery.noConflict();
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
 			var sort='';
+			var query='';
 			var body={
 				app:kintone.app.getId(),
-				query:vars.config['date']+'="'+vars.date.format('Y-m-d')+'"',
+				query:query,
 				fields:vars.fields
 			};
+			query+=vars.config['date']+'="'+vars.date.format('Y-m-d')+'"';
+			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
+			query+=' and '+vars.config['totime']+'<="'+('0'+vars.config['endhour']).slice(-2)+':59"';
 			sort=' order by ';
 			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
 			sort+=vars.config['fromtime']+' asc limit 500';
-			body.query+=sort;
+			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				var records=resp.records;
 				/* initialize table */
@@ -250,17 +254,20 @@ jQuery.noConflict();
 		var template=$('<tr>');
 		if (vars.config['route']=='1' || vars.config['segment'].length!=0)
 		{
-			head.eq(0).append($('<th>'));
-			head.eq(1).append($('<th class="timetable-daily-cellhead">'));
-			template.append($('<td class="nowrap">'));
+			head.eq(0).append($('<th class="timetable-daily-cellhead">'));
+			head.eq(1).append($('<th>'));
+			template.append($('<td>'));
 		}
 		for (var i=0;i<24;i++)
 		{
-			head.eq(0).append($('<th colspan="'+vars.config['scale']+'">').text(i));
+			var hide='';
+			if (i<parseInt(vars.config['starthour'])) hide='class="hide"';
+			if (i>parseInt(vars.config['endhour'])) hide='class="hide"';
+			head.eq(0).append($('<th colspan="'+vars.config['scale']+'" '+hide+'>').text(i));
 			for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
 			{
-				head.eq(1).append($('<th class="timetable-daily-cell'+vars.config['scale']+'">'));
-				template.append($('<td>'));
+				head.eq(1).append($('<th '+hide+'>'));
+				template.append($('<td '+hide+'>'));
 			}
 		}
 		vars.table=$('<table id="timetable" class="customview-table timetable-daily">').mergetable({

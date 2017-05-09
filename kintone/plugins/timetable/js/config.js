@@ -100,6 +100,8 @@ jQuery.noConflict();
         	$('select#display').val(config['display']);
         	$('select#segment').val(config['segment']);
         	$('select#scale').val(config['scale']);
+        	$('select#starthour').val(config['starthour']);
+        	$('select#endhour').val(config['endhour']);
         	$('select#lat').val(config['lat']);
         	$('select#lng').val(config['lng']);
         	$('input#apikey').val(config['apikey']);
@@ -153,6 +155,16 @@ jQuery.noConflict();
 	    	swal('Error!','目盛り間隔を選択して下さい。','error');
 	    	return;
 	    }
+	    if ($('select#starthour').val()=='')
+	    {
+	    	swal('Error!','タイムテーブル設定開始時刻を選択して下さい。','error');
+	    	return;
+	    }
+	    if ($('select#endhour').val()=='')
+	    {
+	    	swal('Error!','タイムテーブル設定終了時刻を選択して下さい。','error');
+	    	return;
+	    }
 	    if ($('input#route').prop('checked'))
 	    {
 		    if ($('select#lat').val()=='')
@@ -184,6 +196,8 @@ jQuery.noConflict();
         config['segment']=$('select#segment').val();
         config['segmentdisplay']=$('select#segmentdisplay').val();
         config['scale']=$('select#scale').val();
+        config['starthour']=$('select#starthour').val();
+        config['endhour']=$('select#endhour').val();
         if ($('select#segment').val().length!=0)
         {
 		    config['segmentapp']=vars.appIds[$('select#segment').val()];

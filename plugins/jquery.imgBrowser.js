@@ -303,9 +303,18 @@ jQuery.fn.imgSlider = function(options){
 * 画像ドラッグ&拡大縮小
 * -------------------------------------------------------------------
 */
-jQuery.fn.imgOperator = function(){
+jQuery.fn.imgOperator = function(options){
+	var options=$.extend({
+		container:null,
+		zoommin:0,
+		zoommax:1000,
+		wheelcallback:null
+	},options);
 	return $(this).each(function(){
 		var target=$(this);
+		var zoom=100;
+		/* 変数格納 */
+		$.data(target[0],'container',options.container);
 		/* スタイルシート変更 */
 		position=target.css({'position':'fixed'});
 		/*
@@ -318,8 +327,11 @@ jQuery.fn.imgOperator = function(){
 		});
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY*-1:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail*-1;
-			delta=(delta<0)?-150:150;
-			target.relocation(false,delta);
+			zoom+=(delta<0)?-50:50;
+			if (zoom<options.zoommin) zoom=options.zoommin;
+			if (zoom>options.zoommax) zoom=options.zoommax;
+			target.relocation(false,zoom);
+			if (options.wheelcallback) options.wheelcallback(zoom);
 			e.preventDefault();
 		});
 		/*
@@ -353,9 +365,8 @@ jQuery.fn.imgOperator = function(){
 				'top':(target.offset().top).toString()+'px',
 				'transition':'all 0.35s ease-out 0s'
 			});
-			$.data(target[0],'centerX',($(window).width()/2-target.offset().left)/target.width());
-			$.data(target[0],'centerY',($(window).height()/2-target.offset().top)/target.height());
-			target.relocation(false);
+			$.data(target[0],'left',target.offset().left/$(window).width());
+			$.data(target[0],'top',target.offset().top/$(window).height());
 	        e.preventDefault();
 		});
 	});
@@ -391,10 +402,12 @@ jQuery.fn.relocation=function(init,zoom){
 	var width=0;
 	if (init)
 	{
-		left=($(window).width()-target.width())/2;
-		top=($(window).height()-target.height())/2;
+		left=(($.data(target[0],'container').innerWidth()-target.width())/2)+$.data(target[0],'container').offset().left;
+		top=(($.data(target[0],'container').innerHeight()-target.height())/2)+$.data(target[0],'container').offset().top;
 		height=target.height();
 		width=target.width();
+		$.data(target[0],'baseheight',height);
+		$.data(target[0],'basewidth',width);
 	}
 	else
 	{
@@ -402,15 +415,15 @@ jQuery.fn.relocation=function(init,zoom){
 		width=$.data(target[0],'width');
 		if (zoom!=null)
 		{
-			height=(width+zoom)*(height/width);
-			width+=zoom;
+			height=$.data(target[0],'baseheight')*(zoom/100);
+			width=$.data(target[0],'basewidth')*(zoom/100);
 		}
-		left=($(window).width())/2-(width*$.data(target[0],'centerX'));
-		top=($(window).height())/2-(height*$.data(target[0],'centerY'));
+		left=($.data(target[0],'left')*$(window).width())-((width-$.data(target[0],'width'))/2);
+		top=($.data(target[0],'top')*$(window).height())-((height-$.data(target[0],'height'))/2);
 	}
 	target.css({'left':left.toString()+'px','top':top.toString()+'px','width':width.toString()+'px'});
-	$.data(target[0],'centerX',($(window).width()/2-left)/width);
-	$.data(target[0],'centerY',($(window).height()/2-top)/height);
+	$.data(target[0],'left',left/$(window).width());
+	$.data(target[0],'top',top/$(window).height());
 	$.data(target[0],'height',height);
 	$.data(target[0],'width',width);
 };

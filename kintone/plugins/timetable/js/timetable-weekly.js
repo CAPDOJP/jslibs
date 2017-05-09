@@ -62,8 +62,8 @@ jQuery.noConflict();
 					/* create cell */
 					var fromtime=new Date(date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00');
 					var totime=new Date(date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
-					var from=(fromtime.getHours())*2+Math.floor(fromtime.getMinutes()/30);
-					var to=(totime.getHours())*2+Math.ceil(totime.getMinutes()/30);
+					var from=(fromtime.getHours())*parseInt(vars.config['scale'])+Math.floor(fromtime.getMinutes()/(60/parseInt(vars.config['scale'])));
+					var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])));
 					var row=vars.table.contents.find('tr').eq(from);
 					var position=positions.min;
 					from=vars.table.contents.find('tr').eq(from).position().top;
@@ -123,16 +123,21 @@ jQuery.noConflict();
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
 			var sort='';
+			var query='';
 			var body={
 				app:kintone.app.getId(),
-				query:vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"',
+				query:query,
 				fields:vars.fields
 			};
+			query+=vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'"';
+			query+=' and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
+			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
+			query+=' and '+vars.config['totime']+'<="'+('0'+vars.config['endhour']).slice(-2)+':59"';
 			sort=' order by ';
 			sort+=vars.config['date']+' asc,';
 			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
 			sort+=vars.config['fromtime']+' asc limit 500';
-			body.query+=sort;
+			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				var records=resp.records;
 				var color='';
@@ -252,13 +257,19 @@ jQuery.noConflict();
 		/* insert row */
 		for (var i=0;i<24;i++)
 		{
+			var hide=false;
+			if (i<parseInt(vars.config['starthour'])) hide=true;
+			if (i>parseInt(vars.config['endhour'])) hide=true;
 			vars.table.insertrow(null,function(row){
-				var hourrow=row;
-				vars.table.insertrow(row,function(row){
-					var minuterow=row;
-					hourrow.find('td').eq(0).attr('rowspan',2).text(i);
-			        minuterow.find('td').eq(0).hide();
-				});
+				for (var i2=0;i2<parseInt(vars.config['scale'])-1;i2++)
+				{
+					vars.table.insertrow(row,function(row){
+				        row.find('td').eq(0).hide();
+						if (hide) row.addClass('hide');
+					});
+				}
+				row.find('td').eq(0).attr('rowspan',parseInt(vars.config['scale'])).text(i);
+				if (hide) row.addClass('hide');
 			});
 		}
 		/* get fields of app */
