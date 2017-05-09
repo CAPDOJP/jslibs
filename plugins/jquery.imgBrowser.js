@@ -315,6 +315,7 @@ jQuery.fn.imgOperator = function(options){
 		var zoom=100;
 		/* 変数格納 */
 		$.data(target[0],'container',options.container);
+		$.data(target[0],'enablewheel',true);
 		/* スタイルシート変更 */
 		position=target.css({'position':'fixed'});
 		/*
@@ -326,6 +327,7 @@ jQuery.fn.imgOperator = function(options){
 			target.relocation(e.type=='load');
 		});
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
+			if (!$.data(target[0],'enablewheel')) return;
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY*-1:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail*-1;
 			zoom+=(delta<0)?-50:50;
 			if (zoom<options.zoommin) zoom=options.zoommin;
@@ -388,6 +390,15 @@ jQuery.fn.dragstart=function(clientX,clientY,offsetX,offsetY){
 		'top':clientY.toString()+'px',
 		'transition':'none'
 	});
+};
+/*
+*--------------------------------------------------------------------
+* マウスホイールイベント許可判定
+* -------------------------------------------------------------------
+*/
+jQuery.fn.enablewheel=function(enable){
+	var target=$(this);
+	$.data(target[0],'enablewheel',enable);
 };
 /*
 *--------------------------------------------------------------------
