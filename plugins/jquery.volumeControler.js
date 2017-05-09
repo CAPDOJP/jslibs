@@ -41,6 +41,7 @@ jQuery.fn.volumeControler = function(options){
 			down:0,
 			keep:0
 		};
+		var volume=options.default;
 		if (options.line) options.line.css({'transition':'none'});
 		if (options.clip) options.clip.css({'transition':'none'});
 		if (options.display) options.display.css({'transition':'none'});
@@ -67,7 +68,6 @@ jQuery.fn.volumeControler = function(options){
 			if (clipleft>lineleft-targetleft-(options.clip.width()/2)+options.line.width()) clipleft=lineleft-targetleft-(options.clip.width()/2)+options.line.width();
 			options.clip.css({'left':clipleft.toString()+'px'});
 			//移動量算出
-			var volume=0;
 			clipleft+=(options.clip.width()/2)-(lineleft-targetleft);
 			volume=Math.floor((clipleft/options.line.width())*(options.max-options.min));
 			if (options.display) options.display.text(volume);
@@ -79,7 +79,9 @@ jQuery.fn.volumeControler = function(options){
 			capture=false;
 			e.preventDefault();
 		});
-		target.attachvolume(options.default);
+		$(window).on('load resize',function(){
+			target.attachvolume(volume);
+		});
 	});
 };
 jQuery.fn.attachvolume = function(volume){
