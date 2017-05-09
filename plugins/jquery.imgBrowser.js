@@ -226,50 +226,48 @@ jQuery.fn.imgSlider = function(options){
 				$.data(next[0],'type','next');
 				break;
 			case 'drag':
-				target.on({
-					'touchstart mousedown':function(e){
-						if ($(window).width()<options.limit) return;
-						capture=true;
-						targetvalues.down=target.scrollLeft();
-						targetvalues.move.amount=0;
-						if (e.type=='touchstart')
-						{
-							targetvalues.keep=e.originalEvent.touches[0].pageX;
-							targetvalues.move.left=e.originalEvent.touches[0].pageX;
-						}
-						else
-						{
-							targetvalues.keep=e.pageX;
-							targetvalues.move.left=e.pageX;
-						}
-						$.data(target[0],'dragged',false);
-						e.preventDefault();
-					},
-					'touchmove mousemove':function(e){
-						if ($(window).width()<options.limit) return;
-						if (!capture) return;
-						if (e.type=='touchmove')
-						{
-							target.scrollLeft(targetvalues.down+targetvalues.keep-e.originalEvent.touches[0].pageX);
-							targetvalues.move.amount=targetvalues.move.left-e.originalEvent.touches[0].pageX;
-							targetvalues.move.left=e.originalEvent.touches[0].pageX;
-						}
-						else
-						{
-							target.scrollLeft(targetvalues.down+targetvalues.keep-e.pageX);
-							targetvalues.move.amount=targetvalues.move.left-e.pageX;
-							targetvalues.move.left=e.pageX;
-						}
-						e.preventDefault();
-					},
-					'touchend mouseup':function(e){
-						if ($(window).width()<options.limit) return;
-						if (!capture) return;
-						capture=false;
-						target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(targetvalues.move.amount,2))*((targetvalues.move.amount<0)?-1:1)},350,'easeOutCirc');
-						$.data(target[0],'dragged',(targetvalues.move.amount!=0));
-						e.preventDefault();
+				target.on('touchstart mousedown',function(e){
+					if ($(window).width()<options.limit) return;
+					capture=true;
+					targetvalues.down=target.scrollLeft();
+					targetvalues.move.amount=0;
+					if (e.type=='touchstart')
+					{
+						targetvalues.keep=e.originalEvent.touches[0].pageX;
+						targetvalues.move.left=e.originalEvent.touches[0].pageX;
 					}
+					else
+					{
+						targetvalues.keep=e.pageX;
+						targetvalues.move.left=e.pageX;
+					}
+					$.data(target[0],'dragged',false);
+					e.preventDefault();
+				});
+				$(window).on('touchmove mousemove',function(e){
+					if ($(window).width()<options.limit) return;
+					if (!capture) return;
+					if (e.type=='touchmove')
+					{
+						target.scrollLeft(targetvalues.down+targetvalues.keep-e.originalEvent.touches[0].pageX);
+						targetvalues.move.amount=targetvalues.move.left-e.originalEvent.touches[0].pageX;
+						targetvalues.move.left=e.originalEvent.touches[0].pageX;
+					}
+					else
+					{
+						target.scrollLeft(targetvalues.down+targetvalues.keep-e.pageX);
+						targetvalues.move.amount=targetvalues.move.left-e.pageX;
+						targetvalues.move.left=e.pageX;
+					}
+					e.preventDefault();
+				});
+				$(window).on('touchend mouseup',function(e){
+					if ($(window).width()<options.limit) return;
+					if (!capture) return;
+					capture=false;
+					target.animate({scrollLeft:target.scrollLeft()+Math.round(Math.pow(targetvalues.move.amount,2))*((targetvalues.move.amount<0)?-1:1)},350,'easeOutCirc');
+					$.data(target[0],'dragged',(targetvalues.move.amount!=0));
+					e.preventDefault();
 				});
 				break;
 		}
@@ -324,6 +322,7 @@ jQuery.fn.imgOperator = function(options){
 		*------------------------------------------------------------
 		*/
 		$(window).on('load resize scroll',function(e){
+			if (e.type=='resize') target.css({'transition':'none'});
 			target.relocation(e.type=='load');
 		});
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
@@ -367,8 +366,8 @@ jQuery.fn.imgOperator = function(options){
 				'top':(target.offset().top).toString()+'px',
 				'transition':'all 0.35s ease-out 0s'
 			});
-			$.data(target[0],'left',target.offset().left/$(window).width());
-			$.data(target[0],'top',target.offset().top/$(window).height());
+			$.data(target[0],'centerX',(target.offset().left+(target.width()/2)-options.container.offset().left)/options.container.outerWidth(false));
+			$.data(target[0],'centerY',(target.offset().top+(target.height()/2)-options.container.offset().top)/options.container.outerHeight(false));
 	        e.preventDefault();
 		});
 	});
@@ -407,14 +406,15 @@ jQuery.fn.enablewheel=function(enable){
 */
 jQuery.fn.relocation=function(init,zoom){
 	var target=$(this);
+	var container=$.data(target[0],'container');
 	var left=0;
 	var top=0;
 	var height=0;
 	var width=0;
 	if (init)
 	{
-		left=(($.data(target[0],'container').innerWidth()-target.width())/2)+$.data(target[0],'container').offset().left;
-		top=(($.data(target[0],'container').innerHeight()-target.height())/2)+$.data(target[0],'container').offset().top;
+		left=((container.outerWidth(false)-target.width())/2)+container.offset().left;
+		top=((container.outerHeight(false)-target.height())/2)+container.offset().top;
 		height=target.height();
 		width=target.width();
 		$.data(target[0],'baseheight',height);
@@ -429,13 +429,14 @@ jQuery.fn.relocation=function(init,zoom){
 			height=$.data(target[0],'baseheight')*(zoom/100);
 			width=$.data(target[0],'basewidth')*(zoom/100);
 		}
-		left=($.data(target[0],'left')*$(window).width())-((width-$.data(target[0],'width'))/2);
-		top=($.data(target[0],'top')*$(window).height())-((height-$.data(target[0],'height'))/2);
+		left=($.data(target[0],'centerX')*container.outerWidth(false))-(width/2)+container.offset().left;
+		top=($.data(target[0],'centerY')*container.outerHeight(false))-(height/2)+container.offset().top;
 	}
 	target.css({'left':left.toString()+'px','top':top.toString()+'px','width':width.toString()+'px'});
-	$.data(target[0],'left',left/$(window).width());
-	$.data(target[0],'top',top/$(window).height());
+	$.data(target[0],'centerX',(left+(width/2)-container.offset().left)/container.outerWidth(false));
+	$.data(target[0],'centerY',(top+(height/2)-container.offset().top)/container.outerHeight(false));
 	$.data(target[0],'height',height);
 	$.data(target[0],'width',width);
+	target.css({'transition':'all 0.35s ease-out 0s'});
 };
 })(jQuery);
