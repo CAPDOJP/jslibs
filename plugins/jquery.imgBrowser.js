@@ -366,8 +366,9 @@ jQuery.fn.imgOperator = function(options){
 				'top':(target.offset().top).toString()+'px',
 				'transition':'all 0.35s ease-out 0s'
 			});
-			$.data(target[0],'centerX',(target.offset().left+(target.width()/2)-options.container.offset().left)/options.container.outerWidth(false));
-			$.data(target[0],'centerY',(target.offset().top+(target.height()/2)-options.container.offset().top)/options.container.outerHeight(false));
+			$.data(target[0],'centerX',(target.offset().left+($.data(target[0],'width')/2)-options.container.offset().left)/options.container.outerWidth(false));
+			$.data(target[0],'centerY',(target.offset().top+($.data(target[0],'height')/2)-options.container.offset().top)/options.container.outerHeight(false));
+			target.relocation(false);
 	        e.preventDefault();
 		});
 	});
