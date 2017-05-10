@@ -33,9 +33,9 @@ var volumeControler = function(options){
 		callback:null
 	},options);
 	if (options.container==null) {alert('移動量調整コントローラーボックスを指定して下さい。');return;}
-	var capture=false;
 	var my=this;
 	var target=options.container;
+	var capture=false;
 	var values={
 		down:0,
 		keep:0
