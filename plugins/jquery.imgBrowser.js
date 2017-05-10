@@ -381,6 +381,10 @@ jQuery.fn.imgOperator = function(options){
 */
 jQuery.fn.dragstart=function(clientX,clientY,offsetX,offsetY){
 	var target=$(this);
+	if (clientX<target.offset().left) return;
+	if (clientX>target.offset().left+target.width()) return;
+	if (clientY<target.offset().top) return;
+	if (clientY>target.offset().top+target.height()) return;
 	/* ドラッグ開始 */
 	$.data(target[0],'dragging',true);
 	/* スタイルシート変更 */
