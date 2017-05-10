@@ -310,10 +310,10 @@ jQuery.fn.imgOperator = function(options){
 	},options);
 	return $(this).each(function(){
 		var target=$(this);
-		var zoom=100;
 		/* 変数格納 */
 		$.data(target[0],'container',options.container);
 		$.data(target[0],'enablewheel',true);
+		$.data(target[0],'zoom',100);
 		/* スタイルシート変更 */
 		position=target.css({'position':'fixed'});
 		/*
@@ -328,6 +328,7 @@ jQuery.fn.imgOperator = function(options){
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
 			if (!$.data(target[0],'enablewheel')) return;
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY*-1:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail*-1;
+			var zoom=$.data(target[0],'zoom');
 			zoom+=(delta<0)?-50:50;
 			if (zoom<options.zoommin) zoom=options.zoommin;
 			if (zoom>options.zoommax) zoom=options.zoommax;
@@ -438,6 +439,7 @@ jQuery.fn.relocation=function(init,zoom){
 	$.data(target[0],'centerY',(top+(height/2)-container.offset().top)/container.outerHeight(false));
 	$.data(target[0],'height',height);
 	$.data(target[0],'width',width);
+	$.data(target[0],'zoom',zoom);
 	target.css({'transition':'all 0.35s ease-out 0s'});
 };
 })(jQuery);
