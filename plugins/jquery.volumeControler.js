@@ -45,17 +45,17 @@ var volumeControler = function(options){
 		'height':'2em',
 		'margin':'0px auto',
 		'max-width':options.width.toString()+'px',
+		'padding':'1em 6em 0px 1em',
 		'width':'100%'
 	});
 	var line=$('<div>').css({
 		'border-top':'1px solid rgba(255,255,255,0.15)',
 		'border-bottom':'1px solid #9E9E9E',
 		'height':'0px',
-		'left':'1em',
-		'position':'absolute',
-		'top':'calc(1em - 1px)',
+		'margin':'-1px 0px 0px 0px',
+		'padding':'0px',
 		'transition':'none',
-		'width':'calc(100% - 7em)',
+		'width':'100%',
 		'z-index':'111'
 	});
 	var clip=$('<button>').css({
@@ -65,6 +65,8 @@ var volumeControler = function(options){
 		'cursor':'pointer',
 		'height':'1em',
 		'left':'0.5em',
+		'margin':'0px',
+		'padding':'0px',
 		'position':'absolute',
 		'top':'0.5em',
 		'transition':'none',
@@ -74,6 +76,8 @@ var volumeControler = function(options){
 	var display=$('<div>').css({
 		'height':'2em',
 		'line-height':'2em',
+		'margin':'0px',
+		'padding':'0px',
 		'position':'absolute',
 		'right':'0px',
 		'top':'0px',
