@@ -13,9 +13,6 @@
 *--------------------------------------------------------------------
 * imgBrowser
 * 画像拡大表示
-*--------------------------------------------------------------------
-* parameters
-* options @ shadow :表示画像ドロップシャドウ設定
 * -------------------------------------------------------------------
 */
 jQuery.fn.imgBrowser = function(options){
@@ -126,6 +123,7 @@ jQuery.fn.imgBrowser = function(options){
 *--------------------------------------------------------------------
 * parameters
 * options @ limit :スライドボックス最大幅
+*         @ type  :ドラッグ方法
 * -------------------------------------------------------------------
 */
 jQuery.fn.imgSlider = function(options){
@@ -306,23 +304,37 @@ jQuery.fn.imgOperator = function(options){
 		container:null,
 		zoommin:0,
 		zoommax:1000,
+		wheelzoom:true,
 		wheelcallback:null
 	},options);
 	return $(this).each(function(){
 		var target=$(this);
+		var drag={
+			left:0,
+			top:0
+		};
+		var keep={
+			left:0,
+			top:0
+		};
+		var rect={
+			container:null,
+			target:null
+		};
 		/* 変数格納 */
 		$.data(target[0],'container',options.container);
-		$.data(target[0],'enablewheel',true);
+		$.data(target[0],'enablewheel',options.wheelzoom);
 		$.data(target[0],'zoom',100);
+		$.data(target[0],'keep',keep);
+		$.data(target[0],'rect',rect);
 		/* スタイルシート変更 */
-		position=target.css({'position':'fixed'});
+		target.css({'position':'absolute'});
 		/*
 		*------------------------------------------------------------
 		* 画像調整
 		*------------------------------------------------------------
 		*/
 		$(window).on('load resize scroll',function(e){
-			if (e.type=='resize') target.css({'transition':'none'});
 			target.relocation(e.type=='load');
 		});
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
@@ -343,32 +355,36 @@ jQuery.fn.imgOperator = function(options){
 		*/
 		$.data(target[0],'dragging',false);
 		target.on('mousedown',function(e){
-			target.dragstart(e.clientX,e.clientY,e.offsetX,e.offsetY);
+			target.dragstart(e.clientX,e.clientY);
 			e.preventDefault();
 		});
 		$(window).on('mousemove',function(e){
 	    	if (!$.data(target[0],'dragging')) return;
 			/* スタイルシート変更 */
-		    target.css({
-		      'left':e.clientX,
-		      'top':e.clientY
-		    });
+			keep=$.data(target[0],'keep');
+			rect=$.data(target[0],'rect');
+			drag.left=rect.target.left+e.clientX-keep.left;
+			drag.top=rect.target.top+e.clientY-keep.top;
+			target.css({
+				'left':drag.left.toString()+'px',
+				'top':drag.top.toString()+'px'
+			});
 	        e.preventDefault();
 		});
 		$(window).on('mouseup',function(e){
 	    	if (!$.data(target[0],'dragging')) return;
 			/* ドラッグ終了 */
 			$.data(target[0],'dragging',false);
+			rect.container=options.container[0].getBoundingClientRect();
+			rect.target=target[0].getBoundingClientRect();
 			/* スタイルシート変更 */
 			target.css({
-				'left':(target.offset().left).toString()+'px',
-				'margin-left':'0px',
-				'margin-top':'0px',
-				'top':(target.offset().top).toString()+'px',
-				'transition':'all 0.35s ease-out 0s'
+				'left':(rect.target.left-rect.container.left+options.container.scrollLeft()).toString()+'px',
+				'position':'absolute',
+				'top':(rect.target.top-rect.container.top+options.container.scrollTop()).toString()+'px'
 			});
-			$.data(target[0],'centerX',(target.offset().left+($.data(target[0],'width')/2)-options.container.offset().left)/options.container.outerWidth(false));
-			$.data(target[0],'centerY',(target.offset().top+($.data(target[0],'height')/2)-options.container.offset().top)/options.container.outerHeight(false));
+			$.data(target[0],'centerX',(rect.target.left-rect.container.left+options.container.scrollLeft()+($.data(target[0],'width')/2))/options.container.innerWidth());
+			$.data(target[0],'centerY',(rect.target.top-rect.container.top+options.container.scrollTop()+($.data(target[0],'height')/2))/options.container.innerHeight());
 			target.relocation(false);
 	        e.preventDefault();
 		});
@@ -379,22 +395,29 @@ jQuery.fn.imgOperator = function(options){
 * 画像ドラッグ
 * -------------------------------------------------------------------
 */
-jQuery.fn.dragstart=function(clientX,clientY,offsetX,offsetY){
+jQuery.fn.dragstart=function(clientX,clientY){
 	var target=$(this);
-	if (clientX<target.offset().left) return;
-	if (clientX>target.offset().left+target.width()) return;
-	if (clientY<target.offset().top) return;
-	if (clientY>target.offset().top+target.height()) return;
+	var keep=$.data(target[0],'keep');
+	var rect=$.data(target[0],'rect');
+	keep.left=clientX;
+	keep.top=clientY;
+	rect.container=$.data(target[0],'container')[0].getBoundingClientRect();
+	rect.target=target[0].getBoundingClientRect();
+	if (clientX<rect.target.left) return;
+	if (clientX>rect.target.right) return;
+	if (clientY<rect.target.top) return;
+	if (clientY>rect.target.bottom) return;
 	/* ドラッグ開始 */
 	$.data(target[0],'dragging',true);
 	/* スタイルシート変更 */
 	target.css({
-		'left':clientX.toString()+'px',
-		'margin-left':'-'+offsetX.toString()+'px',
-		'margin-top':'-'+offsetY.toString()+'px',
-		'top':clientY.toString()+'px',
+		'left':rect.target.left.toString()+'px',
+		'position':'fixed',
+		'top':rect.target.top.toString()+'px',
 		'transition':'none'
 	});
+	$.data(target[0],'keep',keep);
+	$.data(target[0],'rect',rect);
 };
 /*
 *--------------------------------------------------------------------
@@ -410,6 +433,18 @@ jQuery.fn.enablewheel=function(enable){
 * 画像再配置
 * -------------------------------------------------------------------
 */
+jQuery.fn.originsize=function(callback){
+	var target=$(this);
+	var image=new Image();
+	image.onload=function(){
+		$.data(target[0],'baseheight',image.height);
+		$.data(target[0],'basewidth',image.width);
+		$.data(target[0],'height',image.height);
+		$.data(target[0],'width',image.width);
+		if (callback) callback(target);
+	};
+	image.src=$(this)[0].src;
+};
 jQuery.fn.relocation=function(init,zoom){
 	var target=$(this);
 	var container=$.data(target[0],'container');
@@ -417,10 +452,14 @@ jQuery.fn.relocation=function(init,zoom){
 	var top=0;
 	var height=0;
 	var width=0;
+	var rect={
+		container:container[0].getBoundingClientRect(),
+		target:target[0].getBoundingClientRect()
+	};
 	if (init)
 	{
-		left=((container.outerWidth(false)-target.width())/2)+container.offset().left;
-		top=((container.outerHeight(false)-target.height())/2)+container.offset().top;
+		left=((container.innerWidth()-target.width())/2)+container.scrollLeft();
+		top=((container.innerHeight()-target.height())/2)+container.scrollTop();
 		height=target.height();
 		width=target.width();
 		$.data(target[0],'baseheight',height);
@@ -435,15 +474,18 @@ jQuery.fn.relocation=function(init,zoom){
 			height=$.data(target[0],'baseheight')*(zoom/100);
 			width=$.data(target[0],'basewidth')*(zoom/100);
 		}
-		left=($.data(target[0],'centerX')*container.outerWidth(false))-(width/2)+container.offset().left;
-		top=($.data(target[0],'centerY')*container.outerHeight(false))-(height/2)+container.offset().top;
+		left=($.data(target[0],'centerX')*container.innerWidth())-(width/2);
+		top=($.data(target[0],'centerY')*container.innerHeight())-(height/2);
 	}
-	target.css({'left':left.toString()+'px','top':top.toString()+'px','width':width.toString()+'px'});
-	$.data(target[0],'centerX',(left+(width/2)-container.offset().left)/container.outerWidth(false));
-	$.data(target[0],'centerY',(top+(height/2)-container.offset().top)/container.outerHeight(false));
+	target
+	.css({'transition':'none'})
+	.css({'left':left.toString()+'px','top':top.toString()+'px','width':width.toString()+'px'})
+	.css({'transition':'all 0.35s ease-out 0s'});
+	$.data(target[0],'centerX',(left+(width/2))/container.innerWidth());
+	$.data(target[0],'centerY',(top+(height/2))/container.innerHeight());
 	$.data(target[0],'height',height);
 	$.data(target[0],'width',width);
 	$.data(target[0],'zoom',zoom);
-	target.css({'transition':'all 0.35s ease-out 0s'});
+	return $(this);
 };
 })(jQuery);

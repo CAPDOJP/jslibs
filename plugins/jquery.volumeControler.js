@@ -29,6 +29,7 @@ var volumeControler = function(options){
 		min:0,
 		max:100,
 		default:0,
+		unit:'%',
 		width:1000,
 		callback:null
 	},options);
@@ -84,7 +85,7 @@ var volumeControler = function(options){
 		'transition':'none',
 		'width':'5em',
 		'z-index':'333'
-	}).append('<span></span><span>%</span>');
+	}).append('<span></span><span>'+options.unit+'</span>');
 	container.append(line);
 	container.append(clip);
 	container.append(display);
@@ -116,6 +117,7 @@ var volumeControler = function(options){
 		//移動量算出
 		clipleft+=(my.clip.width()/2)-(lineleft-containerleft);
 		my.volume=Math.floor((clipleft/my.line.width())*(options.max-options.min));
+		my.volume+=options.min;
 		my.display.find('span').first().text(my.volume);
 		if (options.callback) options.callback(my.volume);
 		e.preventDefault();
@@ -135,7 +137,7 @@ volumeControler.prototype={
 	attachvolume:function(volume){
 		var clipleft=0;
 		clipleft+=this.line.offset().left-this.container.offset().left-(this.clip.width()/2);
-		clipleft+=this.line.width()*(volume/(this.max-this.min));
+		clipleft+=this.line.width()*((volume-this.min)/(this.max-this.min));
 		this.clip.css({'left':clipleft.toString()+'px'});
 		this.display.find('span').first().text(volume);
 		this.volume=volume;

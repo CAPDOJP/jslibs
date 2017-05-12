@@ -21,6 +21,7 @@ jQuery.fn.sliderAction = function(options){
 	var options=$.extend({
 		direction:'vertical',
 		color:'rgba(0,0,0,0.75)',
+		trigger:null,
 		limit:0
 	},options);
 	return $(this).each(function(){
@@ -44,11 +45,13 @@ jQuery.fn.sliderAction = function(options){
 		};
 		var rect={
 			slider:null,
+			other:null,
 			target:null
 		};
 		var slider={
 			base:null,
 			holizontal:null,
+			other:null,
 			target:null,
 			vertical:null
 		};
@@ -178,6 +181,8 @@ jQuery.fn.sliderAction = function(options){
 		})
 		.append(slider.holizontal)
 		.append(slider.vertical);
+		/* トリガーイベント定義 */
+		if (options.trigger) $(document).on('change',options.trigger,function(){checkslidersize();});
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
 			/* スタイルシート調整 */
@@ -286,6 +291,25 @@ jQuery.fn.sliderAction = function(options){
 				'position':'fixed',
 				'top':rect.slider.top.toString()+'px'
 			});
+			if (options.direction=='both')
+			{
+				switch (slider.target.attr('id').replace(/slider/g,''))
+				{
+					case 'holizontal':
+						slider.other=slider.vertical;
+						break;
+					case 'vertical':
+						slider.other=slider.holizontal;
+						break;
+				}
+				rect.other=slider.other[0].getBoundingClientRect();
+				slider.other.css({
+					'left':rect.other.left.toString()+'px',
+					'position':'fixed',
+					'top':rect.other.top.toString()+'px'
+				});
+			}
+			else slider.other=null;
 		};
 		/* スクロール */
 		function slidemove(amount,callback){
@@ -311,6 +335,7 @@ jQuery.fn.sliderAction = function(options){
 		function slideend(){
 			rect.slider=slider.target[0].getBoundingClientRect();
 			rect.target=target[0].getBoundingClientRect();
+			if (rect.other!=null) rect.other=slider.other[0].getBoundingClientRect();
 			switch (slider.target.attr('id').replace(/slider/g,''))
 			{
 				case 'holizontal':
@@ -319,6 +344,14 @@ jQuery.fn.sliderAction = function(options){
 						'position':'absolute',
 						'top':(target.scrollTop()+target[0].clientHeight-8).toString()+'px'
 					});
+					if (rect.other!=null)
+					{
+						slider.other.css({
+							'left':(target.scrollLeft()+target[0].clientWidth-8).toString()+'px',
+							'position':'absolute',
+							'top':(rect.other.top-rect.target.top+target.scrollTop()).toString()+'px'
+						});
+					}
 					break;
 				case 'vertical':
 					slider.target.css({
@@ -326,6 +359,14 @@ jQuery.fn.sliderAction = function(options){
 						'position':'absolute',
 						'top':(rect.slider.top-rect.target.top+target.scrollTop()).toString()+'px'
 					});
+					if (rect.other!=null)
+					{
+						slider.other.css({
+							'left':(rect.other.left-rect.target.left+target.scrollLeft()).toString()+'px',
+							'position':'absolute',
+							'top':(target.scrollTop()+target[0].clientHeight-8).toString()+'px'
+						});
+					}
 					break;
 			}
 		};
