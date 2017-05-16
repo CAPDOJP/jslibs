@@ -353,7 +353,7 @@ jQuery.fn.removerow = function(options){
 		if (options.row!=null)
 		{
 			//要素チェック
-			if ($(this).children('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
+			if ($(this).children('tbody')==null) {alert('tableに���tbody要素を追加して下さい。');return;}
 			var container=$(this).children('tbody');
 			//要素削除
 			if (container.children('tr').length!=1)
@@ -1242,7 +1242,7 @@ jQuery.fn.toVal = function(){
 	switch ($(this).prop('tagName').toLowerCase())
 	{
 		case 'input':
-			//入力されている値がtitle内容と同一のテキストボックスは初期化
+			//入���されている値がtitle内容と同一のテキストボックスは初期化
 			if ($(this).prop('type')=='text') if ($(this).val()==$.data(this[0],'display')) $(this).val('');
 			break;
 		case 'textarea':
@@ -1305,7 +1305,7 @@ jQuery.fn.positionTop = function(parent){
 * ファイルデータ取得
 * -------------------------------------------------------------------
 */
-jQuery.fn.fileRead = function(callback){
+jQuery.fn.readFile = function(callback){
 	var target=$(this);
 	//ローディング表示
 	if ($('div#loading')!=null) $('div#loading').css('display','block');
