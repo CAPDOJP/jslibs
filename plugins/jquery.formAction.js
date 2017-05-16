@@ -1302,6 +1302,47 @@ jQuery.fn.positionTop = function(parent){
 }
 /*
 *--------------------------------------------------------------------
+* ファイルデータ取得
+* -------------------------------------------------------------------
+*/
+jQuery.fn.fileRead = function(callback){
+	var target=$(this);
+	//ローディング表示
+	if ($('div#loading')!=null) $('div#loading').css('display','block');
+	try
+	{
+		if (target[0].files.length==0)
+		{
+			//ローディング消去
+			if ($('div#loading')!=null) $('div#loading').css('display','none');
+			return;
+		}
+		if (!target[0].files[0].type.match('image.*'))
+		{
+			//ローディング消去
+			if ($('div#loading')!=null) $('div#loading').css('display','none');
+			return;
+		}
+		var reader=new FileReader();
+		reader.onload=(function(readData){
+			return function(e){
+				if (callback) callback(e.target.result);
+				//ローディング消去
+				if ($('div#loading')!=null) $('div#loading').css('display','none');
+			};
+		})(target[0].files[0]);
+		/* read image */
+		reader.readAsDataURL(target[0].files[0]);
+	}
+	catch(e)
+	{
+		alert('お使いのブラウザでは利用出来ません。');
+		//ローディング消去
+		if ($('div#loading')!=null) $('div#loading').css('display','none');
+	}
+}
+/*
+*--------------------------------------------------------------------
 * バイト数取得
 * -------------------------------------------------------------------
 */

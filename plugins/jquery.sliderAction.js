@@ -182,7 +182,7 @@ jQuery.fn.sliderAction = function(options){
 		.append(slider.holizontal)
 		.append(slider.vertical);
 		/* トリガーイベント定義 */
-		if (options.trigger) $(document).on('change',options.trigger,function(){checkslidersize();});
+		if (options.trigger) $(document).on('change',options.trigger,function(){sizecheck=false;});
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
 			/* スタイルシート調整 */
