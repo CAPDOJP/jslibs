@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "volumeControler"
+* jQuery-Plugin "volumeController"
 * Version: 1.0
 * Copyright (c) 2014 TIS
 *
@@ -10,7 +10,7 @@
 */
 /*
 *--------------------------------------------------------------------
-* volumeControler
+* volumeController
 * 移動量調整コントローラー
 *--------------------------------------------------------------------
 * parameters
@@ -23,7 +23,7 @@
 * -------------------------------------------------------------------
 */
 /* コンストラクタ */
-var volumeControler = function(options){
+var volumeController = function(options){
 	var options=$.extend({
 		container:null,
 		min:0,
@@ -97,7 +97,9 @@ var volumeControler = function(options){
 	this.min=options.min;
 	this.max=options.max;
 	this.volume=options.default;
+	this.disabled=false;
 	clip.on('touchstart mousedown',function(e){
+		if (my.disabled) return;
 		capture=true;
 		values.down=my.clip.offset().left-my.container.offset().left;
 		if (e.type=='touchstart') values.keep=e.originalEvent.touches[0].pageX;
@@ -105,6 +107,7 @@ var volumeControler = function(options){
 		e.preventDefault();
 	});
 	$(window).on('touchmove mousemove',function(e){
+		if (my.disabled) return;
 		if (!capture) return;
 		var clipleft=0;
 		var lineleft=my.line.offset().left;
@@ -123,6 +126,7 @@ var volumeControler = function(options){
 		e.preventDefault();
 	});
 	$(window).on('touchend mouseup',function(e){
+		if (my.disabled) return;
 		if (!capture) return;
 		capture=false;
 		e.preventDefault();
@@ -132,7 +136,7 @@ var volumeControler = function(options){
 	});
 };
 /* 関数定義 */
-volumeControler.prototype={
+volumeController.prototype={
 	/* 倍率セット */
 	attachvolume:function(volume){
 		var clipleft=0;
@@ -141,5 +145,10 @@ volumeControler.prototype={
 		this.clip.css({'left':clipleft.toString()+'px'});
 		this.display.find('span').first().text(volume);
 		this.volume=volume;
+	},
+	/* 無効判定 */
+	disable:function(value){
+		this.disabled=value;
+		this.container.css({'opacity':((value)?'0.5':'1')});
 	}
 };

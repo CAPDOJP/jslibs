@@ -21,7 +21,6 @@ jQuery.fn.sliderAction = function(options){
 	var options=$.extend({
 		direction:'vertical',
 		color:'rgba(0,0,0,0.75)',
-		trigger:null,
 		limit:0
 	},options);
 	return $(this).each(function(){
@@ -177,12 +176,13 @@ jQuery.fn.sliderAction = function(options){
 				if (capture) return;
 				slider.holizontal.fadeOut();
 				slider.vertical.fadeOut();
+			},
+			'recheck':function(){
+				sizecheck=false;
 			}
 		})
 		.append(slider.holizontal)
 		.append(slider.vertical);
-		/* トリガーイベント定義 */
-		if (options.trigger) $(document).on('change',options.trigger,function(){sizecheck=false;});
 		/* ウインドウイベント定義 */
 		$(window).on('load resize scroll',function(){
 			/* スタイルシート調整 */
@@ -372,4 +372,9 @@ jQuery.fn.sliderAction = function(options){
 		};
 	});
 };
+jQuery.fn.rechecksliderbounds = function(){
+	/* イベント発火 */
+	var event=new $.Event('recheck',null);
+	$(this).trigger(event);
+}
 })(jQuery);

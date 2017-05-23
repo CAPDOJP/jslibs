@@ -1305,7 +1305,7 @@ jQuery.fn.positionTop = function(parent){
 * ファイルデータ取得
 * -------------------------------------------------------------------
 */
-jQuery.fn.readFile = function(callback){
+jQuery.fn.readFile = function(event,callback){
 	var target=$(this);
 	//ローディング表示
 	if ($('div#loading')!=null) $('div#loading').css('display','block');
@@ -1325,14 +1325,12 @@ jQuery.fn.readFile = function(callback){
 		}
 		var reader=new FileReader();
 		reader.onload=(function(readData){
-			return function(e){
-				if (callback) callback(e.target.result);
-				//ローディング消去
-				if ($('div#loading')!=null) $('div#loading').css('display','none');
-			};
-		})(target[0].files[0]);
+			if (callback) callback(readData.target.result);
+			//ローディング消去
+			if ($('div#loading')!=null) $('div#loading').css('display','none');
+		});
 		/* read image */
-		reader.readAsDataURL(target[0].files[0]);
+		reader.readAsDataURL(event.target.files[0]);
 	}
 	catch(e)
 	{
