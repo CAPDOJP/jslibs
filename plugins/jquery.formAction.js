@@ -1311,13 +1311,13 @@ jQuery.fn.readFile = function(event,callback){
 	if ($('div#loading')!=null) $('div#loading').css('display','block');
 	try
 	{
-		if (target[0].files.length==0)
+		if (event.target.files.length==0)
 		{
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
 			return;
 		}
-		if (!target[0].files[0].type.match('image.*'))
+		if (!event.target.files[0].type.match('image.*'))
 		{
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
