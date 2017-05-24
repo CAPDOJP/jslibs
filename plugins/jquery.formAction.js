@@ -1305,19 +1305,19 @@ jQuery.fn.positionTop = function(parent){
 * ファイルデータ取得
 * -------------------------------------------------------------------
 */
-jQuery.fn.readFile = function(event,callback){
+jQuery.fn.readFile = function(files,callback){
 	var target=$(this);
 	//ローディング表示
 	if ($('div#loading')!=null) $('div#loading').css('display','block');
 	try
 	{
-		if (event.target.files.length==0)
+		if (files.length==0)
 		{
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
 			return;
 		}
-		if (!event.target.files[0].type.match('image.*'))
+		if (!files[0].type.match('image.*'))
 		{
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -1330,7 +1330,7 @@ jQuery.fn.readFile = function(event,callback){
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
 		});
 		/* read image */
-		reader.readAsDataURL(event.target.files[0]);
+		reader.readAsDataURL(files[0]);
 	}
 	catch(e)
 	{
