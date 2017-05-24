@@ -1306,7 +1306,6 @@ jQuery.fn.positionTop = function(parent){
 * -------------------------------------------------------------------
 */
 jQuery.fn.readFile = function(files,callback){
-	var target=$(this);
 	//ローディング表示
 	if ($('div#loading')!=null) $('div#loading').css('display','block');
 	try
