@@ -383,7 +383,14 @@ var layerController = function(options){
 				/* テキスト編集キャンセル */
 				this.layer.on('editcancel',function(e){
 					/* 再描画 */
-					if (my.text.value.length!=0) my.redraw();
+					if (my.text.value.length!=0)
+					{
+						/* テキストエディター座標変換 */
+						var position=my.layerposition();
+						my.text.rect.left-=position.left;
+						my.text.rect.top-=position.top;
+						my.redraw();
+					}
 					else
 					{
 						/* イベント発火 */
@@ -423,9 +430,10 @@ var layerController = function(options){
 		* マウス操作
 		*------------------------------------------------------------
 		*/
-		this.layer.on('mousedown',function(e){
-			var left=e.clientX-my.layer.offset().left;
-			var top=e.clientY-my.layer.offset().top;
+		this.layer.on('touchstart mousedown',function(e){
+			var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
+			var left=event.pageX-my.layer.offset().left;
+			var top=event.pageY-my.layer.offset().top;
 			switch(my.operation)
 			{
 				case 'brush':
@@ -449,7 +457,7 @@ var layerController = function(options){
 						/* 再描画 */
 						my.redraw();
 						/* イベント発火 */
-						var event=new $.Event('layeractivate',{layer:my});
+						event=new $.Event('layeractivate',{layer:my});
 						my.artboard.trigger(event);
 					}
 					break;
@@ -466,13 +474,12 @@ var layerController = function(options){
 								if (my.hit(left,top))
 								{
 									/* テキストエディター座標変換 */
-									var rect=my.text.rect;
-									rect.left+=position.left;
-									rect.top+=position.top;
+									my.text.rect.left+=position.left;
+									my.text.rect.top+=position.top;
 									/* レイヤー初期化 */
 									my.context.clearRect(0,0,my.basewidth,my.baseheight);
 									/* テキストエディター表示 */
-									my.text.controller.editstart(my.layer,rect,my.text.style,my.text.value);
+									my.text.controller.editstart(my.layer,my.text.rect,my.text.style,my.text.value);
 								}
 							}
 							my.text.click=0;
@@ -481,14 +488,14 @@ var layerController = function(options){
 					}
 					my.down.left=position.left;
 					my.down.top=position.top;
-					my.keep.left=e.clientX;
-					my.keep.top=e.clientY;
+					my.keep.left=event.pageX;
+					my.keep.top=event.pageY;
 					if (my.hit(left,top))
 					{
 						/* ドラッグ開始 */
 						my.capture=true;
 						/* イベント発火 */
-						var event=new $.Event('layeractivate',{layer:my});
+						event=new $.Event('layeractivate',{layer:my});
 						my.artboard.trigger(event);
 					}
 					break;
@@ -496,12 +503,13 @@ var layerController = function(options){
 			/* 下層要素へ引き継ぎ */
 			if ( my.bottomlayer && !my.capture)
 			{
-				var event=new $.Event('mousedown',e);
+				event=new $.Event('touchstart mousedown',e);
 				my.bottomlayer.trigger(event);
 			}
+			e.stopPropagation();
 			e.preventDefault();
 		});
-		$(window).on('mousemove',function(e){
+		$(window).on('touchmove mousemove',function(e){
 			switch(my.operation)
 			{
 				case 'brush':
@@ -514,6 +522,7 @@ var layerController = function(options){
 					break;
 			}
 			if (!my.capture) return;
+			var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
 			var left=0;
 			var top=0;
 			switch(my.operation)
@@ -523,8 +532,8 @@ var layerController = function(options){
 					if (my.type=='draw')
 					{
 						/* 描画 */
-						left=e.clientX-my.layer.offset().left;
-						top=e.clientY-my.layer.offset().top;
+						left=event.pageX-my.layer.offset().left;
+						top=event.pageY-my.layer.offset().top;
 						if (left<0) return;
 						if (left>my.layer.width()) return;
 						if (top<0) return;
@@ -537,18 +546,20 @@ var layerController = function(options){
 					break;
 				case 'move':
 					/* ドラッグ */
-					left=my.down.left+e.clientX-my.keep.left;
-					top=my.down.top+e.clientY-my.keep.top;
+					left=my.down.left+event.pageX-my.keep.left;
+					top=my.down.top+event.pageY-my.keep.top;
 					my.layer.css({
 						'left':left.toString()+'px',
 						'top':top.toString()+'px'
 					});
 					break;
 			}
+			e.stopPropagation();
 		    e.preventDefault();
 		});
-		$(window).on('mouseup',function(e){
+		$(window).on('touchend mouseup',function(e){
 			if (!my.capture) return;
+			var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
 			var left=0;
 			var top=0;
 			switch(my.operation)
@@ -562,13 +573,14 @@ var layerController = function(options){
 					break;
 				case 'move':
 					/* ドラッグ終了 */
-					left=my.down.left+e.clientX-my.keep.left;
-					top=my.down.top+e.clientY-my.keep.top;
+					left=my.down.left+event.pageX-my.keep.left;
+					top=my.down.top+event.pageY-my.keep.top;
 					my.capture=false;
 					/* リサイズ */
 					my.resize();
 					break;
 			}
+			e.stopPropagation();
 		    e.preventDefault();
 		});
 		/*
@@ -584,6 +596,7 @@ var layerController = function(options){
 			if (my.zoom>options.zoommax) my.zoom=options.zoommax;
 			my.relocation(my.zoom);
 			if (options.wheelcallback) options.wheelcallback(my.zoom);
+			e.stopPropagation();
 			e.preventDefault();
 		});
 	}
@@ -611,6 +624,13 @@ layerController.prototype={
 			if (this.context.getImageData(x,y,1,1).data[3]!=0) return true;
 			else return false;
 		}
+	},
+	/* レイヤー座標 */
+	layerposition:function(){
+		return {
+			left:this.layer.offset().left-this.artboard.offset().left-parseInt(this.artboard.css('border-left-width')),
+			top:this.layer.offset().top-this.artboard.offset().top-parseInt(this.artboard.css('border-top-width'))
+		};
 	},
 	/* レイヤー再描画 */
 	redraw:function(adjust){
@@ -752,13 +772,6 @@ layerController.prototype={
 		this.centerX=(left+(this.width/2))/this.artboard.outerWidth(false);
 		this.centerY=(top+(this.height/2))/this.artboard.outerHeight(false);
 		this.relocation();
-	},
-	/* レイヤー座標 */
-	layerposition:function(){
-		return {
-			left:this.layer.offset().left-this.artboard.offset().left-parseInt(this.artboard.css('border-left-width')),
-			top:this.layer.offset().top-this.artboard.offset().top-parseInt(this.artboard.css('border-top-width'))
-		};
 	}
 };
 /*
@@ -894,7 +907,7 @@ var textController = function(options){
 		'word-spacing':'normal'
 	})
 	.on('keyup',function(e){my.textarea.css({'height':my.textarea[0].scrollHeight.toString()+'px','width':my.textarea[0].scrollWidth.toString()+'px'});})
-	.on('mousedown',function(e){e.stopPropagation();});
+	.on('touchstart mousedown',function(e){e.stopPropagation();});
 	/* レイヤー配置 */
 	this.container.append(
 		this.layer
@@ -926,11 +939,11 @@ var textController = function(options){
 		.append(this.textarea)
 		.append($('<button>Cancel</button>')
 			.css({'display':'inline-block','margin':'0px'})
-			.on('click',function(){my.editcancel();})
+			.on('touchstart click',function(){my.editcancel();})
 		)
 		.append($('<button>OK</button>')
 			.css({'display':'inline-block','margin':'0px 0px 0px 5px'})
-			.on('click',function(){my.editend();})
+			.on('touchstart click',function(){my.editend();})
 		)
 		.hide()
 	);
@@ -951,28 +964,33 @@ var textController = function(options){
 	* マウス操作
 	*----------------------------------------------------------------
 	*/
-	this.layer.on('mousedown',function(e){
+	this.layer.on('touchstart mousedown',function(e){
+		var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
 		my.down.left=my.layer.offset().left-my.container.offset().left-parseInt(my.container.css('border-left-width'));
 		my.down.top=my.layer.offset().top-my.container.offset().top-parseInt(my.container.css('border-top-width'));
-		my.keep.left=e.clientX;
-		my.keep.top=e.clientY;
+		my.keep.left=event.pageX;
+		my.keep.top=event.pageY;
 		/* ドラッグ開始 */
 		my.capture=true;
+		e.stopPropagation();
 		e.preventDefault();
 	});
-	$(window).on('mousemove',function(e){
+	$(window).on('touchmove mousemove',function(e){
 		if (!my.capture) return;
+		var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
 		/* ドラッグ */
 		my.layer.css({
-			'left':(my.down.left+e.clientX-my.keep.left).toString()+'px',
-			'top':(my.down.top+e.clientY-my.keep.top).toString()+'px'
+			'left':(my.down.left+event.pageX-my.keep.left).toString()+'px',
+			'top':(my.down.top+event.pageY-my.keep.top).toString()+'px'
 		});
+		e.stopPropagation();
 	    e.preventDefault();
 	});
-	$(window).on('mouseup',function(e){
+	$(window).on('touchend mouseup',function(e){
 		if (!my.capture) return;
 		/* ドラッグ終了 */
 		my.capture=false;
+		e.stopPropagation();
 	    e.preventDefault();
 	});
 };
@@ -1240,7 +1258,7 @@ var fontController = function(options){
 					'text-align':'right',
 					'width':'3em'
 				})
-				.on('mousedown',function(e){e.stopPropagation();})
+				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('change',function(e){
 					/* イベント発火 */
 					var event=null;
@@ -1287,7 +1305,7 @@ var fontController = function(options){
 				'border-radius':'3px',
 				'width':'3em'
 			})
-			.on('mousedown',function(e){e.stopPropagation();})
+			.on('touchstart mousedown',function(e){e.stopPropagation();})
 			.on('change',function(e){
 				/* イベント発火 */
 				var event=new $.Event('valuechanged',{value:$(this).val()});
@@ -1300,7 +1318,7 @@ var fontController = function(options){
 				'border-radius':'3px',
 				'width':'13.5em'
 			})
-			.on('mousedown',function(e){e.stopPropagation();})
+			.on('touchstart mousedown',function(e){e.stopPropagation();})
 			.on('change',function(e){
 				/* イベント発火 */
 				var event=new $.Event('valuechanged',{value:'\''+$(this).val()+'\''});
@@ -1340,7 +1358,7 @@ var fontController = function(options){
 					'width':'1.8em'
 				})
 			)
-			.on('mousedown',function(e){e.stopPropagation();});
+			.on('touchstart mousedown',function(e){e.stopPropagation();});
 			if (options.type=='fontstyle') this.controller.find('div').css({'font-style':'italic'}).text('I');
 			if (options.type=='fontweight') this.controller.find('div').css({'font-weight':'bold'}).text('B');
 			break;
@@ -1385,7 +1403,7 @@ var fontController = function(options){
 				'padding':'0px',
 				'vertical-align':'top'
 			})
-			.on('mousedown',function(e){e.stopPropagation();});
+			.on('touchstart mousedown',function(e){e.stopPropagation();});
 			this.controller.append(radio.clone(true));
 			this.controller.append(radio.clone(true));
 			this.controller.append(radio.clone(true));
@@ -1579,7 +1597,7 @@ listNavigation.prototype={
 			e.stopPropagation();
 			e.preventDefault();
   		})
-		.on('mousedown',function(){
+		.on('touchstart mousedown',function(){
 			/* イベント発火 */
 			var event=new $.Event('selected',{index:my.lists.indexOf(list[0])});
 			my.container.trigger(event);
