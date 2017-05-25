@@ -992,11 +992,11 @@ var textController = function(options){
 		.append(this.textarea)
 		.append($('<button>Cancel</button>')
 			.css({'display':'inline-block','margin':'0px'})
-			.on('tap click',function(){my.editcancel();})
+			.on('touchstart click',function(){my.editcancel();})
 		)
 		.append($('<button>OK</button>')
 			.css({'display':'inline-block','margin':'0px 0px 0px 5px'})
-			.on('tap click',function(){my.editend();})
+			.on('touchstart click',function(){my.editend();})
 		)
 		.hide()
 	);
