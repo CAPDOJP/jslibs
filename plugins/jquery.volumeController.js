@@ -102,7 +102,7 @@ var volumeController = function(options){
 		if (my.disabled) return;
 		capture=true;
 		values.down=my.clip.offset().left-my.container.offset().left;
-		if (e.type=='touchstart') values.keep=e.originalEvent.touches[0].pageX;
+		if (e.type.match(/touch/g)) values.keep=e.originalEvent.touches[0].pageX;
 		else values.keep=e.pageX;
 		e.stopPropagation();
 		e.preventDefault();
@@ -113,7 +113,7 @@ var volumeController = function(options){
 		var clipleft=0;
 		var lineleft=my.line.offset().left;
 		var containerleft=my.container.offset().left;
-		if (e.type=='touchmove') clipleft=values.down+e.originalEvent.touches[0].pageX-values.keep;
+		if (e.type.match(/touch/g)) clipleft=values.down+e.originalEvent.touches[0].pageX-values.keep;
 		else clipleft=values.down+e.pageX-values.keep;
 		if (clipleft<lineleft-containerleft-(my.clip.width()/2)) clipleft=lineleft-containerleft-(my.clip.width()/2);
 		if (clipleft>lineleft-containerleft-(my.clip.width()/2)+my.line.width()) clipleft=lineleft-containerleft-(my.clip.width()/2)+my.line.width();
