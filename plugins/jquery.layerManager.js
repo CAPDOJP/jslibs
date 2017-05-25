@@ -24,7 +24,8 @@ var layerManager = function(options){
 	var options=$.extend({
 		artboard:null,
 		navigation:null,
-		activatecallback:null
+		activatecallback:null,
+		zoomcallback:null
 	},options);
 	if (options.artboard==null) {alert('アートボードを指定して下さい。');return;}
 	var my=this;
@@ -33,6 +34,7 @@ var layerManager = function(options){
 		'overflow':'hidden',
 		'transition':'none'
 	});
+	this.zoomcallback=options.zoomcallback;
 	this.activelayer=null;
 	this.navigation=null;
 	this.operation='move';
@@ -94,6 +96,7 @@ layerManager.prototype={
 			brushColor:((this.layers.length!=0)?this.layers[0].brushColor:'#000000'),
 			brushTransparency:((this.layers.length!=0)?this.layers[0].brushTransparency:1),
 			brushWidth:((this.layers.length!=0)?this.layers[0].brushWidth:1),
+			gesturezoom:false,
 			wheelzoom:false
 		});
 		/* レイヤー配置 */
@@ -112,7 +115,9 @@ layerManager.prototype={
 				height:image.height,
 				width:image.width,
 				src:image,
-				wheelzoom:false
+				gesturezoom:true,
+				wheelzoom:false,
+				zoomcallback:my.zoomcallback
 			});
 			/* 描画終了 */
 			my.drawend();
@@ -131,6 +136,7 @@ layerManager.prototype={
 			height:this.artboard.height(),
 			width:this.artboard.width(),
 			text:this.text,
+			gesturezoom:false,
 			wheelzoom:false
 		});
 		/* 描画終了 */
@@ -297,8 +303,9 @@ layerManager.prototype={
 *         @ src               :画像配置用イメージオブジェクト
 *         @ zoommin           :拡大率最小値
 *         @ zoommax           :拡大率最大値
+*         @ gesturezoom       :ジェスチャーズーム許可判定
 *         @ wheelzoom         :マウスホイールズーム許可判定
-*         @ wheelcallback     :マウスホイールズームコールバック
+*         @ zoomcallback      :ズームコールバック
 * -------------------------------------------------------------------
 */
 /* コンストラクタ */
@@ -316,8 +323,9 @@ var layerController = function(options){
 		text:null,
 		zoommin:0,
 		zoommax:1000,
+		gesturezoom:true,
 		wheelzoom:true,
-		wheelcallback:null
+		zoomcallback:null
 	},options);
 	if (options.artboard==null) {alert('アートボードを指定して下さい。');return;}
 	var my=this;
@@ -337,6 +345,7 @@ var layerController = function(options){
 	this.centerX=null;
 	this.centerY=null;
 	this.context=null;
+	this.gesture=false;
 	this.operation='move';
 	this.zoom=100;
 	this.histories=[];
@@ -346,7 +355,8 @@ var layerController = function(options){
 	};
 	this.keep={
 		left:0,
-		top:0
+		top:0,
+		scale:0
 	};
 	this.text={
 		check:0,
@@ -522,6 +532,7 @@ var layerController = function(options){
 					break;
 			}
 			if (!my.capture) return;
+			if (my.gesture) return;
 			var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
 			var left=0;
 			var top=0;
@@ -559,9 +570,7 @@ var layerController = function(options){
 		});
 		$(window).on('touchend mouseup',function(e){
 			if (!my.capture) return;
-			var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
-			var left=0;
-			var top=0;
+			if (my.gesture) return;
 			switch(my.operation)
 			{
 				case 'brush':
@@ -573,8 +582,6 @@ var layerController = function(options){
 					break;
 				case 'move':
 					/* ドラッグ終了 */
-					left=my.down.left+event.pageX-my.keep.left;
-					top=my.down.top+event.pageY-my.keep.top;
 					my.capture=false;
 					/* リサイズ */
 					my.resize();
@@ -591,19 +598,62 @@ var layerController = function(options){
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
 			if (!options.wheelzoom) return;
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY*-1:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail*-1;
+			/* 拡大率設定 */
 			my.zoom+=(delta<0)?-50:50;
 			if (my.zoom<options.zoommin) my.zoom=options.zoommin;
 			if (my.zoom>options.zoommax) my.zoom=options.zoommax;
+			/* レイヤー再配置 */
 			my.relocation(my.zoom);
-			if (options.wheelcallback) options.wheelcallback(my.zoom);
+			if (options.zoomcallback) options.zoomcallback(my.zoom);
 			e.stopPropagation();
 			e.preventDefault();
+		});
+		/*
+		*------------------------------------------------------------
+		* ジェスチャー操作
+		*------------------------------------------------------------
+		*/
+		this.layer.on('gesturestart',function(e){
+			if (!options.gesturezoom) return;
+			/* ドラッグ解除 */
+			my.capture=false;
+			/* 拡大率保持 */
+			my.keep.scale=1;
+			/* ジェスチャー開始 */
+			my.gesture=true;
+		});
+		$(document).on('gesturechange',function(e){
+			if (!options.gesturezoom) return;
+			if (!my.gesture) return;
+			/* 拡大率設定 */
+			my.zoom+=Math.floor((e.originalEvent.scale-my.keep.scale)*50);
+			if (my.zoom<options.zoommin) my.zoom=options.zoommin;
+			if (my.zoom>options.zoommax) my.zoom=options.zoommax;
+			/* 拡大率保持 */
+			my.keep.scale=e.originalEvent.scale;
+			/* レイヤー再配置 */
+			my.relocation(my.zoom);
+			if (options.zoomcallback) options.zoomcallback(my.zoom);
+			e.stopPropagation();
+			e.preventDefault();
+		});
+		$(document).on('gestureend',function(e){
+			if (!options.gesturezoom) return;
+			/* ジェスチャー終了 */
+			my.gesture=false;
 		});
 	}
 	else alert('本サービスはご利用中のブラウザには対応しておりません。');
 };
 /* 関数定義 */
 layerController.prototype={
+	/* 表示領域中心座標 */
+	displaycenter:function(){
+		return {
+			left:(this.container[0].clientWidth/2)+this.container.scrollLeft(),
+			top:(this.container[0].clientHeight/2)+this.container.scrollTop()
+		};
+	},
 	/* 領域内判定 */
 	hit:function(x,y)
 	{
@@ -718,6 +768,9 @@ layerController.prototype={
 	relocation:function(zoom){
 		var left=0;
 		var top=0;
+		var height=this.height;
+		var width=this.width;
+		var position=this.displaycenter();
 		if (zoom!=null)
 		{
 			this.zoom=zoom;
@@ -731,17 +784,17 @@ layerController.prototype={
 		}
 		else
 		{
-			left=(this.centerX*this.artboard.outerWidth(false))-(this.width/2);
-			top=(this.centerY*this.artboard.outerHeight(false))-(this.height/2);
+			left=position.left+(this.centerX*(this.width/width));
+			top=position.top+(this.centerY*(this.height/height));
 		}
 		this.layer.css({'left':left.toString()+'px','top':top.toString()+'px','width':this.width.toString()+'px'})
-		this.centerX=(left+(this.width/2))/this.artboard.outerWidth(false);
-		this.centerY=(top+(this.height/2))/this.artboard.outerHeight(false);
+		this.centerX=left-position.left;
+		this.centerY=top-position.top;
 	},
 	/* レイヤーリサイズ */
 	resize:function(){
-		var left=this.layer.offset().left-this.artboard.offset().left-parseInt(this.artboard.css('border-left-width'));
-		var top=this.layer.offset().top-this.artboard.offset().top-parseInt(this.artboard.css('border-top-width'));
+		var displaycenter=this.displaycenter();
+		var layerposition=this.layerposition();
 		if (this.type!='image')
 		{
 			var height=this.baseheight;
@@ -749,10 +802,10 @@ layerController.prototype={
 			var redraw=false;
 			var adjust={x:0,y:0};
 			/* 位置・サイズ調整 */
-			if (left>0) {adjust.x=left;width+=left;left=0;redraw=true;}
-			if (top>0) {adjust.y=top;height+=top;top=0;redraw=true;}
-			if (left+width<this.artboard.outerWidth(false)) {width+=this.artboard.outerWidth(false)-(left+width);redraw=true;}
-			if (top+height<this.artboard.outerHeight(false)) {height+=this.artboard.outerHeight(false)-(top+height);redraw=true;}
+			if (layerposition.left>0) {adjust.x=layerposition.left;width+=layerposition.left;layerposition.left=0;redraw=true;}
+			if (layerposition.top>0) {adjust.y=layerposition.top;height+=layerposition.top;layerposition.top=0;redraw=true;}
+			if (layerposition.left+width<this.artboard.outerWidth(false)) {width+=this.artboard.outerWidth(false)-(layerposition.left+width);redraw=true;}
+			if (layerposition.top+height<this.artboard.outerHeight(false)) {height+=this.artboard.outerHeight(false)-(layerposition.top+height);redraw=true;}
 			if (redraw)
 			{
 				this.baseheight=height;
@@ -762,15 +815,15 @@ layerController.prototype={
 				this.layer.attr('height',height);
 				this.layer.attr('width',width);
 				this.layer.css({
-					'left':left.toString()+'px',
-					'top':top.toString()+'px'
+					'left':layerposition.left.toString()+'px',
+					'top':layerposition.top.toString()+'px'
 				});
+				/* 再描画 */
+				this.redraw(adjust);
 			}
-			/* 再描画 */
-			if (redraw) this.redraw(adjust);
 		}
-		this.centerX=(left+(this.width/2))/this.artboard.outerWidth(false);
-		this.centerY=(top+(this.height/2))/this.artboard.outerHeight(false);
+		this.centerX=layerposition.left-displaycenter.left;
+		this.centerY=layerposition.top-displaycenter.top;
 		this.relocation();
 	}
 };
@@ -939,11 +992,11 @@ var textController = function(options){
 		.append(this.textarea)
 		.append($('<button>Cancel</button>')
 			.css({'display':'inline-block','margin':'0px'})
-			.on('touchstart click',function(){my.editcancel();})
+			.on('tap click',function(){my.editcancel();})
 		)
 		.append($('<button>OK</button>')
 			.css({'display':'inline-block','margin':'0px 0px 0px 5px'})
-			.on('touchstart click',function(){my.editend();})
+			.on('tap click',function(){my.editend();})
 		)
 		.hide()
 	);
