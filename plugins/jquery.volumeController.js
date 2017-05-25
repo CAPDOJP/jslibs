@@ -64,14 +64,14 @@ var volumeController = function(options){
 		'border-radius':'50%',
 		'box-shadow':'1px 1px 2px rgba(0,0,0,0.5)',
 		'cursor':'pointer',
-		'height':'1.6em',
-		'left':'0.2em',
+		'height':'1.4em',
+		'left':'0.3em',
 		'margin':'0px',
 		'padding':'0px',
 		'position':'absolute',
-		'top':'0.2em',
+		'top':'0.3em',
 		'transition':'none',
-		'width':'1.6em',
+		'width':'1.4em',
 		'z-index':'222'
 	});
 	var display=$('<div>').css({
