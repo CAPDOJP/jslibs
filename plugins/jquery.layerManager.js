@@ -1569,7 +1569,18 @@ var listNavigation = function(options){
 	this.selected=options.selected;
 	this.dragover=options.dragover;
 	this.activelist=null;
+	this.capture=false;
+	this.droplist=null;
+	this.guidelist=null;
 	this.lists=[];
+	this.down={
+		left:0,
+		top:0
+	};
+	this.keep={
+		left:0,
+		top:0
+	};
 	/* リストイベント */
 	this.container.on('selected',function(e){
 		my.activate(e.index);
@@ -1579,22 +1590,68 @@ var listNavigation = function(options){
 	this.container.on('dragged',function(e){
 		if (options.draggedcallback) options.draggedcallback(e);
 	});
+	/*
+	*----------------------------------------------------------------
+	* マウス操作
+	*----------------------------------------------------------------
+	*/
+	$(window).on('touchmove mousemove',function(e){
+		if (!my.capture) return;
+		var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
+		/* ガイドリスト移動 */
+		my.guidelist.css({
+			'left':(my.down.left+event.pageX-my.keep.left).toString()+'px',
+			'top':(my.down.top+event.pageY-my.keep.top).toString()+'px'
+		});
+		/* ドロップ対象リスト選択 */
+		$.each(my.lists,function(index){
+			if (my.hit(my.lists[index],event.pageX,event.pageY))
+			{
+				my.lists[index].addClass(my.dragover);
+				my.droplist=my.lists[index];
+			}
+			else my.lists[index].removeClass(my.dragover);
+		});
+		e.stopPropagation();
+	    e.preventDefault();
+	});
+	$(window).on('touchend mouseup',function(e){
+		if (!my.capture) return;
+		/* ドラッグ終了 */
+		my.capture=false;
+		/* ガイドリスト削除 */
+		my.guidelist.remove();
+		if (my.droplist)
+		{
+			my.droplist.removeClass(my.dragover);
+			if (my.activelist[0]!=my.droplist[0])
+			{
+				my.activelist.insertAfter(my.droplist);
+				/* イベント発火 */
+				var event=new $.Event('dragged',{from:my.lists.indexOf(my.activelist),to:my.lists.indexOf(my.droplist)});
+				my.container.trigger(event);
+			}
+		}
+		e.stopPropagation();
+	    e.preventDefault();
+	});
 };
 /* 関数定義 */
 listNavigation.prototype={
 	/* リスト選択 */
 	activate:function(index){
 		var my=this;
+		if (!this.lists[index]) return;
 		this.activelist=this.lists[index];
 		$.each(this.lists,function(index){
-			if (my.lists[index]==my.activelist) $(my.lists[index]).addClass(my.selected);
-			else $(my.lists[index]).removeClass(my.selected);
+			if (my.lists[index][0]==my.activelist[0]) my.lists[index].addClass(my.selected);
+			else my.lists[index].removeClass(my.selected);
 		});
 	},
 	/* リスト配置 */
 	append:function(classname,value){
 		var my=this;
-		var list=$('<li class="'+classname+'" draggable="true">'+value+'</li>')
+		var list=$('<li class="'+classname+'">'+value+'</li>')
 		.css({
 			'cursor':'move',
 			'overflow':'hidden',
@@ -1602,62 +1659,34 @@ listNavigation.prototype={
 			'text-overflow':'ellipsis',
 			'width':'100%'
 		})
-		.on('dragstart',function(e){
-			var dragevent=e;
-			if(e.originalEvent) dragevent=e.originalEvent;
-			dragevent.dataTransfer.dropEffect='move';
-			dragevent.dataTransfer.effectAllowed='move';
-			dragevent.dataTransfer.setData('Text',my.lists.indexOf(dragevent.target).toString());
-  		})
-		.on('dragenter',function(e){
-			var dragevent=e;
-			if(e.originalEvent) dragevent=e.originalEvent;
-			$(dragevent.target).addClass(my.dragover);
-			e.stopPropagation();
-			e.preventDefault();
-  		})
-		.on('dragover',function(e){
-			e.stopPropagation();
-			e.preventDefault();
-		})
-		.on('dragleave',function(e){
-			var dragevent=e;
-			if(e.originalEvent) dragevent=e.originalEvent;
-			$(dragevent.target).removeClass(my.dragover);
-			e.stopPropagation();
-			e.preventDefault();
-  		})
-		.on('drop',function(e){
-			var from=null;
-			var to=null;
-			var indexes={from:0,to:0};
-			var dragevent=e;
-			if(e.originalEvent) dragevent=e.originalEvent;
-			$(dragevent.target).removeClass(my.dragover);
-			from=my.lists[parseInt(dragevent.dataTransfer.getData('Text'))];
-			to=dragevent.currentTarget;
-			indexes={
-				from:my.lists.indexOf(from),
-				to:my.lists.indexOf(to),
-			};
-			if (indexes.from!=indexes.to)
-			{
-				$(from).insertAfter($(to));
-				/* イベント発火 */
-				var event=new $.Event('dragged',{from:indexes.from,to:indexes.to});
-				my.container.trigger(event);
-			}
-			e.stopPropagation();
-			e.preventDefault();
-  		})
-		.on('touchstart mousedown',function(){
+		.on('touchstart mousedown',function(e){
+			var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
+			/* 変数初期化 */
+			my.droplist=null;
+			my.down.left=list.offset().left;
+			my.down.top=list.offset().top;
+			my.keep.left=event.pageX;
+			my.keep.top=event.pageY;
+			/* ドラッグ開始 */
+			my.capture=true;
+			/* ガイドリスト生成 */
+			my.guidelist=list.clone().css({
+				'left':my.down.left.toString()+'px',
+				'opacity':'0.5',
+				'position':'fixed',
+				'top':my.down.top.toString()+'px',
+				'z-index':(my.lists.length).toString()
+			});
+			my.container.append(my.guidelist);
 			/* イベント発火 */
-			var event=new $.Event('selected',{index:my.lists.indexOf(list[0])});
+			var event=new $.Event('selected',{index:my.lists.indexOf(list)});
 			my.container.trigger(event);
+			e.stopPropagation();
+			e.preventDefault();
 		});
 		if (this.direction=='top') this.container.prepend(list);
 		else this.container.append(list);
-		this.lists.push(list[0]);
+		this.lists.push(list);
 		/* イベント発火 */
 		var event=new $.Event('selected',{index:this.lists.length-1});
 		this.container.trigger(event);
@@ -1665,12 +1694,21 @@ listNavigation.prototype={
 	/* 削除 */
 	delete:function(index){
 		var deletelist=this.lists[index];
-		this.lists=$.grep(this.lists,function(item,index){return item!=deletelist});
-		this.container[0].removeChild(deletelist);
+		this.lists=$.grep(this.lists,function(item,index){return item[0]!=deletelist[0]});
+		deletelist.remove();
+	},
+	/* 領域内判定 */
+	hit:function(list,x,y)
+	{
+		if (x<list.offset().left) return false;
+		if (x>list.offset().left+list.outerWidth(true)) return false;
+		if (y<list.offset().top) return false;
+		if (y>list.offset().top+list.outerHeight(true)) return false;
+		return true;
 	},
 	/* テキスト変更 */
 	text:function(index,value){
-		$(this.lists[index]).text(value);
+		this.lists[index].text(value);
 	}
 };
 /* カラーコード変換 */
