@@ -104,6 +104,7 @@ var volumeController = function(options){
 		values.down=my.clip.offset().left-my.container.offset().left;
 		if (e.type=='touchstart') values.keep=e.originalEvent.touches[0].pageX;
 		else values.keep=e.pageX;
+		e.stopPropagation();
 		e.preventDefault();
 	});
 	$(window).on('touchmove mousemove',function(e){
@@ -123,12 +124,14 @@ var volumeController = function(options){
 		my.volume+=options.min;
 		my.display.find('span').first().text(my.volume);
 		if (options.callback) options.callback(my.volume);
+		e.stopPropagation();
 		e.preventDefault();
 	});
 	$(window).on('touchend mouseup',function(e){
 		if (my.disabled) return;
 		if (!capture) return;
 		capture=false;
+		e.stopPropagation();
 		e.preventDefault();
 	});
 	$(window).on('load resize',function(){
