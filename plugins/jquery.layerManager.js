@@ -268,6 +268,9 @@ layerManager.prototype={
 		$.each(sortlayers,function(index){
 			var layer=sortlayers[index];
 			if (layer.layer.isVisible())
+			{
+				context.globalAlpha=layer.layer.css('opacity');
+				context.globalCompositeOperation=layer.layer.css('mix-blend-mode');
 				context.drawImage(
 					layer.layer[0],
 					0,
@@ -279,6 +282,7 @@ layerManager.prototype={
 					layer.basewidth*(layer.zoom/100),
 					layer.baseheight*(layer.zoom/100)
 				);
+			}
 		});
 		res=canvas[0].toDataURL('image/png');
 		canvas.remove();
@@ -340,6 +344,7 @@ var layerController = function(options){
 	this.brushColor=options.brushColor;
 	this.brushTransparency=options.brushTransparency;
 	this.brushWidth=options.brushWidth;
+	this.src=options.src;
 	this.bottomlayer=null;
 	this.capture=false;
 	this.centerX=null;
@@ -371,6 +376,8 @@ var layerController = function(options){
 	/* レイヤー生成 */
 	this.layer=$('<canvas height="'+this.height+'" width="'+this.width+'">').css({
 		'display':'block',
+		'mix-blend-mode':'normal',
+		'opacity':'1',
 		'position':'absolute',
 		'transition':'none'
 	});
@@ -378,7 +385,7 @@ var layerController = function(options){
 	{
 		this.context=this.layer[0].getContext('2d');
 		/* 画像描画 */
-		if (this.type=='image') this.context.drawImage(options.src,0,0);
+		if (this.type=='image') this.redraw();
 		/* レイヤー配置 */
 		this.relocation();
 		this.artboard.append(this.layer);
@@ -723,6 +730,9 @@ layerController.prototype={
 					path.closePath();
 					my.context.stroke(path);
 				});
+				break;
+			case 'image':
+				this.context.drawImage(this.src,0,0);
 				break;
 			case 'text':
 				var left=0;
