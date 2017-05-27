@@ -28,6 +28,7 @@ var volumeController = function(options){
 		container:null,
 		min:0,
 		max:100,
+		precision:0,
 		default:0,
 		unit:'%',
 		width:1000,
@@ -99,6 +100,7 @@ var volumeController = function(options){
 	this.max=options.max;
 	this.volume=options.default;
 	this.disabled=false;
+	this.precision=(options.precision==0)?1:Math.pow(10,options.precision);
 	clip.on('touchstart mousedown',function(e){
 		if (my.disabled) return;
 		capture=true;
@@ -121,8 +123,9 @@ var volumeController = function(options){
 		my.clip.css({'left':clipleft.toString()+'px'});
 		//移動量算出
 		clipleft+=(my.clip.width()/2)-(lineleft-containerleft);
-		my.volume=Math.floor((clipleft/my.line.width())*(options.max-options.min));
+		my.volume=Math.floor((clipleft/my.line.width())*(options.max-options.min)*my.precision);
 		my.volume+=options.min;
+		my.volume/=my.precision;
 		my.display.find('span').first().text(my.volume);
 		if (options.callback) options.callback(my.volume);
 		e.stopPropagation();

@@ -269,6 +269,7 @@ layerManager.prototype={
 			var layer=sortlayers[index];
 			if (layer.layer.isVisible())
 			{
+				context.filter=layer.createfilters();
 				context.globalAlpha=layer.layer.css('opacity');
 				context.globalCompositeOperation=layer.layer.css('mix-blend-mode');
 				context.drawImage(
@@ -353,6 +354,7 @@ var layerController = function(options){
 	this.gesture=false;
 	this.operation='move';
 	this.zoom=100;
+	this.filters={};
 	this.histories=[];
 	this.down={
 		left:0,
@@ -654,6 +656,41 @@ var layerController = function(options){
 };
 /* 関数定義 */
 layerController.prototype={
+	/* フィルタ生成 */
+	createfilters:function(){
+		var filter='';
+		$.each(this.filters,function(key,values){
+			switch(key)
+			{
+				case 'blur':
+					if (values!=0) filter+=key+'('+values.toString()+'px) ';
+					break;
+				case 'brightness':
+					if (values!=1) filter+=key+'('+values.toString()+'%) ';
+					break;
+				case 'contrast':
+					if (values!=100) filter+=key+'('+values.toString()+'%) ';
+					break;
+				case 'grayscale':
+					if (values!=0) filter+=key+'('+values.toString()+'%) ';
+					break;
+				case 'huerotate':
+					if (values!=0) filter+='hue-rotate('+values.toString()+'deg) ';
+					break;
+				case 'invert':
+					if (values!=0) filter+=key+'('+values.toString()+'%) ';
+					break;
+				case 'saturate':
+					if (values!=100) filter+=key+'('+values.toString()+'%) ';
+					break;
+				case 'sepia':
+					if (values!=0) filter+=key+'('+values.toString()+'%) ';
+					break;
+			}
+		});
+		if (filter.length==0) filter='none';
+		return filter;
+	},
 	/* 表示領域中心座標 */
 	displaycenter:function(){
 		return {
