@@ -94,6 +94,7 @@ var volumeController = function(options){
 	this.line=line;
 	this.clip=clip;
 	this.display=display;
+	this.default=options.default;
 	this.min=options.min;
 	this.max=options.max;
 	this.volume=options.default;
