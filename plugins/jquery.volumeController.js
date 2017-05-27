@@ -46,7 +46,7 @@ var volumeController = function(options){
 		'height':'2em',
 		'margin':'0px auto',
 		'max-width':options.width.toString()+'px',
-		'padding':'1em 6em 0px 1em',
+		'padding':'1em 4em 0px 1em',
 		'width':'100%'
 	});
 	var line=$('<div>').css({
@@ -83,7 +83,7 @@ var volumeController = function(options){
 		'right':'0px',
 		'top':'0px',
 		'transition':'none',
-		'width':'5em',
+		'width':'3em',
 		'z-index':'333'
 	}).append('<span></span><span>'+options.unit+'</span>');
 	container.append(line);
