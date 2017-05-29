@@ -105,6 +105,7 @@ var volumeController = function(options){
 		if ($(this).val()<my.min) $(this).val(my.min);
 		if ($(this).val()>my.max) $(this).val(my.max);
 		my.attachvolume($(this).val());
+		if (options.callback) options.callback(my.volume);
 	});
 	var unit=$('<span>'+options.unit+'</span>').css({
 		'display':'inline-block',
