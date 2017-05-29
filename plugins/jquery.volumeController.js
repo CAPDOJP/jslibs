@@ -47,7 +47,7 @@ var volumeController = function(options){
 		'height':'2em',
 		'margin':'0px auto',
 		'max-width':options.width.toString()+'px',
-		'padding':'1em 4em 0px 1em',
+		'padding':'1em 4.25em 0px 1em',
 		'width':'100%'
 	});
 	var line=$('<div>').css({
@@ -77,24 +77,55 @@ var volumeController = function(options){
 	});
 	var display=$('<div>').css({
 		'height':'2em',
-		'line-height':'2em',
 		'margin':'0px',
-		'padding':'0px',
+		'padding':'0.25em 0px',
 		'position':'absolute',
 		'right':'0px',
 		'top':'0px',
 		'transition':'none',
-		'width':'3em',
+		'width':'3.5em',
 		'z-index':'333'
-	}).append('<span></span><span>'+options.unit+'</span>');
+	});
+	var input=$('<input type="text">').css({
+		'background-color':'transparent',
+		'border':'none',
+		'display':'inline-block',
+		'height':'1.5em',
+		'line-height':'1.5em',
+		'margin':'0px',
+		'padding':'0px',
+		'padding-right':'1.05em',
+		'text-align':'right',
+		'vertical-align':'top',
+		'width':'100%',
+		'z-index':'111'
+	})
+	.on('change',function(){
+		if (!$.isNumeric($(this).val())) $(this).val(my.volume);
+		if ($(this).val()<my.min) $(this).val(my.min);
+		if ($(this).val()>my.max) $(this).val(my.max);
+		my.attachvolume($(this).val());
+	});
+	var unit=$('<span>'+options.unit+'</span>').css({
+		'display':'inline-block',
+		'font-size':'0.75em',
+		'height':'2em',
+		'line-height':'2em',
+		'margin-left':'-1.35em',
+		'text-align':'center',
+		'vertical-align':'top',
+		'width':'1.35em',
+		'z-index':'222'
+	});
 	container.append(line);
 	container.append(clip);
-	container.append(display);
+	container.append(display.append(input).append(unit));
 	target.append(container);
 	this.container=container;
 	this.line=line;
 	this.clip=clip;
 	this.display=display;
+	this.input=input;
 	this.default=options.default;
 	this.min=options.min;
 	this.max=options.max;
@@ -126,7 +157,7 @@ var volumeController = function(options){
 		my.volume=Math.floor((clipleft/my.line.width())*(options.max-options.min)*my.precision);
 		my.volume+=options.min;
 		my.volume/=my.precision;
-		my.display.find('span').first().text(my.volume);
+		my.input.val(my.volume);
 		if (options.callback) options.callback(my.volume);
 		e.stopPropagation();
 		e.preventDefault();
@@ -150,7 +181,7 @@ volumeController.prototype={
 		clipleft+=this.line.offset().left-this.container.offset().left-(this.clip.width()/2);
 		clipleft+=this.line.width()*((volume-this.min)/(this.max-this.min));
 		this.clip.css({'left':clipleft.toString()+'px'});
-		this.display.find('span').first().text(volume);
+		this.input.val(volume);
 		this.volume=volume;
 	},
 	/* 無効判定 */
