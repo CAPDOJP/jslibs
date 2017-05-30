@@ -268,8 +268,15 @@ layerManager.prototype={
 		/* レイヤー描画 */
 		$.each(sortlayers,function(index){
 			var layer=sortlayers[index];
+			var position=layer.layerposition();
 			if (layer.layer.isVisible())
 			{
+				if (layer.degrees!=0)
+				{
+					context.translate(position.left+(layer.width/2),position.top+(layer.height/2));
+					context.rotate(layer.degrees*Math.PI/180);
+					context.translate((position.left+(layer.width/2))*-1,(position.top+(layer.height/2))*-1);
+				}
 				context.filter=layer.createfilters();
 				context.globalAlpha=layer.layer.css('opacity');
 				context.globalCompositeOperation=layer.layer.css('mix-blend-mode');
@@ -279,11 +286,12 @@ layerManager.prototype={
 					0,
 					layer.basewidth,
 					layer.baseheight,
-					layer.layer.offset().left-my.artboard.offset().left,
-					layer.layer.offset().top-my.artboard.offset().top,
-					layer.basewidth*(layer.zoom/100),
-					layer.baseheight*(layer.zoom/100)
+					position.left,
+					position.top,
+					layer.width,
+					layer.height
 				);
+				context.setTransform(1,0,0,1,0,0);
 			}
 		});
 		res=canvas[0].toDataURL('image/png');
@@ -349,10 +357,10 @@ var layerController = function(options){
 	this.src=options.src;
 	this.bottomlayer=null;
 	this.capture=false;
-	this.centerX=null;
-	this.centerY=null;
 	this.context=null;
+	this.degrees=0;
 	this.gesture=false;
+	this.loaded=false;
 	this.operation='move';
 	this.zoom=100;
 	this.filters={};
@@ -692,16 +700,21 @@ layerController.prototype={
 		if (filter.length==0) filter='none';
 		return filter;
 	},
-	/* 表示領域中心座標 */
-	displaycenter:function(){
-		return {
-			left:(this.container[0].clientWidth/2)+this.container.scrollLeft(),
-			top:(this.container[0].clientHeight/2)+this.container.scrollTop()
-		};
+	/* フィルタ設定 */
+	filtering:function(filters){
+		var filter='';
+		this.filters=filters;
+		filter=this.createfilters();
+		this.layer.css({
+			'-webkit-filter':filter,
+			'-moz-filter':filter,
+			'filter':filter
+		});
 	},
 	/* 領域内判定 */
 	hit:function(x,y)
 	{
+		var rect=this.layer[0].getBoundingClientRect();
 		if (this.type=='text')
 		{
 			if (x<this.text.rect.left+this.text.draw.left) return false;
@@ -713,9 +726,9 @@ layerController.prototype={
 		else
 		{
 			if (x<0) return false;
-			if (x>this.width) return false;
+			if (x>rect.width) return false;
 			if (y<0) return false;
-			if (y>this.height) return false;
+			if (y>rect.height) return false;
 			if (this.context.getImageData(x,y,1,1).data[3]!=0) return true;
 			else return false;
 		}
@@ -723,8 +736,8 @@ layerController.prototype={
 	/* レイヤー座標 */
 	layerposition:function(){
 		return {
-			left:this.layer.offset().left-this.artboard.offset().left-parseInt(this.artboard.css('border-left-width')),
-			top:this.layer.offset().top-this.artboard.offset().top-parseInt(this.artboard.css('border-top-width'))
+			left:parseInt(this.layer.css('left')),
+			top:parseInt(this.layer.css('top'))
 		};
 	},
 	/* レイヤー再描画 */
@@ -818,30 +831,28 @@ layerController.prototype={
 		var top=0;
 		var height=this.height;
 		var width=this.width;
-		var position=this.displaycenter();
+		var position=this.layerposition();
 		if (zoom!=null)
 		{
 			this.zoom=zoom;
 			this.height=this.baseheight*(this.zoom/100);
 			this.width=this.basewidth*(this.zoom/100);
 		}
-		if (this.centerX==null)
+		if (!this.loaded)
 		{
 			left=((this.container[0].clientWidth-this.width)/2)+this.container.scrollLeft();
 			top=((this.container[0].clientHeight-this.height)/2)+this.container.scrollTop();
 		}
 		else
 		{
-			left=position.left+(this.centerX*(this.width/width));
-			top=position.top+(this.centerY*(this.height/height));
+			left=position.left-((this.width-width)/2);
+			top=position.top-((this.height-height)/2);
 		}
 		this.layer.css({'left':left.toString()+'px','top':top.toString()+'px','width':this.width.toString()+'px'})
-		this.centerX=left-position.left;
-		this.centerY=top-position.top;
+		this.loaded=true;
 	},
 	/* レイヤーリサイズ */
 	resize:function(){
-		var displaycenter=this.displaycenter();
 		var layerposition=this.layerposition();
 		if (this.type!='image')
 		{
@@ -870,9 +881,19 @@ layerController.prototype={
 				this.redraw(adjust);
 			}
 		}
-		this.centerX=layerposition.left-displaycenter.left;
-		this.centerY=layerposition.top-displaycenter.top;
 		this.relocation();
+	},
+	/* 回転 */
+	rotation:function(degrees){
+		this.degrees=degrees;
+		this.layer.css({
+			'-webkit-transform':'rotate('+this.degrees.toString()+'deg)',
+			'-ms-transform':'rotate('+this.degrees.toString()+'deg)',
+			'transform':'rotate('+this.degrees.toString()+'deg)',
+			'-webkit-transform-origin':'50% 50%',
+			'-ms-transform-origin':'50% 50%',
+			'transform-origin':'50% 50%'
+		});
 	}
 };
 /*
