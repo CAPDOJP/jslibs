@@ -1157,7 +1157,20 @@ var textController = function(options){
 		'width':'auto',
 		'word-spacing':'normal'
 	})
-	.on('keyup',function(e){my.textarea.css({'height':my.textarea[0].scrollHeight.toString()+'px','width':my.textarea[0].scrollWidth.toString()+'px'});})
+	.on('keyup',function(e){
+		var height=0;
+		var width=0;
+		var row=parseInt(my.textarea.css('line-height'));
+		var values=my.textarea.val().split('\n');
+		$.each(values,function(index){
+			height+=row;
+			if (width<values[index].bytelength()) width=values[index].bytelength();
+		});
+		my.textarea.css({
+			'height':height.toString()+'px',
+			'width':(Math.ceil(width/2)).toString()+'em'
+		});
+	})
 	.on('touchstart mousedown',function(e){e.stopPropagation();});
 	/* レイヤー配置 */
 	this.container.append(
