@@ -55,6 +55,7 @@ var layerManager = function(options){
 				my.artboard.trigger(event);
 			},
 			draggedcallback:function(indexes){
+				/* 重なり順変更 */
 				my.layers[indexes.from].layer.insertBefore(my.layers[indexes.to].layer);
 				my.organize();
 			}
@@ -136,7 +137,7 @@ layerManager.prototype={
 			type:'text',
 			height:this.artboard.height(),
 			width:this.artboard.width(),
-			text:this.text,
+			text:{controller:this.text},
 			gesturezoom:false,
 			wheelzoom:false
 		});
@@ -187,6 +188,22 @@ layerManager.prototype={
 		if (value) $.each(this.layers,function(index){my.layers[index].brushWidth=value});
 		if (this.layers.length!=0) return this.layers[0].brushWidth;
 		else return 1;
+	},
+	/* 複製 */
+	clone:function(){
+		if (!this.activelayer) return;
+		var index=this.layers.indexOf(this.activelayer);
+		var ctrlLayer=this.activelayer.clone();
+		/* レイヤー配置 */
+		this.layers.splice(index+1,0,ctrlLayer);
+		this.organize();
+		/* レイヤーナビゲーション配置 */
+		if (this.navigation)
+			this.navigation.append(
+				this.navigation.activelist.attr('class'),
+				this.navigation.activelist.text(),
+				index
+			);
 	},
 	/* 削除 */
 	delete:function(){
@@ -326,6 +343,7 @@ layerManager.prototype={
 var layerController = function(options){
 	var options=$.extend({
 		artboard:null,
+		layer:null,
 		type:'draw',
 		height:150,
 		width:300,
@@ -334,7 +352,14 @@ var layerController = function(options){
 		brushTransparency:1,
 		brushWidth:1,
 		src:null,
-		text:null,
+		text:{
+			loaded:false,
+			controller:options.text,
+			draw:{left:0,top:0,height:0,width:0},
+			rect:{left:0,top:0,height:0,width:0},
+			style:null,
+			value:''
+		},
 		zoommin:0,
 		zoommax:1000,
 		gesturezoom:true,
@@ -355,12 +380,17 @@ var layerController = function(options){
 	this.brushTransparency=options.brushTransparency;
 	this.brushWidth=options.brushWidth;
 	this.src=options.src;
+	this.zoommin=options.zoommin;
+	this.zoommax=options.zoommax;
+	this.gesturezoom=options.gesturezoom;
+	this.wheelzoom=options.wheelzoom;
+	this.zoomcallback=options.zoomcallback;
 	this.bottomlayer=null;
 	this.capture=false;
 	this.context=null;
 	this.degrees=0;
 	this.gesture=false;
-	this.loaded=false;
+	this.loaded=(options.layer!=null);
 	this.operation='move';
 	this.zoom=100;
 	this.filters={};
@@ -374,85 +404,103 @@ var layerController = function(options){
 		top:0,
 		scale:0
 	};
-	this.text={
-		check:0,
-		controller:options.text,
+	this.text=$.extend({
+		loaded:false,
+		controller:null,
 		draw:{left:0,top:0,height:0,width:0},
 		rect:{left:0,top:0,height:0,width:0},
 		style:null,
 		value:''
-	};
+	},options.text);
 	/* コンテナ取得 */
 	this.container=(this.artboard.prop('tagName').toLowerCase()!='body')?this.artboard.parent():this.artboard;
 	/* レイヤー生成 */
-	this.layer=$('<canvas height="'+this.height+'" width="'+this.width+'">').css({
-		'display':'block',
-		'mix-blend-mode':'normal',
-		'opacity':'1',
-		'position':'absolute',
-		'transition':'none'
-	});
+	if (options.layer==null)
+	{
+		this.layer=$('<canvas height="'+this.height+'" width="'+this.width+'">').css({
+			'display':'block',
+			'mix-blend-mode':'normal',
+			'opacity':'1',
+			'position':'absolute',
+			'transition':'none'
+		});
+	}
+	else this.layer=options.layer.clone();
+	/* レイヤー配置 */
+	this.artboard.append(this.layer);
 	if (this.layer[0].getContext)
 	{
 		this.context=this.layer[0].getContext('2d');
-		/* 画像描画 */
-		if (this.type=='image') this.redraw();
-		/* レイヤー配置 */
+		if (options.layer==null)
+		{
+			/* 画像描画 */
+			if (this.type=='image') this.redraw();
+		}
+		else
+		{
+			/* レイヤー再描画 */
+			this.redraw();
+			/* 重なり順変更 */
+			this.layer.insertAfter(options.layer);
+		}
+		/* レイヤー再配置 */
 		this.relocation();
-		this.artboard.append(this.layer);
 		/* テキストエディター設定 */
 		if (this.type=='text')
-			if (this.text.controller)
+		{
+			/* テキスト編集キャンセル */
+			this.layer.on('editcancel',function(e){
+				/* 再描画 */
+				if (my.text.value.length!=0)
+				{
+					/* テキストエディター座標変換 */
+					var position=my.layerposition();
+					my.text.rect.left-=position.left;
+					my.text.rect.top-=position.top;
+					my.redraw();
+				}
+				else
+				{
+					/* イベント発火 */
+					var event=new $.Event('layerdelete',{layer:my});
+					my.artboard.trigger(event);
+				}
+			});
+			/* テキスト編集終了 */
+			this.layer.on('editend',function(e){
+				/* テキストエディター座標変換 */
+				var position=my.layerposition();
+				e.rect.left-=position.left;
+				e.rect.top-=position.top;
+				/* 引数取得 */
+				my.text.draw=e.draw;
+				my.text.rect=e.rect;
+				my.text.style=e.style;
+				my.text.value=e.value;
+				/* 再描画 */
+				if (e.value.length!=0)
+				{
+					my.redraw();
+					/* イベント発火 */
+					var event=new $.Event('layertextchange',{layer:my,value:e.value.replace('\r\n','\n').split('\n')[0]});
+					my.artboard.trigger(event);
+				}
+				else
+				{
+					/* イベント発火 */
+					var event=new $.Event('layerdelete',{layer:my});
+					my.artboard.trigger(event);
+				}
+			});
+			if (!this.text.loaded)
 			{
 				/* テキストエディター表示 */
 				this.text.rect.left=((this.container[0].clientWidth-this.text.controller.layer.outerWidth(true))/2)+this.container.scrollLeft();
 				this.text.rect.top=((this.container[0].clientHeight-this.text.controller.layer.outerHeight(true))/2)+this.container.scrollTop();
 				this.text.controller.editstart(this.layer,this.text.rect,this.text.style,this.text.value);
-				/* テキスト編集キャンセル */
-				this.layer.on('editcancel',function(e){
-					/* 再描画 */
-					if (my.text.value.length!=0)
-					{
-						/* テキストエディター座標変換 */
-						var position=my.layerposition();
-						my.text.rect.left-=position.left;
-						my.text.rect.top-=position.top;
-						my.redraw();
-					}
-					else
-					{
-						/* イベント発火 */
-						var event=new $.Event('layerdelete',{layer:my});
-						my.artboard.trigger(event);
-					}
-				});
-				/* テキスト編集終了 */
-				this.layer.on('editend',function(e){
-					/* テキストエディター座標変換 */
-					var position=my.layerposition();
-					e.rect.left-=position.left;
-					e.rect.top-=position.top;
-					/* 引数取得 */
-					my.text.draw=e.draw;
-					my.text.rect=e.rect;
-					my.text.style=e.style;
-					my.text.value=e.value;
-					/* 再描画 */
-					if (e.value.length!=0)
-					{
-						my.redraw();
-						/* イベント発火 */
-						var event=new $.Event('layertextchange',{layer:my,value:e.value.replace('\r\n','\n').split('\n')[0]});
-						my.artboard.trigger(event);
-					}
-					else
-					{
-						/* イベント発火 */
-						var event=new $.Event('layerdelete',{layer:my});
-						my.artboard.trigger(event);
-					}
-				});
 			}
+			this.text.loaded=true;
+		}
 		/*
 		*------------------------------------------------------------
 		* マウス操作
@@ -614,15 +662,15 @@ var layerController = function(options){
 		*------------------------------------------------------------
 		*/
 		$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
-			if (!options.wheelzoom) return;
+			if (!my.wheelzoom) return;
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY*-1:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail*-1;
 			/* 拡大率設定 */
 			my.zoom+=(delta<0)?-50:50;
-			if (my.zoom<options.zoommin) my.zoom=options.zoommin;
-			if (my.zoom>options.zoommax) my.zoom=options.zoommax;
+			if (my.zoom<my.zoommin) my.zoom=my.zoommin;
+			if (my.zoom>my.zoommax) my.zoom=my.zoommax;
 			/* レイヤー再配置 */
 			my.relocation(my.zoom);
-			if (options.zoomcallback) options.zoomcallback(my.zoom);
+			if (my.zoomcallback) my.zoomcallback(my.zoom);
 			e.stopPropagation();
 			e.preventDefault();
 		});
@@ -632,7 +680,7 @@ var layerController = function(options){
 		*------------------------------------------------------------
 		*/
 		this.layer.on('gesturestart',function(e){
-			if (!options.gesturezoom) return;
+			if (!my.gesturezoom) return;
 			/* ドラッグ解除 */
 			my.capture=false;
 			/* 拡大率保持 */
@@ -641,22 +689,22 @@ var layerController = function(options){
 			my.gesture=true;
 		});
 		$(document).on('gesturechange',function(e){
-			if (!options.gesturezoom) return;
+			if (!my.gesturezoom) return;
 			if (!my.gesture) return;
 			/* 拡大率設定 */
 			my.zoom+=Math.floor((e.originalEvent.scale-my.keep.scale)*50);
-			if (my.zoom<options.zoommin) my.zoom=options.zoommin;
-			if (my.zoom>options.zoommax) my.zoom=options.zoommax;
+			if (my.zoom<my.zoommin) my.zoom=my.zoommin;
+			if (my.zoom>my.zoommax) my.zoom=my.zoommax;
 			/* 拡大率保持 */
 			my.keep.scale=e.originalEvent.scale;
 			/* レイヤー再配置 */
 			my.relocation(my.zoom);
-			if (options.zoomcallback) options.zoomcallback(my.zoom);
+			if (my.zoomcallback) my.zoomcallback(my.zoom);
 			e.stopPropagation();
 			e.preventDefault();
 		});
 		$(document).on('gestureend',function(e){
-			if (!options.gesturezoom) return;
+			if (!my.gesturezoom) return;
 			/* ジェスチャー終了 */
 			my.gesture=false;
 		});
@@ -665,6 +713,44 @@ var layerController = function(options){
 };
 /* 関数定義 */
 layerController.prototype={
+	/* 複製 */
+	clone:function(){
+		var ctrlLayer=new layerController({
+			artboard:this.artboard,
+			layer:this.layer,
+			type:this.type,
+			height:this.height,
+			width:this.width,
+			brushBlur:this.brushBlur,
+			brushColor:this.brushColor,
+			brushTransparency:this.brushTransparency,
+			brushWidth:this.brushWidth,
+			src:this.src,
+			text:{
+				loaded:true,
+				controller:this.text.controller,
+				draw:$.extend(true,{},this.text.draw),
+				rect:$.extend(true,{},this.text.rect),
+				style:$.extend(true,{},this.text.style),
+				value:this.text.value
+			},
+			zoommin:this.zoommin,
+			zoommax:this.zoommax,
+			gesturezoom:this.gesturezoom,
+			wheelzoom:this.wheelzoom,
+			zoomcallback:this.zoomcallback
+		});
+		ctrlLayer.baseheight=this.baseheight;
+		ctrlLayer.basewidth=this.basewidth;
+		ctrlLayer.bottomlayer=this.layer;
+		ctrlLayer.degrees=this.degrees;
+		ctrlLayer.operation=this.operation;
+		ctrlLayer.zoom=this.zoom;
+		ctrlLayer.filters=$.extend(true,{},this.filters);
+		ctrlLayer.histories=$.extend(true,[],this.histories);
+		ctrlLayer.text=$.extend(true,{},this.text)
+		return ctrlLayer;
+	},
 	/* フィルタ生成 */
 	createfilters:function(){
 		var filter='';
@@ -1718,7 +1804,7 @@ listNavigation.prototype={
 		});
 	},
 	/* リスト配置 */
-	append:function(classname,value){
+	append:function(classname,value,index){
 		var my=this;
 		var list=$('<li class="'+classname+'">'+value+'</li>')
 		.css({
@@ -1753,12 +1839,24 @@ listNavigation.prototype={
 			e.stopPropagation();
 			e.preventDefault();
 		});
-		if (this.direction=='top') this.container.prepend(list);
-		else this.container.append(list);
-		this.lists.push(list);
-		/* イベント発火 */
-		var event=new $.Event('selected',{index:this.lists.length-1});
-		this.container.trigger(event);
+		if (!$.isNumeric(index))
+		{
+			if (this.direction=='top') this.container.prepend(list);
+			else this.container.append(list);
+			this.lists.push(list);
+			/* イベント発火 */
+			var event=new $.Event('selected',{index:this.lists.length-1});
+			this.container.trigger(event);
+		}
+		else
+		{
+			if (this.direction=='top') list.insertBefore(this.lists[index]);
+			else list.insertAfter(this.lists[index]);
+			this.lists.splice(index+1,0,list);
+			/* イベント発火 */
+			var event=new $.Event('selected',{index:index+1});
+			this.container.trigger(event);
+		}
 	},
 	/* 削除 */
 	delete:function(index){
