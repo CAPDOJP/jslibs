@@ -84,6 +84,35 @@ var layerManager = function(options){
 	this.artboard.on('layertextchange',function(e){
 		if (my.navigation) my.navigation.text(my.layers.indexOf(e.layer),e.value);
 	});
+	/*
+	*----------------------------------------------------------------
+	* キー操作
+	*----------------------------------------------------------------
+	*/
+	$(window).on('keydown',function(e){
+		if (!my.activelayer) return;
+		if (my.text.layer.is(':visible')) return;
+		var code=e.keyCode||e.which;
+		switch(code)
+		{
+			/* 左 */
+			case 37:
+				my.activelayer.move('holizontal',-1);
+				break;
+			/* 上 */
+			case 38:
+				my.activelayer.move('vertical',-1);
+				break;
+			/* 右 */
+			case 39:
+				my.activelayer.move('holizontal',1);
+				break;
+			/* 下 */
+			case 40:
+				my.activelayer.move('vertical',1);
+				break;
+		}
+	});
 };
 /* 関数定義 */
 layerManager.prototype={
@@ -825,6 +854,20 @@ layerController.prototype={
 			left:parseInt(this.layer.css('left')),
 			top:parseInt(this.layer.css('top'))
 		};
+	},
+	/* 移動 */
+	move:function(direction,distance){
+		switch(direction)
+		{
+			case 'holizontal':
+				this.layer.css({'left':(parseInt(this.layer.css('left'))+distance).toString()+'px'});
+				break;
+			case 'vertical':
+				this.layer.css({'top':(parseInt(this.layer.css('top'))+distance).toString()+'px'});
+				break;
+		}
+		/* リサイズ */
+		this.resize();
 	},
 	/* レイヤー再描画 */
 	redraw:function(adjust){
