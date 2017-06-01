@@ -189,5 +189,9 @@ volumeController.prototype={
 	disable:function(value){
 		this.disabled=value;
 		this.container.css({'opacity':((value)?'0.5':'1')});
+	},
+	/* クリップ再配置 */
+	relocation:function(){
+		this.attachvolume(this.volume);
 	}
 };

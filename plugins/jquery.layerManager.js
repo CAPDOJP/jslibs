@@ -204,7 +204,7 @@ layerManager.prototype={
 		if (this.layers.length!=0) return this.layers[0].brushColor;
 		else return "#000000";
 	},
-	/* ブラシ透明度設定 */
+	/* ブラシ不透明度設定 */
 	brushTransparency:function(value){
 		var my=this;
 		if (value) $.each(this.layers,function(index){my.layers[index].brushTransparency=value});
@@ -358,7 +358,7 @@ layerManager.prototype={
 *         @ width             :幅
 *         @ brushBlur         :ブラシぼかし
 *         @ brushColor        :ブラシ色
-*         @ brushTransparency :ブラシ透明度
+*         @ brushTransparency :ブラシ不透明度
 *         @ brushWidth        :ブラシ太さ
 *         @ src               :画像配置用イメージオブジェクト
 *         @ zoommin           :拡大率最小値
@@ -795,6 +795,9 @@ layerController.prototype={
 				case 'contrast':
 					if (values!=100) filter+=key+'('+values.toString()+'%) ';
 					break;
+				case 'dropshadow':
+					if (values!=0) filter+='drop-shadow('+$.toDropShadow(values)+') ';
+					break;
 				case 'grayscale':
 					if (values!=0) filter+=key+'('+values.toString()+'%) ';
 					break;
@@ -938,10 +941,10 @@ layerController.prototype={
 						break;
 				}
 				top+=this.text.draw.top;
-				my.context.fillStyle=$.toRGBA(this.text.style.color,this.text.style.transparent);
+				my.context.fillStyle=$.toRGBA(this.text.style.color,this.text.style.transparency);
 				my.context.font=this.text.style.style+' '+this.text.style.weight+' '+this.text.style.size+' '+this.text.style.family;
 				my.context.shadowBlur=this.text.style.blur;
-				my.context.shadowColor=$.toRGBA(this.text.style.color,this.text.style.transparent);
+				my.context.shadowColor=$.toRGBA(this.text.style.color,this.text.style.transparency);
 				my.context.textAlign=this.text.style.align;
 				my.context.textBaseline='hanging';
 				/* 描画 */
@@ -1117,16 +1120,16 @@ var textController = function(options){
 	this.fontcolor=new fontController({type:'fontcolor'});
 	this.fontcolor.controller.on('valuechanged',function(e){
 		my.style.color=e.value;
-		my.textarea.css({'color':$.toRGBA(my.style.color,my.style.transparent)});
+		my.textarea.css({'color':$.toRGBA(my.style.color,my.style.transparency)});
 		/* イベント発火 */
 		var event=new $.Event('keyup');
 		my.textarea.trigger(event);
 	});
-	/* フォント透明度入力コントロール生成 */
-	this.fonttransparent=new fontController({type:'fonttransparent'});
-	this.fonttransparent.controller.on('valuechanged',function(e){
-		my.style.transparent=parseFloat(e.value);
-		my.textarea.css({'color':$.toRGBA(my.style.color,my.style.transparent)});
+	/* フォント不透明度入力コントロール生成 */
+	this.fonttransparency=new fontController({type:'fonttransparency'});
+	this.fonttransparency.controller.on('valuechanged',function(e){
+		my.style.transparency=parseFloat(e.value);
+		my.textarea.css({'color':$.toRGBA(my.style.color,my.style.transparency)});
 		/* イベント発火 */
 		var event=new $.Event('keyup');
 		my.textarea.trigger(event);
@@ -1135,7 +1138,7 @@ var textController = function(options){
 	this.fontblur=new fontController({type:'fontblur'});
 	this.fontblur.controller.on('valuechanged',function(e){
 		my.style.blur=parseInt(e.value);
-		my.textarea.css({'text-shadow':'0px 0px '+e.value+' '+$.toRGBA(my.style.color,my.style.transparent)});
+		my.textarea.css({'text-shadow':'0px 0px '+e.value+' '+$.toRGBA(my.style.color,my.style.transparency)});
 		/* イベント発火 */
 		var event=new $.Event('keyup');
 		my.textarea.trigger(event);
@@ -1197,7 +1200,7 @@ var textController = function(options){
 			.append(this.fontweight.controller)
 			.append(this.textalign.controller)
 			.append(this.fontcolor.controller)
-			.append(this.fonttransparent.controller)
+			.append(this.fonttransparency.controller)
 			.append(this.fontblur.controller)
 		)
 		.append(this.textarea)
@@ -1220,7 +1223,7 @@ var textController = function(options){
 		lineheight:this.textarea.css('line-height'),
 		style:'normal',
 		size:this.textarea.css('font-size'),
-		transparent:1,
+		transparency:1,
 		weight:'normal'
 	};
 	/*
@@ -1273,7 +1276,7 @@ textController.prototype={
 			lineheight:this.style.lineheight,
 			style:this.style.style,
 			size:this.style.size,
-			transparent:this.style.transparent,
+			transparency:this.style.transparency,
 			weight:this.style.weight
 		},style);
 		/* 各種フォント設定値コントローラー初期化 */
@@ -1282,13 +1285,13 @@ textController.prototype={
 		this.fontfamily.val(this.style.family);
 		this.fontsize.val(this.style.size);
 		this.fontstyle.val(this.style.style);
-		this.fonttransparent.val(this.style.transparent);
+		this.fonttransparency.val(this.style.transparency);
 		this.fontweight.val(this.style.weight);
 		this.lineheight.val(this.style.lineheight);
 		this.textalign.val(this.style.align);
 		/* テキスト設定 */
 		this.textarea.css({
-			'color':$.toRGBA(this.style.color,this.style.transparent),
+			'color':$.toRGBA(this.style.color,this.style.transparency),
 			'font-family':this.style.family,
 			'font-size':this.style.size,
 			'font-style':this.style.style,
@@ -1297,7 +1300,7 @@ textController.prototype={
 			'line-height':this.style.lineheight,
 			'padding':'0px',
 			'text-align':this.style.align,
-			'text-shadow':'0px 0px '+this.style.blur+'px '+$.toRGBA(this.style.color,this.style.transparent)
+			'text-shadow':'0px 0px '+this.style.blur+'px '+$.toRGBA(this.style.color,this.style.transparency)
 		}).val(value);
 		/* レイヤー表示 */
 		if (this.container.children().length!=0) this.layer.insertAfter(this.container.children().last());
@@ -1346,7 +1349,7 @@ textController.prototype={
 				lineheight:this.textarea.css('line-height'),
 				style:this.textarea.css('font-style'),
 				size:this.textarea.css('font-size'),
-				transparent:this.style.transparent,
+				transparency:this.style.transparency,
 				weight:this.textarea.css('font-weight')
 			},
 			value:this.textarea.val()
@@ -1500,7 +1503,7 @@ var fontController = function(options){
 	{
 		case 'fontblur':
 		case 'fontsize':
-		case 'fonttransparent':
+		case 'fonttransparency':
 		case 'lineheight':
 			this.controller=$('<label>').css({
 				'border':'none',
@@ -1509,9 +1512,9 @@ var fontController = function(options){
 			.append($('<span></span>').css({
 					'display':'inline-block',
 					'font-size':'0.75em',
-					'padding':'0px',
+					'padding':'0px 0.25em',
 					'line-height':'1.8em',
-					'width':'4em'
+					'width':'4.5em'
 				})
 			)
 			.append($('<input type="number">').css({
@@ -1526,7 +1529,7 @@ var fontController = function(options){
 				.on('change',function(e){
 					/* イベント発火 */
 					var event=null;
-					if (options.type=='fonttransparent') event=new $.Event('valuechanged',{value:(parseInt($(this).val())/100).toString()});
+					if (options.type=='fonttransparency') event=new $.Event('valuechanged',{value:(parseInt($(this).val())/100).toString()});
 					else event=new $.Event('valuechanged',{value:$(this).val()+'px'});
 					my.controller.trigger(event);
 				})
@@ -1551,8 +1554,8 @@ var fontController = function(options){
 					this.controller.find('span').first().text('フォント');
 					this.controller.find('span').last().text('px');
 					break;
-				case 'fonttransparent':
-					this.controller.find('span').first().text('透明度');
+				case 'fonttransparency':
+					this.controller.find('span').first().text('不透明度');
 					this.controller.find('span').last().text('%');
 					this.controller.find('input').attr('max',100);
 					this.controller.find('input').attr('min',0);
@@ -1729,9 +1732,9 @@ fontController.prototype={
 		{
 			case 'fontblur':
 			case 'fontsize':
-			case 'fonttransparent':
+			case 'fonttransparency':
 			case 'lineheight':
-				if (this.type=='fonttransparent') this.controller.find('input').val(parseFloat(value)*100);
+				if (this.type=='fonttransparency') this.controller.find('input').val(parseFloat(value)*100);
 				else this.controller.find('input').val(parseInt(value));
 				break;
 			case 'fontcolor':
@@ -1936,7 +1939,17 @@ listNavigation.prototype={
 };
 /* カラーコード変換 */
 jQuery.extend({
-	toRGBA:function(hex,transparent){
+	toDropShadow:function(options){
+		var options=$.extend({
+			x:0,
+			y:0,
+			blur:0,
+			color:'#000000',
+			transparency:1
+		},options);
+		return ''+options.x+'px '+options.y+'px '+options.blur+'px '+$.toRGBA(options.color,options.transparency);
+	},
+	toRGBA:function(hex,transparency){
 		var color=hex.replace('#','');
 		var colors={r:0,g:0,b:0};
 		switch (color.length)
@@ -1952,6 +1965,6 @@ jQuery.extend({
 				colors.b=parseInt(color.substr(4,2),16);
 				break;
 		}
-		return 'rgba('+colors.r+','+colors.g+','+colors.b+','+transparent+')';
+		return 'rgba('+colors.r+','+colors.g+','+colors.b+','+transparency+')';
 	}
 });
