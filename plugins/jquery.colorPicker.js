@@ -82,8 +82,48 @@ var colorPicker = function(options){
 		'transition':'none',
 		'width':'1.4em',
 		'z-index':'333'
-	})
-	.on('touchstart mousedown',function(e){
+	});
+	canvas.on('touchstart mousedown',function(e){
+		var event=null;
+		var clipleft=0;
+		var canvasleft=0;
+		var containerleft=0;
+		if ($(this)[0]==my.hue.canvas[0]) values.target='hue';
+		if ($(this)[0]==my.saturation.canvas[0]) values.target='saturation';
+		if ($(this)[0]==my.brightness.canvas[0]) values.target='brightness';
+		switch(values.target)
+		{
+			case 'hue':
+				values.clip=my.hue.clip;
+				values.canvas=my.hue.canvas;
+				values.container=my.hue.container;
+				break;
+			case 'saturation':
+				values.clip=my.saturation.clip;
+				values.canvas=my.saturation.canvas;
+				values.container=my.saturation.container;
+				break;
+			case 'brightness':
+				values.clip=my.brightness.clip;
+				values.canvas=my.brightness.canvas;
+				values.container=my.brightness.container;
+				break;
+		}
+		canvasleft=values.canvas.offset().left;
+		containerleft=values.container.offset().left;
+		if (e.type.match(/touch/g)) clipleft=e.originalEvent.touches[0].pageX;
+		else clipleft=e.pageX;
+		if (clipleft<canvasleft) return;
+		if (clipleft>canvasleft+values.canvas.width()) return;
+		my.capture=true;
+		values.clip.css({'left':(clipleft-containerleft-(values.clip.width()/2)).toString()+'px'});
+		/* イベント発火 */
+		event=new $.Event('touchstart mousedown',e);
+		values.clip.trigger(event);
+		e.stopPropagation();
+		e.preventDefault();
+	});
+	clip.on('touchstart mousedown',function(e){
 		if ($(this)[0]==my.hue.clip[0]) values.target='hue';
 		if ($(this)[0]==my.saturation.clip[0]) values.target='saturation';
 		if ($(this)[0]==my.brightness.clip[0]) values.target='brightness';
@@ -207,7 +247,7 @@ var colorPicker = function(options){
 		display:display.clone(),
 		container:container.clone(),
 		caption:caption.clone().css({'text-align':'center'}).text('色相'),
-		canvas:canvas.clone(),
+		canvas:canvas.clone(true),
 		clip:clip.clone(true),
 		max:359,
 		volume:0
@@ -217,7 +257,7 @@ var colorPicker = function(options){
 		display:display.clone(),
 		container:container.clone(),
 		caption:caption.clone().css({'text-align':'center'}).text('彩度'),
-		canvas:canvas.clone(),
+		canvas:canvas.clone(true),
 		clip:clip.clone(true),
 		max:100,
 		volume:0
@@ -227,7 +267,7 @@ var colorPicker = function(options){
 		display:display.clone(),
 		container:container.clone(),
 		caption:caption.clone().css({'text-align':'center'}).text('明度'),
-		canvas:canvas.clone(),
+		canvas:canvas.clone(true),
 		clip:clip.clone(true),
 		max:100,
 		volume:0

@@ -133,6 +133,24 @@ var volumeController = function(options){
 	this.volume=options.default;
 	this.disabled=false;
 	this.precision=(options.precision==0)?1:Math.pow(10,options.precision);
+	container.on('touchstart mousedown',function(e){
+		if (my.disabled) return;
+		var event=null;
+		var clipleft=0;
+		var lineleft=my.line.offset().left;
+		var containerleft=my.container.offset().left;
+		if (e.type.match(/touch/g)) clipleft=e.originalEvent.touches[0].pageX;
+		else clipleft=e.pageX;
+		if (clipleft<lineleft) return;
+		if (clipleft>lineleft+my.line.width()) return;
+		capture=true;
+		my.clip.css({'left':(clipleft-containerleft-(my.clip.width()/2)).toString()+'px'});
+		/* イベント発火 */
+		event=new $.Event('touchstart mousedown',e);
+		my.clip.trigger(event);
+		e.stopPropagation();
+		e.preventDefault();
+	});
 	clip.on('touchstart mousedown',function(e){
 		if (my.disabled) return;
 		capture=true;
