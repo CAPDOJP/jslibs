@@ -1986,22 +1986,33 @@ jQuery.extend({
 		},options);
 		return ''+options.x+'px '+options.y+'px '+options.blur+'px '+$.toRGBA(options.color,options.transparency);
 	},
-	toRGBA:function(hex,transparency){
-		var color=hex.replace('#','');
-		var colors={r:0,g:0,b:0};
-		switch (color.length)
+	toRGBA:function(color,transparency){
+		var colors=[];
+		var rgb={r:0,g:0,b:0};
+		color=color.replace(/(#|rgba|rgb|\(|\))/g,'');
+		colors=color.split(',');
+		if (colors.length==1)
 		{
-			case 3:
-				colors.r=parseInt(color.substr(0,1),16);
-				colors.g=parseInt(color.substr(1,1),16);
-				colors.b=parseInt(color.substr(2,1),16);
-				break;
-			case 6:
-				colors.r=parseInt(color.substr(0,2),16);
-				colors.g=parseInt(color.substr(2,2),16);
-				colors.b=parseInt(color.substr(4,2),16);
-				break;
+			switch (color.length)
+			{
+				case 3:
+					rgb.r=parseInt(color.substr(0,1),16);
+					rgb.g=parseInt(color.substr(1,1),16);
+					rgb.b=parseInt(color.substr(2,1),16);
+					break;
+				case 6:
+					rgb.r=parseInt(color.substr(0,2),16);
+					rgb.g=parseInt(color.substr(2,2),16);
+					rgb.b=parseInt(color.substr(4,2),16);
+					break;
+			}
 		}
-		return 'rgba('+colors.r+','+colors.g+','+colors.b+','+transparency+')';
+		else
+		{
+			rgb.r=parseInt(colors[0]);
+			rgb.g=parseInt(colors[1]);
+			rgb.b=parseInt(colors[2]);
+		}
+		return 'rgba('+rgb.r+','+rgb.g+','+rgb.b+','+transparency+')';
 	}
 });
