@@ -801,7 +801,7 @@ layerController.prototype={
 					if (values!=100) filter+=key+'('+values.toString()+'%) ';
 					break;
 				case 'dropshadow':
-					if (values!=0) filter+='drop-shadow('+$.toDropShadow(values)+') ';
+					if (values.x!=0 && values.y!=0 && values.blur!=0) filter+='drop-shadow('+$.toDropShadow(values)+') ';
 					break;
 				case 'grayscale':
 					if (values!=0) filter+=key+'('+values.toString()+'%) ';
