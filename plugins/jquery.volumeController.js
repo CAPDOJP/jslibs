@@ -131,6 +131,7 @@ var volumeController = function(options){
 	this.min=options.min;
 	this.max=options.max;
 	this.volume=options.default;
+	this.callback=options.callback;
 	this.disabled=false;
 	this.precision=(options.precision==0)?1:Math.pow(10,options.precision);
 	container.on('touchstart mousedown',function(e){
@@ -145,6 +146,8 @@ var volumeController = function(options){
 		if (clipleft>lineleft+my.line.width()) return;
 		capture=true;
 		my.clip.css({'left':(clipleft-containerleft-(my.clip.width()/2)).toString()+'px'});
+		/* 倍率表示 */
+		my.displayvolume();
 		/* イベント発火 */
 		event=new $.Event('touchstart mousedown',e);
 		my.clip.trigger(event);
@@ -171,13 +174,8 @@ var volumeController = function(options){
 		if (clipleft<lineleft-containerleft-(my.clip.width()/2)) clipleft=lineleft-containerleft-(my.clip.width()/2);
 		if (clipleft>lineleft-containerleft-(my.clip.width()/2)+my.line.width()) clipleft=lineleft-containerleft-(my.clip.width()/2)+my.line.width();
 		my.clip.css({'left':clipleft.toString()+'px'});
-		//移動量算出
-		clipleft+=(my.clip.width()/2)-(lineleft-containerleft);
-		my.volume=Math.floor((clipleft/my.line.width())*(options.max-options.min)*my.precision);
-		my.volume+=options.min;
-		my.volume/=my.precision;
-		my.input.val(my.volume);
-		if (options.callback) options.callback(my.volume);
+		/* 倍率表示 */
+		my.displayvolume();
 		e.stopPropagation();
 		e.preventDefault();
 	});
@@ -202,6 +200,18 @@ volumeController.prototype={
 		this.clip.css({'left':clipleft.toString()+'px'});
 		this.input.val(volume);
 		this.volume=volume;
+	},
+	/* 倍率表示 */
+	displayvolume:function(){
+		var position=parseInt(this.clip.css('left'));
+		var lineleft=this.line.offset().left;
+		var containerleft=this.container.offset().left;
+		position+=(this.clip.width()/2)-(lineleft-containerleft);
+		this.volume=Math.floor((position/this.line.width())*(this.max-this.min)*this.precision);
+		this.volume+=this.min;
+		this.volume/=this.precision;
+		this.input.val(this.volume);
+		if (this.callback) this.callback(this.volume);
 	},
 	/* 無効判定 */
 	disable:function(value){

@@ -25,14 +25,6 @@ var colorPicker = function(options){
 	},options);
 	if (options.container==null) {alert('カラーピッカーボックスを指定して下さい。');return;}
 	var my=this;
-	var values={
-		target:'',
-		down:0,
-		keep:0,
-		clip:null,
-		canvas:null,
-		container:null
-	};
 	var cell=$('<p>').css({
 		'display':'inline-block',
 		'font-size':'0.8em',
@@ -88,67 +80,69 @@ var colorPicker = function(options){
 		var clipleft=0;
 		var canvasleft=0;
 		var containerleft=0;
-		if ($(this)[0]==my.hue.canvas[0]) values.target='hue';
-		if ($(this)[0]==my.saturation.canvas[0]) values.target='saturation';
-		if ($(this)[0]==my.brightness.canvas[0]) values.target='brightness';
-		switch(values.target)
+		if ($(this)[0]==my.hue.canvas[0]) my.values.target='hue';
+		if ($(this)[0]==my.saturation.canvas[0]) my.values.target='saturation';
+		if ($(this)[0]==my.brightness.canvas[0]) my.values.target='brightness';
+		switch(my.values.target)
 		{
 			case 'hue':
-				values.clip=my.hue.clip;
-				values.canvas=my.hue.canvas;
-				values.container=my.hue.container;
+				my.values.clip=my.hue.clip;
+				my.values.canvas=my.hue.canvas;
+				my.values.container=my.hue.container;
 				break;
 			case 'saturation':
-				values.clip=my.saturation.clip;
-				values.canvas=my.saturation.canvas;
-				values.container=my.saturation.container;
+				my.values.clip=my.saturation.clip;
+				my.values.canvas=my.saturation.canvas;
+				my.values.container=my.saturation.container;
 				break;
 			case 'brightness':
-				values.clip=my.brightness.clip;
-				values.canvas=my.brightness.canvas;
-				values.container=my.brightness.container;
+				my.values.clip=my.brightness.clip;
+				my.values.canvas=my.brightness.canvas;
+				my.values.container=my.brightness.container;
 				break;
 		}
-		canvasleft=values.canvas.offset().left;
-		containerleft=values.container.offset().left;
+		canvasleft=my.values.canvas.offset().left;
+		containerleft=my.values.container.offset().left;
 		if (e.type.match(/touch/g)) clipleft=e.originalEvent.touches[0].pageX;
 		else clipleft=e.pageX;
 		if (clipleft<canvasleft) return;
-		if (clipleft>canvasleft+values.canvas.width()) return;
+		if (clipleft>canvasleft+my.values.canvas.width()) return;
 		my.capture=true;
-		values.clip.css({'left':(clipleft-containerleft-(values.clip.width()/2)).toString()+'px'});
+		my.values.clip.css({'left':(clipleft-containerleft-(my.values.clip.width()/2)).toString()+'px'});
+		/* 倍率表示 */
+		my.displayvolume();
 		/* イベント発火 */
 		event=new $.Event('touchstart mousedown',e);
-		values.clip.trigger(event);
+		my.values.clip.trigger(event);
 		e.stopPropagation();
 		e.preventDefault();
 	});
 	clip.on('touchstart mousedown',function(e){
-		if ($(this)[0]==my.hue.clip[0]) values.target='hue';
-		if ($(this)[0]==my.saturation.clip[0]) values.target='saturation';
-		if ($(this)[0]==my.brightness.clip[0]) values.target='brightness';
-		switch(values.target)
+		if ($(this)[0]==my.hue.clip[0]) my.values.target='hue';
+		if ($(this)[0]==my.saturation.clip[0]) my.values.target='saturation';
+		if ($(this)[0]==my.brightness.clip[0]) my.values.target='brightness';
+		switch(my.values.target)
 		{
 			case 'hue':
-				values.clip=my.hue.clip;
-				values.canvas=my.hue.canvas;
-				values.container=my.hue.container;
+				my.values.clip=my.hue.clip;
+				my.values.canvas=my.hue.canvas;
+				my.values.container=my.hue.container;
 				break;
 			case 'saturation':
-				values.clip=my.saturation.clip;
-				values.canvas=my.saturation.canvas;
-				values.container=my.saturation.container;
+				my.values.clip=my.saturation.clip;
+				my.values.canvas=my.saturation.canvas;
+				my.values.container=my.saturation.container;
 				break;
 			case 'brightness':
-				values.clip=my.brightness.clip;
-				values.canvas=my.brightness.canvas;
-				values.container=my.brightness.container;
+				my.values.clip=my.brightness.clip;
+				my.values.canvas=my.brightness.canvas;
+				my.values.container=my.brightness.container;
 				break;
 		}
 		my.capture=true;
-		values.down=values.clip.offset().left-values.container.offset().left;
-		if (e.type.match(/touch/g)) values.keep=e.originalEvent.touches[0].pageX;
-		else values.keep=e.pageX;
+		my.values.down=my.values.clip.offset().left-my.values.container.offset().left;
+		if (e.type.match(/touch/g)) my.values.keep=e.originalEvent.touches[0].pageX;
+		else my.values.keep=e.pageX;
 		e.stopPropagation();
 		e.preventDefault();
 	});
@@ -157,34 +151,15 @@ var colorPicker = function(options){
 		var clipleft=0;
 		var canvasleft=0;
 		var containerleft=0;
-		var color='';
-		canvasleft=values.canvas.offset().left;
-		containerleft=values.container.offset().left;
-		if (e.type.match(/touch/g)) clipleft=values.down+e.originalEvent.touches[0].pageX-values.keep;
-		else clipleft=values.down+e.pageX-values.keep;
-		if (clipleft<canvasleft-containerleft-(values.clip.width()/2)) clipleft=canvasleft-containerleft-(values.clip.width()/2);
-		if (clipleft>canvasleft-containerleft-(values.clip.width()/2)+values.canvas.width()) clipleft=canvasleft-containerleft-(values.clip.width()/2)+values.canvas.width();
-		values.clip.css({'left':clipleft.toString()+'px'});
-		//移動量算出
-		clipleft+=(values.clip.width()/2)-(canvasleft-containerleft);
-		switch(values.target)
-		{
-			case 'hue':
-				my.hue.volume=Math.floor((clipleft/values.canvas.width())*my.hue.max);
-				break;
-			case 'saturation':
-				my.saturation.volume=Math.floor((clipleft/values.canvas.width())*my.saturation.max);
-				break;
-			case 'brightness':
-				my.brightness.volume=Math.floor((clipleft/values.canvas.width())*my.brightness.max);
-				break;
-		}
-		/* 再配置 */
-		my.relocation();
-		/* サムネイル背景色変更 */
-		color=my.toHEX();
-		my.thumbnail.css({'background-color':color});
-		if (my.callback) my.callback(color);
+		canvasleft=my.values.canvas.offset().left;
+		containerleft=my.values.container.offset().left;
+		if (e.type.match(/touch/g)) clipleft=my.values.down+e.originalEvent.touches[0].pageX-my.values.keep;
+		else clipleft=my.values.down+e.pageX-my.values.keep;
+		if (clipleft<canvasleft-containerleft-(my.values.clip.width()/2)) clipleft=canvasleft-containerleft-(my.values.clip.width()/2);
+		if (clipleft>canvasleft-containerleft-(my.values.clip.width()/2)+my.values.canvas.width()) clipleft=canvasleft-containerleft-(my.values.clip.width()/2)+my.values.canvas.width();
+		my.values.clip.css({'left':clipleft.toString()+'px'});
+		/* 倍率表示 */
+		my.displayvolume();
 		e.stopPropagation();
 		e.preventDefault();
 	});
@@ -202,6 +177,14 @@ var colorPicker = function(options){
 	this.container=options.container.css({'text-align':'center'});
 	this.capture=false;
 	this.callback=null;
+	this.values={
+		target:'',
+		down:0,
+		keep:0,
+		clip:null,
+		canvas:null,
+		container:null
+	};
 	/* 情報パネル生成 */
 	this.informations=$('<div>').css({
 		'display':'inline-block',
@@ -219,6 +202,7 @@ var colorPicker = function(options){
 		'border-radius':'0.25em',
 		'height':'8em',
 		'margin':'0px 10% 1em 10%',
+		'transition':'none',
 		'vertical-align':'top',
 		'width':'30%'
 	});
@@ -308,6 +292,32 @@ colorPicker.prototype={
 		clipleft+=target.canvas.offset().left-target.container.offset().left-(target.clip.width()/2);
 		clipleft+=target.canvas.width()*(target.volume/target.max);
 		target.clip.css({'left':clipleft.toString()+'px'});
+	},
+	/* 倍率表示 */
+	displayvolume:function(){
+		var position=parseInt(this.values.clip.css('left'));
+		var canvasleft=this.values.canvas.offset().left;
+		var containerleft=this.values.container.offset().left;
+		var color='';
+		position+=(this.values.clip.width()/2)-(canvasleft-containerleft);
+		switch(this.values.target)
+		{
+			case 'hue':
+				this.hue.volume=Math.floor((position/this.values.canvas.width())*this.hue.max);
+				break;
+			case 'saturation':
+				this.saturation.volume=Math.floor((position/this.values.canvas.width())*this.saturation.max);
+				break;
+			case 'brightness':
+				this.brightness.volume=Math.floor((position/this.values.canvas.width())*this.brightness.max);
+				break;
+		}
+		/* 再配置 */
+		this.relocation();
+		/* サムネイル背景色変更 */
+		color=this.toHEX();
+		this.thumbnail.css({'background-color':color});
+		if (this.callback) this.callback(color);
 	},
 	/* 表示 */
 	show:function(color,callback){
