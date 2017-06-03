@@ -88,6 +88,7 @@ var colorPicker = function(options){
 		var clipleft=0;
 		var canvasleft=0;
 		var containerleft=0;
+		var color='';
 		if ($(this)[0]==my.hue.canvas[0]) values.target='hue';
 		if ($(this)[0]==my.saturation.canvas[0]) values.target='saturation';
 		if ($(this)[0]==my.brightness.canvas[0]) values.target='brightness';
@@ -120,6 +121,10 @@ var colorPicker = function(options){
 		/* イベント発火 */
 		event=new $.Event('touchstart mousedown',e);
 		values.clip.trigger(event);
+		/* サムネイル背景色変更 */
+		color=my.toHEX();
+		my.thumbnail.css({'background-color':color});
+		if (my.callback) my.callback(color);
 		e.stopPropagation();
 		e.preventDefault();
 	});
