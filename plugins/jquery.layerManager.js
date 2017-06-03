@@ -24,6 +24,7 @@
 var layerManager = function(options){
 	var options=$.extend({
 		artboard:null,
+		colorpicker:null,
 		navigation:null,
 		activatecallback:null,
 		zoomcallback:null
@@ -35,6 +36,7 @@ var layerManager = function(options){
 		'overflow':'hidden',
 		'transition':'none'
 	});
+	this.colorpicker=options.colorpicker;
 	this.zoomcallback=options.zoomcallback;
 	this.activelayer=null;
 	this.navigation=null;
@@ -42,7 +44,7 @@ var layerManager = function(options){
 	this.text=null;
 	this.layers=[];
 	/* レイヤーナビゲーション生成 */
-	if (options.navigation)
+	if (options.navigation!=null)
 	{
 		this.navigation=new listNavigation({
 			container:options.navigation,
@@ -62,17 +64,20 @@ var layerManager = function(options){
 		});
 	}
 	/* テキストエディター生成 */
-	this.text=new textController({container:this.artboard});
+	this.text=new textController({
+		container:this.artboard,
+		colorpicker:this.colorpicker
+	});
 	/* レイヤーイベント */
 	this.artboard.on('layeractivate',function(e){
-		if (my.activelayer) my.activelayer.operation=((my.operation!='move')?'lock':my.operation);
+		if (my.activelayer!=null) my.activelayer.operation=((my.operation!='move')?'lock':my.operation);
 		my.activelayer=e.layer;
-		if (my.activelayer)
+		if (my.activelayer!=null)
 		{
 			my.activelayer.operation=my.operation;
-			if (options.activatecallback) options.activatecallback(e.layer);
+			if (options.activatecallback!=null) options.activatecallback(e.layer);
 			/* レイヤーナビゲーション選択切替 */
-			if (my.navigation) my.navigation.activate(my.layers.indexOf(my.activelayer));
+			if (my.navigation!=null) my.navigation.activate(my.layers.indexOf(my.activelayer));
 		}
 	});
 	this.artboard.on('layerdelete',function(e){
@@ -82,7 +87,7 @@ var layerManager = function(options){
 		my.delete();
 	});
 	this.artboard.on('layertextchange',function(e){
-		if (my.navigation) my.navigation.text(my.layers.indexOf(e.layer),e.value);
+		if (my.navigation!=null) my.navigation.text(my.layers.indexOf(e.layer),e.value);
 	});
 	/*
 	*----------------------------------------------------------------
@@ -90,7 +95,7 @@ var layerManager = function(options){
 	*----------------------------------------------------------------
 	*/
 	$(window).on('keydown',function(e){
-		if (!my.activelayer) return;
+		if (my.activelayer==null) return;
 		if (my.text.layer.is(':visible')) return;
 		var code=e.keyCode||e.which;
 		switch(code)
@@ -133,7 +138,7 @@ layerManager.prototype={
 		/* レイヤー配置 */
 		this.append(ctrlLayer);
 		/* レイヤーナビゲーション配置 */
-		if (this.navigation) this.navigation.append('draw','ブラシアート');
+		if (this.navigation!=null) this.navigation.append('draw','ブラシアート');
 	},
 	/* 画像レイヤー生成 */
 	addimage:function(src,filename){
@@ -155,7 +160,7 @@ layerManager.prototype={
 			/* レイヤー配置 */
 			my.append(ctrlLayer);
 			/* レイヤーナビゲーション配置 */
-			if (my.navigation) my.navigation.append('image',filename);
+			if (my.navigation!=null) my.navigation.append('image',filename);
 		};
 		image.src=src;
 	},
@@ -175,7 +180,7 @@ layerManager.prototype={
 		/* レイヤー配置 */
 		this.append(ctrlLayer);
 		/* レイヤーナビゲーション配置 */
-		if (this.navigation) this.navigation.append('text','テキスト');
+		if (this.navigation!=null) this.navigation.append('text','テキスト');
 	},
 	/* レイヤー配置 */
 	append:function(layer){
@@ -220,14 +225,14 @@ layerManager.prototype={
 	},
 	/* 複製 */
 	clone:function(){
-		if (!this.activelayer) return;
+		if (this.activelayer==null) return;
 		var index=this.layers.indexOf(this.activelayer);
 		var ctrlLayer=this.activelayer.clone();
 		/* レイヤー配置 */
 		this.layers.splice(index+1,0,ctrlLayer);
 		this.organize();
 		/* レイヤーナビゲーション配置 */
-		if (this.navigation)
+		if (this.navigation!=null)
 			this.navigation.append(
 				this.navigation.activelist.attr('class'),
 				this.navigation.activelist.text(),
@@ -236,12 +241,12 @@ layerManager.prototype={
 	},
 	/* 削除 */
 	delete:function(){
-		if (!this.activelayer) return;
+		if (this.activelayer==null) return;
 		var bottomlayer=this.activelayer.bottomlayer;
 		var deletelayer=this.activelayer;
 		var controller=null;
 		/* レイヤーナビゲーション削除 */
-		if (this.navigation) this.navigation.delete(this.layers.indexOf(deletelayer));
+		if (this.navigation!=null) this.navigation.delete(this.layers.indexOf(deletelayer));
 		/* レイヤー削除 */
 		this.layers=$.grep(this.layers,function(item,index){return item.layer[0]!=deletelayer.layer[0]});
 		this.artboard[0].removeChild(this.activelayer.layer[0]);
@@ -249,7 +254,7 @@ layerManager.prototype={
 		this.organize();
 		/* アクティブレイヤー再設定 */
 		if (bottomlayer==null && this.layers.length!=0) bottomlayer=this.artboard.find('canvas').first();
-		if (bottomlayer) controller=$.grep(this.layers,function(item,index){return item.layer[0]==bottomlayer[0]})[0];
+		if (bottomlayer!=null) controller=$.grep(this.layers,function(item,index){return item.layer[0]==bottomlayer[0]})[0];
 		/* イベント発火 */
 		var event=new $.Event('layeractivate',{layer:controller});
 		this.artboard.trigger(event);
@@ -342,7 +347,7 @@ layerManager.prototype={
 		});
 		res=canvas[0].toDataURL('image/png');
 		canvas.remove();
-		if (callback) callback();
+		if (callback!=null) callback();
 		return res;
 	}
 };
@@ -699,7 +704,7 @@ var layerController = function(options){
 			if (my.zoom>my.zoommax) my.zoom=my.zoommax;
 			/* レイヤー再配置 */
 			my.relocation(my.zoom);
-			if (my.zoomcallback) my.zoomcallback(my.zoom);
+			if (my.zoomcallback!=null) my.zoomcallback(my.zoom);
 			e.stopPropagation();
 			e.preventDefault();
 		});
@@ -728,7 +733,7 @@ var layerController = function(options){
 			my.keep.scale=e.originalEvent.scale;
 			/* レイヤー再配置 */
 			my.relocation(my.zoom);
-			if (my.zoomcallback) my.zoomcallback(my.zoom);
+			if (my.zoomcallback!=null) my.zoomcallback(my.zoom);
 			e.stopPropagation();
 			e.preventDefault();
 		});
@@ -1042,11 +1047,13 @@ layerController.prototype={
 var textController = function(options){
 	var options=$.extend({
 		container:null,
+		colorpicker:null
 	},options);
 	if (options.container==null) {alert('テキスト配置ボックスを指定して下さい。');return;}
 	var my=this;
 	/* 変数定義 */
 	this.container=options.container;
+	this.colorpicker=options.colorpicker;
 	this.sender=null;
 	this.down={
 		left:0,
@@ -1117,14 +1124,43 @@ var textController = function(options){
 		my.textarea.trigger(event);
 	});
 	/* フォント前景色選択コントロール生成 */
-	this.fontcolor=new fontController({type:'fontcolor'});
-	this.fontcolor.controller.on('valuechanged',function(e){
-		my.style.color=e.value;
-		my.textarea.css({'color':$.toRGBA(my.style.color,my.style.transparency)});
-		/* イベント発火 */
-		var event=new $.Event('keyup');
-		my.textarea.trigger(event);
-	});
+	if (this.colorpicker!=null)
+	{
+		this.fontcolor=$('<span>').css({
+			'background-color':'transparent',
+			'border':'1px solid #87ceeb',
+			'border-radius':'3px',
+			'cursor':'pointer',
+			'display':'inline-block',
+			'height':'1.8em',
+			'margin':'0px 0.25em 5px 0.25em',
+			'padding':'0px',
+			'vertical-align':'top',
+			'width':'3em'
+		})
+		.on('touchstart mousedown',function(e){e.stopPropagation();})
+		.on('click',function(e){
+			var colorthumbnail=$(this);
+			/* カラーピッカー表示 */
+			my.colorpicker.show(colorthumbnail.css('background-color'),function(color){
+				my.style.color=color;
+				my.textarea.css({'color':$.toRGBA(my.style.color,my.style.transparency)});
+				/* サムネイル背景色変更 */
+				colorthumbnail.css({'background-color':color});
+			});
+		});
+	}
+	else
+	{
+		this.fontcolor=new fontController({type:'fontcolor'});
+		this.fontcolor.controller.on('valuechanged',function(e){
+			my.style.color=e.value;
+			my.textarea.css({'color':$.toRGBA(my.style.color,my.style.transparency)});
+			/* イベント発火 */
+			var event=new $.Event('keyup');
+			my.textarea.trigger(event);
+		});
+	}
 	/* フォント不透明度入力コントロール生成 */
 	this.fonttransparency=new fontController({type:'fonttransparency'});
 	this.fonttransparency.controller.on('valuechanged',function(e){
@@ -1199,7 +1235,7 @@ var textController = function(options){
 			.append(this.fontstyle.controller)
 			.append(this.fontweight.controller)
 			.append(this.textalign.controller)
-			.append(this.fontcolor.controller)
+			.append((this.colorpicker!=null)?this.fontcolor:this.fontcolor.controller)
 			.append(this.fonttransparency.controller)
 			.append(this.fontblur.controller)
 		)
@@ -1281,7 +1317,6 @@ textController.prototype={
 		},style);
 		/* 各種フォント設定値コントローラー初期化 */
 		this.fontblur.val(this.style.blur);
-		this.fontcolor.val(this.style.color);
 		this.fontfamily.val(this.style.family);
 		this.fontsize.val(this.style.size);
 		this.fontstyle.val(this.style.style);
@@ -1289,6 +1324,8 @@ textController.prototype={
 		this.fontweight.val(this.style.weight);
 		this.lineheight.val(this.style.lineheight);
 		this.textalign.val(this.style.align);
+		if (this.colorpicker!=null) this.fontcolor.css({'background-color':this.style.color});
+		else this.fontcolor.val(this.style.color);
 		/* テキスト設定 */
 		this.textarea.css({
 			'color':$.toRGBA(this.style.color,this.style.transparency),
@@ -1798,11 +1835,11 @@ var listNavigation = function(options){
 	/* リストイベント */
 	this.container.on('selected',function(e){
 		my.activate(e.index);
-		if (options.selectedcallback) options.selectedcallback(e.index);
+		if (options.selectedcallback!=null) options.selectedcallback(e.index);
 	});
 	/* ドラッグイベント */
 	this.container.on('dragged',function(e){
-		if (options.draggedcallback) options.draggedcallback(e);
+		if (options.draggedcallback!=null) options.draggedcallback(e);
 	});
 	/*
 	*----------------------------------------------------------------

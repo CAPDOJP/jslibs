@@ -21,7 +21,9 @@ jQuery.noConflict();
 		header:null,
 		rows:null,
 		template:null,
+		apps:{},
 		config:{},
+		offset:{},
 		referer:{},
 		requiredvalue:{},
 		disabled:{
@@ -210,31 +212,9 @@ jQuery.noConflict();
 			});
 			if (fieldinfo.lookup)
 			{
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app,query:'order by $id asc'},function(resp){
-					/* create reference box */
-					vars.referer[fieldinfo.code]=$('body').referer({
-						datasource:resp.records,
-						displaytext:fieldinfo.lookup.lookupPickerFields,
-						searchbuttonclass:'customview-button search-button referer-button-search',
-						searchbuttontext:'',
-						buttons:[
-							{
-								id:'cancel',
-								class:'customview-button referer-button-cancel',
-								text:'キャンセル'
-							}
-						],
-						searches:[
-							{
-								id:'multi',
-								class:'referer-input-multi',
-								label:'',
-								type:'multi'
-							}
-						]
-					});
-					vars.referer[fieldinfo.code].searchblock.find('input#multi').closest('label').css({'width':'100%'});
-				},function(error){});
+				vars.apps[fieldinfo.lookup.relatedApp.app]=null;
+				vars.offset[fieldinfo.lookup.relatedApp.app]=0;
+				loaddatas(fieldinfo.lookup.relatedApp.app,fieldinfo);
 				button.on('click',function(){
 					var target=$(this);
 					vars.referer[fieldinfo.code].show({
@@ -546,4 +526,42 @@ jQuery.noConflict();
 			},function(error){});
 		},function(error){});
 	});
+	var limit=500;
+	/*---------------------------------------------------------------
+	 all data load
+	---------------------------------------------------------------*/
+	function loaddatas(appkey,fieldinfo){
+        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString()},function(resp){
+        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+			vars.offset[appkey]+=limit;
+			if (resp.records.length==limit) loaddatas(appkey,fieldinfo);
+			else
+			{
+				/* create reference box */
+				vars.referer[fieldinfo.code]=$('body').referer({
+					datasource:vars.apps[appkey],
+					displaytext:fieldinfo.lookup.lookupPickerFields,
+					searchbuttonclass:'customview-button search-button referer-button-search',
+					searchbuttontext:'',
+					buttons:[
+						{
+							id:'cancel',
+							class:'customview-button referer-button-cancel',
+							text:'キャンセル'
+						}
+					],
+					searches:[
+						{
+							id:'multi',
+							class:'referer-input-multi',
+							label:'',
+							type:'multi'
+						}
+					]
+				});
+				vars.referer[fieldinfo.code].searchblock.find('input#multi').closest('label').css({'width':'100%'});
+			}
+		},function(error){});
+	}
 })(jQuery,kintone.$PLUGIN_ID);

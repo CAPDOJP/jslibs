@@ -16,7 +16,8 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		loaded:0,
-		apps:{}
+		apps:{},
+		offset:{}
 	};
 	var events={
 		show:[
@@ -122,16 +123,24 @@ jQuery.noConflict();
         	params[index].fields=fields;
 	    });
 	    /* setup relation datas */
-	    $.each(vars.apps,function(key,values){
-	        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:key},function(resp){
-	        	vars.apps[key]=resp.records;
-	        	vars.loaded++;
-			},function(error){});
-	    })
+	    $.each(vars.apps,function(key,values){vars.offset[key]=0;loaddatas(key);})
 		/* loading wait */
 		functions.waitloaded(function(){
 			$.each(params,function(index){functions.relations(params[index]);});
 		});
 		return event;
 	});
+	var limit=500;
+	/*---------------------------------------------------------------
+	 all data load
+	---------------------------------------------------------------*/
+	function loaddatas(appkey){
+        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString()},function(resp){
+        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+			vars.offset[appkey]+=limit;
+			if (resp.records.length==limit) loaddatas(appkey);
+			else vars.loaded++;
+		},function(error){});
+	}
 })(jQuery,kintone.$PLUGIN_ID);

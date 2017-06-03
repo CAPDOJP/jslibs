@@ -18,6 +18,7 @@ jQuery.noConflict();
 		appNames:{},
 		isTable:{},
 		relations:[],
+		offset:0,
 		types:[
 			'DATE',
 			'DATETIME',
@@ -52,15 +53,7 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 initialize fields
 	---------------------------------------------------------------*/
-	kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{},function(resp){
-		/* setup app lists */
-		$.each(resp.apps,function(index,values){
-			if (values.appId!=kintone.app.getId())
-			{
-		    	$('select#relationapp').append($('<option>').attr('value',values.appId).text(values.name));
-				vars.appNames[values.appId]=values.name;
-			}
-		})
+	loaddatas(function(){
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			/* setup field lists */
 			$.each(resp.properties,function(key,values){
@@ -199,7 +192,7 @@ jQuery.noConflict();
 		        	$('select#basefield',container).trigger('change');
 			    });
 		},function(error){});
-	},function(error){});
+	});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/
@@ -297,4 +290,22 @@ jQuery.noConflict();
     $('button#cancel').on('click',function(e){
         history.back();
     });
+	/*---------------------------------------------------------------
+	 all data load
+	---------------------------------------------------------------*/
+	function loaddatas(callback){
+		kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
+			/* setup app lists */
+			$.each(resp.apps,function(index,values){
+				if (values.appId!=kintone.app.getId())
+				{
+			    	$('select#relationapp').append($('<option>').attr('value',values.appId).text(values.name));
+					vars.appNames[values.appId]=values.name;
+				}
+				vars.offset++;
+			})
+			if (resp.apps.length==100) loaddatas(callback);
+			else callback();
+		},function(error){});
+	}
 })(jQuery,kintone.$PLUGIN_ID);
