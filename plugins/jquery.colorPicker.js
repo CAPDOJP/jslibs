@@ -489,6 +489,12 @@ colorPicker.prototype={
 		hsb.h=Math.round(hsb.h*360);
 		hsb.s=Math.round(hsb.s*100);
 		hsb.b=Math.round(hsb.b*100);
+		if (hsb.h<0) hsb.h=0;
+		if (hsb.s<0) hsb.s=0;
+		if (hsb.b<0) hsb.b=0;
+		if (hsb.h>360) hsb.h=360;
+		if (hsb.s>100) hsb.s=100;
+		if (hsb.b>100) hsb.b=100;
 		/* 倍率変数へ格納 */
 		this.hue.volume=hsb.h;
 		this.saturation.volume=hsb.s;
