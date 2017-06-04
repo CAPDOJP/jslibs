@@ -482,19 +482,13 @@ colorPicker.prototype={
 			hsb.s=diff.check/hsb.b;
 			if (rgb.r===hsb.b) hsb.h=diff.b-diff.g;
 			else if (rgb.g===hsb.b) hsb.h=(1/3)+diff.r-diff.b;
-			else if (rgb.b===hsb.b) hsb.h=(2/3)+rgb.g2-diff.r;
+			else if (rgb.b===hsb.b) hsb.h=(2/3)+diff.g-diff.r;
 			if (hsb.h < 0) hsb.h+=1;
 			else if (hsb.h > 1) hsb.h-=1;
 		}
 		hsb.h=Math.round(hsb.h*360);
 		hsb.s=Math.round(hsb.s*100);
 		hsb.b=Math.round(hsb.b*100);
-		if (hsb.h<0) hsb.h=0;
-		if (hsb.s<0) hsb.s=0;
-		if (hsb.b<0) hsb.b=0;
-		if (hsb.h>this.hue.max) hsb.h=this.hue.max;
-		if (hsb.s>this.saturation.max) hsb.s=this.saturation.max;
-		if (hsb.b>this.brightness.max) hsb.b=this.brightness.max;
 		/* 倍率変数へ格納 */
 		this.hue.volume=hsb.h;
 		this.saturation.volume=hsb.s;
