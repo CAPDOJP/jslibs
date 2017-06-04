@@ -492,9 +492,9 @@ colorPicker.prototype={
 		if (hsb.h<0) hsb.h=0;
 		if (hsb.s<0) hsb.s=0;
 		if (hsb.b<0) hsb.b=0;
-		if (hsb.h>360) hsb.h=360;
-		if (hsb.s>100) hsb.s=100;
-		if (hsb.b>100) hsb.b=100;
+		if (hsb.h>this.hue.max) hsb.h=this.hue.max;
+		if (hsb.s>this.saturation.max) hsb.s=this.saturation.max;
+		if (hsb.b>this.brightness.max) hsb.b=this.brightness.max;
 		/* 倍率変数へ格納 */
 		this.hue.volume=hsb.h;
 		this.saturation.volume=hsb.s;
