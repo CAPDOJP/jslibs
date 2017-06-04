@@ -109,8 +109,8 @@ var colorPicker = function(options){
 		if (clipleft>canvasleft+my.values.canvas.width()) return;
 		my.capture=true;
 		my.values.clip.css({'left':(clipleft-containerleft-(my.values.clip.width()/2)).toString()+'px'});
-		/* 倍率表示 */
-		my.displayvolume();
+		/* 倍率調整 */
+		my.adjustvolume();
 		/* イベント発火 */
 		event=new $.Event('touchstart mousedown',e);
 		my.values.clip.trigger(event);
@@ -158,8 +158,8 @@ var colorPicker = function(options){
 		if (clipleft<canvasleft-containerleft-(my.values.clip.width()/2)) clipleft=canvasleft-containerleft-(my.values.clip.width()/2);
 		if (clipleft>canvasleft-containerleft-(my.values.clip.width()/2)+my.values.canvas.width()) clipleft=canvasleft-containerleft-(my.values.clip.width()/2)+my.values.canvas.width();
 		my.values.clip.css({'left':clipleft.toString()+'px'});
-		/* 倍率表示 */
-		my.displayvolume();
+		/* 倍率調整 */
+		my.adjustvolume();
 		e.stopPropagation();
 		e.preventDefault();
 	});
@@ -170,8 +170,8 @@ var colorPicker = function(options){
 		e.preventDefault();
 	});
 	$(window).on('resize',function(){
-		/* 再配置 */
-		my.relocation();
+		/* 倍率セット */
+		my.attachvolume();
 	});
 	this.layer=options.layer;
 	this.container=options.container.css({'text-align':'center'});
@@ -223,8 +223,14 @@ var colorPicker = function(options){
 	})
 	.on('change',function(){
 		var color=$(this).val().replace('#','');
-		/* 再描画 */
-		if (color.length==6) my.redraw(color);
+		if (color.length==6)
+		{
+			/* HSBカラー変換 */
+			my.toHSB(color)
+			/* 倍率セット */
+			my.attachvolume();
+			if (options.callback) options.callback('#'+color);
+		}
 	});
 	/* 色相スライダー生成 */
 	this.hue={
@@ -286,58 +292,55 @@ var colorPicker = function(options){
 };
 /* 関数定義 */
 colorPicker.prototype={
-	/* 倍率セット */
-	attachvolume:function(target){
-		var clipleft=0;
-		clipleft+=target.canvas.offset().left-target.container.offset().left-(target.clip.width()/2);
-		clipleft+=target.canvas.width()*(target.volume/target.max);
-		target.clip.css({'left':clipleft.toString()+'px'});
-	},
-	/* 倍率表示 */
-	displayvolume:function(){
+	/* 倍率調整 */
+	adjustvolume:function(){
 		var position=parseInt(this.values.clip.css('left'));
 		var canvasleft=this.values.canvas.offset().left;
 		var containerleft=this.values.container.offset().left;
-		var color='';
 		position+=(this.values.clip.width()/2)-(canvasleft-containerleft);
 		switch(this.values.target)
 		{
 			case 'hue':
-				this.hue.volume=Math.floor((position/this.values.canvas.width())*this.hue.max);
+				this.hue.volume=Math.ceil((position/this.values.canvas.width())*this.hue.max);
 				break;
 			case 'saturation':
-				this.saturation.volume=Math.floor((position/this.values.canvas.width())*this.saturation.max);
+				this.saturation.volume=Math.ceil((position/this.values.canvas.width())*this.saturation.max);
 				break;
 			case 'brightness':
-				this.brightness.volume=Math.floor((position/this.values.canvas.width())*this.brightness.max);
+				this.brightness.volume=Math.ceil((position/this.values.canvas.width())*this.brightness.max);
 				break;
 		}
-		/* 再配置 */
-		this.relocation();
-		/* サムネイル背景色変更 */
-		color=this.toHEX();
-		this.thumbnail.css({'background-color':color});
-		if (this.callback) this.callback(color);
+		/* 再描画 */
+		this.redraw();
+		/* 16進数カラー変換 */
+		this.toHEX();
+		if (this.callback) this.callback('#'+this.hex.val().toString());
+	},
+	/* 倍率セット */
+	attachvolume:function(){
+		var clipleft=0;
+		var volumes=[this.hue,this.saturation,this.brightness];
+		/* 再描画 */
+		this.redraw();
+		$.each(volumes,function(index){
+			clipleft=0;
+			clipleft+=volumes[index].canvas.offset().left-volumes[index].container.offset().left-(volumes[index].clip.width()/2);
+			clipleft+=volumes[index].canvas.width()*(volumes[index].volume/volumes[index].max);
+			volumes[index].clip.css({'left':clipleft.toString()+'px'});
+		});
 	},
 	/* 表示 */
 	show:function(color,callback){
 		if (this.layer) this.layer.show();
 		/* 引数取得 */
 		this.callback=callback;
-		/* 再描画 */
-		this.redraw(color);
-	},
-	/* 再描画 */
-	redraw:function(color){
-		/* サムネイル背景色変更 */
-		this.thumbnail.css({'background-color':color});
 		/* HSBカラー変換 */
 		this.toHSB(color)
-		/* 再配置 */
-		this.relocation();
+		/* 倍率セット */
+		this.attachvolume();
 	},
-	/* 再配置 */
-	relocation:function(){
+	/* 再描画 */
+	redraw:function(){
 		var height=parseInt($('body').css('font-size'))*1.5;
 		var width=0;
 		var context=null;
@@ -354,8 +357,6 @@ colorPicker.prototype={
 				context.fillRect(i,0,i,height);
 			}
 		}
-		/* 倍率セット */
-		if (!this.capture) this.attachvolume(this.hue);
 		/* 彩度 */
 		width=this.saturation.container.width()-this.saturation.caption.outerWidth(true);
 		this.saturation.canvas.attr('height',height.toString()+'px');
@@ -369,8 +370,6 @@ colorPicker.prototype={
 				context.fillRect(i,0,i,height);
 			}
 		}
-		/* 倍率セット */
-		if (!this.capture) this.attachvolume(this.saturation);
 		/* 明度 */
 		width=this.brightness.container.width()-this.brightness.caption.outerWidth(true);
 		this.brightness.canvas.attr('height',height.toString()+'px');
@@ -384,13 +383,6 @@ colorPicker.prototype={
 				context.fillRect(i,0,i,height);
 			}
 		}
-		/* 倍率セット */
-		if (!this.capture) this.attachvolume(this.brightness);
-		/* 情報パネル変更 */
-		this.hue.display.text(this.hue.volume);
-		this.saturation.display.text(this.saturation.volume);
-		this.brightness.display.text(this.brightness.volume);
-		this.hex.val(this.toHEX().replace('#',''));
 	},
 	/* 16進数カラー変換 */
 	toHEX:function(){
@@ -434,11 +426,16 @@ colorPicker.prototype={
 					break;
 			}
 		}
-		color+='#';
-		color+=this.toTwoDigits(Math.round(rgb.r*255).toString(16));
-		color+=this.toTwoDigits(Math.round(rgb.g*255).toString(16));
-		color+=this.toTwoDigits(Math.round(rgb.b*255).toString(16));
-		return color;
+		color+=$.hex(Math.round(rgb.r*255));
+		color+=$.hex(Math.round(rgb.g*255));
+		color+=$.hex(Math.round(rgb.b*255));
+		/* 情報パネル変更 */
+		this.hue.display.text(this.hue.volume);
+		this.saturation.display.text(this.saturation.volume);
+		this.brightness.display.text(this.brightness.volume);
+		this.hex.val(color);
+		/* サムネイル背景色変更 */
+		this.thumbnail.css({'background-color':'#'+color});
 	},
 	/* HSBカラー変換 */
 	toHSB:function(color){
@@ -496,10 +493,17 @@ colorPicker.prototype={
 		this.hue.volume=hsb.h;
 		this.saturation.volume=hsb.s;
 		this.brightness.volume=hsb.b;
-	},
-	/* 16進数桁数調整 */
-	toTwoDigits:function(value){
-		if (value.length==1) value+=value;
-		return value;
+		/* 16進数カラー変換 */
+		this.toHEX();
 	}
 };
+/* 16進数変換(桁数調整) */
+jQuery.extend({
+	hex:function(value){
+		var sin="0123456789ABCDEF";
+		if(value>255) return 'FF';
+		if(value<0) return '00';
+		return sin.charAt(Math.floor(value/16))+sin.charAt(value%16);
+	}
+});
+

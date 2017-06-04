@@ -104,6 +104,7 @@ var volumeController = function(options){
 		if (!$.isNumeric($(this).val())) $(this).val(my.volume);
 		if ($(this).val()<my.min) $(this).val(my.min);
 		if ($(this).val()>my.max) $(this).val(my.max);
+		/* 倍率セット */
 		my.attachvolume($(this).val());
 		if (options.callback) options.callback(my.volume);
 	});
@@ -146,8 +147,8 @@ var volumeController = function(options){
 		if (clipleft>lineleft+my.line.width()) return;
 		capture=true;
 		my.clip.css({'left':(clipleft-containerleft-(my.clip.width()/2)).toString()+'px'});
-		/* 倍率表示 */
-		my.displayvolume();
+		/* 倍率調整 */
+		my.adjustvolume();
 		/* イベント発火 */
 		event=new $.Event('touchstart mousedown',e);
 		my.clip.trigger(event);
@@ -174,8 +175,8 @@ var volumeController = function(options){
 		if (clipleft<lineleft-containerleft-(my.clip.width()/2)) clipleft=lineleft-containerleft-(my.clip.width()/2);
 		if (clipleft>lineleft-containerleft-(my.clip.width()/2)+my.line.width()) clipleft=lineleft-containerleft-(my.clip.width()/2)+my.line.width();
 		my.clip.css({'left':clipleft.toString()+'px'});
-		/* 倍率表示 */
-		my.displayvolume();
+		/* 倍率調整 */
+		my.adjustvolume();
 		e.stopPropagation();
 		e.preventDefault();
 	});
@@ -187,11 +188,24 @@ var volumeController = function(options){
 		e.preventDefault();
 	});
 	$(window).on('load resize',function(){
+		/* 倍率セット */
 		my.attachvolume(my.volume);
 	});
 };
 /* 関数定義 */
 volumeController.prototype={
+	/* 倍率調整 */
+	adjustvolume:function(){
+		var position=parseInt(this.clip.css('left'));
+		var lineleft=this.line.offset().left;
+		var containerleft=this.container.offset().left;
+		position+=(this.clip.width()/2)-(lineleft-containerleft);
+		this.volume=Math.ceil((position/this.line.width())*(this.max-this.min)*this.precision);
+		this.volume+=this.min;
+		this.volume/=this.precision;
+		this.input.val(this.volume);
+		if (this.callback) this.callback(this.volume);
+	},
 	/* 倍率セット */
 	attachvolume:function(volume){
 		var clipleft=0;
@@ -201,18 +215,6 @@ volumeController.prototype={
 		this.input.val(volume);
 		this.volume=volume;
 	},
-	/* 倍率表示 */
-	displayvolume:function(){
-		var position=parseInt(this.clip.css('left'));
-		var lineleft=this.line.offset().left;
-		var containerleft=this.container.offset().left;
-		position+=(this.clip.width()/2)-(lineleft-containerleft);
-		this.volume=Math.floor((position/this.line.width())*(this.max-this.min)*this.precision);
-		this.volume+=this.min;
-		this.volume/=this.precision;
-		this.input.val(this.volume);
-		if (this.callback) this.callback(this.volume);
-	},
 	/* 無効判定 */
 	disable:function(value){
 		this.disabled=value;
@@ -220,6 +222,7 @@ volumeController.prototype={
 	},
 	/* クリップ再配置 */
 	relocation:function(){
+		/* 倍率セット */
 		this.attachvolume(this.volume);
 	}
 };
