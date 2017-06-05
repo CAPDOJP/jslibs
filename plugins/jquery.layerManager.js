@@ -931,7 +931,7 @@ layerController.prototype={
 					this.text.rect.top+=adjust.y;
 				}
 				left=this.text.rect.left;
-				top=this.text.rect.top;
+				top=this.text.rect.top+(parseInt(this.text.style.lineheight)/2);
 				/* 描画設定 */
 				switch(this.text.style.align)
 				{
@@ -951,7 +951,7 @@ layerController.prototype={
 				my.context.shadowBlur=this.text.style.blur;
 				my.context.shadowColor=$.toRGBA(this.text.style.color,this.text.style.transparency);
 				my.context.textAlign=this.text.style.align;
-				my.context.textBaseline='hanging';
+				my.context.textBaseline='middle';
 				/* 描画 */
 				var values=this.text.value.replace('\r\n','\n').split('\n');
 				for (var i=0;i<values.length;i++)
@@ -1363,13 +1363,12 @@ textController.prototype={
 	{
 		var borderholizontal=parseInt(this.textarea.css('border-left-width'))+parseInt(this.textarea.css('border-right-width'));
 		var bordervertical=parseInt(this.textarea.css('border-top-width'))+parseInt(this.textarea.css('border-bottom-width'));
-		var padding=(parseInt(this.textarea.css('line-height'))-parseInt(this.textarea.css('font-size')))/2;
 		/* イベント発火 */
 		var event=new $.Event('editend',{
 			draw:{
 				left:this.textarea.position().left+parseInt(this.textarea.css('border-left-width')),
-				top:this.textarea.position().top+parseInt(this.textarea.css('border-top-width'))+padding,
-				height:this.textarea.outerHeight(false)-bordervertical-padding,
+				top:this.textarea.position().top+parseInt(this.textarea.css('border-top-width')),
+				height:this.textarea.outerHeight(false)-bordervertical,
 				width:this.textarea.outerWidth(false)-borderholizontal
 			},
 			rect:{
