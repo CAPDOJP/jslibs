@@ -1,0 +1,40 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone PDF表示プラグイン",
+        "en":"kintone PDF Viewer plug-in",
+        "zh":"kintone PDF表示プラグイン"
+    },
+    "description":{
+        "ja":"添付ファイルのPDFをブラウザ上に表示させるプラグインです。",
+        "en":"This plug-in to display PDF of attached file on browser",
+        "zh":"添付ファイルのPDFをブラウザ上に表示させるプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/pdfviewer.js"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}
