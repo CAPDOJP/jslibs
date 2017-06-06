@@ -978,10 +978,10 @@ layerController.prototype={
 			/* 位置調整 */
 			if (this.type=='image')
 			{
-				if (this.artboard.outerWidth(false)<this.container[0].clientWidth) left=((this.artboard.outerWidth(false)-this.width)/2)
-				else left=((this.container[0].clientWidth-this.width-borders.holizontal)/2)+this.container.scrollLeft();
-				if (this.artboard.outerHeight(false)<this.container[0].clientHeight) top=((this.artboard.outerHeight(false)-this.height)/2);
-				else top=((this.container[0].clientHeight-this.height-borders.vertical)/2)+this.container.scrollTop();
+				if (this.artboard.innerWidth()<this.container[0].clientWidth-borders.holizontal) left=((this.artboard.innerWidth()-this.width)/2)
+				else left=((this.container[0].clientWidth-borders.holizontal-this.width)/2)+this.container.scrollLeft();
+				if (this.artboard.innerHeight()<this.container[0].clientHeight-borders.vertical) top=((this.artboard.innerHeight()-this.height)/2);
+				else top=((this.container[0].clientHeight-borders.vertical-this.height)/2)+this.container.scrollTop();
 			}
 			this.center.x=left+(this.width/2);
 			this.center.y=top+(this.height/2);
@@ -1017,8 +1017,8 @@ layerController.prototype={
 			/* 位置・サイズ調整 */
 			if (layerposition.left>0) {adjust.x=layerposition.left;width+=layerposition.left;layerposition.left=0;redraw=true;}
 			if (layerposition.top>0) {adjust.y=layerposition.top;height+=layerposition.top;layerposition.top=0;redraw=true;}
-			if (layerposition.left+width<this.artboard.outerWidth(false)) {width+=this.artboard.outerWidth(false)-(layerposition.left+width);redraw=true;}
-			if (layerposition.top+height<this.artboard.outerHeight(false)) {height+=this.artboard.outerHeight(false)-(layerposition.top+height);redraw=true;}
+			if (layerposition.left+width<this.artboard.innerWidth()) {width+=this.artboard.innerWidth()-(layerposition.left+width);redraw=true;}
+			if (layerposition.top+height<this.artboard.innerHeight()) {height+=this.artboard.innerHeight()-(layerposition.top+height);redraw=true;}
 			if (redraw)
 			{
 				this.baseheight=height;
