@@ -429,6 +429,7 @@ var layerController = function(options){
 	this.zoom=100;
 	this.filters={};
 	this.histories=[];
+	this.center={x:0,y:0};
 	this.down={
 		left:0,
 		top:0
@@ -968,22 +969,38 @@ layerController.prototype={
 		var top=0;
 		var height=this.height;
 		var width=this.width;
+		var borders=this.artboard.borders();
 		var position=this.layerposition();
-		if (zoom!=null)
-		{
-			this.zoom=zoom;
-			this.height=this.baseheight*(this.zoom/100);
-			this.width=this.basewidth*(this.zoom/100);
-		}
+		left=position.left;
+		top=position.top;
 		if (!this.loaded)
 		{
-			left=((this.container[0].clientWidth-this.width)/2)+this.container.scrollLeft();
-			top=((this.container[0].clientHeight-this.height)/2)+this.container.scrollTop();
+			/* 位置調整 */
+			if (this.type=='image')
+			{
+				if (this.artboard.outerWidth(false)<this.container[0].clientWidth) left=((this.artboard.outerWidth(false)-this.width)/2)
+				else left=((this.container[0].clientWidth-this.width-borders.holizontal)/2)+this.container.scrollLeft();
+				if (this.artboard.outerHeight(false)<this.container[0].clientHeight) top=((this.artboard.outerHeight(false)-this.height)/2);
+				else top=((this.container[0].clientHeight-this.height-borders.vertical)/2)+this.container.scrollTop();
+			}
+			this.center.x=left+(this.width/2);
+			this.center.y=top+(this.height/2);
 		}
 		else
 		{
-			left=position.left-((this.width-width)/2);
-			top=position.top-((this.height-height)/2);
+			if (zoom!=null)
+			{
+				this.zoom=zoom;
+				this.height=this.baseheight*(this.zoom/100);
+				this.width=this.basewidth*(this.zoom/100);
+				left=this.center.x-(this.width/2);
+				top=this.center.y-(this.height/2);
+			}
+			else
+			{
+				this.center.x=left+(this.width/2);
+				this.center.y=top+(this.height/2);
+			}
 		}
 		this.layer.css({'left':left.toString()+'px','top':top.toString()+'px','width':this.width.toString()+'px'})
 		this.loaded=true;
@@ -1242,10 +1259,12 @@ var textController = function(options){
 		.append(this.textarea)
 		.append($('<button>Cancel</button>')
 			.css({'display':'inline-block','margin':'0px'})
+			.on('mousedown',function(e){e.stopPropagation();})
 			.on('touchstart click',function(){my.editcancel();})
 		)
 		.append($('<button>OK</button>')
 			.css({'display':'inline-block','margin':'0px 0px 0px 5px'})
+			.on('mousedown',function(e){e.stopPropagation();})
 			.on('touchstart click',function(){my.editend();})
 		)
 		.hide()
@@ -1269,8 +1288,9 @@ var textController = function(options){
 	*/
 	this.layer.on('touchstart mousedown',function(e){
 		var event=((e.type.match(/touch/g)))?e.originalEvent.touches[0]:e;
-		my.down.left=my.layer.offset().left-my.container.offset().left-parseInt(my.container.css('border-left-width'));
-		my.down.top=my.layer.offset().top-my.container.offset().top-parseInt(my.container.css('border-top-width'));
+		var borders=my.container.borders();
+		my.down.left=my.layer.offset().left-my.container.offset().left-borders.left;
+		my.down.top=my.layer.offset().top-my.container.offset().top-borders.top;
 		my.keep.left=event.pageX;
 		my.keep.top=event.pageY;
 		/* ドラッグ開始 */
@@ -1361,19 +1381,21 @@ textController.prototype={
 	/* 編集終了 */
 	editend:function()
 	{
-		var borderholizontal=parseInt(this.textarea.css('border-left-width'))+parseInt(this.textarea.css('border-right-width'));
-		var bordervertical=parseInt(this.textarea.css('border-top-width'))+parseInt(this.textarea.css('border-bottom-width'));
+		var borders={
+			container:this.container.borders(),
+			textarea:this.textarea.borders()
+		};
 		/* イベント発火 */
 		var event=new $.Event('editend',{
 			draw:{
-				left:this.textarea.position().left+parseInt(this.textarea.css('border-left-width')),
-				top:this.textarea.position().top+parseInt(this.textarea.css('border-top-width')),
-				height:this.textarea.outerHeight(false)-bordervertical,
-				width:this.textarea.outerWidth(false)-borderholizontal
+				left:this.textarea.position().left+borders.textarea.left,
+				top:this.textarea.position().top+borders.textarea.top,
+				height:this.textarea.outerHeight(false)-borders.textarea.vertical,
+				width:this.textarea.outerWidth(false)-borders.textarea.holizontal
 			},
 			rect:{
-				left:this.layer.offset().left-this.container.offset().left-parseInt(this.container.css('border-left-width')),
-				top:this.layer.offset().top-this.container.offset().top-parseInt(this.container.css('border-top-width')),
+				left:this.layer.offset().left-this.container.offset().left-borders.container.left,
+				top:this.layer.offset().top-this.container.offset().top-borders.container.top,
 				height:this.layer.outerHeight(false),
 				width:this.layer.outerWidth(false)
 			},
