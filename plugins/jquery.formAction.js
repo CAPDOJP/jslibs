@@ -1302,6 +1302,26 @@ jQuery.fn.positionTop = function(parent){
 }
 /*
 *--------------------------------------------------------------------
+* ボーダー幅取得
+* -------------------------------------------------------------------
+*/
+jQuery.fn.borders = function(){
+	var target=$(this);
+	var borderleft=parseInt(target.css('border-left-width'));
+	var borderright=parseInt(target.css('border-right-width'));
+	var bordertop=parseInt(target.css('border-top-width'));
+	var borderbottom=parseInt(target.css('border-bottom-width'));
+	return {
+		left:borderleft,
+		right:borderright,
+		top:bordertop,
+		bottom:borderbottom,
+		holizontal:borderleft+borderright,
+		vertical:bordertop+borderbottom
+	};
+}
+/*
+*--------------------------------------------------------------------
 * ファイルデータ取得
 * -------------------------------------------------------------------
 */
