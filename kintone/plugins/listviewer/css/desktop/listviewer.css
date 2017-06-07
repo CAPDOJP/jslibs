@@ -9,7 +9,8 @@ table#listviewer tr td,
 table#listviewer tr th{
 	padding:0px 3px;
 	font-size:15px;
-	line-height:25px;
+	height:auto;
+	line-height:30px;
 	vertical-align:top;
     white-space:nowrap;
 }

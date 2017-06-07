@@ -116,13 +116,13 @@ jQuery.noConflict();
 												rows[rowindex].find('td').last().find('button').hide();
 											}
 											$.each(values.value,function(key,values){
-												if (keys.indexOf(key)>-1) setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1),vars.fieldcodes[key],values);
+												if (keys.indexOf(key)>-1) setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1),vars.fieldcodes[key].fieldinfo,values.value);
 											});
 											rowindex++;
 										});
 										break;
 									default:
-										if (keys.indexOf(key)>-1) setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1),vars.fieldcodes[key],values);
+										if (keys.indexOf(key)>-1) setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1),vars.fieldcodes[key].fieldinfo,values.value);
 										break;
 								}
 								rowindex=0;
@@ -189,103 +189,130 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 setup value
 	---------------------------------------------------------------*/
-	function setvalue(cell,fieldinfo,field){
+	function setvalue(cell,fieldinfo,values){
 		var value=null;
 		var unit=(fieldinfo.unit!=null)?fieldinfo.unit:'';
 		var unitPosition=(fieldinfo.unitPosition!=null)?fieldinfo.unitPosition.toUpperCase():'BEFORE';
-		if (field.value!=null)
+		if (values!=null)
 			switch (fieldinfo.type.toUpperCase())
 			{
 				case 'CALC':
-					switch(field.format.toUpperCase())
+					if (values.length!=0)
 					{
-						case 'NUMBER':
-							value=field.value;
-							break;
-						case 'NUMBER_DIGIT':
-							value=parseFloat(field.value).format();
-							break;
-						case 'DATETIME':
-							value=new Date(field.value);
-							value=value.format('Y-m-d H:i');
-							break;
-						case 'DATE':
-							value=new Date(field.value+'T00:00:00+09:00');
-							value=value.format('Y-m-d');
-							break;
-						case 'TIME':
-							value=new Date('1900-01-01T'+field.value+':00+09:00');
-							value=value.format('H:i');
-							break;
-						case 'HOUR_MINUTE':
-							value=field.value;
-							break;
-						case 'DAY_HOUR_MINUTE':
-							value=field.value;
-							break;
+						switch(fieldinfo.format.toUpperCase())
+						{
+							case 'NUMBER':
+								value=values;
+								break;
+							case 'NUMBER_DIGIT':
+								value=parseFloat(values).format();
+								break;
+							case 'DATETIME':
+								value=new Date(values);
+								value=value.format('Y-m-d H:i');
+								break;
+							case 'DATE':
+								value=new Date(values+'T00:00:00+09:00');
+								value=value.format('Y-m-d');
+								break;
+							case 'TIME':
+								value=new Date('1900-01-01T'+values+':00+09:00');
+								value=value.format('H:i');
+								break;
+							case 'HOUR_MINUTE':
+								value=values;
+								break;
+							case 'DAY_HOUR_MINUTE':
+								value=values;
+								break;
+						}
+						if (unitPosition=='BEFORE') value=unit+value;
+						else value=value+unit;
+						cell.text(value);
 					}
-					if (unitPosition=='BEFORE') value=unit+value;
-					else value=value+unit;
-					cell.text(value);
 					break;
 				case 'CATEGORY':
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
-					value=field.value.join('<br>');
-					cell.text(value);
+					if (values.length!=0)
+					{
+						value=values.join('<br>');
+						cell.html(value);
+					}
 					break;
 				case 'CREATOR':
 				case 'MODIFIER':
-					cell.html('<a href="https://'+$(location).attr('host')+'/#/people/user/'+field.value.code+'" target="_blank">'+field.value.name+'</a>');
+					if (values.code.length!=0) cell.html('<a href="https://'+$(location).attr('host')+'/#/people/user/'+values.code+'" target="_blank">'+values.name+'</a>');
 					break;
 				case 'CREATED_TIME':
 				case 'DATETIME':
 				case 'UPDATED_TIME':
-					value=new Date(field.value);
-					cell.text(value.format('Y-m-d H:i'));
+					if (values.length!=0)
+					{
+						value=new Date(values);
+						cell.text(value.format('Y-m-d H:i'));
+					}
 					break;
 				case 'DATE':
-					value=new Date(field.value+'T00:00:00+09:00');
-					cell.text(value.format('Y-m-d'));
+					if (values.length!=0)
+					{
+						value=new Date(values+'T00:00:00+09:00');
+						cell.text(value.format('Y-m-d'));
+					}
 					break;
 				case 'FILE':
+					if (values.length!=0)
+					{
+					}
 					break;
 				case 'LINK':
-					cell.html('<a href="'+field.value+'" target="_blank">'+field.value+'</a>');
+					if (values.length!=0) cell.html('<a href="'+values+'" target="_blank">'+values+'</a>');
 					break;
 				case 'MULTI_LINE_TEXT':
-					cell.html(field.value.replace('\n','<br>'));
+					if (values.length!=0) cell.html(values.replace('\n','<br>'));
 					break;
 				case 'NUMBER':
-					if (field.digit) value=parseFloat(field.value).format();
-					else value=field.value;
-					if (unitPosition=='BEFORE') value=unit+value;
-					else value=value+unit;
-					cell.text(value);
+					if (values.length!=0)
+					{
+						if (fieldinfo.digit) value=parseFloat(values).format();
+						else value=values;
+						if (unitPosition=='BEFORE') value=unit+value;
+						else value=value+unit;
+						cell.text(value);
+					}
 					break;
 				case 'GROUP_SELECT':
 				case 'ORGANIZATION_SELECT':
-					$.each(field.value,function(index){
-						value+='<a href="https://'+$(location).attr('host')+'/#/people/user/'+field.value.code+'" style="display:block" target="_blank">'+field.value.name+'</a>';
-					});
-					cell.html(value);
+					if (values.length!=0)
+					{
+						$.each(values,function(index){
+							value+='<span style="display:block">'+values[index].name+'</span>';
+						});
+						cell.html(value);
+					}
 					break;
 				case 'RICH_TEXT':
-					cell.html(field.value);
+					if (values.length!=0) cell.html(values);
 					break;
 				case 'STATUS_ASSIGNEE':
 				case 'USER_SELECT':
-					$.each(field.value,function(index){
-						value+='<a href="https://'+$(location).attr('host')+'/#/people/user/'+field.value[index].code+'" style="display:block" target="_blank">'+field.value[index].name+'</a>';
-					});
-					cell.html(value);
+					if (values.length!=0)
+					{
+						$.each(values,function(index){
+							value+='<a href="https://'+$(location).attr('host')+'/#/people/user/'+values[index].code+'" style="display:block" target="_blank">'+values[index].name+'</a>';
+						});
+						cell.html(value);
+					}
 					break;
 				case 'TIME':
-					value=new Date('1900-01-01T'+field.value+':00+09:00');
-					cell.text(value.format('H:i'));
+					if (values.length!=0)
+					{
+						value=new Date('1900-01-01T'+values+':00+09:00');
+						cell.text(value.format('H:i'));
+					}
 					break;
 				default:
-					cell.text(field.value);
+					if (values.length!=0) cell.text(values);
 					break;
 			}
 	};

@@ -76,6 +76,12 @@ Date.prototype.format=function(pattern){
 	if (pattern.match(/^Y-m-d H:i$/g)!=null) return year+'-'+month+'-'+day+' '+hour+':'+minute;
 	//year-month-day H:i:s
 	if (pattern.match(/^Y-m-d H:i:s$/g)!=null) return year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;
+	//H
+	if (pattern.match(/^H$/g)!=null) return hour;
+	//H:i
+	if (pattern.match(/^H:i$/g)!=null) return hour+':'+minute;
+	//H:i:s
+	if (pattern.match(/^H:i:s$/g)!=null) return hour+':'+minute+':'+second;
 	return '';
 }
 /*
