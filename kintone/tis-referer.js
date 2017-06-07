@@ -94,14 +94,20 @@ var Referer=function(options){
 	var select=$('<select>').css({
 		'border':'none',
 		'border-radius':'5px',
-		'box-shadow':'0px 0px 1px rgba(0,0,0,0.35) inset,-1px -1px 1px rgba(255,255,255,0.35) inset'
+		'box-shadow':'0px 0px 1px rgba(0,0,0,0.35) inset,-1px -1px 1px rgba(255,255,255,0.35) inset',
+		'height':'30px',
+		'line-height':'30px',
+		'padding':'0px 3px'
 	});
 	var span=$('<span>');
 	var table=$('<table>');
 	var text=$('<input type="text">').css({
-		'border':'1px solid #3498db',
+		'border':'none',
 		'border-radius':'5px',
-		'box-shadow':'0px 0px 1px rgba(0,0,0,0.35) inset,-1px -1px 1px rgba(255,255,255,0.35) inset'
+		'box-shadow':'0px 0px 1px rgba(0,0,0,0.35) inset,-1px -1px 1px rgba(255,255,255,0.35) inset',
+		'height':'30px',
+		'line-height':'30px',
+		'padding':'0px 3px'
 	});
 	/* append elements */
 	this.cover=div.clone(true).css({
