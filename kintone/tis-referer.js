@@ -99,7 +99,7 @@ var Referer=function(options){
 	var span=$('<span>');
 	var table=$('<table>');
 	var text=$('<input type="text">').css({
-		'border':'none',
+		'border':'1px solid #3498db',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 1px rgba(0,0,0,0.35) inset,-1px -1px 1px rgba(255,255,255,0.35) inset'
 	});
