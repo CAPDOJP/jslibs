@@ -82,6 +82,8 @@ var Referer=function(options){
 	/* property */
 	this.datasource=options.datasource;
 	this.displaytext=options.displaytext;
+	this.parambuttons=options.buttons;
+	this.paramsearches=options.searches;
 	this.buttons=[];
 	this.callback=null;
 	/* valiable */
@@ -173,30 +175,24 @@ var Referer=function(options){
 		'width':'100%',
 		'z-index':'888'
 	});
-	/* valiable */
-	var buttons=this.buttons;
-	var containerblock=this.container;
-	var contentsblock=this.contents;
-	var buttonblock=this.buttonblock;
-	var searchblock=this.searchblock;
 	/* append elements */
-	$.each(options.buttons,function(index){
+	$.each(this.parambuttons,function(index){
 		var buttonvalue=$.extend({
 			id:'',
 			class:'',
 			text:'',
 			callback:null
-		},options.buttons[index]);
-		buttons.push(
+		},my.parambuttons[index]);
+		my.buttons.push(
 			button.clone(true)
 			.attr('id',buttonvalue.id)
 			.addClass(buttonvalue.class)
 			.text(buttonvalue.text)
 			.on('click',function(){if (buttonvalue.callback!=null) buttonvalue.callback();})
 		);
-		buttonblock.append(buttons[index]);
+		my.buttonblock.append(my.buttons[index]);
 	});
-	$.each(options.searches,function(index){
+	$.each(this.paramsearches,function(index){
 		var searchvalue=$.extend({
 			id:'',
 			class:'',
@@ -207,7 +203,7 @@ var Referer=function(options){
 			text:'',
 			align:'left',
 			callback:null
-		},options.searches[index]);
+		},my.paramsearches[index]);
 		var searchfield=null;
 		switch (searchvalue.type)
 		{
@@ -230,7 +226,7 @@ var Referer=function(options){
 				break;
 		}
 		if (searchvalue.callback!=null) searchfield.on('change',function(){searchvalue.callback(searchfield);});
-		searchblock.append(
+		my.searchblock.append(
 			label.clone(true).css({
 				'display':'inline-block'
 			})
@@ -238,9 +234,9 @@ var Referer=function(options){
 			.append(searchfield)
 		);
 	});
-	if (options.searches.length!=0)
+	if (this.paramsearches.length!=0)
 	{
-		searchblock.append(
+		this.searchblock.append(
 			button.clone(true)
 			.addClass(options.searchbuttonclass)
 			.text(options.searchbuttontext)
@@ -249,11 +245,11 @@ var Referer=function(options){
 				my.search();
 			})
 		);
-		$('input[type=text],select',searchblock).on('keydown',function(e){
+		$('input[type=text],select',this.searchblock).on('keydown',function(e){
 			var code=e.keyCode||e.which;
 			if (code==13)
 			{
-				var targets=containerblock.find('button,input[type=text],select,table');
+				var targets=my.container.find('button,input[type=text],select,table');
 				var total=targets.length;
 				var index=targets.index(this);
 				if (e.shiftKey)
@@ -273,19 +269,23 @@ var Referer=function(options){
 	}
 	this.contents.append(this.listblock);
 	this.container.append(this.contents);
-	if (options.buttons.length!=0) this.container.append(this.buttonblock);
-	if (options.searches.length!=0) this.container.append(this.searchblock);
+	if (this.parambuttons.length!=0) this.container.append(this.buttonblock);
+	if (this.paramsearches.length!=0) this.container.append(this.searchblock);
 	this.cover.append(this.container);
 	options.container.append(this.cover);
 	/* adjust container height */
 	$(window).on('load resize',function(){
-		contentsblock.css({
-			'height':(containerblock.height()-searchblock.outerHeight(true)-buttonblock.outerHeight(true)).toString()+'px',
-			'margin-top':(searchblock.outerHeight(true)).toString()+'px'
+		var height=my.container.height();
+		var margin=(my.paramsearches.length!=0)?my.searchblock.outerHeight(true):0;
+		if (my.parambuttons.length!=0) height-=my.buttonblock.outerHeight(true);
+		if (my.paramsearches.length!=0) height-=my.searchblock.outerHeight(true);
+		my.contents.css({
+			'height':height.toString()+'px',
+			'margin-top':margin.toString()+'px'
 		});
 	});
 	/* reload referer */
-	my.search();
+	this.search();
 };
 Referer.prototype={
 	/* reload referer */
@@ -354,11 +354,13 @@ Referer.prototype={
 			buttons:{},
 			callback:null
 		},options);
-		var buttons=this.buttons;
+		var my=this;
+		var height=0;
+		var margin=0;
 		var lists=this.listblock.find('tbody').find('tr').find('td');
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
-			$.each(buttons,function(index){
+			$.each(my.buttons,function(index){
 				if ($(this).attr('id')==key)
 				{
 					$(this).off('click');
@@ -374,9 +376,13 @@ Referer.prototype={
 		this.callback=options.callback;
 		this.cover.show();
 		/* adjust container height */
+		height=this.container.height();
+		margin=(this.paramsearches.length!=0)?this.searchblock.outerHeight(true):0;
+		if (this.parambuttons.length!=0) height-=this.buttonblock.outerHeight(true);
+		if (this.paramsearches.length!=0) height-=this.searchblock.outerHeight(true);
 		this.contents.css({
-			'height':(this.container.height()-this.searchblock.outerHeight(true)-this.buttonblock.outerHeight(true)).toString()+'px',
-			'margin-top':(this.searchblock.outerHeight(true)).toString()+'px'
+			'height':height.toString()+'px',
+			'margin-top':margin.toString()+'px'
 		});
 		/* focus in search field */
 		var searchfields=this.searchblock.find('input[type=text],select');
