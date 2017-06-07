@@ -91,10 +91,10 @@ var Referer=function(options){
 	});
 	var button=$('<button>');
 	var label=$('<label>');
-	var select=$('<select>');
+	var select=$('<select>').css({'border-radius':'5px'});
 	var span=$('<span>');
 	var table=$('<table>');
-	var text=$('<input type="text">');
+	var text=$('<input type="text">').css({'border-radius':'5px'});
 	/* append elements */
 	this.cover=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
