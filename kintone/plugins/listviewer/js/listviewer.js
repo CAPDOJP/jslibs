@@ -20,6 +20,7 @@ jQuery.noConflict();
 		header:null,
 		rows:null,
 		template:null,
+		thumbnail:null,
 		columns:{},
 		config:{},
 		fieldcodes:{}
@@ -45,6 +46,43 @@ jQuery.noConflict();
 		vars.header=$('<tr>');
 		vars.rows=$('<tbody>');
 		vars.template=$('<tr>');
+		vars.thumbnail=$('<div class="imageviewer">').css({
+			'background-color':'rgba(0,0,0,0.5)',
+			'display':'none',
+			'height':'100%',
+			'left':'0px',
+			'position':'fixed',
+			'top':'0px',
+			'width':'100%',
+			'z-index':'999999'
+		})
+		.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png">').css({
+			'cursor':'pointer',
+			'display':'block',
+			'height':'30px',
+			'margin':'0px',
+			'padding':'0px',
+			'position':'absolute',
+			'right':'5px',
+			'top':'5px',
+			'width':'30px'
+		}))
+		.append($('<img class="listviewer-image">').css({
+			'bottom':'0',
+			'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+			'display':'block',
+			'height':'auto',
+			'left':'0',
+			'margin':'auto',
+			'max-height':'calc(100% - 80px)',
+			'max-width':'calc(100% - 80px)',
+			'padding':'0px',
+			'position':'absolute',
+			'right':'0',
+			'top':'0',
+			'width':'auto'
+		}))
+		.on('click',function(){vars.thumbnail.hide();});
 		/* create grid */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			var fieldinfo=resp.properties;
@@ -162,6 +200,7 @@ jQuery.noConflict();
 						vars.grid.append($('<thead>').append(vars.header));
 						vars.grid.append(vars.rows);
 						vars.container.empty().append(vars.grid);
+						$('body').append(vars.thumbnail);
 				    }
 				})
 			});
@@ -186,6 +225,27 @@ jQuery.noConflict();
 				break;
 		}
 	};
+	/*---------------------------------------------------------------
+	 download file
+	---------------------------------------------------------------*/
+	function download(fileKey){
+		return new Promise(function(resolve,reject)
+		{
+			var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+fileKey;
+			var xhr=new XMLHttpRequest();
+			xhr.open('GET',url);
+			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+			xhr.responseType='blob';
+			xhr.onload=function(){
+				if (xhr.status===200) resolve(xhr.response);
+				else reject(Error('File download error:' + xhr.statusText));
+			};
+			xhr.onerror=function(){
+				reject(Error('There was a network error.'));
+			};
+			xhr.send();
+		});
+	}
 	/*---------------------------------------------------------------
 	 setup value
 	---------------------------------------------------------------*/
@@ -242,7 +302,7 @@ jQuery.noConflict();
 					break;
 				case 'CREATOR':
 				case 'MODIFIER':
-					if (values.code.length!=0) cell.html('<a href="https://'+$(location).attr('host')+'/#/people/user/'+values.code+'" target="_blank">'+values.name+'</a>');
+					if (values.code.length!=0) cell.html('<a href="https://'+$(location).attr('host')+'/k/#/people/user/'+values.code+'" target="_blank">'+values.name+'</a>');
 					break;
 				case 'CREATED_TIME':
 				case 'DATETIME':
@@ -263,10 +323,62 @@ jQuery.noConflict();
 				case 'FILE':
 					if (values.length!=0)
 					{
+						value=[];
+						$.each(values,function(index){
+							switch(values[index].contentType)
+							{
+								case 'image/bmp':
+								case 'image/gif':
+								case 'image/jpeg':
+								case 'image/png':
+									value.push($('<img src="" class="listviewer-thumbnail" alt="'+values[index].name+'" title="'+values[index].name+'" />')
+										.on('click',function(e){
+											vars.thumbnail.find('.listviewer-image').attr('src',$(this).attr('src'));
+											vars.thumbnail.show();
+										})
+									);
+									download(values[index].fileKey).then(function(blob){
+										var url=window.URL || window.webkitURL;
+										var image=url.createObjectURL(blob);
+										value[index].attr('src',url.createObjectURL(blob));
+									});
+									break;
+								default:
+									value.push($('<a href="./">'+values[index].name+'</a>')
+										.on('click',function(e){
+											download(values[index].fileKey).then(function(blob){
+												var url=window.URL || window.webkitURL;
+												var a=document.createElement('a');
+												a.href=url.createObjectURL(blob);
+												a.download=values[index].name;
+												a.click();
+											});
+											return false;
+										})
+									);
+									break;
+							}
+						});
+						$.each(value,function(index){cell.append(value[index]);});
 					}
 					break;
 				case 'LINK':
-					if (values.length!=0) cell.html('<a href="'+values+'" target="_blank">'+values+'</a>');
+					if (values.length!=0)
+					{
+						switch(fieldinfo.protocol.toUpperCase())
+						{
+							case 'CALL':
+								value='<a href="tel:'+values+'" target="_blank">'+values+'</a>';
+								break;
+							case 'MAIL':
+								value='<a href="mailto:'+values+'" target="_blank">'+values+'</a>';
+								break;
+							case 'WEB':
+								value='<a href="'+values+'" target="_blank">'+values+'</a>';
+								break;
+						}
+						cell.html(value);
+					}
 					break;
 				case 'MULTI_LINE_TEXT':
 					if (values.length!=0) cell.html(values.replace('\n','<br>'));
@@ -285,8 +397,9 @@ jQuery.noConflict();
 				case 'ORGANIZATION_SELECT':
 					if (values.length!=0)
 					{
+						value='';
 						$.each(values,function(index){
-							value+='<span style="display:block">'+values[index].name+'</span>';
+							value+='<span>'+values[index].name+'</span>';
 						});
 						cell.html(value);
 					}
@@ -298,8 +411,9 @@ jQuery.noConflict();
 				case 'USER_SELECT':
 					if (values.length!=0)
 					{
+						value='';
 						$.each(values,function(index){
-							value+='<a href="https://'+$(location).attr('host')+'/#/people/user/'+values[index].code+'" style="display:block" target="_blank">'+values[index].name+'</a>';
+							value+='<a href="https://'+$(location).attr('host')+'/k/#/people/user/'+values[index].code+'" target="_blank">'+values[index].name+'</a>';
 						});
 						cell.html(value);
 					}

@@ -132,7 +132,7 @@ var Referer=function(options){
 		'z-index':'777'
 	});
 	this.buttonblock=div.clone(true).css({
-		'background-color':'rgba(0,0,0,0.5)',
+		'background-color':'#3498db',
 		'border-bottom-left-radius':'5px',
 		'border-bottom-right-radius':'5px',
 		'bottom':'0px',
@@ -148,7 +148,7 @@ var Referer=function(options){
 		'width':'100%'
 	}).append('<tbody>');
 	this.searchblock=div.clone(true).css({
-		'background-color':'rgba(0,0,0,0.5)',
+		'background-color':'#3498db',
 		'border-top-left-radius':'5px',
 		'border-top-right-radius':'5px',
 		'left':'0px',

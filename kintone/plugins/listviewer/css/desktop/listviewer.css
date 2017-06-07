@@ -1,16 +1,29 @@
 /* individual style */
 table#listviewer tr.odd{
-	background-color:transparent;
+	background-color:#FFFFFF;
 }
 table#listviewer tr.even{
-	background-color:#E9FBFD;
+	background-color:#EFFAFE;
 }
 table#listviewer tr td,
 table#listviewer tr th{
 	padding:0px 3px;
-	font-size:15px;
+	font-size:14px;
 	height:auto;
 	line-height:30px;
+    min-width:auto;
 	vertical-align:top;
     white-space:nowrap;
+    width:auto;
+}
+table#listviewer tr td a,
+table#listviewer tr td span,
+table#listviewer tr td img{
+	display:block;
+}
+table#listviewer img.listviewer-thumbnail{
+	border:none;
+	cursor:pointer;
+	margin:3px 0px;
+	height:54px;
 }
