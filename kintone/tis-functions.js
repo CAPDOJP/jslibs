@@ -61,13 +61,33 @@ Date.prototype.format=function(pattern){
 	var year=this.getFullYear();
 	var month=('0'+(this.getMonth()+1)).slice(-2);
 	var day=('0'+this.getDate()).slice(-2);
+	var hour=('0'+this.getHours()).slice(-2);
+	var minute=('0'+this.getMinutes()).slice(-2);
+	var second=('0'+this.getSeconds()).slice(-2);
 	//year
 	if (pattern.match(/^Y$/g)!=null) return year;
 	//year-month
 	if (pattern.match(/^Y-m$/g)!=null) return year+'-'+month;
 	//year-month-day
 	if (pattern.match(/^Y-m-d$/g)!=null) return year+'-'+month+'-'+day;
+	//year-month-day H
+	if (pattern.match(/^Y-m-d H$/g)!=null) return year+'-'+month+'-'+day+' '+hour;
+	//year-month-day H:i
+	if (pattern.match(/^Y-m-d H:i$/g)!=null) return year+'-'+month+'-'+day+' '+hour+':'+minute;
+	//year-month-day H:i:s
+	if (pattern.match(/^Y-m-d H:i:s$/g)!=null) return year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;
 	return '';
+}
+/*
+*--------------------------------------------------------------------
+* number format
+*--------------------------------------------------------------------
+* parameters
+* pattern	:format pattern
+* -------------------------------------------------------------------
+*/
+Number.prototype.format = function(){
+	return String(this).replace(/(\d)(?=(\d\d\d)+(?!\d))/g,'$1,');
 }
 /*
 *--------------------------------------------------------------------

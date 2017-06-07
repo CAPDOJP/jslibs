@@ -1,0 +1,46 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone リストビューワープラグイン",
+        "en":"kintone List Viewer plug-in",
+        "zh":"kintone リストビューワープラグイン"
+    },
+    "description":{
+        "ja":"テーブルを含むすべてのフィールドを一覧表示するプラグインです。",
+        "en":"This plug-in to list all the fields including the table",
+        "zh":"テーブルを含むすべてのフィールドを一覧表示するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/listviewer.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/desktop/common.css",
+            "css/desktop/listviewer.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}
