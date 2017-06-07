@@ -166,7 +166,7 @@ var Referer=function(options){
 		'border-top-left-radius':'5px',
 		'border-top-right-radius':'5px',
 		'left':'0px',
-		'padding':'5px',
+		'padding':'10px 5px',
 		'position':'absolute',
 		'text-align':'center',
 		'top':'0px',
