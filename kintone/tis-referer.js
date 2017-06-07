@@ -94,11 +94,15 @@ var Referer=function(options){
 	var select=$('<select>').css({
 		'border':'none',
 		'border-radius':'5px',
-		'box-shadow':'0px 0px 1px rgba(0,0,0,0.35) inset,-1px -1px 1px rgba(255,255,255,0.35) inset',
+		'box-shadow':'0px 0px 1px rgba(0,0,0,0.35) inset,-1px -1px 1px rgba(255,255,255,0.35) inset'
 	});
 	var span=$('<span>');
 	var table=$('<table>');
-	var text=$('<input type="text">').css({'border-radius':'5px'});
+	var text=$('<input type="text">').css({
+		'border':'none',
+		'border-radius':'5px',
+		'box-shadow':'0px 0px 1px rgba(0,0,0,0.35) inset,-1px -1px 1px rgba(255,255,255,0.35) inset'
+	});
 	/* append elements */
 	this.cover=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
