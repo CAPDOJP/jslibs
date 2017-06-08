@@ -3,9 +3,9 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone リストビューワープラグイン",
+        "ja":"kintone テーブルデータ一括表示プラグイン",
         "en":"kintone List Viewer plug-in",
-        "zh":"kintone リストビューワープラグイン"
+        "zh":"kintone テーブルデータ一括表示プラグイン"
     },
     "description":{
         "ja":"テーブルを含むすべてのフィールドを一覧表示するプラグインです。",

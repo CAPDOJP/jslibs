@@ -7,14 +7,25 @@ table#listviewer tr.even{
 }
 table#listviewer tr td,
 table#listviewer tr th{
-	padding:0px 3px;
+	padding:0px;
 	font-size:14px;
 	height:auto;
 	line-height:30px;
-    min-width:auto;
+	vertical-align:top;
+}
+table#listviewer tr td.adjust,
+table#listviewer tr th.adjust{
+	cursor:col-resize;
+}
+table#listviewer tr td div,
+table#listviewer tr th div{
+	box-sizing:border-box;
+    overflow:hidden;
+	padding:0px 3px;
+	text-overflow:'';
 	vertical-align:top;
     white-space:nowrap;
-    width:auto;
+	width:100%;
 }
 table#listviewer tr td a,
 table#listviewer tr td span,

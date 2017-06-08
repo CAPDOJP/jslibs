@@ -16,11 +16,21 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		container:null,
+		drag:{
+			capture:false,
+			cells:[],
+			keep:{
+				column:0,
+				container:0,
+				position:0
+			}
+		},
 		grid:null,
 		header:null,
 		rows:null,
 		template:null,
 		thumbnail:null,
+		containers:[],
 		columns:{},
 		config:{},
 		fieldcodes:{}
@@ -154,13 +164,13 @@ jQuery.noConflict();
 												rows[rowindex].find('td').last().find('button').hide();
 											}
 											$.each(values.value,function(key,values){
-												if (keys.indexOf(key)>-1) setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1),vars.fieldcodes[key].fieldinfo,values.value);
+												if (keys.indexOf(key)>-1) setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1).find('div'),vars.fieldcodes[key].fieldinfo,values.value);
 											});
 											rowindex++;
 										});
 										break;
 									default:
-										if (keys.indexOf(key)>-1) setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1),vars.fieldcodes[key].fieldinfo,values.value);
+										if (keys.indexOf(key)>-1) setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1).find('div'),vars.fieldcodes[key].fieldinfo,values.value);
 										break;
 								}
 								rowindex=0;
@@ -201,6 +211,60 @@ jQuery.noConflict();
 						vars.grid.append(vars.rows);
 						vars.container.empty().append(vars.grid);
 						$('body').append(vars.thumbnail);
+						/* append fix containers */
+						$.each(vars.grid.parents(),function(index){
+							var check=$(this).attr('style');
+							if (check)
+								if (check.indexOf(vars.grid.width().toString()+'px')>-1) vars.containers.push($(this));
+						});
+						if (vars.containers.length==0) vars.containers.push(vars.container);
+						/* mouse events */
+						$(vars.grid).on('mousemove','td,th',function(e){
+							if (vars.drag.capture) return;
+							var left=e.pageX-$(this).offset().left;
+							var hit=true;
+							if (left<$(this).outerWidth(false)-5) hit=false;
+							if (left>$(this).outerWidth(false)) hit=false;
+							if (hit) $(this).addClass('adjust');
+							else $(this).removeClass('adjust');
+						});
+						$(vars.grid).on('mousedown','td,th',function(e){
+							if (!$(this).hasClass('adjust')) return;
+							vars.drag.capture=true;
+							vars.drag.keep.column=$(this).outerWidth(false);
+							vars.drag.keep.container=vars.containers[0].outerWidth(false);
+							vars.drag.keep.position=e.pageX;
+							/* setup resize column */
+							vars.drag.cells=[];
+							$.each($('td,th',vars.grid),function(index){
+								if (e.pageX>$(this).offset().left && e.pageX<$(this).offset().left+$(this).outerWidth(false)) vars.drag.cells.push($(this));
+							});
+							e.stopPropagation();
+							e.preventDefault();
+						});
+						$(window).on('mousemove',function(e){
+							if (!vars.drag.capture) return;
+							var width=0;
+							width=vars.drag.keep.column+e.pageX-vars.drag.keep.position;
+							if (width<15) width=15;
+							/* resize column */
+							$.each(vars.drag.cells,function(index){
+								vars.drag.cells[index].css({'width':width.toString()+'px'});
+								vars.drag.cells[index].find('div').css({'width':width.toString()+'px'});
+							});
+							/* resize container */
+							$.each(vars.containers,function(index){
+								vars.containers[index].css({'width':(vars.drag.keep.container-vars.drag.keep.column+width).toString()+'px'});
+							});
+							e.stopPropagation();
+							e.preventDefault();
+						});
+						$(window).on('mouseup',function(e){
+							if (!vars.drag.capture) return;
+							vars.drag.capture=false;
+							e.stopPropagation();
+							e.preventDefault();
+						});
 				    }
 				})
 			});
@@ -216,8 +280,8 @@ jQuery.noConflict();
 				$.each(fieldinfo.fields,function(key,values){addcolumns(values,true);});
 				break;
 			default:
-				vars.header.append($('<th>').text(fieldinfo.label));
-				vars.template.append($('<td>'));
+				vars.header.append($('<th>').append($('<div>').text(fieldinfo.label)));
+				vars.template.append($('<td>').append($('<div>')));
 				vars.fieldcodes[fieldinfo.code]={
 					isTable:istable,
 					fieldinfo:fieldinfo
