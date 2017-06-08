@@ -170,6 +170,9 @@ jQuery.fn.formAction = function(options){
 							if ($('div#loading')!=null) $('div#loading').css('display','none');
 						},
 						success:function(json){
+							//値初期化
+							target.val('');
+							target.replaceWith(target.clone(true));
 							if ('error' in json)
 								if (json.error.length!=0)
 								{
