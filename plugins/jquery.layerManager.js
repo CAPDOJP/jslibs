@@ -329,7 +329,7 @@ layerManager.prototype={
 					context.translate((position.left+(layer.width/2))*-1,(position.top+(layer.height/2))*-1);
 				}
 				context.filter=layer.createfilters();
-				context.globalAlpha=layer.layer.css('opacity');
+				context.globalAlpha=layer.opacity;
 				context.globalCompositeOperation=layer.blendmode;
 				context.drawImage(
 					layer.layer[0],
@@ -426,6 +426,7 @@ var layerController = function(options){
 	this.degrees=0;
 	this.gesture=false;
 	this.loaded=(options.layer!=null);
+	this.opacity=1;
 	this.operation='move';
 	this.zoom=100;
 	this.filters={};
@@ -455,8 +456,8 @@ var layerController = function(options){
 	{
 		this.layer=$('<canvas height="'+this.height+'" width="'+this.width+'">').css({
 			'display':'block',
-			'mix-blend-mode':'normal',
-			'opacity':'1',
+			'mix-blend-mode':this.blendmode,
+			'opacity':this.opacity.toString(),
 			'position':'absolute',
 			'transition':'none'
 		});
@@ -749,11 +750,6 @@ var layerController = function(options){
 };
 /* 関数定義 */
 layerController.prototype={
-	/* 描画モード設定 */
-	blending:function(blendmode){
-		this.blendmode=blendmode;
-		this.layer.css({'mix-blend-mode':blendmode});
-	},
 	/* 複製 */
 	clone:function(){
 		var ctrlLayer=new layerController({
@@ -829,17 +825,6 @@ layerController.prototype={
 		});
 		if (filter.length==0) filter='none';
 		return filter;
-	},
-	/* フィルタ設定 */
-	filtering:function(filters){
-		var filter='';
-		this.filters=filters;
-		filter=this.createfilters();
-		this.layer.css({
-			'-webkit-filter':filter,
-			'-moz-filter':filter,
-			'filter':filter
-		});
 	},
 	/* 領域内判定 */
 	hit:function(x,y)
@@ -1010,6 +995,27 @@ layerController.prototype={
 		}
 		this.layer.css({'left':left.toString()+'px','top':top.toString()+'px','width':this.width.toString()+'px'})
 		this.loaded=true;
+	},
+	/* 描画モード設定 */
+	resetblendmode:function(blendmode){
+		this.blendmode=blendmode;
+		this.layer.css({'mix-blend-mode':blendmode});
+	},
+	/* フィルタ設定 */
+	resetfilter:function(filters){
+		var filter='';
+		this.filters=filters;
+		filter=this.createfilters();
+		this.layer.css({
+			'-webkit-filter':filter,
+			'-moz-filter':filter,
+			'filter':filter
+		});
+	},
+	/* 不透明度設定 */
+	resetopacity:function(opacity){
+		this.opacity=opacity;
+		this.layer.css({'opacity':opacity.toString()});
 	},
 	/* レイヤーリサイズ */
 	resize:function(){
