@@ -330,7 +330,7 @@ layerManager.prototype={
 				}
 				context.filter=layer.createfilters();
 				context.globalAlpha=layer.layer.css('opacity');
-				context.globalCompositeOperation=layer.layer.css('mix-blend-mode');
+				context.globalCompositeOperation=layer.blendmode;
 				context.drawImage(
 					layer.layer[0],
 					0,
@@ -419,6 +419,7 @@ var layerController = function(options){
 	this.gesturezoom=options.gesturezoom;
 	this.wheelzoom=options.wheelzoom;
 	this.zoomcallback=options.zoomcallback;
+	this.blendmode='normal';
 	this.bottomlayer=null;
 	this.capture=false;
 	this.context=null;
@@ -748,6 +749,11 @@ var layerController = function(options){
 };
 /* 関数定義 */
 layerController.prototype={
+	/* 描画モード設定 */
+	blending:function(blendmode){
+		this.blendmode=blendmode;
+		this.layer.css({'mix-blend-mode':blendmode});
+	},
 	/* 複製 */
 	clone:function(){
 		var ctrlLayer=new layerController({
