@@ -29,7 +29,6 @@ var RouteMap=function(options){
 		'box-sizing':'border-box'
 	});
 	/* keep parameters */
-	this.mapcontainer=options.container;
 	this.needclose=options.needclose;
 	this.needroute=options.needroute;
 	this.loadedcallback=options.loadedcallback;
@@ -72,7 +71,7 @@ var RouteMap=function(options){
 	}));
 	this.container.append(this.contents);
 	if (this.needclose) this.container.append(this.buttonblock);
-	this.mapcontainer.append(this.container);
+	options.container.append(this.container);
 	/* setup google map */
 	var api=$('<script>');
 	api.attr('type','text/javascript');
