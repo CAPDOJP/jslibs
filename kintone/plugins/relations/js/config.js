@@ -48,12 +48,27 @@ jQuery.noConflict();
 				else target.insertAfter(row);
 			}
 			target.find('button#removerelation').show();
+		},
+		loaddatas:function(callback){
+			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
+				/* setup app lists */
+				$.each(resp.apps,function(index,values){
+					if (values.appId!=kintone.app.getId())
+					{
+				    	$('select#relationapp').append($('<option>').attr('value',values.appId).text(values.name));
+						vars.appNames[values.appId]=values.name;
+					}
+					vars.offset++;
+				})
+				if (resp.apps.length==100) functions.loaddatas(callback);
+				else callback();
+			},function(error){});
 		}
 	};
 	/*---------------------------------------------------------------
 	 initialize fields
 	---------------------------------------------------------------*/
-	loaddatas(function(){
+	functions.loaddatas(function(){
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			/* setup field lists */
 			$.each(resp.properties,function(key,values){
@@ -290,22 +305,4 @@ jQuery.noConflict();
     $('button#cancel').on('click',function(e){
         history.back();
     });
-	/*---------------------------------------------------------------
-	 all data load
-	---------------------------------------------------------------*/
-	function loaddatas(callback){
-		kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
-			/* setup app lists */
-			$.each(resp.apps,function(index,values){
-				if (values.appId!=kintone.app.getId())
-				{
-			    	$('select#relationapp').append($('<option>').attr('value',values.appId).text(values.name));
-					vars.appNames[values.appId]=values.name;
-				}
-				vars.offset++;
-			})
-			if (resp.apps.length==100) loaddatas(callback);
-			else callback();
-		},function(error){});
-	}
 })(jQuery,kintone.$PLUGIN_ID);

@@ -15,10 +15,15 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
+		currentlocation:null,
 		map:null,
-		config:{}
+		config:{},
+		markers:[]
 	};
 	var events={
+		lists:[
+			'app.record.index.show'
+		],
 		show:[
 			'app.record.create.show',
 			'app.record.edit.show',
@@ -77,6 +82,59 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
+	kintone.events.on(events.lists,function(event){
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if (!vars.config) return event;
+		/* check display map */
+		if (!'map' in vars.config) return event;
+		if (vars.config['map']!='1') return event;
+		/* create currentlocation box */
+		vars.currentlocation=$('<label>')
+		.append('<input type="checkbox" id="addcurrentlocation">').on('change',function(e){
+			if ($(this).prop('checked'))
+			{
+				vars.map.currentlocation({callback:function(latlng){
+					var markers=vars.markers;
+					/* start from current location */
+					markers.push({
+						label:'現在地',
+						lat:latlng.lat(),
+						lng:latlng.lng()
+					});
+					/* display map */
+					vars.map.reloadmap({markers:markers});
+				}});
+			}
+			else
+			{
+				/* display map */
+				vars.map.reloadmap({markers:vars.markers});
+			}
+		})
+		.append('<button type="button">現在地を追加</button>');
+		/* create map box */
+		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'}).routemap(vars.config['apikey'],false,false);
+		/* create map */
+		$.each(event.records,function(index,values){
+			var record=values
+			var lat=parseFloat('0'+record[vars.config['lat']].value);
+			var lng=parseFloat('0'+record[vars.config['lng']].value);
+			if (lat+lng!=0)
+				vars.markers.push({
+					colors:1,
+					label:(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value,
+					lat:lat,
+					lng:lng
+				});
+		});
+		if (vars.markers.length==0) return event;
+		/* display map */
+		vars.map.reloadmap({markers:vars.markers});
+		/* append elements */
+		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.map[0]);
+		return event;
+	});
 	kintone.events.on(events.show,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;

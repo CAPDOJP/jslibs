@@ -21,42 +21,47 @@ jQuery.noConflict();
 			'SINGLE_LINE_TEXT'
 		]
 	};
+	var limit=500;
+	var functions={
+		loaddatas:function(appkey,callback){
+	        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString()},function(resp){
+	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				vars.offset[appkey]+=limit;
+				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
+				else callback();
+			},function(error){});
+		}
+	};
 	/*---------------------------------------------------------------
 	 initialize fields
 	---------------------------------------------------------------*/
-	vars.apps[kintone.app.getId()]=null;
 	vars.offset[kintone.app.getId()]=0;
 	vars.progress=$('<div id="progress">')
 	.append($('<div class="message">'))
 	.append($('<div class="progressbar">').append($('<div class="progresscell">')));
 	$('body').append(vars.progress);
-	$.loaddatas(
-		2,
-		vars.offset[kintone.app.getId()],
-		kintone.app.getId(),
-		vars.apps[kintone.app.getId()],
-		function(){
-			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
-				vars.fieldinfos=$.fieldparallelize(resp.properties);
-				/* setup field lists */
-				$.each(vars.fieldinfos,function(key,values){
-					if ($.inArray(values.type,vars.types)>-1)
+	functions.loaddatas(kintone.app.getId(),function(){
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+			vars.fieldinfos=$.fieldparallelize(resp.properties);
+			/* setup field lists */
+			$.each(vars.fieldinfos,function(key,values){
+				if ($.inArray(values.type,vars.types)>-1)
+				{
+					if (values.lookup)
 					{
-						if (values.lookup)
-						{
-							$('select#fromlookupfrom').append($('<option>').attr('value',values.code).text(values.label));
-							$('select#tolookupto').append($('<option>').attr('value',values.code).text(values.label));
-						}
-						else
-						{
-							$('select#fromlookupto').append($('<option>').attr('value',values.code).text(values.label));
-							$('select#tolookupfrom').append($('<option>').attr('value',values.code).text(values.label));
-						}
+						$('select#fromlookupfrom').append($('<option>').attr('value',values.code).text(values.label));
+						$('select#tolookupto').append($('<option>').attr('value',values.code).text(values.label));
 					}
-				});
-			},function(error){});
-		}
-	);
+					else
+					{
+						$('select#fromlookupto').append($('<option>').attr('value',values.code).text(values.label));
+						$('select#tolookupfrom').append($('<option>').attr('value',values.code).text(values.label));
+					}
+				}
+			});
+		},function(error){});
+	});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/

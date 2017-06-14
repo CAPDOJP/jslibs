@@ -22,7 +22,7 @@ jQuery.noConflict();
 			{
 				case 'NUMBER':
 					/* exclude lookup */
-					if (!values.relatedApp)
+					if (!values.lookup)
 					{
 						/* check scale */
 						if (values.displayScale)
@@ -35,7 +35,11 @@ jQuery.noConflict();
 					break;
 				case 'SINGLE_LINE_TEXT':
 					/* exclude lookup */
-					if (!values.relatedApp) $('select#address').append($('<option>').attr('value',values.code).text(values.label));
+					if (!values.lookup)
+					{
+						$('select#address').append($('<option>').attr('value',values.code).text(values.label));
+						$('select#information').append($('<option>').attr('value',values.code).text(values.label));
+					}
 					break;
 				case 'SPACER':
 					$('select#spacer').append($('<option>').attr('value',values.elementId).text(values.elementId));
@@ -47,6 +51,9 @@ jQuery.noConflict();
 	        	$('select#lat').val(config['lat']);
 	        	$('select#lng').val(config['lng']);
 	        	$('select#spacer').val(config['spacer']);
+	        	$('select#information').val(config['information']);
+	        	$('input#apikey').val(config['apikey']);
+	        	if (config['map']=='1') $('input#map').prop('checked',true);
 	        }
 		});
 	},function(error){});
@@ -81,11 +88,22 @@ jQuery.noConflict();
 	    	swal('Error!','緯度表示フィールドと経度表示フィールドは異なるフィールドを選択して下さい。','error');
 	    	return;
 	    }
+	    if ($('input#map').prop('checked'))
+	    {
+		    if ($('input#apikey').val()=='')
+		    {
+		    	swal('Error!','Google Maps APIキーを入力して下さい。','error');
+		    	return;
+		    }
+	    }
 		/* setup config */
         config['address']=$('select#address').val();
         config['lat']=$('select#lat').val();
         config['lng']=$('select#lng').val();
         config['spacer']=$('select#spacer').val();
+        config['map']=($('input#map').prop('checked'))?'1':'0';
+        config['information']=$('select#information').val();
+        config['apikey']=$('input#apikey').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

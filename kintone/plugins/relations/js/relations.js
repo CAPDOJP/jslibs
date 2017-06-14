@@ -26,7 +26,17 @@ jQuery.noConflict();
 			'app.record.edit.show'
 		]
 	};
+	var limit=500;
 	var functions={
+		loaddatas:function(appkey){
+	        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString()},function(resp){
+	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				vars.offset[appkey]+=limit;
+				if (resp.records.length==limit) functions.loaddatas(appkey);
+				else vars.loaded++;
+			},function(error){});
+		},
 		/* related data acquisition */
 		relations:function(options){
 			var options=$.extend({
@@ -124,24 +134,11 @@ jQuery.noConflict();
         	params[index].fields=fields;
 	    });
 	    /* setup relation datas */
-	    $.each(vars.apps,function(key,values){vars.offset[key]=0;loaddatas(key);})
+	    $.each(vars.apps,function(key,values){vars.offset[key]=0;functions.loaddatas(key);})
 		/* loading wait */
 		functions.waitloaded(function(){
 			$.each(params,function(index){functions.relations(params[index]);});
 		});
 		return event;
 	});
-	var limit=500;
-	/*---------------------------------------------------------------
-	 all data load
-	---------------------------------------------------------------*/
-	function loaddatas(appkey){
-        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString()},function(resp){
-        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
-			vars.offset[appkey]+=limit;
-			if (resp.records.length==limit) loaddatas(appkey);
-			else vars.loaded++;
-		},function(error){});
-	}
 })(jQuery,kintone.$PLUGIN_ID);

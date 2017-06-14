@@ -43,6 +43,31 @@
 			</div>
 		</div>
 	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">一覧地図表示</div>
+		<div class="kintoneplugin-desc">一覧画面に地図を表示したい場合は、チェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="map" value="0">一覧画面に地図を表示する</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">表示フィールド</div>
+		<div class="kintoneplugin-desc">各マーカーの情報ウインドウに表示するフィールドを選択して下さい。【文字列(1行)フィールド】<br>指定がない場合は住所入力フィールドで指定したフィールドが表示されます。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="information">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Google Maps APIキー</div>
+		<div class="kintoneplugin-desc">一覧地図を表示する場合は、Google Maps APIキーを取得し、取得したキーを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
 </div>
 <div class="block">
 	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
