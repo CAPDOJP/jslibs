@@ -19,7 +19,7 @@ var RouteMap=function(options){
 	var options=$.extend({
 		apiikey:'',
 		container:null,
-		needclose:true,
+		isfullscreen:true,
 		needroute:true,
 		loadedcallback:null
 	},options);
@@ -29,7 +29,7 @@ var RouteMap=function(options){
 		'box-sizing':'border-box'
 	});
 	/* keep parameters */
-	this.needclose=options.needclose;
+	this.isfullscreen=options.isfullscreen;
 	this.needroute=options.needroute;
 	this.loadedcallback=options.loadedcallback;
 	/* loading wait */
@@ -42,17 +42,29 @@ var RouteMap=function(options){
 	/* append elements */
 	this.container=div.clone(true).css({
 		'background-color':'#FFFFFF',
-		'bottom':'-100%',
-		'height':'100%',
-		'left':'0px',
-		'position':'fixed',
 		'width':'100%',
 		'z-index':'999999'
 	}).attr('id','mapcontainer');
+	if (this.isfullscreen)
+	{
+		this.container=div.clone(true).css({
+			'bottom':'-100%',
+			'height':'100%',
+			'left':'0px',
+			'position':'fixed'
+		});
+	}
+	else
+	{
+		this.container=div.clone(true).css({
+			'padding-top':'100%',
+			'position':'relative'
+		});
+	}
 	this.contents=div.clone(true).css({
 		'height':'100%',
 		'left':'0px',
-		'position':'relative',
+		'position':'absolute',
 		'top':'0px',
 		'width':'100%',
 		'z-index':'888'
@@ -70,7 +82,7 @@ var RouteMap=function(options){
 		my.container.css({'bottom':'-100%'});
 	}));
 	this.container.append(this.contents);
-	if (this.needclose) this.container.append(this.buttonblock);
+	if (this.isfullscreen) this.container.append(this.buttonblock);
 	options.container.append(this.container);
 	/* setup google map */
 	var api=$('<script>');
@@ -304,16 +316,19 @@ RouteMap.prototype={
 				}
 				break;
 		}
-		this.container.css({'bottom':'0px'});
-		/* adjust container paddings */
-		if (this.needclose) this.container.css({'padding-bottom':this.buttonblock.outerHeight(true)+'px'});
+		if (this.isfullscreen)
+		{
+			this.container.css({'bottom':'0px'});
+			/* adjust container paddings */
+			this.container.css({'padding-bottom':this.buttonblock.outerHeight(true)+'px'});
+		}
 	}
 };
-jQuery.fn.routemap=function(apiikey,needclose,needroute,loadedcallback){
+jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback){
 	return new RouteMap({
 		apiikey:apiikey,
 		container:this,
-		needclose:(needclose===undefined)?true:needclose,
+		isfullscreen:(isfullscreen===undefined)?true:isfullscreen,
 		needroute:(needroute===undefined)?true:needroute,
 		loadedcallback:(loadedcallback===undefined)?null:loadedcallback
 	});
