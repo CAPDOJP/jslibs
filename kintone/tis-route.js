@@ -47,7 +47,7 @@ var RouteMap=function(options){
 	}).attr('id','mapcontainer');
 	if (this.isfullscreen)
 	{
-		this.container=div.clone(true).css({
+		this.container.css({
 			'bottom':'-100%',
 			'height':'100%',
 			'left':'0px',
@@ -56,7 +56,7 @@ var RouteMap=function(options){
 	}
 	else
 	{
-		this.container=div.clone(true).css({
+		this.container.css({
 			'padding-top':'100%',
 			'position':'relative'
 		});
