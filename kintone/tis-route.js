@@ -44,15 +44,15 @@ var RouteMap=function(options){
 	this.container=div.clone(true).css({
 		'background-color':'#FFFFFF',
 		'height':'100%',
-		'width':'100%',
-		'z-index':'999999'
+		'width':'100%'
 	}).attr('id','mapcontainer');
 	if (this.isfullscreen)
 	{
 		this.container.css({
 			'bottom':'-100%',
 			'left':'0px',
-			'position':'fixed'
+			'position':'fixed',
+			'z-index':'999999'
 		});
 	}
 	this.contents=div.clone(true).css({

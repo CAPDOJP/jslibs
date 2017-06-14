@@ -1,19 +1,26 @@
 /* individual style */
-button.customview-checkerbutton{
+label.customview-checker{
     background-color:#f7f9fa;
     border:1px solid #e3e7e8;
     box-sizing:border-box;
 	cursor:pointer;
     display:inline-block;
     height:48px;
-    line-height:48px;
     margin-right:8px;
-    padding:0px 5px;
-    outline:none;
     vertical-align:top;
     width:auto;
 }
-label.customview-checker input[type=checkbox]:checked+button.customview-checkerbutton{
+label.customview-checker input[type=checkbox]{
+    display:none;
+}
+label.customview-checker span.customview-checkerspan{
+    box-sizing:border-box;
+    display:inline-block;
+    font-size:13px;
+    line-height:48px;
+    padding:0px 10px;
+}
+label.customview-checker input[type=checkbox]:checked+span.customview-checkerspan{
     background-color:#E64A19;
     color:#2B2B2B;
 }

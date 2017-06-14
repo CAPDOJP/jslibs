@@ -112,10 +112,10 @@ jQuery.noConflict();
 				vars.map.reloadmap({markers:vars.markers});
 			}
 		})
-		.append('<button type="button" class="customview-checkerbutton">現在地を表示</button>');
+		.append('<span class="customview-checkerspan">現在地を表示</span>');
 		/* create map controller */
-		var mapcontainer=$('<div id="map">');
-		vars.map=mapcontainer.css({'height':'50vh','width':'100%'}).routemap(vars.config['apikey'],false,false,function(){
+		var mapcontainer=$('<div id="map">').css({'height':'50vh','width':'100%'});
+		vars.map=mapcontainer.routemap(vars.config['apikey'],false,false,function(){
 			/* create map */
 			$.each(event.records,function(index,values){
 				var record=values
@@ -135,7 +135,7 @@ jQuery.noConflict();
 		});
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(mapcontainer[0]);
+		kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
 		return event;
 	});
 	kintone.events.on(events.show,function(event){
