@@ -30,7 +30,7 @@ jQuery.noConflict();
 	.append($('<div class="message">'))
 	.append($('<div class="progressbar">').append($('<div class="progresscell">')));
 	$('body').append(vars.progress);
-	loaddatas({
+	$.loaddatas({
 		limit:500,
 		offset:vars.offset[kintone.app.getId()],
 		appkey:kintone.app.getId(),

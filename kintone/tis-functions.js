@@ -142,22 +142,15 @@ jQuery.extend({
 		});
 		return fields;
 	},
-	loaddatas:function(options){
-		var options=$.extend({
-			limit:100,
-			offset:0,
-			appkey:null,
-			storage:null,
-			callback:null
-		},options);
-		kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:options.appkey,query:'order by $id asc limit '+options.limit.toString()+' offset '+options.offset.toString()},function(resp){
-			if (options.storage==null) options.storage=resp.records;
-			else Array.prototype.push.apply(options.storage,resp.records);
-			options.offset+=options.limit;
-			if (resp.records.length==options.limit) $.loaddatas(options);
+	loaddatas:function(limit,offset,appkey,storage,callback){
+		kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+offset.toString()},function(resp){
+			if (storage==null) storage=resp.records;
+			else Array.prototype.push.apply(storage,resp.records);
+			offset+=limit;
+			if (resp.records.length==limit) $.loaddatas(limit,offset,appkey,storage,callback);
 			else
 			{
-				if (options.callback!=null) options.callback();
+				if (callback!=null) callback();
 			}
 		},function(error){});
 	},
