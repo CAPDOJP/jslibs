@@ -120,6 +120,47 @@ String.prototype.rpad=function(pattern,length){
 * -------------------------------------------------------------------
 */
 jQuery.extend({
+	fieldparallelize:function(properties){
+		var tablecode='';
+		var fields={};
+		$.each(properties,function(key,values){
+			tablecode='';
+			switch (values.type)
+			{
+				case 'SUBTABLE':
+					tablecode=values.code;
+					$.each(values.fields,function(index,values){
+						values['tablecode']=tablecode;
+						fields[values.code]=values;
+					});
+					break;
+				default:
+					values['tablecode']=tablecode;
+					fields[values.code]=values;
+					break;
+			}
+		});
+		return fields;
+	},
+	loaddatas:function(options){
+		var options=$.extend({
+			limit:100,
+			offset:0,
+			appkey:null,
+			storage:null,
+			callback:null
+		},options);
+        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:options.appkey,query:'order by $id asc limit '+options.limit.toString()+' offset '+options.offset.toString()},function(resp){
+        	if (options.storage==null) options.storage=resp.records;
+        	else Array.prototype.push.apply(options.storage,resp.records);
+			options.offset+=options.limit;
+			if (resp.records.length==options.limit) $.loaddatas(options);
+			else
+			{
+				if (options.callback!=null) options.callback();
+			}
+		},function(error){});
+	},
 	queries:function(){
 		var queries=[];
 		var hash=null;

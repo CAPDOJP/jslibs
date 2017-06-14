@@ -15,7 +15,8 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		map:null
+		map:null,
+		config:{}
 	};
 	var events={
 		show:[
@@ -77,28 +78,28 @@ jQuery.noConflict();
 	 kintone events
 	---------------------------------------------------------------*/
 	kintone.events.on(events.show,function(event){
-		var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		if (!config) return false;
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if (!vars.config) return false;
 		/* hide elements  */
-		kintone.app.record.setFieldShown(config['lat'],false);
-		kintone.app.record.setFieldShown(config['lng'],false);
+		kintone.app.record.setFieldShown(vars.config['lat'],false);
+		kintone.app.record.setFieldShown(vars.config['lng'],false);
 		/* map action  */
 		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
 		/* the initial display when editing */
 		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record.lat.value+','+event.record.lng.value});
 		/* display map in value change event */
 		if (event.type.match(/(create|edit)/g)!=null)
-			$('body').fields(config['address'])[0].on('change',function(){
+			$('body').fields(vars.config['address'])[0].on('change',function(){
 				var target=$(this);
 				functions.displaymap({
 					address:target.val(),
 					callback:function(json){
-						$('body').fields(config['lat'])[0].val(json.results[0].geometry.location.lat);
-						$('body').fields(config['lng'])[0].val(json.results[0].geometry.location.lng);
+						$('body').fields(vars.config['lat'])[0].val(json.results[0].geometry.location.lat);
+						$('body').fields(vars.config['lng'])[0].val(json.results[0].geometry.location.lng);
 					}
 				});
 			});
-		kintone.app.record.getSpaceElement(config['spacer']).appendChild(vars.map[0]);
+		kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

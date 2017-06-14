@@ -1,0 +1,33 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone ルックアップデータ変換プラグイン",
+        "en":"kintone LookupField Exchange plug-in",
+        "zh":"kintone ルックアップデータ変換プラグイン"
+    },
+    "description":{
+        "ja":"ルックアップフィールドのデータを数値/文字列フィールドに、数値/文字列フィールドのデータをルックアップフィールドにコピーするプラグインです。",
+        "en":"This plug-in to copies the lookup field data to the numeric / string field and the numeric / string field data to the lookup field",
+        "zh":"ルックアップフィールドのデータを数値/文字列フィールドに、数値/文字列フィールドのデータをルックアップフィールドにコピーするプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

@@ -288,9 +288,13 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
 		/* check viewid */
-		var excludeviews=vars.config.excludeviews.split(',');
-		if (excludeviews.length!=0)
-			if ($.inArray(event.viewId.toString(),excludeviews)>-1) return;
+		if ('excludeviews' in vars.config)
+		{
+			var excludeviews=vars.config.excludeviews.split(',');
+			if (excludeviews.length!=0)
+				if ($.inArray(event.viewId.toString(),excludeviews)>-1) return;
+		}
+		else return;
 		/* initialize valiable */
 		vars.container=$('div#view-list-data-gaia');
 		vars.grid=$('<table id="listviewer" class="customview-table">');

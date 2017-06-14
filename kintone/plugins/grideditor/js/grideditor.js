@@ -28,6 +28,8 @@ jQuery.noConflict();
 		requiredvalue:{},
 		disabled:{
 			'FILE':'添付ファイル',
+			'GROUP_SELECT':'グループ選択',
+			'ORGANIZATION_SELECT':'組織選択',
 			'RICH_TEXT':'リッチエディター',
 			'SUBTABLE':'テーブル',
 			'USER_SELECT':'ユーザー選択'

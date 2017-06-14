@@ -17,6 +17,7 @@ jQuery.noConflict();
 	var vars={
 		loaded:0,
 		apps:{},
+		config:{},
 		offset:{}
 	};
 	var events={
@@ -94,11 +95,11 @@ jQuery.noConflict();
 	 kintone events
 	---------------------------------------------------------------*/
 	kintone.events.on(events.show,function(event){
-		var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		if (!config) return false;
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if (!vars.config) return false;
 		var params=[];
 	    /* get configuration */
-	    $.each(JSON.parse(config['relations']),function(index,values){
+	    $.each(JSON.parse(vars.config['relations']),function(index,values){
 	    	params[index]={
 	    		basefield:values['basefield'],
 	    		baseapp:values['baseapp'],
