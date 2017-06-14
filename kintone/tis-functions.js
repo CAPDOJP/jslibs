@@ -150,9 +150,9 @@ jQuery.extend({
 			storage:null,
 			callback:null
 		},options);
-        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:options.appkey,query:'order by $id asc limit '+options.limit.toString()+' offset '+options.offset.toString()},function(resp){
-        	if (options.storage==null) options.storage=resp.records;
-        	else Array.prototype.push.apply(options.storage,resp.records);
+		kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:options.appkey,query:'order by $id asc limit '+options.limit.toString()+' offset '+options.offset.toString()},function(resp){
+			if (options.storage==null) options.storage=resp.records;
+			else Array.prototype.push.apply(options.storage,resp.records);
 			options.offset+=options.limit;
 			if (resp.records.length==options.limit) $.loaddatas(options);
 			else
