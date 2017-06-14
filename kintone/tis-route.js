@@ -42,6 +42,7 @@ var RouteMap=function(options){
 	/* append elements */
 	this.container=div.clone(true).css({
 		'background-color':'#FFFFFF',
+		'height':'100%',
 		'width':'100%',
 		'z-index':'999999'
 	}).attr('id','mapcontainer');
@@ -49,7 +50,6 @@ var RouteMap=function(options){
 	{
 		this.container.css({
 			'bottom':'-100%',
-			'height':'100%',
 			'left':'0px',
 			'position':'fixed'
 		});
@@ -57,7 +57,6 @@ var RouteMap=function(options){
 	else
 	{
 		this.container.css({
-			'padding-top':'100%',
 			'position':'relative'
 		});
 	}
