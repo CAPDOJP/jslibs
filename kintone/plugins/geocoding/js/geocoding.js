@@ -123,7 +123,7 @@ jQuery.noConflict();
 				var lng=parseFloat('0'+record[vars.config['lng']].value);
 				if (lat+lng!=0)
 					vars.markers.push({
-						colors:1,
+						colors:6,
 						label:(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value,
 						lat:lat,
 						lng:lng

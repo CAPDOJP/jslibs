@@ -313,9 +313,9 @@ jQuery.fn.routemap=function(apiikey,needclose,needroute,loadedcallback){
 	return new RouteMap({
 		apiikey:apiikey,
 		container:this,
-		needclose:(!needclose)?true:needclose,
-		needroute:(!needroute)?true:needroute,
-		loadedcallback:(!loadedcallback)?null:loadedcallback
+		needclose:(needclose===undefined)?true:needclose,
+		needroute:(needroute===undefined)?true:needroute,
+		loadedcallback:(loadedcallback===undefined)?null:loadedcallback
 	});
 };
 })(jQuery);
