@@ -22,7 +22,8 @@ jQuery.noConflict();
 	};
 	var events={
 		lists:[
-			'app.record.index.show'
+			'app.record.index.show',
+			'mobile.app.record.index.show'
 		],
 		show:[
 			'app.record.create.show',
@@ -89,7 +90,7 @@ jQuery.noConflict();
 		if (!'map' in vars.config) return event;
 		if (vars.config['map']!='1') return event;
 		/* create currentlocation box */
-		vars.currentlocation=$('<label>')
+		vars.currentlocation=$('<label class="customview-checker">')
 		.append('<input type="checkbox" id="addcurrentlocation">').on('change',function(e){
 			if ($(this).prop('checked'))
 			{
@@ -111,28 +112,29 @@ jQuery.noConflict();
 				vars.map.reloadmap({markers:vars.markers});
 			}
 		})
-		.append('<button type="button">現在地を追加</button>');
-		/* create map box */
-		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'}).routemap(vars.config['apikey'],false,false);
-		/* create map */
-		$.each(event.records,function(index,values){
-			var record=values
-			var lat=parseFloat('0'+record[vars.config['lat']].value);
-			var lng=parseFloat('0'+record[vars.config['lng']].value);
-			if (lat+lng!=0)
-				vars.markers.push({
-					colors:1,
-					label:(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value,
-					lat:lat,
-					lng:lng
-				});
+		.append('<button type="button" class="customview-checkerbutton">現在地を表示</button>');
+		/* create map controller */
+		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'}).routemap(vars.config['apikey'],false,false,function(){
+			/* create map */
+			$.each(event.records,function(index,values){
+				var record=values
+				var lat=parseFloat('0'+record[vars.config['lat']].value);
+				var lng=parseFloat('0'+record[vars.config['lng']].value);
+				if (lat+lng!=0)
+					vars.markers.push({
+						colors:1,
+						label:(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value,
+						lat:lat,
+						lng:lng
+					});
+			});
+			if (vars.markers.length==0) return;
+			/* display map */
+			vars.map.reloadmap({markers:vars.markers});
+			/* append elements */
+			kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
+			kintone.app.getHeaderMenuSpaceElement().appendChild(vars.map[0]);
 		});
-		if (vars.markers.length==0) return event;
-		/* display map */
-		vars.map.reloadmap({markers:vars.markers});
-		/* append elements */
-		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.map[0]);
 		return event;
 	});
 	kintone.events.on(events.show,function(event){

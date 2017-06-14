@@ -24,6 +24,9 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-route.js",
             "js/geocoding.js"
+        ],
+        "css":[
+            "css/desktop/geocoding.css"
         ]
     },
     "mobile":{
@@ -32,6 +35,9 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-route.js",
             "js/geocoding.js"
+        ],
+        "css":[
+            "css/desktop/geocoding.css"
         ]
     },
     "config":{

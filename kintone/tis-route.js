@@ -20,7 +20,8 @@ var RouteMap=function(options){
 		apiikey:'',
 		container:null,
 		needclose:true,
-		needroute:true
+		needroute:true,
+		loadedcallback:null
 	},options);
 	/* valiable */
 	var my=this;
@@ -31,6 +32,7 @@ var RouteMap=function(options){
 	this.mapcontainer=options.container;
 	this.needclose=options.needclose;
 	this.needroute=options.needroute;
+	this.loadedcallback=options.loadedcallback;
 	/* loading wait */
 	var waitgoogle=function(callback){
 		setTimeout(function(){
@@ -140,6 +142,7 @@ var RouteMap=function(options){
 		my.map=new google.maps.Map(document.getElementById(my.contents.attr('id')),param);
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
+		if (my.loadedcallback!=null) my.loadedcallback();
 	});
 };
 RouteMap.prototype={
@@ -307,12 +310,13 @@ RouteMap.prototype={
 		if (this.needclose) this.container.css({'padding-bottom':this.buttonblock.outerHeight(true)+'px'});
 	}
 };
-jQuery.fn.routemap=function(apiikey,needclose,needroute){
+jQuery.fn.routemap=function(apiikey,needclose,needroute,loadedcallback){
 	return new RouteMap({
 		apiikey:apiikey,
 		container:this,
 		needclose:(!needclose)?true:needclose,
-		needroute:(!needroute)?true:needroute
+		needroute:(!needroute)?true:needroute,
+		loadedcallback:(!loadedcallback)?null:loadedcallback
 	});
 };
 })(jQuery);
