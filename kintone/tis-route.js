@@ -26,7 +26,8 @@ var RouteMap=function(options){
 	/* valiable */
 	var my=this;
 	var div=$('<div>').css({
-		'box-sizing':'border-box'
+		'box-sizing':'border-box',
+		'position':'relative'
 	});
 	/* keep parameters */
 	this.isfullscreen=options.isfullscreen;
@@ -52,12 +53,6 @@ var RouteMap=function(options){
 			'bottom':'-100%',
 			'left':'0px',
 			'position':'fixed'
-		});
-	}
-	else
-	{
-		this.container.css({
-			'position':'relative'
 		});
 	}
 	this.contents=div.clone(true).css({
