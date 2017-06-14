@@ -142,18 +142,6 @@ jQuery.extend({
 		});
 		return fields;
 	},
-	loaddatas:function(limit,offset,appkey,storage,callback){
-		kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+offset.toString()},function(resp){
-			if (storage==null) storage=resp.records;
-			else Array.prototype.push.apply(storage,resp.records);
-			offset+=limit;
-			if (resp.records.length==limit) $.loaddatas(limit,offset,appkey,storage,callback);
-			else
-			{
-				if (callback!=null) callback();
-			}
-		},function(error){});
-	},
 	queries:function(){
 		var queries=[];
 		var hash=null;

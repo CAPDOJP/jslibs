@@ -30,12 +30,12 @@ jQuery.noConflict();
 	.append($('<div class="message">'))
 	.append($('<div class="progressbar">').append($('<div class="progresscell">')));
 	$('body').append(vars.progress);
-	$.loaddatas({
-		limit:500,
-		offset:vars.offset[kintone.app.getId()],
-		appkey:kintone.app.getId(),
-		storage:vars.apps[kintone.app.getId()],
-		callback:function(){
+	$.loaddatas(
+		2,
+		vars.offset[kintone.app.getId()],
+		kintone.app.getId(),
+		vars.apps[kintone.app.getId()],
+		function(){
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 				vars.fieldinfos=$.fieldparallelize(resp.properties);
 				/* setup field lists */
@@ -56,7 +56,7 @@ jQuery.noConflict();
 				});
 			},function(error){});
 		}
-	});
+	);
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/
