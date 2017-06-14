@@ -151,6 +151,13 @@ var RouteMap=function(options){
 	});
 };
 RouteMap.prototype={
+	/* close information widnow */
+	closeinformationwindow:function(){
+		var my=this;
+		$.each(this.balloons,function(index){
+			my.balloons[index].close();
+		});
+	},
 	/* get currentlocation */
 	currentlocation:function(options){
 		var options=$.extend({

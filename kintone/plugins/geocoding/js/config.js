@@ -51,10 +51,12 @@ jQuery.noConflict();
 	        	$('select#lat').val(config['lat']);
 	        	$('select#lng').val(config['lng']);
 	        	$('select#spacer').val(config['spacer']);
+	        	$('input#mapheight').val(config['mapheight']);
 	        	$('select#information').val(config['information']);
 	        	$('input#apikey').val(config['apikey']);
 	        	if (config['map']=='1') $('input#map').prop('checked',true);
 	        }
+	        else $('input#mapheight').val('50');
 		});
 	},function(error){});
 	/*---------------------------------------------------------------
@@ -90,6 +92,12 @@ jQuery.noConflict();
 	    }
 	    if ($('input#map').prop('checked'))
 	    {
+		    if ($('input#mapheight').val()=='') $('input#mapheight').val('50');
+			if (!$.isNumeric($('input#mapheight').val()))
+		    {
+		    	swal('Error!','一覧地図高さは数値を入力して下さい。','error');
+		    	return;
+		    }
 		    if ($('input#apikey').val()=='')
 		    {
 		    	swal('Error!','Google Maps APIキーを入力して下さい。','error');
@@ -102,6 +110,7 @@ jQuery.noConflict();
         config['lng']=$('select#lng').val();
         config['spacer']=$('select#spacer').val();
         config['map']=($('input#map').prop('checked'))?'1':'0';
+        config['mapheight']=$('input#mapheight').val();
         config['information']=$('select#information').val();
         config['apikey']=$('input#apikey').val();
 		/* save config */

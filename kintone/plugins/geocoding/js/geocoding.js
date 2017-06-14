@@ -91,43 +91,52 @@ jQuery.noConflict();
 		if (vars.config['map']!='1') return event;
 		/* create currentlocation box */
 		vars.currentlocation=$('<label class="customview-checker">')
-		.append('<input type="checkbox" id="addcurrentlocation">').on('change',function(e){
-			if ($(this).prop('checked'))
-			{
-				vars.map.currentlocation({callback:function(latlng){
-					var markers=vars.markers;
-					/* start from current location */
-					markers.push({
-						label:'現在地',
-						lat:latlng.lat(),
-						lng:latlng.lng()
-					});
+		.append($('<input type="checkbox" id="addcurrentlocation">')
+			.on('change',function(e){
+				if ($(this).prop('checked'))
+				{
+					vars.map.currentlocation({callback:function(latlng){
+						var markers=$.extend(true,[],vars.markers);
+						/* start from current location */
+						markers.unshift({
+							colors:0,
+							label:'現在地',
+							lat:latlng.lat(),
+							lng:latlng.lng()
+						});
+						/* display map */
+						vars.map.reloadmap({markers:markers});
+					}});
+				}
+				else
+				{
 					/* display map */
-					vars.map.reloadmap({markers:markers});
-				}});
-			}
-			else
-			{
-				/* display map */
-				vars.map.reloadmap({markers:vars.markers});
-			}
-		})
-		.append('<span class="customview-checkerspan">現在地を表示</span>');
+					vars.map.reloadmap({markers:vars.markers});
+				}
+			})
+		)
+		.append($('<span class="customview-checkerspan">現在地を表示</span>'));
 		/* create map controller */
-		var mapcontainer=$('<div id="map">').css({'height':'50vh','width':'100%'});
+		var mapcontainer=$('<div id="map">').css({'height':vars.config['mapheight']+'vh','width':'100%'});
 		vars.map=mapcontainer.routemap(vars.config['apikey'],false,false,function(){
 			/* create map */
 			$.each(event.records,function(index,values){
 				var record=values
 				var lat=parseFloat('0'+record[vars.config['lat']].value);
 				var lng=parseFloat('0'+record[vars.config['lng']].value);
+				var label='';
 				if (lat+lng!=0)
+				{
+					label='';
+					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
+					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					vars.markers.push({
 						colors:6,
-						label:(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value,
+						label:label,
 						lat:lat,
 						lng:lng
 					});
+				}
 			});
 			if (vars.markers.length==0) return;
 			/* display map */
