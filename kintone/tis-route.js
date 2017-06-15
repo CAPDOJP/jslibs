@@ -152,7 +152,7 @@ var RouteMap=function(options){
 };
 RouteMap.prototype={
 	/* close information widnow */
-	closeinformationwindow:function(){
+	closeinfowindow:function(){
 		var my=this;
 		$.each(this.balloons,function(index){
 			my.balloons[index].close();
@@ -182,6 +182,13 @@ RouteMap.prototype={
 			);
 		}
 		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
+	},
+	/* open information widnow */
+	openinfowindow:function(){
+		var my=this;
+		$.each(this.balloons,function(index){
+			if (my.markers.length>index) my.balloons[index].open(my.map,my.markers[index]);
+		});
 	},
 	/* reload map */
 	reloadmap:function(options){

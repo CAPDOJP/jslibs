@@ -60,6 +60,17 @@
   vertical-align: inherit;
 }
 
+/* 単位等 */
+.kintoneplugin-unit {
+  border: none;
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 3px 5px;
+  position: relative;
+}
+
 /* テキストボックス */
 /*
 <div class="kintoneplugin-input-outer">

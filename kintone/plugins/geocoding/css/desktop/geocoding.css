@@ -1,26 +1,31 @@
 /* individual style */
-label.customview-checker{
+label.customview-checkbox{
     background-color:#f7f9fa;
-    border:1px solid #e3e7e8;
+    border:none;
     box-sizing:border-box;
 	cursor:pointer;
     display:inline-block;
     height:48px;
     margin-right:8px;
+    padding:0px 10px;
     vertical-align:top;
     width:auto;
 }
-label.customview-checker input[type=checkbox]{
+label.customview-checkbox input{
     display:none;
 }
-label.customview-checker span.customview-checkerspan{
+label.customview-checkbox span{
+	background-image:url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/image/checkbox_nocheck.svg");
+	background-position:left 9px;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
     box-sizing:border-box;
     display:inline-block;
     font-size:13px;
     line-height:48px;
-    padding:0px 10px;
+	padding:0px 0px 0px 35px;
+    vertical-align:top;
 }
-label.customview-checker input[type=checkbox]:checked+span.customview-checkerspan{
-    background-color:#E64A19;
-    color:#2B2B2B;
+label.customview-checkbox input:checked+span{
+	background-image:url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/image/checkbox_checked.svg");
 }

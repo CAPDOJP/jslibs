@@ -15,6 +15,7 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
+		infowindow:null,
 		currentlocation:null,
 		map:null,
 		config:{},
@@ -89,9 +90,9 @@ jQuery.noConflict();
 		/* check display map */
 		if (!'map' in vars.config) return event;
 		if (vars.config['map']!='1') return event;
-		/* create currentlocation box */
-		vars.currentlocation=$('<label class="customview-checker">')
-		.append($('<input type="checkbox" id="addcurrentlocation">')
+		/* create currentlocation checkbox */
+		vars.currentlocation=$('<label class="customview-checkbox">')
+		.append($('<input type="checkbox" id="currentlocation">')
 			.on('change',function(e){
 				if ($(this).prop('checked'))
 				{
@@ -115,7 +116,16 @@ jQuery.noConflict();
 				}
 			})
 		)
-		.append($('<span class="customview-checkerspan">現在地を表示</span>'));
+		.append($('<span>現在地を表示</span>'));
+		/* create informationwindow checkbox */
+		vars.infowindow=$('<label class="customview-checkbox">')
+		.append($('<input type="checkbox" id="infowindow">')
+			.on('change',function(e){
+				if ($(this).prop('checked')) vars.map.closeinfowindow();
+				else vars.map.openinfowindow();
+			})
+		)
+		.append($('<span>情報ウインドウを隠す</span>'));
 		/* create map controller */
 		var mapcontainer=$('<div id="map">').css({'height':vars.config['mapheight']+'vh','width':'100%'});
 		vars.map=mapcontainer.routemap(vars.config['apikey'],false,false,function(){
@@ -144,6 +154,7 @@ jQuery.noConflict();
 		});
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.infowindow[0]);
 		kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
 		return event;
 	});
