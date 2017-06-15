@@ -194,6 +194,7 @@ RouteMap.prototype={
 	reloadmap:function(options){
 		var options=$.extend({
 			markers:[],
+			isopeninfowindow:true,
 			callback:null
 		},options);
 		var colors=this.colors;
@@ -224,7 +225,7 @@ RouteMap.prototype={
 			if (label.length!=0)
 			{
 				var balloon=new google.maps.InfoWindow({content:label});
-				balloon.open(map,marker);
+				if (options.isopeninfowindow) balloon.open(map,marker);
 				google.maps.event.addListener(marker,'click',function(event){
 					if (!balloon.getMap()) balloon.open(map,marker);
 				});

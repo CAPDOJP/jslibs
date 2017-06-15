@@ -15,7 +15,7 @@ label.customview-checkbox input{
     display:none;
 }
 label.customview-checkbox span{
-	background-image:url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/image/checkbox_nocheck.svg");
+	background-image:url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/checkbox_nocheck.svg");
 	background-position:left 9px;
 	background-repeat:no-repeat;
 	background-size:30px 30px;
@@ -27,5 +27,5 @@ label.customview-checkbox span{
     vertical-align:top;
 }
 label.customview-checkbox input:checked+span{
-	background-image:url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/image/checkbox_checked.svg");
+	background-image:url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/checkbox_checked.svg");
 }
