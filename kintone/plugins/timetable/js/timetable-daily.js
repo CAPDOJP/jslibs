@@ -20,7 +20,9 @@ jQuery.noConflict();
 		route:null,
 		segment:null,
 		table:null,
+		apps:{},
 		config:{},
+		offset:{},
 		fields:[]
 	};
 	var events={
@@ -32,6 +34,7 @@ jQuery.noConflict();
 			'app.record.edit.show'
 		]
 	};
+	var limit=500;
 	var functions={
 		/* rebuild view */
 		build:function(filter,segment,segmentname,colorindex){
@@ -162,22 +165,10 @@ jQuery.noConflict();
 		/* reload view */
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
-			var sort='';
-			var query='';
-			var body={
-				app:kintone.app.getId(),
-				query:query,
-				fields:vars.fields
-			};
-			query+=vars.config['date']+'="'+vars.date.format('Y-m-d')+'"';
-			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
-			query+=' and '+vars.config['totime']+'<="'+('0'+vars.config['endhour']).slice(-2)+':59"';
-			sort=' order by ';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
-			sort+=vars.config['fromtime']+' asc limit 500';
-			body.query+=query+sort;
-			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-				var records=resp.records;
+			vars.apps[kintone.app.getId()]=null;
+			vars.offset[kintone.app.getId()]=0;
+			functions.loaddatas(kintone.app.getId(),function(){
+				var records=vars.apps[kintone.app.getId()];
 				/* initialize table */
 				vars.table.clearrows();
 				if (vars.config['segment'].length!=0)
@@ -195,6 +186,30 @@ jQuery.noConflict();
 					/* rebuild view */
 					functions.build(filter,'','',0);
 				}
+			});
+		},
+		/* reload datas */
+		loaddatas:function(appkey,callback){
+			var sort='';
+			var query='';
+			var body={
+				app:appkey,
+				query:query,
+				fields:vars.fields
+			};
+			query+=vars.config['date']+'="'+vars.date.format('Y-m-d')+'"';
+			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
+			query+=' and '+vars.config['totime']+'<="'+('0'+vars.config['endhour']).slice(-2)+':59"';
+			sort=' order by ';
+			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
+			body.query+=query+sort;
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				vars.offset[appkey]+=limit;
+				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
+				else callback();
 			},function(error){});
 		}
 	};

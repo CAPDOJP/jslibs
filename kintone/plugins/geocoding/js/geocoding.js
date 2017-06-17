@@ -90,6 +90,8 @@ jQuery.noConflict();
 		/* check display map */
 		if (!'map' in vars.config) return event;
 		if (vars.config['map']!='1') return event;
+		/* initialize valiable */
+		vars.markers=[];
 		/* create currentlocation checkbox */
 		vars.currentlocation=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="currentlocation">')
@@ -106,13 +108,13 @@ jQuery.noConflict();
 							lng:latlng.lng()
 						});
 						/* display map */
-						vars.map.reloadmap({markers:markers});
+						vars.map.reloadmap({markers:markers,isopeninfowindow:$('#infowindow').prop('checked')});
 					}});
 				}
 				else
 				{
 					/* display map */
-					vars.map.reloadmap({markers:vars.markers});
+					vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
 				}
 			})
 		)
@@ -121,11 +123,11 @@ jQuery.noConflict();
 		vars.infowindow=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="infowindow">')
 			.on('change',function(e){
-				if ($(this).prop('checked')) vars.map.closeinfowindow();
-				else vars.map.openinfowindow();
+				if ($(this).prop('checked')) vars.map.openinfowindow();
+				else vars.map.closeinfowindow();
 			})
 		)
-		.append($('<span>情報ウインドウを隠す</span>'));
+		.append($('<span>情報ウインドウを表示</span>'));
 		/* create map controller */
 		var mapcontainer=$('<div id="map">').css({'height':vars.config['mapheight']+'vh','width':'100%'});
 		vars.map=mapcontainer.routemap(vars.config['apikey'],false,false,function(){
@@ -150,11 +152,13 @@ jQuery.noConflict();
 			});
 			if (vars.markers.length==0) return;
 			/* display map */
-			vars.map.reloadmap({markers:vars.markers});
+			vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
 		});
 		/* append elements */
+		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.infowindow[0]);
+		kintone.app.getHeaderSpaceElement().innerHTML='';
 		kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
 		return event;
 	});

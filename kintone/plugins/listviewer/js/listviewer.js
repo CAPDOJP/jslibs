@@ -31,7 +31,6 @@ jQuery.noConflict();
 		template:null,
 		thumbnail:null,
 		containers:[],
-		columns:{},
 		config:{},
 		fieldcodes:{},
 		tablecodes:{}
@@ -338,6 +337,7 @@ jQuery.noConflict();
 			'width':'auto'
 		}))
 		.on('click',function(){vars.thumbnail.hide();});
+		vars.containers=[];
 		/* get table layout */
 		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
 			functions.tablesort(resp.layout);

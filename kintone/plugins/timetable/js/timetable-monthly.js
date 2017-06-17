@@ -20,7 +20,9 @@ jQuery.noConflict();
 		graphlegend:null,
 		segment:null,
 		table:null,
+		apps:{},
 		config:{},
+		offset:{},
 		fields:[],
 		colors:[
 			'#FA8273',
@@ -42,6 +44,7 @@ jQuery.noConflict();
 			'app.record.index.show'
 		]
 	};
+	var limit=500;
 	var functions={
 		/* rebuild view */
 		build:function(filter,cell,colorindex){
@@ -66,19 +69,10 @@ jQuery.noConflict();
 		/* reload view */
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
-			var sort='';
-			var body={
-				app:kintone.app.getId(),
-				query:vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"',
-				fields:vars.fields
-			};
-			sort=' order by ';
-			sort+=vars.config['date']+' asc,';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
-			sort+=vars.config['fromtime']+' asc limit 500';
-			body.query+=sort;
-			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-				var records=resp.records;
+			vars.apps[kintone.app.getId()]=null;
+			vars.offset[kintone.app.getId()]=0;
+			functions.loaddatas(kintone.app.getId(),function(){
+				var records=vars.apps[kintone.app.getId()];
 				var color='';
 				/* initialize rows */
 				vars.table.contents.find('tr').show();
@@ -137,6 +131,27 @@ jQuery.noConflict();
 				$.each(vars.table.contents.find('tr'),function(index,values){
 				    if (!$(this).find('div').size()) $(this).hide();
 				})
+			},function(error){});
+		},
+		/* reload datas */
+		loaddatas:function(appkey,callback){
+			var sort='';
+			var body={
+				app:appkey,
+				query:vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"',
+				fields:vars.fields
+			};
+			sort=' order by ';
+			sort+=vars.config['date']+' asc,';
+			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
+			body.query+=sort;
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				vars.offset[appkey]+=limit;
+				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
+				else callback();
 			},function(error){});
 		}
 	};

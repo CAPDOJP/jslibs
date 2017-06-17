@@ -458,6 +458,8 @@ jQuery.noConflict();
 	   	vars.header=$('<tr>');
 	   	vars.rows=$('<tbody>');
 	   	vars.template=$('<tr>');
+	   	vars.fieldinfos=[];
+	   	vars.mappings=[];
 		/* append elements */
 		vars.grid.append($('<thead>').append(vars.header));
 		vars.grid.append(vars.rows);

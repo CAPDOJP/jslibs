@@ -201,6 +201,7 @@ RouteMap.prototype={
 		var map=this.map;
 		var renderer=this.directionsRenderer;
 		var service=this.directionsService;
+		var serialnumber=0;
 		var markers=[];
 		var balloons=[];
 		/* initialize markers */
@@ -218,7 +219,7 @@ RouteMap.prototype={
 			var marker=new google.maps.Marker({
 				map:map,
 				position:latlng,
-				icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+childindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+				icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+((childindex==-1)?'':childindex.toString())+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
 			});
 			markers.push(marker);
 			/* append balloons */
@@ -239,8 +240,10 @@ RouteMap.prototype={
 			case 1:
 				/* append markers */
 				var latlng=new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng);
+				if ('serialnumber' in options.markers[0]) serialnumber=(options.markers[0].serialnumber)?1:-1;
+				else serialnumber=1
 				addmarker(latlng,
-					1,
+					serialnumber,
 					(('colors' in options.markers[0])?options.markers[0].colors:0),
 					(('label' in options.markers[0])?options.markers[0].label:'')
 				);
@@ -292,14 +295,17 @@ RouteMap.prototype={
 						if (status==google.maps.DirectionsStatus.OK)
 						{
 							/* append markers */
+							serialnumber=0;
 							$.each(options.markers,function(index,values){
 								var values=$.extend({
 									colors:0,
 									label:'',
 									lat:0,
-									lng:0
+									lng:0,
+									serialnumber:true
 								},values);
-								addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label);
+								if (values.serialnumber) serialnumber++;
+								addmarker(new google.maps.LatLng(values.lat,values.lng),((values.serialnumber)?serialnumber:-1),values.colors,values.label);
 							});
 							renderer.setDirections(result);
 							renderer.setMap(map);
@@ -310,14 +316,17 @@ RouteMap.prototype={
 				else
 				{
 					/* append markers */
+					serialnumber=0;
 					$.each(options.markers,function(index,values){
 						var values=$.extend({
 							colors:0,
 							label:'',
 							lat:0,
-							lng:0
+							lng:0,
+							serialnumber:true
 						},values);
-						addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label);
+						if (values.serialnumber) serialnumber++;
+						addmarker(new google.maps.LatLng(values.lat,values.lng),((values.serialnumber)?serialnumber:-1),values.colors,values.label);
 					});
 					/* setup center position */
 					map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
