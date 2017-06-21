@@ -717,9 +717,12 @@ jQuery.fn.loaddatas = function(options){
 			if (options.callback!=null) options.callback(json);
 			/* カンマ区切り */
 			if ($.isArray($.data(form[0],'comma')))
+			{
+				console.log('aaa');
 				$.each($.data(form[0],'comma'),function(index){
 					$.each($.data(form[0],'comma')[index],function(){$(this).toComma();});
 				});
+			}
 			//ローディング消去
 			if (!options.silent)
 				if ($('div#loading')!=null) $('div#loading').css('display','none');
