@@ -101,11 +101,12 @@ jQuery.noConflict();
 					vars.map.currentlocation({callback:function(latlng){
 						var markers=$.extend(true,[],vars.markers);
 						/* start from current location */
-						markers.unshift({
+						markers.push({
 							colors:0,
 							label:'現在地',
 							lat:latlng.lat(),
-							lng:latlng.lng()
+							lng:latlng.lng(),
+							serialnumber:false
 						});
 						/* display map */
 						vars.map.reloadmap({markers:markers,isopeninfowindow:$('#infowindow').prop('checked')});

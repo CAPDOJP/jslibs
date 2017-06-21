@@ -25,7 +25,8 @@ jQuery.fn.formAction = function(options){
 		files:{},
 		lists:{},
 		pagers:{},
-		texts:{}
+		texts:{},
+		comma:[]
 	},options);
 	//キー制御
 	$(document).on('keydown','input[type=text],input[type=password],select',function(e){
@@ -58,6 +59,8 @@ jQuery.fn.formAction = function(options){
 	});
 	return $(this).each(function(){
 		var form=$(this);
+		//引数を変数に代入
+		$.data(form[0],'comma',options.comma);
 		//テキストボックス操作(title属性があるテキストボックスはtitle内容を初期表示にする)
 		form.find('input[type=text],textarea').each(function(){
 			if ($(this).attr('title')!=null)
@@ -281,6 +284,22 @@ jQuery.fn.formAction = function(options){
 				form.on('focus',key,function(){$.data(this,'focus',$(this).val());values($(this),'focus');});
 				form.on('keyup',key,function(){if ($.data(this,'focus')!=$(this).val()) values($(this),'keyup');});
 				form.on('blur',key,function(){if ($.data(this,'focus')!=$(this).val()) values($(this),'blur');});
+			}
+		});
+		/*
+		*------------------------------------------------------------
+		* カンマ区切り操作
+		*------------------------------------------------------------
+		* parameters
+		* selector:セレクタ
+		* -----------------------------------------------------------
+		*/
+		$.each(options.comma,function(index){
+			if ($.inArray(options.comma[index].prop('tagName').toLowerCase(),['input','textarea'])!=-1)
+			{
+				//イベント追加
+				form.on('focus',options.comma[index],function(){$(this).val($(this).toVal().replace(',',''));});
+				form.on('blur',options.comma[index],function(){$(this).toComma();});
 			}
 		});
 	});
@@ -696,6 +715,11 @@ jQuery.fn.loaddatas = function(options){
 				if ($(this).val().length==0) $(this).val($.data(this,'display'));
 			});
 			if (options.callback!=null) options.callback(json);
+			/* カンマ区切り */
+			if ($.isArray($.data(form[0],'comma')))
+				$.each($.data(form[0],'comma'),function(index){
+					$.each($.data(form[0],'comma')[index],function(){$(this).toComma();});
+				});
 			//ローディング消去
 			if (!options.silent)
 				if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -981,6 +1005,11 @@ jQuery.fn.senddatas = function(options){
 			$(this).val((_checkbox.prop('checked'))?'1':'0');
 		});
 	});
+	/* カンマ区切り解除 */
+	if ($.isArray($.data(form[0],'comma')))
+		$.each($.data(form[0],'comma'),function(index){
+			$.each($.data(form[0],'comma')[index],function(){$(this).val($(this).toVal().replace(',',''));});
+		});
 	//明細行がある場合は行数を追加
 	form.find('table').each(function(){
 		if ($(this).attr('id')!=null)
