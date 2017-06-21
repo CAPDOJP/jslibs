@@ -295,12 +295,13 @@ jQuery.fn.formAction = function(options){
 		* -----------------------------------------------------------
 		*/
 		$.each(options.comma,function(index){
-			if ($.inArray(options.comma[index].prop('tagName').toLowerCase(),['input','textarea'])!=-1)
-			{
-				//イベント追加
-				form.on('focus',options.comma[index],function(){$(this).val($(this).toVal().replace(',',''));});
-				form.on('blur',options.comma[index],function(){$(this).toComma();});
-			}
+			//イベント追加
+			form.on('focus',options.comma[index],function(){
+				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace(',',''));
+			});
+			form.on('blur',options.comma[index],function(){
+				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).toComma();
+			});
 		});
 	});
 }
@@ -716,13 +717,10 @@ jQuery.fn.loaddatas = function(options){
 			});
 			if (options.callback!=null) options.callback(json);
 			/* カンマ区切り */
-				console.log($.data(form[0],'comma'));
 			if ($.isArray($.data(form[0],'comma')))
-			{
 				$.each($.data(form[0],'comma'),function(index){
-					$.each($.data(form[0],'comma')[index],function(){$(this).toComma();});
+					$($.data(form[0],'comma')[index]).toComma();
 				});
-			}
 			//ローディング消去
 			if (!options.silent)
 				if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -1011,7 +1009,9 @@ jQuery.fn.senddatas = function(options){
 	/* カンマ区切り解除 */
 	if ($.isArray($.data(form[0],'comma')))
 		$.each($.data(form[0],'comma'),function(index){
-			$.each($.data(form[0],'comma')[index],function(){$(this).val($(this).toVal().replace(',',''));});
+			$.each($($.data(form[0],'comma')[index]),function(){
+				$(this).val($(this).toVal().replace(',',''));
+			});
 		});
 	//明細行がある場合は行数を追加
 	form.find('table').each(function(){
