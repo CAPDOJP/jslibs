@@ -264,6 +264,15 @@ jQuery.fn.sliderAction = function(options){
 			/* マウスホイールスクロール */
 			var delta=(e.originalEvent.deltaY)?e.originalEvent.deltaY:(e.originalEvent.wheelDelta)?e.originalEvent.wheelDelta:e.originalEvent.detail;
 			delta=(delta<0)?-100:100;
+			switch (slider.target.attr('id').replace(/slider/g,''))
+			{
+				case 'holizontal':
+					delta*=ratio.holizontal;
+					break;
+				case 'vertical':
+					delta*=ratio.vertical;
+					break;
+			}
 			/* 各種変数初期化 */
 			down.left=target.scrollLeft();
 			down.top=target.scrollTop();
