@@ -728,7 +728,6 @@ jQuery.fn.loaddatas = function(options){
 	});
 }
 jQuery.fn.attach = function(json,index){
-{
 	return $(this).each(function(){
 		var container=$(this);
 		$.each(json,function(key,value){
@@ -767,7 +766,7 @@ jQuery.fn.attach = function(json,index){
 			if (container.find('span#'+id).size()) container.find('span#'+id).html(data.replace(/\r?\n/g,'<br>'));
 		});
 	});
-};
+}
 /*
 *--------------------------------------------------------------------
 * データ取得(リスト)
