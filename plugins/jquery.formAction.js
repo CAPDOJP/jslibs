@@ -299,7 +299,7 @@ jQuery.fn.formAction = function(options){
 		$.each(options.comma,function(index){
 			//イベント追加
 			form.on('focus',options.comma[index],function(){
-				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace('/,/g',''));
+				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace(/,/g,''));
 			});
 			form.on('blur',options.comma[index],function(){
 				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).toComma();
@@ -316,7 +316,7 @@ jQuery.fn.formAction = function(options){
 		$.each(options.date,function(index){
 			//イベント追加
 			form.on('focus',options.date[index],function(){
-				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace('/[^0-9]+/g',''));
+				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace(/[^0-9]+/g,'');
 			});
 			form.on('blur',options.date[index],function(){
 				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).toDate();
@@ -1031,7 +1031,7 @@ jQuery.fn.senddatas = function(options){
 	if ($.isArray($.data(form[0],'comma')))
 		$.each($.data(form[0],'comma'),function(index){
 			$.each($($.data(form[0],'comma')[index]),function(){
-				$(this).val($(this).toVal().replace('/,/g',''));
+				$(this).val($(this).toVal().replace(/,/g,''));
 			});
 		});
 	//明細行がある場合は行数を追加
