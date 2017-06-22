@@ -727,7 +727,7 @@ jQuery.fn.loaddatas = function(options){
 		}
 	});
 }
-jQuery.fn.attach(json,index)
+jQuery.fn.attach = function(json,index){
 {
 	return $(this).each(function(){
 		var container=$(this);
