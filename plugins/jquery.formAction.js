@@ -1497,6 +1497,13 @@ jQuery.fn.refererAction = function(options){
 								table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).text($(this).toVal());
 							if (table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
 								table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).val($(this).toVal());
+							if (table.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()+']').size())
+							{
+								var checked=$(this).toVal();
+								table.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()+']').each(function(){
+									if ($(this).val()==checked) $(this).prop('checked','checked');
+								});
+							}
 						});
 						//強制行追加
 						$.each(table.find('tbody').find('tr').eq(rowindex-1).find('input[type=text],textarea'),function(){
@@ -1508,6 +1515,13 @@ jQuery.fn.refererAction = function(options){
 						$(this).find('input[type=hidden]').each(function(){
 							if (form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')).text($(this).toVal());
 							if (form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')).val($(this).toVal());
+							if (form.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+']').size())
+							{
+								var checked=$(this).toVal();
+								form.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+']').each(function(){
+									if ($(this).val()==checked) $(this).prop('checked','checked');
+								});
+							}
 						});
 					}
 					if (options.rows.callback!=null) options.rows.callback(source,$(this));
