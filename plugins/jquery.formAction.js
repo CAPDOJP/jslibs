@@ -316,7 +316,7 @@ jQuery.fn.formAction = function(options){
 		$.each(options.date,function(index){
 			//イベント追加
 			form.on('focus',options.date[index],function(){
-				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace('/[-\/]+/g',''));
+				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace('/[^0-9]+/g',''));
 			});
 			form.on('blur',options.date[index],function(){
 				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).toDate();
