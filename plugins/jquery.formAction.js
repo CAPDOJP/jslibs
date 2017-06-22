@@ -1519,7 +1519,6 @@ jQuery.fn.refererAction = function(options){
 							{
 								var checked=$(this).toVal();
 								form.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+']').each(function(){
-									console.log($(this).val()+'：'+checked);
 									if ($(this).val()==checked) $(this).prop('checked','checked');
 								});
 							}
