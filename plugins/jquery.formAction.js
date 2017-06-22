@@ -26,7 +26,8 @@ jQuery.fn.formAction = function(options){
 		lists:{},
 		pagers:{},
 		texts:{},
-		comma:[]
+		comma:[],
+		date:[]
 	},options);
 	//キー制御
 	$(document).on('keydown','input[type=text],input[type=password],select',function(e){
@@ -61,6 +62,7 @@ jQuery.fn.formAction = function(options){
 		var form=$(this);
 		//引数を変数に代入
 		$.data(form[0],'comma',options.comma);
+		$.data(form[0],'date',options.date);
 		//テキストボックス操作(title属性があるテキストボックスはtitle内容を初期表示にする)
 		form.find('input[type=text],textarea').each(function(){
 			if ($(this).attr('title')!=null)
@@ -301,6 +303,23 @@ jQuery.fn.formAction = function(options){
 			});
 			form.on('blur',options.comma[index],function(){
 				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).toComma();
+			});
+		});
+		/*
+		*------------------------------------------------------------
+		* 日付フォーマット操作
+		*------------------------------------------------------------
+		* parameters
+		* selector:セレクタ
+		* -----------------------------------------------------------
+		*/
+		$.each(options.date,function(index){
+			//イベント追加
+			form.on('focus',options.date[index],function(){
+				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace('-',''));
+			});
+			form.on('blur',options.date[index],function(){
+				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).toDate();
 			});
 		});
 	});
