@@ -646,7 +646,7 @@ jQuery.fn.loaddatas = function(options){
 				//全データ初期化
 				if (options.reset) form.reset();
 				//データセット
-				attach(form,json.conditions,'');
+				form.attach(json.conditions,'');
 			}
 			//ヘッダーデータ
 			if (existshead!=0)
@@ -654,7 +654,7 @@ jQuery.fn.loaddatas = function(options){
 				//全データ初期化
 				if (options.reset) form.reset();
 				//データセット
-				attach(form,json.head,'');
+				form.attach(json.head,'');
 			}
 			//明細初期化用変数
 			var inits=new Array();
@@ -699,7 +699,7 @@ jQuery.fn.loaddatas = function(options){
 								for (var i=0;i<values.length;i++)
 								{
 									if (options.append) container.addrow({initialimage:options.initialimage});
-									attach(container,values[i],(i+parseInt(counter)+1).toString());
+									container.attach(values[i],(i+parseInt(counter)+1).toString());
 									if (!options.append && i<values.length-1) container.addrow({initialimage:options.initialimage});
 								}
 							}
@@ -726,8 +726,11 @@ jQuery.fn.loaddatas = function(options){
 				if ($('div#loading')!=null) $('div#loading').css('display','none');
 		}
 	});
-	function attach(container,json,index)
-	{
+}
+jQuery.fn.attach(json,index)
+{
+	return $(this).each(function(){
+		var container=$(this);
 		$.each(json,function(key,value){
 			//各項目に値設定
 			var id=key+index;
@@ -763,8 +766,8 @@ jQuery.fn.loaddatas = function(options){
 			if (container.find('label#'+id).size()) container.find('label#'+id).html(data.replace(/\r?\n/g,'<br>'));
 			if (container.find('span#'+id).size()) container.find('span#'+id).html(data.replace(/\r?\n/g,'<br>'));
 		});
-	};
-}
+	});
+};
 /*
 *--------------------------------------------------------------------
 * データ取得(リスト)
