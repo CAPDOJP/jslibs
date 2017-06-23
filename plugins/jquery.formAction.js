@@ -1488,6 +1488,8 @@ jQuery.fn.refererAction = function(options){
 		var form=$(this);
 		$.each(options.sources,function(index){
 			var source=$(this);
+			//データ格納変数初期化
+			$.data(source[0],'refererdatas',[]);
 			//ボタン操作
 			if (options.search.button.length!=0)
 			{
@@ -1511,17 +1513,16 @@ jQuery.fn.refererAction = function(options){
 					//値セット
 					var table=$.data(source[0],'table');
 					var rowindex=$.data(source[0],'rowindex');
+					var refererdatas=$.data(source[0],'refererdatas')[source.find(options.rows.row).index($(this))];
 					if (rowindex!=null)
 					{
-						$(this).find('input[type=hidden]').each(function(){
-							if (table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
-								table.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).text($(this).toVal());
-							if (table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()))
-								table.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()).val($(this).toVal());
-							if (table.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()+']').size())
+						$.each(refererdatas,function(key,values){
+							if (table.find('label#'+key+rowindex.toString())) table.find('label#'+key+rowindex.toString()).text(values);
+							if (table.find('input#'+key+rowindex.toString())) table.find('input#'+key+rowindex.toString()).val(values);
+							if (table.find('input[type=radio][id^='+key+rowindex.toString()+']').size())
 							{
-								var checked=$(this).toVal();
-								table.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+rowindex.toString()+']').each(function(){
+								var checked=values;
+								table.find('input[type=radio][id^='+key+rowindex.toString()+']').each(function(){
 									if ($(this).val()==checked) $(this).prop('checked','checked');
 								});
 							}
@@ -1533,13 +1534,13 @@ jQuery.fn.refererAction = function(options){
 					}
 					else
 					{
-						$(this).find('input[type=hidden]').each(function(){
-							if (form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('label#'+$(this).attr('id').replace(/[0-9]+/g,'')).text($(this).toVal());
-							if (form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,''))) form.find('input#'+$(this).attr('id').replace(/[0-9]+/g,'')).val($(this).toVal());
-							if (form.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+']').size())
+						$.each(refererdatas,function(key,values){
+							if (form.find('label#'+key)) form.find('label#'+key).text(values);
+							if (form.find('input#'+key)) form.find('input#'+key).val(values);
+							if (form.find('input[type=radio][id^='+key+']').size())
 							{
-								var checked=$(this).toVal();
-								form.find('input[type=radio][id^='+$(this).attr('id').replace(/[0-9]+/g,'')+']').each(function(){
+								var checked=values;
+								form.find('input[type=radio][id^='+key+']').each(function(){
 									if ($(this).val()==checked) $(this).prop('checked','checked');
 								});
 							}
@@ -1567,6 +1568,8 @@ jQuery.fn.refererShow = function(target,table,rowindex,callback){
 		url:form.attr('action')+query,
 		append:false,
 		callback:function(json){
+			//データ格納変数初期化
+			$.data(form[0],'refererdatas',json.detail[form.attr('id')]);
 			//明細表示判定
 			if (json.detail[form.attr('id')].length==0) $('table#'+form.attr('id')).hide();
 			else $('table#'+form.attr('id')).show();
