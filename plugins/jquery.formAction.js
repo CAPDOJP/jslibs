@@ -1518,7 +1518,20 @@ jQuery.fn.refererAction = function(options){
 					{
 						$.each(refererdatas,function(key,values){
 							if (table.find('label#'+key+rowindex.toString())) table.find('label#'+key+rowindex.toString()).text(values);
-							if (table.find('input#'+key+rowindex.toString())) table.find('input#'+key+rowindex.toString()).val(values);
+							if (table.find('input#'+key+rowindex.toString()))
+							{
+								table.find('input#'+key+rowindex.toString()).each(function(){
+									switch ($(this).prop('type'))
+									{
+										case 'checkbox':
+											$(this).prop('checked',(values=='1')?true:false);
+											break;
+										default:
+											$(this).val(values);
+											break;
+									}
+								});
+							}
 							if (table.find('input[type=radio][id^='+key+rowindex.toString()+']').size())
 							{
 								var checked=values;
@@ -1536,7 +1549,20 @@ jQuery.fn.refererAction = function(options){
 					{
 						$.each(refererdatas,function(key,values){
 							if (form.find('label#'+key)) form.find('label#'+key).text(values);
-							if (form.find('input#'+key)) form.find('input#'+key).val(values);
+							if (form.find('input#'+key))
+							{
+								form.find('input#'+key).each(function(){
+									switch ($(this).prop('type'))
+									{
+										case 'checkbox':
+											$(this).prop('checked',(values=='1')?true:false);
+											break;
+										default:
+											$(this).val(values);
+											break;
+									}
+								});
+							}
 							if (form.find('input[type=radio][id^='+key+']').size())
 							{
 								var checked=values;
