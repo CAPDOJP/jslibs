@@ -1450,6 +1450,80 @@ jQuery.fn.isVisible = function()
 		}
     else return $(this).is(':visible');
 };
+jQuery.extend({
+	calculateTax:function(options){
+		var options=$.extend({
+			able:0,
+			free:0,
+			isoutsidetax:true,
+			taxround:'round',
+			taxrate:0
+		},options);
+		//課税変数端数処理
+		var tax=0;
+		if (options.isoutsidetax)
+		{
+			//外税
+			switch (options.taxround)
+			{
+				case 'floor':
+					//切り捨て
+					options.able=Math.floor(options.able*(1+options.taxrate));
+					tax=Math.floor((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+				case 'ceil':
+					//切り上げ
+					options.able=Math.ceil(options.able*(1+options.taxrate));
+					tax=Math.ceil((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+				case 'round':
+					//四捨五入
+					options.able=Math.round(options.able*(1+options.taxrate));
+					tax=Math.round((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+			}
+		}
+		else
+		{
+			//内税
+			switch (options.taxround)
+			{
+				case 'floor':
+					//切り捨て
+					options.able=Math.floor(options.able);
+					tax=Math.floor((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+				case 'ceil':
+					//切り上げ
+					options.able=Math.ceil(options.able);
+					tax=Math.ceil((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+				case 'round':
+					//四捨五入
+					options.able=Math.round(options.able);
+					tax=Math.round((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+			}
+		}
+		/* 非課税値端数処理 */
+		switch (options.taxround)
+		{
+			case 'floor':
+				//切り捨て
+				options.free=Math.floor(options.free);
+				break;
+			case 'ceil':
+				//切り上げ
+				options.free=Math.ceil(options.free);
+				break;
+			case 'round':
+				//四捨五入
+				options.free=Math.round(options.free);
+				break;
+		}
+		return {able:options.able,tax:tax,free:options.free}
+	}
+});
 /*
 *--------------------------------------------------------------------
 * データ参照ウインドウ
