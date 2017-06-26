@@ -1295,7 +1295,7 @@ jQuery.fn.toVal = function(){
 	switch ($(this).prop('tagName').toLowerCase())
 	{
 		case 'input':
-			//入���されている値がtitle内容と同一のテキストボックスは初期化
+			//入力されている値がtitle内容と同一のテキストボックスは初期化
 			if ($(this).prop('type')=='text') if ($(this).val()==$.data(this[0],'display')) $(this).val('');
 			break;
 		case 'textarea':
