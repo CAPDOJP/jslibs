@@ -392,7 +392,7 @@ jQuery.fn.removerow = function(options){
 		if (options.row!=null)
 		{
 			//要素チェック
-			if ($(this).children('tbody')==null) {alert('tableに���tbody要素を追加して下さい。');return;}
+			if ($(this).children('tbody')==null) {alert('tableにはtbody要素を追加して下さい。');return;}
 			var container=$(this).children('tbody');
 			//要素削除
 			if (container.children('tr').length!=1)
