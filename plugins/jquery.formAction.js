@@ -1249,11 +1249,11 @@ jQuery.fn.toComma = function(){
 		switch ($(this).prop('tagName').toLowerCase())
 		{
 			case 'input':
-				if ($(this).val().length!=0) $(this).val(Number($(this).val()).toLocaleString());
+				if ($(this).val().length!=0) $(this).val(Number($(this).val().replace(',','')).toLocaleString());
 				break;
 			case 'label':
 			case 'span':
-				if ($(this).text().length!=0) $(this).text(Number($(this).text()).toLocaleString());
+				if ($(this).text().length!=0) $(this).text(Number($(this).text().replace(',','')).toLocaleString());
 				break;
 		}
 	});
