@@ -30,11 +30,11 @@ jQuery.fn.formAction = function(options){
 		date:[]
 	},options);
 	//キー制御
-	$(document).on('keydown','input[type=text],input[type=password],select',function(e){
+	$(document).on('keydown','input[type=text],input[type=number],input[type=password],select',function(e){
 		var code=e.keyCode||e.which;
 		if (code==13)
 		{
-			var targets=$(this).closest('form').find('button:visible,input[type=text]:visible,input[type=password]:visible,input[type=button]:visible,textarea:visible,select:visible');
+			var targets=$(this).closest('form').find('button:visible,input[type=number]:visible,input[type=text]:visible,input[type=password]:visible,input[type=button]:visible,textarea:visible,select:visible');
 			var total=targets.length;
 			var index=targets.index(this);
 			targets.eq(index+(e.shiftKey?(index>0?-1:0):(index<total?+1:total))).focus();
@@ -51,7 +51,7 @@ jQuery.fn.formAction = function(options){
 		}
 		if (code==13)
 		{
-			var targets=$(this).closest('form').find('button:visible,input[type=text]:visible,input[type=password]:visible,input[type=button]:visible,textarea:visible,select:visible');
+			var targets=$(this).closest('form').find('button:visible,input[type=number]:visible,input[type=text]:visible,input[type=password]:visible,input[type=button]:visible,textarea:visible,select:visible');
 			var total=targets.length;
 			var index=targets.index(this);
 			targets.eq(index+(e.shiftKey?(index>0?-1:0):(index<total?+1:total))).focus();
@@ -64,7 +64,7 @@ jQuery.fn.formAction = function(options){
 		$.data(form[0],'comma',options.comma);
 		$.data(form[0],'date',options.date);
 		//テキストボックス操作(title属性があるテキストボックスはtitle内容を初期表示にする)
-		form.find('input[type=text],textarea').each(function(){
+		form.find('input[type=text],input[type=number],textarea').each(function(){
 			if ($(this).attr('title')!=null)
 			{
 				$.data(this,'display',$(this).attr('title'));
@@ -587,6 +587,7 @@ jQuery.fn.isEmpty = function(){
 				switch ($(this).prop('type'))
 				{
 					case 'text':
+					case 'number':
 					case 'password':
 						if (!exists) exists=($(this).val().length!=0);
 						break;
@@ -731,7 +732,7 @@ jQuery.fn.loaddatas = function(options){
 					}
 				});
 			//入力されている値が空のテキストボックスはtitle内容を初期表示にする
-			form.find('input[type=text],textarea').each(function(){
+			form.find('input[type=text],input[type=number],textarea').each(function(){
 				if ($(this).val().length==0) $(this).val($.data(this,'display'));
 			});
 			if (options.callback!=null) options.callback(json);
@@ -755,6 +756,7 @@ jQuery.fn.attach = function(json,index){
 			var data=(value==null)?'':value;
 			if (container.find('a#'+id).size()) container.find('a#'+id).prop('href',data);
 			if (container.find('input[type=text]#'+id).size()) container.find('input[type=text]#'+id).val(data);
+			if (container.find('input[type=number]#'+id).size()) container.find('input[type=number]#'+id).val(data);
 			if (container.find('input[type=password]#'+id).size()) container.find('input[type=password]#'+id).val(data);
 			if (container.find('input[type=checkbox]#'+id).size()) container.find('input[type=checkbox]#'+id).prop('checked',(data=='1')?true:false);
 			if (container.find('input[type=radio][id^='+id+']').size())
@@ -951,6 +953,7 @@ jQuery.fn.reset = function(options){
 			$.each(options.images,function(key,values){$(key,container).attr('src',values);});
 			$(this).find('input[type=file]').each(function(){$(this).val('');});
 			$(this).find('input[type=text]').each(function(){$(this).val('');});
+			$(this).find('input[type=number]').each(function(){$(this).val('');});
 			$(this).find('input[type=password]').each(function(){$(this).val('');});
 			$(this).find('input[type=hidden]').each(function(){$(this).val('');});
 			$(this).find('input[type=checkbox]').each(function(){$(this).prop('checked',false);});
@@ -976,7 +979,7 @@ jQuery.fn.reset = function(options){
 			});
 			$(this).find('textarea').each(function(){$(this).val('');});
 			//入力されている値が空のテキストボックスはtitle内容を初期表示にする
-			$(this).find('input[type=text],textarea').each(function(){
+			$(this).find('input[type=text],input[type=number],textarea').each(function(){
 				if ($(this).val().length==0) $(this).val($.data(this,'display'));
 			});
 			//要素内テーブル初期化
@@ -1017,7 +1020,7 @@ jQuery.fn.senddatas = function(options){
 	//ローディング表示
 	if ($('div#loading')!=null) $('div#loading').css('display','block');
 	//入力されている値がtitle内容と同一のテキストボックスは初期化
-	form.find('input[type=text],textarea').each(function(){
+	form.find('input[type=text],input[type=number],textarea').each(function(){
 		if ($(this).val()==$.data(this,'display')) $(this).val('');
 	});
 	//チェックボックスと同一idのhidden要素があるチェックボックスはその値をhidden要素に格納)
@@ -1096,7 +1099,7 @@ jQuery.fn.senddatas = function(options){
 			else
 			{
 				//入力されている値が空のテキストボックスはtitle内容を初期表示にする
-				form.find('input[type=text],textarea').each(function(){
+				form.find('input[type=text],input[type=number],textarea').each(function(){
 					if ($(this).val().length==0) $(this).val($.data(this,'display'));
 				});
 				if (options.message.length!=0)
@@ -1296,7 +1299,7 @@ jQuery.fn.toVal = function(){
 	{
 		case 'input':
 			//入力されている値がtitle内容と同一のテキストボックスは初期化
-			if ($(this).prop('type')=='text') if ($(this).val()==$.data(this[0],'display')) $(this).val('');
+			if ($(this).prop('type')=='text' || $(this).prop('type')=='number') if ($(this).val()==$.data(this[0],'display')) $(this).val('');
 			break;
 		case 'textarea':
 			//入力されている値がtitle内容と同一のテキストボックスは初期化
@@ -1313,7 +1316,7 @@ jQuery.fn.toVal = function(){
 jQuery.fn.toQuery = function(){
 	var query='';
 	//入力されている値がtitle内容と同一のテキストボックスは初期化
-	$(this).find('input[type=text],textarea').each(function(){
+	$(this).find('input[type=text],input[type=number],textarea').each(function(){
 		if ($(this).val()==$.data(this,'display')) $(this).val('');
 	});
 	//クエリ生成
@@ -1615,7 +1618,7 @@ jQuery.fn.refererAction = function(options){
 							}
 						});
 						//強制行追加
-						$.each(table.find('tbody').find('tr').eq(rowindex-1).find('input[type=text],textarea'),function(){
+						$.each(table.find('tbody').find('tr').eq(rowindex-1).find('input[type=text],input[type=number],textarea'),function(){
 							$(this).trigger('keyup');
 						});
 					}
