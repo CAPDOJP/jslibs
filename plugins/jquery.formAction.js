@@ -528,7 +528,8 @@ jQuery.fn.editortable = function(options){
 			button:'',
 			silent:false,
 			resetoptions:{},
-			callback:null
+			callback:null,
+			aftercallback:null
 		},
 		callback:null
 	},options);
@@ -548,6 +549,7 @@ jQuery.fn.editortable = function(options){
 				var rows=my.children('tbody').children('tr');
 				if (options.delete.callback!=null) options.delete.callback(row);
 				my.removerow({row:rows.index(row),resetoptions:options.resetoptions});
+				if (options.delete.aftercallback!=null) options.delete.aftercallback();
 				if (!my.children('tbody').children('tr').last().isEmpty()) my.addrow(options);
 				if (options.callback!=null) options.callback(my.children('tbody').children('tr').last());
 			});
