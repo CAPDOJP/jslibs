@@ -19,7 +19,12 @@ jQuery.noConflict();
 		infowindow:null,
 		currentlocation:null,
 		map:null,
-		fullscreenmap:null,
+		fullscreen:{
+			button:null,
+			infowindow:null,
+			currentlocation:null,
+			map:null
+		},
 		config:{},
 		markers:[]
 	};
@@ -84,10 +89,12 @@ jQuery.noConflict();
 		},
 		/* swtich view of marker */
 		reloadmap:function(){
-			var target=(vars.isfullscreen)?vars.fullscreenmap:vars.map;
-			if (vars.currentlocation.find('input[type=checkbox]').prop('checked'))
+			var infowindow=(vars.isfullscreen)?vars.fullscreen.infowindow:vars.infowindow;
+			var currentlocation=(vars.isfullscreen)?vars.fullscreen.currentlocation:vars.currentlocation;
+			var map=(vars.isfullscreen)?vars.fullscreen.map:vars.map;
+			if (currentlocation.find('input[type=checkbox]').prop('checked'))
 			{
-				target.currentlocation({callback:function(latlng){
+				map.currentlocation({callback:function(latlng){
 					var markers=$.extend(true,[],vars.markers);
 					/* start from current location */
 					markers.unshift({
@@ -98,13 +105,13 @@ jQuery.noConflict();
 						serialnumber:false
 					});
 					/* display map */
-					target.reloadmap({markers:markers,isopeninfowindow:$('#infowindow').prop('checked')});
+					map.reloadmap({markers:markers,isopeninfowindow:infowindow.find('input[type=checkbox]').prop('checked')});
 				}});
 			}
 			else
 			{
 				/* display map */
-				target.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
+				map.reloadmap({markers:vars.markers,isopeninfowindow:infowindow.find('input[type=checkbox]').prop('checked')});
 			}
 		}
 	};
@@ -128,6 +135,14 @@ jQuery.noConflict();
 			})
 		)
 		.append($('<span>現在地を表示</span>'));
+		vars.fullscreen.currentlocation=$('<label class="customview-checkbox">')
+		.append($('<input type="checkbox" id="currentlocation">')
+			.on('change',function(e){
+				/* swtich view of marker */
+				functions.reloadmap();
+			})
+		)
+		.append($('<span>現在地を表示</span>'));
 		/* create informationwindow checkbox */
 		vars.infowindow=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="infowindow">')
@@ -137,6 +152,20 @@ jQuery.noConflict();
 			})
 		)
 		.append($('<span>情報ウインドウを表示</span>'));
+		vars.fullscreen.infowindow=$('<label class="customview-checkbox">')
+		.append($('<input type="checkbox" id="infowindow">')
+			.on('change',function(e){
+				if ($(this).prop('checked')) vars.fullscreen.map.openinfowindow();
+				else vars.fullscreen.map.closeinfowindow();
+			})
+		)
+		.append($('<span>情報ウインドウを表示</span>'));
+		/* create fullscreen button */
+		vars.fullscreen.button=$('<button class="kintoneplugin-button-dialog-ok">')
+		.on('click',function(e){
+			vars.fullscreen=true;
+			functions.reloadmap();
+		});
 		/* create map controller */
 		var mapcontainer=$('<div id="map">').css({'height':vars.config['mapheight']+'vh','width':'100%'});
 		vars.map=mapcontainer.routemap(vars.config['apikey'],false,false,function(){
@@ -161,25 +190,30 @@ jQuery.noConflict();
 			});
 			if (vars.markers.length==0) return;
 			/* display map */
-			vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
+			vars.map.reloadmap({markers:vars.markers,isopeninfowindow:vars.infowindow.find('input[type=checkbox]').prop('checked')});
 		});
-		vars.fullscreenmap=$('body').routemap(vars.config['apikey'],true,false);
-		vars.fullscreenmap.buttonblock.find('button#mapclose').on('click',function(){
+		vars.fullscreen.map=$('body').routemap(vars.config['apikey'],true,false,null,'fullscreen');
+		vars.fullscreen.map.buttonblock
+		.append(vars.fullscreen.infowindow)
+		.append(vars.fullscreen.currentlocation)
+		.find('button#mapclose').on('click',function(){
 			vars.isfullscreen=false;
 		});
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.infowindow[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.fullscreen.button[0]);
 		kintone.app.getHeaderSpaceElement().innerHTML='';
 		kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
-		/*　chase mode */
+		/* chase mode */
 		if (vars.config['chasemode']=='1' && $.isNumeric(vars.config['chasetimespan']))
 		{
 			var timespan=parseFloat(vars.config['chasetimespan'])*1000;
 	        setInterval(function(){
 				/* swtich view of marker */
-				if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
+				var currentlocation=(vars.isfullscreen)?vars.fullscreen.currentlocation:vars.currentlocation;
+				if (currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
 	        },timespan);
 		}
 		return event;

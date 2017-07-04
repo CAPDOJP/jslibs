@@ -21,7 +21,8 @@ var RouteMap=function(options){
 		container:null,
 		isfullscreen:true,
 		needroute:true,
-		loadedcallback:null
+		loadedcallback:null,
+		extendid:''
 	},options);
 	/* valiable */
 	var my=this;
@@ -62,7 +63,7 @@ var RouteMap=function(options){
 		'top':'0px',
 		'width':'100%',
 		'z-index':'888'
-	}).attr('id','mapcontents');
+	}).attr('id','mapcontents'+options.extendid);
 	this.buttonblock=div.clone(true).css({
 		'background-color':'transparent',
 		'left':'0px',
@@ -347,13 +348,14 @@ RouteMap.prototype={
 		if (this.isfullscreen) this.container.css({'bottom':'0px'});
 	}
 };
-jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback){
+jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,extendid){
 	return new RouteMap({
 		apiikey:apiikey,
 		container:this,
 		isfullscreen:(isfullscreen===undefined)?true:isfullscreen,
 		needroute:(needroute===undefined)?true:needroute,
-		loadedcallback:(loadedcallback===undefined)?null:loadedcallback
+		loadedcallback:(loadedcallback===undefined)?null:loadedcallback,
+		extendid:(extendid===undefined)?'':extendid
 	});
 };
 })(jQuery);
