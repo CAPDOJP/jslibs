@@ -173,7 +173,8 @@ jQuery.noConflict();
 			var timespan=parseFloat(vars.config['chasetimespan'])*1000;
 	        setInterval(function(){
 				/* swtich view of marker */
-				if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
+				if (vars.map.container.offset().top==0)
+					if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
 	        },timespan);
 		}
 		return event;

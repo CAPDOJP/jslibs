@@ -205,7 +205,7 @@ DynamicMap.prototype={
 			/*吹き出し配置*/
 			if (label.length!=0)
 			{
-				var balloon=new google.maps.InfoWindow({content:label});
+				var balloon=new google.maps.InfoWindow({content:label,disableAutoPan:true});
 				balloon.open(map,marker);
 				google.maps.event.addListener(marker,'click',function(event){
 					if (!balloon.getMap()) balloon.open(map,marker);
