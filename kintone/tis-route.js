@@ -74,8 +74,12 @@ var RouteMap=function(options){
 		'z-index':'999'
 	}).append(
 		$('<button id="mapclose">')
-		.css({'height':'48px','width':'48px'})
-		.text('閉じる')
+		.css({
+			'background-color':'transparent',
+			'border':'none',
+			'height':'48px',
+			'width':'48px'
+		})
 		.on('click',function(){
 			my.container.css({'bottom':'-100%'});
 		})
