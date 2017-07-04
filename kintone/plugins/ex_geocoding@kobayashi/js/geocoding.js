@@ -15,9 +15,11 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
+		isfullscreen:false,
 		infowindow:null,
 		currentlocation:null,
 		map:null,
+		fullscreenmap:null,
 		config:{},
 		markers:[]
 	};
@@ -79,6 +81,31 @@ jQuery.noConflict();
 				vars.map.empty();
 				vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
 			}
+		},
+		/* swtich view of marker */
+		reloadmap:function(){
+			var target=(vars.isfullscreen)?vars.fullscreenmap:vars.map;
+			if (vars.currentlocation.find('input[type=checkbox]').prop('checked'))
+			{
+				target.currentlocation({callback:function(latlng){
+					var markers=$.extend(true,[],vars.markers);
+					/* start from current location */
+					markers.unshift({
+						colors:0,
+						label:'現在地',
+						lat:latlng.lat(),
+						lng:latlng.lng(),
+						serialnumber:false
+					});
+					/* display map */
+					target.reloadmap({markers:markers,isopeninfowindow:$('#infowindow').prop('checked')});
+				}});
+			}
+			else
+			{
+				/* display map */
+				target.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
+			}
 		}
 	};
 	/*---------------------------------------------------------------
@@ -96,27 +123,8 @@ jQuery.noConflict();
 		vars.currentlocation=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="currentlocation">')
 			.on('change',function(e){
-				if ($(this).prop('checked'))
-				{
-					vars.map.currentlocation({callback:function(latlng){
-						var markers=$.extend(true,[],vars.markers);
-						/* start from current location */
-						markers.unshift({
-							colors:0,
-							label:'現在地',
-							lat:latlng.lat(),
-							lng:latlng.lng(),
-							serialnumber:false
-						});
-						/* display map */
-						vars.map.reloadmap({markers:markers,isopeninfowindow:$('#infowindow').prop('checked')});
-					}});
-				}
-				else
-				{
-					/* display map */
-					vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
-				}
+				/* swtich view of marker */
+				functions.reloadmap();
 			})
 		)
 		.append($('<span>現在地を表示</span>'));
@@ -155,12 +163,25 @@ jQuery.noConflict();
 			/* display map */
 			vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
 		});
+		vars.fullscreenmap=$('body').routemap(vars.config['apikey'],true,false);
+		vars.fullscreenmap.buttonblock.find('button#mapclose').on('click',function(){
+			vars.isfullscreen=false;
+		});
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.infowindow[0]);
 		kintone.app.getHeaderSpaceElement().innerHTML='';
 		kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
+		/*　chase mode */
+		if (vars.config['chasemode']=='1' && $.isNumeric(vars.config['chasetimespan']))
+		{
+			var timespan=parseFloat(vars.config['chasetimespan'])*1000;
+	        setInterval(function(){
+				/* swtich view of marker */
+				if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
+	        },timespan);
+		}
 		return event;
 	});
 	kintone.events.on(events.show,function(event){

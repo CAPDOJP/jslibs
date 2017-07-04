@@ -64,17 +64,23 @@ var RouteMap=function(options){
 		'z-index':'888'
 	}).attr('id','mapcontents');
 	this.buttonblock=div.clone(true).css({
-		'background-color':'rgba(0,0,0,0.5)',
-		'bottom':'0px',
+		'background-color':'transparent',
 		'left':'0px',
-		'padding':'5px 0px',
+		'padding':'5px',
 		'position':'absolute',
-		'text-align':'center',
+		'text-align':'right',
+		'top':'0px',
 		'width':'100%',
 		'z-index':'999'
-	}).append($('<button>').text('閉じる').on('click',function(){
-		my.container.css({'bottom':'-100%'});
-	}));
+	}).append(
+		$('<button id="mapclose">')
+		.css({'height':'48px','width':'48px'})
+		.text('閉じる')
+		.on('click',function(){
+			my.container.css({'bottom':'-100%'});
+		})
+		.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.svg" alt="閉じる" title="閉じる" />').css({'width':'100%'}))
+	);
 	this.container.append(this.contents);
 	if (this.isfullscreen) this.container.append(this.buttonblock);
 	options.container.append(this.container);
@@ -334,12 +340,7 @@ RouteMap.prototype={
 				}
 				break;
 		}
-		if (this.isfullscreen)
-		{
-			this.container.css({'bottom':'0px'});
-			/* adjust container paddings */
-			this.container.css({'padding-bottom':this.buttonblock.outerHeight(true)+'px'});
-		}
+		if (this.isfullscreen) this.container.css({'bottom':'0px'});
 	}
 };
 jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback){
