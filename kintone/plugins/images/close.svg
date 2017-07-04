@@ -1,1 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  --><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve"><path fill="#0288D1" d="M50,10c22.092,0,40,17.908,40,40S72.092,90,50,90S10,72.092,10,50S27.908,10,50,10z M50.001,44.836L34.06,28.898c-0.715-0.714-1.647-1.07-2.581-1.07c-0.935,0-1.868,0.355-2.579,1.07c-1.427,1.424-1.428,3.735-0.001,5.162L44.838,50L28.896,65.941c-1.424,1.426-1.423,3.736,0,5.162c1.427,1.424,3.735,1.424,5.162,0L50,55.162l15.94,15.94c1.426,1.425,3.734,1.425,5.162,0.001c1.426-1.427,1.425-3.737,0-5.162L55.161,50L71.1,34.06c0.714-0.713,1.069-1.647,1.069-2.582c0-0.934-0.355-1.869-1.069-2.58c-1.423-1.426-3.733-1.426-5.159,0L50.001,44.836z"/></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="レイヤー_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+	 y="0px" width="100px" height="100px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
+<circle fill="#0288D1" cx="50" cy="50" r="40"/>
+<path fill="#FFFFFF" d="M50.001,44.836L34.06,28.898c-0.715-0.714-1.647-1.07-2.581-1.07c-0.935,0-1.868,0.355-2.579,1.07
+	c-1.427,1.424-1.428,3.735-0.001,5.162L44.838,50L28.896,65.941c-1.424,1.426-1.423,3.736,0,5.162c1.427,1.424,3.735,1.424,5.162,0
+	L50,55.162l15.939,15.939c1.427,1.426,3.734,1.426,5.162,0.002c1.426-1.428,1.426-3.737,0-5.162L55.161,50L71.1,34.06
+	c0.715-0.713,1.069-1.647,1.069-2.582c0-0.934-0.354-1.869-1.069-2.58c-1.422-1.426-3.732-1.426-5.158,0L50.001,44.836z"/>
+</svg>
