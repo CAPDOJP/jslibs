@@ -15,6 +15,7 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
+		isdisplaymap:false,
 		infowindow:null,
 		currentlocation:null,
 		map:null,
@@ -138,7 +139,7 @@ jQuery.noConflict();
 		/* create display map button */
 		vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
 		.text('地図を表示')
-		.on('click',function(e){functions.reloadmap();});
+		.on('click',function(e){vars.isdisplaymap=true;functions.reloadmap();});
 		/* create map */
 		vars.map=$('body').routemap(vars.config['apikey'],true,false,function(){
 			/* create map */
@@ -163,7 +164,8 @@ jQuery.noConflict();
 		});
 		vars.map.buttonblock
 		.prepend(vars.infowindow)
-		.prepend(vars.currentlocation);
+		.prepend(vars.currentlocation)
+		.find('#mapclose').on('click',function(){vars.isdisplaymap=false;});
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
@@ -173,7 +175,7 @@ jQuery.noConflict();
 			var timespan=parseFloat(vars.config['chasetimespan'])*1000;
 	        setInterval(function(){
 				/* swtich view of marker */
-				if (vars.map.container.offset().top==0)
+				if (vars.isdisplaymap)
 					if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
 	        },timespan);
 		}

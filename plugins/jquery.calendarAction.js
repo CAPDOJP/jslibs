@@ -320,8 +320,10 @@ Date.prototype.DateFormat = function(pattern){
 	if (pattern.match(/^Y$/g)!=null) return year;
 	//月
 	if (pattern.match(/^Y-m$/g)!=null) return year+'-'+month;
+	if (pattern.match(/^Y\/m$/g)!=null) return year+'/'+month;
 	//日
 	if (pattern.match(/^Y-m-d$/g)!=null) return year+'-'+month+'-'+day;
+	if (pattern.match(/^Y\/m\/d$/g)!=null) return year+'/'+month+'/'+day;
 	return '';
 }
 })(jQuery);
