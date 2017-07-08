@@ -131,6 +131,7 @@ jQuery.noConflict();
 		.append($('<span>情報ウインドウを表示</span>'));
 		/* create map controller */
 		var mapcontainer=$('<div id="map">').css({'height':vars.config['mapheight']+'vh','width':'100%'});
+		var isreload=(vars.map!=null);
 		vars.map=mapcontainer.routemap(vars.config['apikey'],false,false,function(){
 			/* create map */
 			$.each(event.records,function(index,values){
@@ -154,7 +155,7 @@ jQuery.noConflict();
 			if (vars.markers.length==0) return;
 			/* display map */
 			vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
-		});
+		},isreload);
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);

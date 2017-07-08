@@ -21,7 +21,8 @@ var RouteMap=function(options){
 		container:null,
 		isfullscreen:true,
 		needroute:true,
-		loadedcallback:null
+		loadedcallback:null,
+		isreload:false
 	},options);
 	/* valiable */
 	var my=this;
@@ -89,10 +90,13 @@ var RouteMap=function(options){
 	if (this.isfullscreen) this.container.append(this.buttonblock);
 	options.container.append(this.container);
 	/* setup google map */
-	var api=$('<script>');
-	api.attr('type','text/javascript');
-	api.attr('src','https://maps.googleapis.com/maps/api/js?key='+options.apiikey);
-	$('head').append(api);
+	if (!options.isreload)
+	{
+		var api=$('<script>');
+		api.attr('type','text/javascript');
+		api.attr('src','https://maps.googleapis.com/maps/api/js?key='+options.apiikey);
+		$('head').append(api);
+	}
 	/* setup map */
 	this.markers=[];
 	this.balloons=[];
@@ -347,13 +351,14 @@ RouteMap.prototype={
 		if (this.isfullscreen) this.container.css({'bottom':'0px'});
 	}
 };
-jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback){
+jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,isreload){
 	return new RouteMap({
 		apiikey:apiikey,
 		container:this,
 		isfullscreen:(isfullscreen===undefined)?true:isfullscreen,
 		needroute:(needroute===undefined)?true:needroute,
-		loadedcallback:(loadedcallback===undefined)?null:loadedcallback
+		loadedcallback:(loadedcallback===undefined)?null:loadedcallback,
+		isreload:(isreload===undefined)?false:isreload
 	});
 };
 })(jQuery);

@@ -141,6 +141,8 @@ jQuery.noConflict();
 		.text('地図を表示')
 		.on('click',function(e){vars.isdisplaymap=true;functions.reloadmap();});
 		/* create map */
+		var isreload=(vars.map!=null);
+		if (isreload) vars.map.container.remove();
 		vars.map=$('body').routemap(vars.config['apikey'],true,false,function(){
 			/* create map */
 			$.each(event.records,function(index,values){
@@ -161,7 +163,7 @@ jQuery.noConflict();
 					});
 				}
 			});
-		});
+		},isreload);
 		vars.map.buttonblock
 		.prepend(vars.infowindow)
 		.prepend(vars.currentlocation)
