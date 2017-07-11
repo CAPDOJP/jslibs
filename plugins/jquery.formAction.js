@@ -743,6 +743,11 @@ jQuery.fn.loaddatas = function(options){
 				$.each($.data(form[0],'comma'),function(index){
 					$($.data(form[0],'comma')[index]).toComma();
 				});
+			/* 日付フォーマット */
+			if ($.isArray($.data(form[0],'date')))
+				$.each($.data(form[0],'date'),function(index){
+					$($.data(form[0],'date')[index]).toDate();
+				});
 			//ローディング消去
 			if (!options.silent)
 				if ($('div#loading')!=null) $('div#loading').css('display','none');
@@ -1238,8 +1243,9 @@ jQuery.fn.toDate = function(){
 				break;
 			case 'label':
 			case 'span':
-				if ($(this).text().length==8)
-					if ($.isNumeric($(this).text())) $(this).text($(this).text().substr(0,4)+'-'+$(this).text().substr(4,2)+'-'+$(this).text().substr(6,2));
+				var value=$(this).text().replace(/[^0-9]+/g,'');
+				if (value.length==8)
+					if ($.isNumeric(value)) $(this).text(value.substr(0,4)+'-'+value.substr(4,2)+'-'+value.substr(6,2));
 				break;
 		}
 	});
