@@ -1238,8 +1238,9 @@ jQuery.fn.toDate = function(){
 		switch ($(this).prop('tagName').toLowerCase())
 		{
 			case 'input':
-				if ($(this).val().length==8)
-					if ($.isNumeric($(this).val())) $(this).val($(this).val().substr(0,4)+'-'+$(this).val().substr(4,2)+'-'+$(this).val().substr(6,2));
+				var value=$(this).val().replace(/[^0-9]+/g,'');
+				if (value.length==8)
+					if ($.isNumeric(value)) $(this).val(value.substr(0,4)+'-'+value.substr(4,2)+'-'+value.substr(6,2));
 				break;
 			case 'label':
 			case 'span':
