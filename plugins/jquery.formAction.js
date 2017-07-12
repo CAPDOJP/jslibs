@@ -302,7 +302,8 @@ jQuery.fn.formAction = function(options){
 				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).val($(this).toVal().replace(/,/g,''));
 			});
 			form.on('blur',options.comma[index],function(){
-				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1) $(this).toComma();
+				if ($.inArray($(this).prop('tagName').toLowerCase(),['input','textarea'])!=-1)
+					if ($.isNumeric($(this).toVal().replace(/,/g,''))) $(this).toComma();
 			});
 		});
 		/*

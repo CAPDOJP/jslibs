@@ -35,6 +35,12 @@ jQuery.noConflict();
 			'mobile.app.record.create.show',
 			'mobile.app.record.edit.show',
 			'mobile.app.record.detail.show'
+		],
+		save:[
+			'app.record.create.submit',
+			'app.record.edit.submit',
+			'mobile.app.record.create.submit',
+			'mobile.app.record.edit.submit'
 		]
 	};
 	var functions={
@@ -207,5 +213,26 @@ jQuery.noConflict();
 			});
 		kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
+	});
+	kintone.events.on(events.save,function(event){
+		return new kintone.Promise(function(resolve,reject){
+			kintone.proxy(
+				'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(event.record[vars.config['address']].value),
+				'GET',
+				{},
+				{},
+				function(body,status,headers){
+					if (status>=200 && status<300){
+						var json=body.replace(/^\s+|\s+$/g,'');
+						var results=JSON.parse(json).results;
+						var lat=results[0].geometry.location.lat
+						var lng=results[0].geometry.location.lng;
+						event.record[vars.config['lat']].value=lat;
+						event.record[vars.config['lng']].value=lng;
+						resolve(event);
+					}
+				}
+			);
+		});
 	});
 })(jQuery,kintone.$PLUGIN_ID);
