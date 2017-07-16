@@ -406,21 +406,24 @@ jQuery.fn.removerow = function(options){
 				{
 					container.children('tr').eq(i).find('iframe,img,input:not(:file),textarea,select,label,span,table').each(function(){
 						var target=$(this);
+						var index='';
 						if (target.attr('id')!=null)
 						{
+							index=target.attr('id').replace(/[^0-9]+/g,'');
+							if (index.length!=0) index=(parseInt(index)+1).toString();
 							switch (target.prop('tagName').toLowerCase())
 							{
 								case 'iframe':
 								case 'img':
-									target.attr('src',container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').attr('src'));
+									target.attr('src',container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).attr('src'));
 									break;
 								case 'label':
 								case 'span':
-									target.text(container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').text());
+									target.text(container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).text());
 									break;
 								case 'table':
 									//テーブル内要素のID指定は考慮しない
-									var fromtable=container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']');
+									var fromtable=container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index);
 									var totable=target;
 									var fromelements=null;
 									var toelements=null;
@@ -446,7 +449,7 @@ jQuery.fn.removerow = function(options){
 									});
 									break;
 								default:
-									target.val(container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').val());
+									target.val(container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).val());
 									break;
 							}
 						}
@@ -478,40 +481,46 @@ jQuery.fn.moverow = function(options){
 				//要素値移動
 				container.children('tr').eq(options.row).find('iframe,img,input:not(:file),textarea,select,label,span').each(function(){
 					var target=$(this);
+					var index='';
 					if (target.attr('id')!=null)
 					{
+						index=target.attr('id').replace(/[^0-9]+/g,'');
+						if (index.length!=0) index=(parseInt(index)+moveto).toString();
 						switch (target.prop('tagName').toLowerCase())
 						{
 							case 'iframe':
 							case 'img':
-								target.attr('src',container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').attr('src'));
+								target.attr('src',container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).attr('src'));
 								break;
 							case 'label':
 							case 'span':
-								target.text(container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').text());
+								target.text(container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).text());
 								break;
 							default:
-								target.val(container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').val());
+								target.val(container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).val());
 								break;
 						}
 					}
 				});
 				container.children('tr').eq(options.row+moveto).find('iframe,img,input:not(:file),textarea,select,label,span').each(function(){
 					var target=$(this);
+					var index='';
 					if (target.attr('id')!=null)
 					{
+						index=target.attr('id').replace(/[^0-9]+/g,'');
+						if (index.length!=0) index=(parseInt(index)-moveto).toString();
 						switch (target.prop('tagName').toLowerCase())
 						{
 							case 'iframe':
 							case 'img':
-								target.attr('src',movefrom.find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').attr('src'));
+								target.attr('src',movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).attr('src'));
 								break;
 							case 'label':
 							case 'span':
-								target.text(movefrom.find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').text());
+								target.text(movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).text());
 								break;
 							default:
-								target.val(movefrom.find(target.prop('tagName').toLowerCase()+'[id^='+target.attr('id').replace(/[0-9]+/g,'')+']').val());
+								target.val(movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).val());
 								break;
 						}
 					}
