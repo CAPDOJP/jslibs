@@ -30,32 +30,32 @@ jQuery.fn.staticMapAction = function(options){
 		$.ajax({
 			url:window.location.protocol+'//maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
 			type:'get',
-			datatype:'json',
-			error:function(){alert('地図座標取得に失敗しました。');},
-			success:function(json){
-				switch (json.status)
-				{
-					case 'ZERO_RESULTS':
-						break;
-					case 'OVER_QUERY_LIMIT':
-						alert('リクエストが割り当て量を超えています。');
-						break;
-					case 'REQUEST_DENIED':
-						alert('リクエストが拒否されました。');
-						break;
-					case 'INVALID_REQUEST':
-						alert('クエリが不足しています。');
-						break;
-					case 'OK':
-						var latlng=json.results[0].geometry.location.lat+','+json.results[0].geometry.location.lng;
-						var src=window.location.protocol+'//maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
-						target.empty();
-						target.append('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>');
-						if (options.callback!=null) options.callback(json);
-						break;
-				}
+			datatype:'json'
+		})
+		.done(function(json){
+			switch (json.status)
+			{
+				case 'ZERO_RESULTS':
+					break;
+				case 'OVER_QUERY_LIMIT':
+					alert('リクエストが割り当て量を超えています。');
+					break;
+				case 'REQUEST_DENIED':
+					alert('リクエストが拒否されました。');
+					break;
+				case 'INVALID_REQUEST':
+					alert('クエリが不足しています。');
+					break;
+				case 'OK':
+					var latlng=json.results[0].geometry.location.lat+','+json.results[0].geometry.location.lng;
+					var src=window.location.protocol+'//maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
+					target.empty();
+					target.append('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>');
+					if (options.callback!=null) options.callback(json);
+					break;
 			}
-		});
+		})
+		.fail(function(){alert('地図座標取得に失敗しました。');});
 	if (options.latlng.length!=0)
 	{
 		var src=window.location.protocol+'//maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
@@ -371,41 +371,41 @@ DynamicMap.prototype={
 		$.ajax({
 			url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&latlng='+options.lat+','+options.lng,
 			type:'get',
-			datatype:'json',
-			error:function(){alert('地図座標取得に失敗しました。');},
-			success:function(json){
-				switch (json.status)
-				{
-					case 'ZERO_RESULTS':
-						break;
-					case 'OVER_QUERY_LIMIT':
-						alert('リクエストが割り当て量を超えています。');
-						break;
-					case 'REQUEST_DENIED':
-						alert('リクエストが拒否されました。');
-						break;
-					case 'INVALID_REQUEST':
-						alert('クエリが不足しています。');
-						break;
-					case 'OK':
-						if (options.target!=null)
+			datatype:'json'
+		})
+		.done(function(json){
+			switch (json.status)
+			{
+				case 'ZERO_RESULTS':
+					break;
+				case 'OVER_QUERY_LIMIT':
+					alert('リクエストが割り当て量を超えています。');
+					break;
+				case 'REQUEST_DENIED':
+					alert('リクエストが拒否されました。');
+					break;
+				case 'INVALID_REQUEST':
+					alert('クエリが不足しています。');
+					break;
+				case 'OK':
+					if (options.target!=null)
+					{
+						switch (options.target.prop('tagName').toLowerCase())
 						{
-							switch (options.target.prop('tagName').toLowerCase())
-							{
-								case 'input':
-								case 'textarea':
-									options.target.val(json.results[0].formatted_address.replace('日本, ',''));
-									break;
-								default:
-									options.target.text(json.results[0].formatted_address.replace('日本, ',''));
-									break;
-							}
+							case 'input':
+							case 'textarea':
+								options.target.val(json.results[0].formatted_address.replace('日本, ',''));
+								break;
+							default:
+								options.target.text(json.results[0].formatted_address.replace('日本, ',''));
+								break;
 						}
-						if (options.callback!=null) options.callback(json);
-						break;
-				}
+					}
+					if (options.callback!=null) options.callback(json);
+					break;
 			}
-		});
+		})
+		.fail(function(){alert('地図座標取得に失敗しました。');});
 	},
 	/*表示領域取得*/
 	inbounds:function(){

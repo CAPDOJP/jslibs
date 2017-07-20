@@ -47,32 +47,32 @@ jQuery.noConflict();
 				$.ajax({
 					url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
 					type:'get',
-					datatype:'json',
-					error:function(){alert('地図座標取得に失敗しました。');},
-					success:function(json){
-						switch (json.status)
-						{
-							case 'ZERO_RESULTS':
-								break;
-							case 'OVER_QUERY_LIMIT':
-								alert('リクエストが割り当て量を超えています。');
-								break;
-							case 'REQUEST_DENIED':
-								alert('リクエストが拒否されました。');
-								break;
-							case 'INVALID_REQUEST':
-								alert('クエリが不足しています。');
-								break;
-							case 'OK':
-								var latlng=json.results[0].geometry.location.lat+','+json.results[0].geometry.location.lng;
-								var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
-								vars.map.empty();
-								vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
-								if (options.callback!=null) options.callback(json);
-								break;
-						}
+					datatype:'json'
+				})
+				.done(function(json){
+					switch (json.status)
+					{
+						case 'ZERO_RESULTS':
+							break;
+						case 'OVER_QUERY_LIMIT':
+							alert('リクエストが割り当て量を超えています。');
+							break;
+						case 'REQUEST_DENIED':
+							alert('リクエストが拒否されました。');
+							break;
+						case 'INVALID_REQUEST':
+							alert('クエリが不足しています。');
+							break;
+						case 'OK':
+							var latlng=json.results[0].geometry.location.lat+','+json.results[0].geometry.location.lng;
+							var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
+							vars.map.empty();
+							vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
+							if (options.callback!=null) options.callback(json);
+							break;
 					}
-				});
+				})
+				.fail(function(){alert('地図座標取得に失敗しました。');});
 			if (options.latlng.length!=0)
 			{
 				var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';

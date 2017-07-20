@@ -176,38 +176,38 @@ jQuery.noConflict();
 						$.ajax({
 							url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(target.val()),
 							type:'get',
-							datatype:'json',
-							error:function(){
-								$.each(vars.fieldinfos,function(index,values){
-									if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
-									{
-										row.find('#'+values.code).val('');
-										record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
-									}
-								});
-								functions.fieldregist(target,record,fieldinfo);
-							},
-							success:function(json){
-								switch (json.status)
-								{
-									case 'OK':
-										row.find('#'+vars.config['lat']).val(json.results[0].geometry.location.lat);
-										row.find('#'+vars.config['lng']).val(json.results[0].geometry.location.lng);
-										record[vars.config['lat']]={value:row.find('#'+vars.config['lat']).val()};
-										record[vars.config['lng']]={value:row.find('#'+vars.config['lng']).val()};
-										break;
-									default:
-										$.each(vars.fieldinfos,function(index,values){
-											if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
-											{
-												row.find('#'+values.code).val('');
-												record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
-											}
-										});
-										break;
-								}
-								functions.fieldregist(target,record,fieldinfo);
+							datatype:'json'
+						})
+						.done(function(json){
+							switch (json.status)
+							{
+								case 'OK':
+									row.find('#'+vars.config['lat']).val(json.results[0].geometry.location.lat);
+									row.find('#'+vars.config['lng']).val(json.results[0].geometry.location.lng);
+									record[vars.config['lat']]={value:row.find('#'+vars.config['lat']).val()};
+									record[vars.config['lng']]={value:row.find('#'+vars.config['lng']).val()};
+									break;
+								default:
+									$.each(vars.fieldinfos,function(index,values){
+										if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
+										{
+											row.find('#'+values.code).val('');
+											record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+										}
+									});
+									break;
 							}
+							functions.fieldregist(target,record,fieldinfo);
+						})
+						.fail(function(){
+							$.each(vars.fieldinfos,function(index,values){
+								if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
+								{
+									row.find('#'+values.code).val('');
+									record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+								}
+							});
+							functions.fieldregist(target,record,fieldinfo);
 						});
 					}
 					else functions.fieldregist(target,record,fieldinfo);

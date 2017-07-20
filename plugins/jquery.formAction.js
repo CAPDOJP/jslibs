@@ -156,51 +156,51 @@ jQuery.fn.formAction = function(options){
 						data:filedata,
 						processData:false,
 						contentType:false,
-						dataType:'json',
-						error:function(XMLHttpRequest,textStatus,errorThrown){
-							var errormessage='アップロードに失敗しました。';
-							if (values.showdetailerror)
+						dataType:'json'
+					})
+					.done(function(json){
+						//値初期化
+						target.val('');
+						target.replaceWith(target.clone(true));
+						if ('error' in json)
+							if (json.error.length!=0)
 							{
-								errormessage='';
-								errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
-								errormessage+='【textStatus】'+textStatus+' ';
-								errormessage+='【errorThrown】'+errorThrown.message;
-							}
-							if (values.messagecallback!=null) values.messagecallback('エラー',errormessage);
-							else alert(errormessage);
-							//値初期化
-							target.val('');
-							target.replaceWith(target.clone(true));
-							//ローディング消去
-							if ($('div#loading')!=null) $('div#loading').css('display','none');
-						},
-						success:function(json){
-							//値初期化
-							target.val('');
-							target.replaceWith(target.clone(true));
-							if ('error' in json)
-								if (json.error.length!=0)
-								{
-									if (values.messagecallback!=null) values.messagecallback('エラー',json.error);
-									else alert(json.error);
-									//ローディング消去
-									if ($('div#loading')!=null) $('div#loading').css('display','none');
-									return;
-								}
-							if (values.callback!=null)
-							{
-								if (json.file.length!=1)
-								{
-									var files=[];
-									for (var i=0;i<json.file.length;i++) files[i]=json.file[i];
-									values.callback(target,files);
-								}
-								else values.callback(target,json.file[0]);
-							}
-							//ローディング消去
-							if (!values.iscontinue)
+								if (values.messagecallback!=null) values.messagecallback('エラー',json.error);
+								else alert(json.error);
+								//ローディング消去
 								if ($('div#loading')!=null) $('div#loading').css('display','none');
+								return;
+							}
+						if (values.callback!=null)
+						{
+							if (json.file.length!=1)
+							{
+								var files=[];
+								for (var i=0;i<json.file.length;i++) files[i]=json.file[i];
+								values.callback(target,files);
+							}
+							else values.callback(target,json.file[0]);
 						}
+						//ローディング消去
+						if (!values.iscontinue)
+							if ($('div#loading')!=null) $('div#loading').css('display','none');
+					})
+					.fail(function(XMLHttpRequest,textStatus,errorThrown){
+						var errormessage='アップロードに失敗しました。';
+						if (values.showdetailerror)
+						{
+							errormessage='';
+							errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
+							errormessage+='【textStatus】'+textStatus+' ';
+							errormessage+='【errorThrown】'+errorThrown.message;
+						}
+						if (values.messagecallback!=null) values.messagecallback('エラー',errormessage);
+						else alert(errormessage);
+						//値初期化
+						target.val('');
+						target.replaceWith(target.clone(true));
+						//ローディング消去
+						if ($('div#loading')!=null) $('div#loading').css('display','none');
 					});
 				}
 				catch(e)
@@ -655,116 +655,116 @@ jQuery.fn.loaddatas = function(options){
 	$.ajax({
 		url:options.url,
 		type:'get',
-		dataType:'json',
-		error:function(){
-			if (options.messagecallback!=null) options.messagecallback('エラー',errors);
-			else alert(errors);
-			//ローディング消去
-			if ($('div#loading')!=null) $('div#loading').css('display','none');
-		},
-		success:function(json){
-			var existsconditions=('conditions' in json)?json.conditions.length:0;
-			var existshead=('head' in json)?json.head.length:0;
-			var existsdetail=('detail' in json)?json.detail.length:0;
-			if (existsconditions+existshead+existsdetail==0)
-				if (options.message.length!=0)
+		dataType:'json'
+	})
+	.done(function(json){
+		var existsconditions=('conditions' in json)?json.conditions.length:0;
+		var existshead=('head' in json)?json.head.length:0;
+		var existsdetail=('detail' in json)?json.detail.length:0;
+		if (existsconditions+existshead+existsdetail==0)
+			if (options.message.length!=0)
+			{
+				if (options.messagecallback!=null) options.messagecallback('エラー',errors);
+				else alert(errors);
+				//ローディング消去
+				if ($('div#loading')!=null) $('div#loading').css('display','none');
+				return;
+			}
+		//条件データ
+		if (existsconditions!=0)
+		{
+			//全データ初期化
+			if (options.reset) form.reset();
+			//データセット
+			form.attach(json.conditions,'');
+		}
+		//ヘッダーデータ
+		if (existshead!=0)
+		{
+			//全データ初期化
+			if (options.reset) form.reset();
+			//データセット
+			form.attach(json.head,'');
+		}
+		//明細初期化用変数
+		var inits=new Array();
+		//明細データ
+		if (existsdetail!=0)
+			$.each(json.detail,function(key,values){
+				if (key.length!=0)
 				{
-					if (options.messagecallback!=null) options.messagecallback('エラー',errors);
-					else alert(errors);
-					//ローディング消去
-					if ($('div#loading')!=null) $('div#loading').css('display','none');
-					return;
-				}
-			//条件データ
-			if (existsconditions!=0)
-			{
-				//全データ初期化
-				if (options.reset) form.reset();
-				//データセット
-				form.attach(json.conditions,'');
-			}
-			//ヘッダーデータ
-			if (existshead!=0)
-			{
-				//全データ初期化
-				if (options.reset) form.reset();
-				//データセット
-				form.attach(json.head,'');
-			}
-			//明細初期化用変数
-			var inits=new Array();
-			//明細データ
-			if (existsdetail!=0)
-				$.each(json.detail,function(key,values){
-					if (key.length!=0)
+					if (form.find('table#'+key)!=null)
 					{
-						if (form.find('table#'+key)!=null)
+						var container=form.find('table#'+key);
+						//明細初期化
+						if (options.detailreset && $.inArray(key,inits)<0)
 						{
-							var container=form.find('table#'+key);
-							//明細初期化
-							if (options.detailreset && $.inArray(key,inits)<0)
-							{
-								container.children('tbody').children('tr').each(function(index){
-									if (index==0) $(this).reset();
-									else $(this).remove();
-								});
-								inits.push(key);
-							}
-							//データセット
-							if (values.length!=0)
-							{
-								var counter='0';
-								if (!options.detailreset)
-								{
-									container.children('tbody').children('tr').last().find('img,input,textarea,select,label,span').each(function(){
-										var target=$(this);
-										if (target.attr('id')!=null)
-										{
-											counter=target.attr('id').replace(/[^0-9]+/g,'');
-											if (counter!='') return;
-										}
-									});
-									if (counter=='')
-									{
-										alert('detailreset設定時にはid属性を付与して下さい。');
-										return;
-									}
-									if (!options.append) counter=(parseInt(counter)-1).toString();
-								}
-								for (var i=0;i<values.length;i++)
-								{
-									if (options.append) container.addrow({initialimage:options.initialimage});
-									container.attach(values[i],(i+parseInt(counter)+1).toString());
-									if (!options.append && i<values.length-1) container.addrow({initialimage:options.initialimage});
-								}
-							}
+							container.children('tbody').children('tr').each(function(index){
+								if (index==0) $(this).reset();
+								else $(this).remove();
+							});
+							inits.push(key);
 						}
-						else
+						//データセット
+						if (values.length!=0)
 						{
-							if (options.messagecallback!=null) options.messagecallback('エラー','グリッドのIDを確認して下さい。');
-							else alert('グリッドのIDを確認して下さい。');
+							var counter='0';
+							if (!options.detailreset)
+							{
+								container.children('tbody').children('tr').last().find('img,input,textarea,select,label,span').each(function(){
+									var target=$(this);
+									if (target.attr('id')!=null)
+									{
+										counter=target.attr('id').replace(/[^0-9]+/g,'');
+										if (counter!='') return;
+									}
+								});
+								if (counter=='')
+								{
+									alert('detailreset設定時にはid属性を付与して下さい。');
+									return;
+								}
+								if (!options.append) counter=(parseInt(counter)-1).toString();
+							}
+							for (var i=0;i<values.length;i++)
+							{
+								if (options.append) container.addrow({initialimage:options.initialimage});
+								container.attach(values[i],(i+parseInt(counter)+1).toString());
+								if (!options.append && i<values.length-1) container.addrow({initialimage:options.initialimage});
+							}
 						}
 					}
-				});
-			//入力されている値が空のテキストボックスはtitle内容を初期表示にする
-			form.find('input[type=text],input[type=number],textarea').each(function(){
-				if ($(this).val().length==0) $(this).val($.data(this,'display'));
+					else
+					{
+						if (options.messagecallback!=null) options.messagecallback('エラー','グリッドのIDを確認して下さい。');
+						else alert('グリッドのIDを確認して下さい。');
+					}
+				}
 			});
-			if (options.callback!=null) options.callback(json);
-			/* カンマ区切り */
-			if ($.isArray($.data(form[0],'comma')))
-				$.each($.data(form[0],'comma'),function(index){
-					$($.data(form[0],'comma')[index]).toComma();
-				});
-			/* 日付フォーマット */
-			if ($.isArray($.data(form[0],'date')))
-				$.each($.data(form[0],'date'),function(index){
-					$($.data(form[0],'date')[index]).toDate();
-				});
-			//ローディング消去
-			if (!options.silent)
-				if ($('div#loading')!=null) $('div#loading').css('display','none');
-		}
+		//入力されている値が空のテキストボックスはtitle内容を初期表示にする
+		form.find('input[type=text],input[type=number],textarea').each(function(){
+			if ($(this).val().length==0) $(this).val($.data(this,'display'));
+		});
+		if (options.callback!=null) options.callback(json);
+		/* カンマ区切り */
+		if ($.isArray($.data(form[0],'comma')))
+			$.each($.data(form[0],'comma'),function(index){
+				$($.data(form[0],'comma')[index]).toComma();
+			});
+		/* 日付フォーマット */
+		if ($.isArray($.data(form[0],'date')))
+			$.each($.data(form[0],'date'),function(index){
+				$($.data(form[0],'date')[index]).toDate();
+			});
+		//ローディング消去
+		if (!options.silent)
+			if ($('div#loading')!=null) $('div#loading').css('display','none');
+	})
+	.fail(function(){
+		if (options.messagecallback!=null) options.messagecallback('エラー',errors);
+		else alert(errors);
+		//ローディング消去
+		if ($('div#loading')!=null) $('div#loading').css('display','none');
 	});
 }
 jQuery.fn.attach = function(json,index){
@@ -829,31 +829,31 @@ jQuery.fn.loaditems = function(param,value,callback){
 			$.ajax({
 				url:$.data(target[0],'options').url+param,
 				type:'get',
-				dataType:'json',
-				error:function(){alert('リストデータの取得に失敗しました。');},
-				success:function(json){
-					//項目設定
-					var option='';
-					if ($.data(target[0],'options').top.pattern=='always' && $.data(target[0],'options').top.value.length!=0)
+				dataType:'json'
+			})
+			.done(function(json){
+				//項目設定
+				var option='';
+				if ($.data(target[0],'options').top.pattern=='always' && $.data(target[0],'options').top.value.length!=0)
+					option+='<option value="'+$.data(target[0],'options').top.value+'">'+$.data(target[0],'options').top.label+'</option>';
+				if ('detail' in json)
+					$.each(json.detail,function(key,values){
+						for (var i=0;i<values.length;i++)
+							option+='<option value="'+values[i][$.data(target[0],'options').item.value]+'">'+values[i][$.data(target[0],'options').item.label]+'</option>';
+					});
+				if (option.length==0)
+					if ($.data(target[0],'options').top.pattern=='nodata' && $.data(target[0],'options').top.value.length!=0)
 						option+='<option value="'+$.data(target[0],'options').top.value+'">'+$.data(target[0],'options').top.label+'</option>';
-					if ('detail' in json)
-						$.each(json.detail,function(key,values){
-							for (var i=0;i<values.length;i++)
-								option+='<option value="'+values[i][$.data(target[0],'options').item.value]+'">'+values[i][$.data(target[0],'options').item.label]+'</option>';
-						});
-					if (option.length==0)
-						if ($.data(target[0],'options').top.pattern=='nodata' && $.data(target[0],'options').top.value.length!=0)
-							option+='<option value="'+$.data(target[0],'options').top.value+'">'+$.data(target[0],'options').top.label+'</option>';
-					target.html(option);
-					//値設定
-					if (option.length!=0)
-					{
-						if (value.length!=0) target.val(value);
-						else target.val(target.children('option').first().val());
-					}
-					if (callback!=null) callback(target);
+				target.html(option);
+				//値設定
+				if (option.length!=0)
+				{
+					if (value.length!=0) target.val(value);
+					else target.val(target.children('option').first().val());
 				}
-			});
+				if (callback!=null) callback(target);
+			})
+			.fail(function(){alert('リストデータの取得に失敗しました。');});
 		}
 	});
 }
@@ -875,30 +875,30 @@ jQuery.fn.loadpager = function(){
 			$.ajax({
 				url:$.data(target[0],'options').url,
 				type:'get',
-				dataType:'json',
-				error:function(){alert('ページ送りデータの取得に失敗しました。');},
-				success:function(json){
-					if ('pager' in json)
-					{
-						//1ページのみは処理しない
-						if (json.pager.length==1) return;
-						$.each(json.pager,function(index,values){
-							//要素生成
-							var pager=$('<li>').html(values.index);
-							var style={'background-color':$.data(target[0],'options').linkback,'color':$.data(target[0],'options').linkfore};
-							if (values.current!='0') $.extend(style,{'cursor':'pointer'});
-							else style={'background-color':$.data(target[0],'options').activeback,'color':$.data(target[0],'options').activefore};
-							pager.css(style);
-							target.append(pager);
-							//イベント追加
-							if ($.data(target[0],'options').callback!=null)
-							{
-								pager.on('click',function(){$.data(target[0],'options').callback($(this));});
-							}
-						});
-					}
+				dataType:'json'
+			})
+			.done(function(json){
+				if ('pager' in json)
+				{
+					//1ページのみは処理しない
+					if (json.pager.length==1) return;
+					$.each(json.pager,function(index,values){
+						//要素生成
+						var pager=$('<li>').html(values.index);
+						var style={'background-color':$.data(target[0],'options').linkback,'color':$.data(target[0],'options').linkfore};
+						if (values.current!='0') $.extend(style,{'cursor':'pointer'});
+						else style={'background-color':$.data(target[0],'options').activeback,'color':$.data(target[0],'options').activefore};
+						pager.css(style);
+						target.append(pager);
+						//イベント追加
+						if ($.data(target[0],'options').callback!=null)
+						{
+							pager.on('click',function(){$.data(target[0],'options').callback($(this));});
+						}
+					});
 				}
-			});
+			})
+			.fail(function(){alert('ページ送りデータの取得に失敗しました。');});
 		}
 	});
 }
@@ -925,23 +925,23 @@ jQuery.fn.loadparts = function(options){
 	$.ajax({
 		url:options.url,
 		type:'get',
-		dataType:'json',
-		error:function(){
+		dataType:'json'
+	})
+	.done(function(json){
+		var existsconditions=('conditions' in json)?json.conditions.length:0;
+		var existshead=('head' in json)?json.head.length:0;
+		var existsdetail=('detail' in json)?json.detail.length:0;
+		if (existsconditions+existshead+existsdetail==0) if (options.message.length!=0)
+		{
 			if (options.messagecallback!=null) options.messagecallback('エラー',errors);
 			else alert(errors);
-		},
-		success:function(json){
-			var existsconditions=('conditions' in json)?json.conditions.length:0;
-			var existshead=('head' in json)?json.head.length:0;
-			var existsdetail=('detail' in json)?json.detail.length:0;
-			if (existsconditions+existshead+existsdetail==0) if (options.message.length!=0)
-			{
-				if (options.messagecallback!=null) options.messagecallback('エラー',errors);
-				else alert(errors);
-				return;
-			}
-			if (options.callback!=null) options.callback(json);
+			return;
 		}
+		if (options.callback!=null) options.callback(json);
+	})
+	.fail(function(){
+		if (options.messagecallback!=null) options.messagecallback('エラー',errors);
+		else alert(errors);
 	});
 }
 /*
@@ -1090,49 +1090,49 @@ jQuery.fn.senddatas = function(options){
 		data:form.serialize(),
 		mimeType:form.prop('enctype'),
 		dataType:'json',
-		timeout:60000,
-		error:function(XMLHttpRequest,textStatus,errorThrown){
-			var errormessage='データ送信に失敗しました。';
-			if (options.showdetailerror)
-			{
-				errormessage='';
-				errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
-				errormessage+='【textStatus】'+textStatus+' ';
-				errormessage+='【errorThrown】'+errorThrown.message;
-			}
-			if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
-			else alert(errormessage);
+		timeout:60000
+	})
+	.done(function(json){
+		var error='';
+		if ('error' in json) if (json.error.length!=0) error=json.error;
+		if (error.length!=0)
+		{
+			if (options.messagecallback!=null) options.messagecallback('エラー',error);
+			else alert(error);
 			//ローディング消去
 			if ($('div#loading')!=null) $('div#loading').css('display','none');
-		},
-		success:function(json){
-			var error='';
-			if ('error' in json) if (json.error.length!=0) error=json.error;
-			if (error.length!=0)
-			{
-				if (options.messagecallback!=null) options.messagecallback('エラー',error);
-				else alert(error);
-				//ローディング消去
-				if ($('div#loading')!=null) $('div#loading').css('display','none');
-				return;
-			}
-			else
-			{
-				//入力されている値が空のテキストボックスはtitle内容を初期表示にする
-				form.find('input[type=text],input[type=number],textarea').each(function(){
-					if ($(this).val().length==0) $(this).val($.data(this,'display'));
-				});
-				if (options.message.length!=0)
-				{
-					if (options.messagecallback!=null) options.messagecallback('メッセージ',options.message);
-					else alert(options.message);
-				}
-				if (options.callback!=null) options.callback(json);
-			}
-			//ローディング消去
-			if (!options.iscontinue)
-				if ($('div#loading')!=null) $('div#loading').css('display','none');
+			return;
 		}
+		else
+		{
+			//入力されている値が空のテキストボックスはtitle内容を初期表示にする
+			form.find('input[type=text],input[type=number],textarea').each(function(){
+				if ($(this).val().length==0) $(this).val($.data(this,'display'));
+			});
+			if (options.message.length!=0)
+			{
+				if (options.messagecallback!=null) options.messagecallback('メッセージ',options.message);
+				else alert(options.message);
+			}
+			if (options.callback!=null) options.callback(json);
+		}
+		//ローディング消去
+		if (!options.iscontinue)
+			if ($('div#loading')!=null) $('div#loading').css('display','none');
+	})
+	.fail(function(XMLHttpRequest,textStatus,errorThrown){
+		var errormessage='データ送信に失敗しました。';
+		if (options.showdetailerror)
+		{
+			errormessage='';
+			errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
+			errormessage+='【textStatus】'+textStatus+' ';
+			errormessage+='【errorThrown】'+errorThrown.message;
+		}
+		if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
+		else alert(errormessage);
+		//ローディング消去
+		if ($('div#loading')!=null) $('div#loading').css('display','none');
 	});
 }
 /*
@@ -1168,34 +1168,34 @@ jQuery.fn.sendparts = function(options){
 			processData:false,
 			contentType:false,
 			dataType:'json',
-			timeout:60000,
-			error:function(XMLHttpRequest,textStatus,errorThrown){
-				var errormessage='データ送信に失敗しました。';
-				if (options.showdetailerror)
-				{
-					errormessage='';
-					errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
-					errormessage+='【textStatus】'+textStatus+' ';
-					errormessage+='【errorThrown】'+errorThrown.message;
-				}
-				if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
-				else alert(errormessage);
-				//ローディング消去
-				if ($('div#loading')!=null) $('div#loading').css('display','none');
-			},
-			success:function(json){
-				var error='';
-				if ('error' in json) if (json.error.length!=0) error=json.error;
-				if (error.length!=0)
-				{
-					if (options.messagecallback!=null) options.messagecallback('エラー',error);
-					else alert(error);
-				}
-				else
-				{
-					if (options.callback!=null) options.callback(json);
-				}
+			timeout:60000
+		})
+		.done(function(json){
+			var error='';
+			if ('error' in json) if (json.error.length!=0) error=json.error;
+			if (error.length!=0)
+			{
+				if (options.messagecallback!=null) options.messagecallback('エラー',error);
+				else alert(error);
 			}
+			else
+			{
+				if (options.callback!=null) options.callback(json);
+			}
+		})
+		.fail(function(XMLHttpRequest,textStatus,errorThrown){
+			var errormessage='データ送信に失敗しました。';
+			if (options.showdetailerror)
+			{
+				errormessage='';
+				errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
+				errormessage+='【textStatus】'+textStatus+' ';
+				errormessage+='【errorThrown】'+errorThrown.message;
+			}
+			if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
+			else alert(errormessage);
+			//ローディング消去
+			if ($('div#loading')!=null) $('div#loading').css('display','none');
 		});
 	}
 	catch(e)
@@ -1210,34 +1210,34 @@ jQuery.fn.sendparts = function(options){
 			data:filedata,
 			mimeType:$(this).prop('enctype'),
 			dataType:'json',
-			timeout:60000,
-			error:function(XMLHttpRequest,textStatus,errorThrown){
-				var errormessage='データ送信に失敗しました。';
-				if (options.showdetailerror)
-				{
-					errormessage='';
-					errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
-					errormessage+='【textStatus】'+textStatus+' ';
-					errormessage+='【errorThrown】'+errorThrown.message;
-				}
-				if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
-				else alert(errormessage);
-				//ローディング消去
-				if ($('div#loading')!=null) $('div#loading').css('display','none');
-			},
-			success:function(json){
-				var error='';
-				if ('error' in json) if (json.error.length!=0) error=json.error;
-				if (error.length!=0)
-				{
-					if (options.messagecallback!=null) options.messagecallback('エラー',error);
-					else alert(error);
-				}
-				else
-				{
-					if (options.callback!=null) options.callback(json);
-				}
+			timeout:60000
+		})
+		.done(function(json){
+			var error='';
+			if ('error' in json) if (json.error.length!=0) error=json.error;
+			if (error.length!=0)
+			{
+				if (options.messagecallback!=null) options.messagecallback('エラー',error);
+				else alert(error);
 			}
+			else
+			{
+				if (options.callback!=null) options.callback(json);
+			}
+		})
+		.fail(function(XMLHttpRequest,textStatus,errorThrown){
+			var errormessage='データ送信に失敗しました。';
+			if (options.showdetailerror)
+			{
+				errormessage='';
+				errormessage+='【XMLHttpRequest】'+XMLHttpRequest.status+' ';
+				errormessage+='【textStatus】'+textStatus+' ';
+				errormessage+='【errorThrown】'+errorThrown.message;
+			}
+			if (options.messagecallback!=null) options.messagecallback('エラー',errormessage);
+			else alert(errormessage);
+			//ローディング消去
+			if ($('div#loading')!=null) $('div#loading').css('display','none');
 		});
 	}
 }
