@@ -231,12 +231,23 @@ RouteMap.prototype={
 		renderer.setMap(null);
 		var addmarker=function(latlng,childindex,colorsindex,label){
 			/* append markers */
-			var fontsize=(options.markerfontsize!=null)?+'|'+options.markerfontsize.toString():'';
-			var marker=new google.maps.Marker({
-				map:map,
-				position:latlng,
-				icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+((childindex==-1)?'':childindex.toString())+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore+fontsize
-			});
+			var marker=null;
+			if (options.markerfontsize!=null)
+			{
+				marker=new google.maps.Marker({
+					map:map,
+					position:latlng,
+					icon:'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|'+colors[colorsindex].back+'|'+options.markerfontsize.toString()+'|_|'+((childindex==-1)?'':childindex.toString())
+				});
+			}
+			else
+			{
+				marker=new google.maps.Marker({
+					map:map,
+					position:latlng,
+					icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+((childindex==-1)?'':childindex.toString())+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+				});
+			}
 			markers.push(marker);
 			/* append balloons */
 			if (label.length!=0)
