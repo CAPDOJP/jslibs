@@ -208,6 +208,7 @@ RouteMap.prototype={
 	reloadmap:function(options){
 		var options=$.extend({
 			markers:[],
+			markerfontsize:null,
 			isopeninfowindow:true,
 			callback:null
 		},options);
@@ -230,7 +231,7 @@ RouteMap.prototype={
 		renderer.setMap(null);
 		var addmarker=function(latlng,childindex,colorsindex,label){
 			/* append markers */
-			var fontsize=('fontsize' in colors[colorsindex])?'|'+colors[colorsindex].fontsize:'';
+			var fontsize=(options.markerfontsize!=null)?+'|'+options.markerfontsize.toString():'';
 			var marker=new google.maps.Marker({
 				map:map,
 				position:latlng,
