@@ -20,9 +20,12 @@ jQuery.noConflict();
 		currentlocation:null,
 		map:null,
 		displaymap:null,
+		apps:{},
 		config:{},
+		offset:{},
 		markers:[]
 	};
+	var limit=500;
 	var events={
 		lists:[
 			'app.record.index.show',
@@ -88,6 +91,59 @@ jQuery.noConflict();
 				vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
 			}
 		},
+		/* data load */
+		loaddatas:function(){
+	        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:kintone.app.getId(),query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[kintone.app.getId()].toString()},function(resp){
+	        	if (vars.apps[kintone.app.getId()]==null) vars.apps[kintone.app.getId()]=resp.records;
+	        	else Array.prototype.push.apply(vars.apps[kintone.app.getId()],resp.records);
+				vars.offset[kintone.app.getId()]+=limit;
+				if (resp.records.length==limit) functions.loaddatas();
+				else
+				{
+					/* create map */
+					var isreload=(vars.map!=null);
+					if (isreload) vars.map.container.remove();
+					vars.map=$('body').routemap(vars.config['apikey'],true,false,function(){
+						/* create map */
+						$.each(vars.apps[kintone.app.getId()],function(index,values){
+							var record=values
+							var lat=parseFloat('0'+record[vars.config['lat']].value);
+							var lng=parseFloat('0'+record[vars.config['lng']].value);
+							var label='';
+							if (lat+lng!=0)
+							{
+								label='';
+								label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
+								label+='<br><a href="https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
+								vars.markers.push({
+									colors:6,
+									label:label,
+									lat:lat,
+									lng:lng
+								});
+							}
+						});
+					},isreload);
+					vars.map.buttonblock
+					.prepend(vars.infowindow)
+					.prepend(vars.currentlocation)
+					.find('#mapclose').on('click',function(){vars.isdisplaymap=false;});
+					/* append elements */
+					kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+					kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
+					/* chase mode */
+					if (vars.config['chasemode']=='1' && $.isNumeric(vars.config['chasetimespan']))
+					{
+						var timespan=parseFloat(vars.config['chasetimespan'])*1000;
+				        setInterval(function(){
+							/* swtich view of marker */
+							if (vars.isdisplaymap)
+								if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
+				        },timespan);
+					}
+				}
+			},function(error){});
+		},
 		/* swtich view of marker */
 		reloadmap:function(){
 			if (vars.currentlocation.find('input[type=checkbox]').prop('checked'))
@@ -146,47 +202,10 @@ jQuery.noConflict();
 		vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
 		.text('地図を表示')
 		.on('click',function(e){vars.isdisplaymap=true;functions.reloadmap();});
-		/* create map */
-		var isreload=(vars.map!=null);
-		if (isreload) vars.map.container.remove();
-		vars.map=$('body').routemap(vars.config['apikey'],true,false,function(){
-			/* create map */
-			$.each(event.records,function(index,values){
-				var record=values
-				var lat=parseFloat('0'+record[vars.config['lat']].value);
-				var lng=parseFloat('0'+record[vars.config['lng']].value);
-				var label='';
-				if (lat+lng!=0)
-				{
-					label='';
-					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
-					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
-					vars.markers.push({
-						colors:6,
-						label:label,
-						lat:lat,
-						lng:lng
-					});
-				}
-			});
-		},isreload);
-		vars.map.buttonblock
-		.prepend(vars.infowindow)
-		.prepend(vars.currentlocation)
-		.find('#mapclose').on('click',function(){vars.isdisplaymap=false;});
-		/* append elements */
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
-		/* chase mode */
-		if (vars.config['chasemode']=='1' && $.isNumeric(vars.config['chasetimespan']))
-		{
-			var timespan=parseFloat(vars.config['chasetimespan'])*1000;
-	        setInterval(function(){
-				/* swtich view of marker */
-				if (vars.isdisplaymap)
-					if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
-	        },timespan);
-		}
+		/* load datas */
+		vars.apps[kintone.app.getId()]=null;
+		vars.offset[kintone.app.getId()]=0;
+		functions.loaddatas();
 		return event;
 	});
 	kintone.events.on(events.show,function(event){

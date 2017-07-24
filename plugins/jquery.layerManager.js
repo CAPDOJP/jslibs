@@ -850,20 +850,30 @@ layerController.prototype={
 	},
 	/* レイヤー座標 */
 	layerposition:function(){
+		var borders=this.artboard.borders();
+		var left=this.layer.css('left').replace(/[^0-9\-.]+/g,'');
+		var top=this.layer.css('top').replace(/[^0-9\-.]+/g,'');
+		if (left.length==0) left=(this.layer.offset().left-this.container.offset().left-borders.left).toString();
+		if (top.length==0) top=(this.layer.offset().top-this.container.offset().top-borders.top).toString();
 		return {
-			left:parseInt(this.layer.css('left')),
-			top:parseInt(this.layer.css('top'))
+			left:parseInt(left),
+			top:parseInt(top)
 		};
 	},
 	/* 移動 */
 	move:function(direction,distance){
+		var borders=this.artboard.borders();
+		var left=this.layer.css('left').replace(/[^0-9\-.]+/g,'');
+		var top=this.layer.css('top').replace(/[^0-9\-.]+/g,'');
+		if (left.length==0) left=(this.layer.offset().left-this.container.offset().left-borders.left).toString();
+		if (top.length==0) top=(this.layer.offset().top-this.container.offset().top-borders.top).toString();
 		switch(direction)
 		{
 			case 'holizontal':
-				this.layer.css({'left':(parseInt(this.layer.css('left'))+distance).toString()+'px'});
+				this.layer.css({'left':(parseInt(left)+distance).toString()+'px'});
 				break;
 			case 'vertical':
-				this.layer.css({'top':(parseInt(this.layer.css('top'))+distance).toString()+'px'});
+				this.layer.css({'top':(parseInt(top)+distance).toString()+'px'});
 				break;
 		}
 		/* リサイズ */
