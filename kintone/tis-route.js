@@ -237,7 +237,7 @@ RouteMap.prototype={
 				marker=new google.maps.Marker({
 					map:map,
 					position:latlng,
-					icon:'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.65|0|'+colors[colorsindex].back+'|'+options.markerfontsize.toString()+'|_|'+((childindex==-1)?'':childindex.toString())
+					icon:'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|'+colors[colorsindex].back+'|'+options.markerfontsize.toString()+'|_|'+((childindex==-1)?'':childindex.toString())
 				});
 			}
 			else
