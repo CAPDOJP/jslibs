@@ -230,10 +230,11 @@ RouteMap.prototype={
 		renderer.setMap(null);
 		var addmarker=function(latlng,childindex,colorsindex,label){
 			/* append markers */
+			var fontsize=('fontsize' in colors[colorsindex])?'|'+colors[colorsindex].fontsize:'';
 			var marker=new google.maps.Marker({
 				map:map,
 				position:latlng,
-				icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+((childindex==-1)?'':childindex.toString())+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+				icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+((childindex==-1)?'':childindex.toString())+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore+fontsize
 			});
 			markers.push(marker);
 			/* append balloons */
