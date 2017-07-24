@@ -103,13 +103,13 @@ jQuery.noConflict();
 						serialnumber:false
 					});
 					/* display map */
-					vars.map.reloadmap({markers:markers,markerfontsize:11,isopeninfowindow:vars.infowindow.find('input[type=checkbox]').prop('checked')});
+					vars.map.reloadmap({markers:markers,markerfontsize:9,isopeninfowindow:vars.infowindow.find('input[type=checkbox]').prop('checked')});
 				}});
 			}
 			else
 			{
 				/* display map */
-				vars.map.reloadmap({markers:vars.markers,markerfontsize:11,isopeninfowindow:vars.infowindow.find('input[type=checkbox]').prop('checked')});
+				vars.map.reloadmap({markers:vars.markers,markerfontsize:9,isopeninfowindow:vars.infowindow.find('input[type=checkbox]').prop('checked')});
 			}
 		}
 	};
