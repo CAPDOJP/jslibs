@@ -116,8 +116,7 @@ jQuery.noConflict();
 					if ((vars.fieldinfos[fields[index]].required && vars.fieldinfos[fields[index]].unique) || vars.fieldinfos[fields[index]].type=='RECORD_NUMBER')
 						$('select#keyfrom').append($('<option>').attr('value',vars.fieldinfos[fields[index]].code).text(vars.fieldinfos[fields[index]].label));
 			});
-			$('div.keyto').hide();
-			$('span.keyto').show();
+			functions.switchdisplay('')
 			/* create copyfields rows */
 			$('.copyfields').empty();
 			$.each(fields,function(index){
@@ -131,6 +130,18 @@ jQuery.noConflict();
 			});
 			vars.rows=$('.copyfields').find('tr');
 			if (callback!=null) callback();
+		},
+		switchdisplay:function(value){
+			if (value.length==0)
+			{
+				$('div.keyto').css({'display':'none'});
+				$('span.keyto').css({'display':'inline-block'});
+			}
+			else
+			{
+				$('div.keyto').css({'display':'inline-block'});
+				$('span.keyto').css({'display':'none'});
+			}
 		}
 	};
 	/*---------------------------------------------------------------
@@ -176,16 +187,14 @@ jQuery.noConflict();
 						for (var $i=0;$i<vars.rows.length;$i++) $('select#copyto',vars.rows.eq($i)).val(copyfields[$('input#copyfrom',vars.rows.eq($i)).val()]);
 						$('select#keyfrom').val(config['keyfrom']);
 						$('select#keyto').val(config['keyto']);
+						functions.switchdisplay(config['keyto']);
 					});
 				}
 				else functions.reloadapp();
 				/* events */
 				$('select#copyview').on('change',function(){functions.reloadview(function(){functions.reloadapp()})});
 				$('select#copyapp').on('change',function(){functions.reloadapp()});
-				$('select#keyfrom').on('change',function(){
-					if ($(this).val().length==0) {$('div.keyto').hide();$('span.keyto').show();}
-					else {$('div.keyto').show();$('span.keyto').hide();}
-				});
+				$('select#keyfrom').on('change',function(){functions.switchdisplay($(this).val());});
 			});
 		});
 	});

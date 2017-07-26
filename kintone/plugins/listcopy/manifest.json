@@ -35,8 +35,9 @@
         "html":"html/config.html",
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
-            "js/sweetalert.min.js",
-            "js/config.js"
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/config.js",
+            "js/sweetalert.min.js"
         ],
         "css":[
             "css/51-jp-default.css",

@@ -153,7 +153,7 @@ jQuery.extend({
 						types=['DATE'];
 						break;
 					case 'DATETIME':
-						types=['CREATED_TIME','DATETIME','UPDATED_TIME'];
+						types=['DATETIME'];
 						break;
 					case 'DAY_HOUR_MINUTE':
 					case 'HOUR_MINUTE':
@@ -172,14 +172,8 @@ jQuery.extend({
 			case 'MULTI_SELECT':
 				types=['CHECK_BOX','MULTI_SELECT'];
 				break;
-			case 'CREATED_TIME':
 			case 'DATETIME':
-			case 'UPDATED_TIME':
-				types=['CREATED_TIME','DATETIME','UPDATED_TIME'];
-				break;
-			case 'CREATOR':
-			case 'MODIFIER':
-				types=['CREATOR','MODIFIER'];
+				types=['DATETIME'];
 				break;
 			case 'DATE':
 				types=['DATE'];
