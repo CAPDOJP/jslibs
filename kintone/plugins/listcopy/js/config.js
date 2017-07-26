@@ -64,9 +64,9 @@ jQuery.noConflict();
 				/* setup app lists */
 				$.each(resp.apps,function(index,values){
 					if (values.appId!=kintone.app.getId()) $('select#copyapp').append($('<option>').attr('value',values.appId).text(values.name));
-					vars.offset++;
 				})
-				if (resp.apps.length==100) functions.loaddatas(callback);
+				vars.offset+=100;
+				if (resp.apps.length==100) functions.loadapps(callback);
 				else
 				{
 					if (callback!=null) callback();
@@ -93,93 +93,13 @@ jQuery.noConflict();
 				/* initialize copy fields elements */
 				for (var $i=0;$i<vars.rows.length;$i++)
 				{
-					var code=$('input#copyfrom',vars.rows.eq($i)).val();
-					var types=[];
 					$('select#copyto',vars.rows.eq($i)).empty();
 					$('select#copyto',vars.rows.eq($i)).append($('<option>').attr('value','').text('コピーしない'));
 					$.each(resp.properties,function(key,values){
 						/* check exclude field */
 						if ($.inArray(values.code,mappings)<0 && $.inArray(values.type,vars.appexcludes)<0)
-						{
-							switch (vars.fieldinfos[code].type)
-							{
-								case 'CALC':
-									switch (vars.fieldinfos[code].format)
-									{
-										case 'DATE':
-											types=['DATE'];
-											break;
-										case 'DATETIME':
-											types=['CREATED_TIME','DATETIME','UPDATED_TIME'];
-											break;
-										case 'DAY_HOUR_MINUTE':
-										case 'HOUR_MINUTE':
-											types=['SINGLE_LINE_TEXT'];
-											break;
-										case 'NUMBER':
-										case 'NUMBER_DIGIT':
-											types=['NUMBER'];
-											break;
-										case 'TIME':
-											types=['TIME'];
-											break;
-									}
-									break;
-								case 'CHECK_BOX':
-								case 'MULTI_SELECT':
-									types=['CHECK_BOX','MULTI_SELECT'];
-									break;
-								case 'CREATED_TIME':
-								case 'DATETIME':
-								case 'UPDATED_TIME':
-									types=['CREATED_TIME','DATETIME','UPDATED_TIME'];
-									break;
-								case 'CREATOR':
-								case 'MODIFIER':
-									types=['CREATOR','MODIFIER'];
-									break;
-								case 'DATE':
-									types=['DATE'];
-									break;
-								case 'DROP_DOWN':
-								case 'RADIO_BUTTON':
-									types=['DROP_DOWN','RADIO_BUTTON','SINGLE_LINE_TEXT'];
-									break;
-								case 'FILE':
-									types=['FILE'];
-									break;
-								case 'GROUP_SELECT':
-									types=['GROUP_SELECT'];
-									break;
-								case 'LINK':
-									types=['LINK','SINGLE_LINE_TEXT'];
-									break;
-								case 'MULTI_LINE_TEXT':
-									types=['MULTI_LINE_TEXT'];
-									break;
-								case 'NUMBER':
-								case 'RECORD_NUMBER':
-									types=['NUMBER'];
-									break;
-								case 'ORGANIZATION_SELECT':
-									types=['ORGANIZATION_SELECT'];
-									break;
-								case 'RICH_TEXT':
-									types=['RICH_TEXT'];
-									break;
-								case 'SINGLE_LINE_TEXT':
-									types=['SINGLE_LINE_TEXT'];
-									break;
-								case 'TIME':
-									types=['TIME'];
-									break;
-								case 'USER_SELECT':
-									types=['USER_SELECT'];
-									break;
-							}
-							if ($.inArray(values.type,types)<0) return true;
-							$('select#copyto',vars.rows.eq($i)).append($('<option>').attr('value',values.code).text(values.label));
-						}
+							if ($.isvalidtype(vars.fieldinfos[$('input#copyfrom',vars.rows.eq($i)).val()],values))
+								$('select#copyto',vars.rows.eq($i)).append($('<option>').attr('value',values.code).text(values.label));
 					});
 				};
 				if (callback!=null) callback();
@@ -196,6 +116,8 @@ jQuery.noConflict();
 					if ((vars.fieldinfos[fields[index]].required && vars.fieldinfos[fields[index]].unique) || vars.fieldinfos[fields[index]].type=='RECORD_NUMBER')
 						$('select#keyfrom').append($('<option>').attr('value',vars.fieldinfos[fields[index]].code).text(vars.fieldinfos[fields[index]].label));
 			});
+			$('div.keyto').hide();
+			$('span.keyto').show();
 			/* create copyfields rows */
 			$('.copyfields').empty();
 			$.each(fields,function(index){
@@ -260,6 +182,10 @@ jQuery.noConflict();
 				/* events */
 				$('select#copyview').on('change',function(){functions.reloadview(function(){functions.reloadapp()})});
 				$('select#copyapp').on('change',function(){functions.reloadapp()});
+				$('select#keyfrom').on('change',function(){
+					if ($(this).val().length==0) {$('div.keyto').hide();$('span.keyto').show();}
+					else {$('div.keyto').show();$('span.keyto').hide();}
+				});
 			});
 		});
 	});

@@ -220,7 +220,7 @@ jQuery.extend({
 				types=['USER_SELECT'];
 				break;
 		}
-		return ($.inArray(target.type,types)!=-1);
+		return ($.inArray(target.type,types)>-1);
 	},
 	queries:function(){
 		var queries=[];

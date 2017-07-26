@@ -466,6 +466,12 @@ div.listcopy table thead tr.keyfields th{
   line-height:1;
   padding:3px;
 }
+div.listcopy table thead tr.keyfields th div.keyto{
+  display:none;
+}
+div.listcopy table thead tr.keyfields th span.keyto{
+  display:inline-block;
+}
 div.listcopy table thead tr:not(.keyfields) th{
   padding-top:10px;
 }
