@@ -142,6 +142,86 @@ jQuery.extend({
 		});
 		return fields;
 	},
+	isvalidtype:function(criteria,target){
+		var types=[];
+		switch (criteria.type)
+		{
+			case 'CALC':
+				switch (criteria.format)
+				{
+					case 'DATE':
+						types=['DATE'];
+						break;
+					case 'DATETIME':
+						types=['CREATED_TIME','DATETIME','UPDATED_TIME'];
+						break;
+					case 'DAY_HOUR_MINUTE':
+					case 'HOUR_MINUTE':
+						types=['SINGLE_LINE_TEXT'];
+						break;
+					case 'NUMBER':
+					case 'NUMBER_DIGIT':
+						types=['NUMBER'];
+						break;
+					case 'TIME':
+						types=['TIME'];
+						break;
+				}
+				break;
+			case 'CHECK_BOX':
+			case 'MULTI_SELECT':
+				types=['CHECK_BOX','MULTI_SELECT'];
+				break;
+			case 'CREATED_TIME':
+			case 'DATETIME':
+			case 'UPDATED_TIME':
+				types=['CREATED_TIME','DATETIME','UPDATED_TIME'];
+				break;
+			case 'CREATOR':
+			case 'MODIFIER':
+				types=['CREATOR','MODIFIER'];
+				break;
+			case 'DATE':
+				types=['DATE'];
+				break;
+			case 'DROP_DOWN':
+			case 'RADIO_BUTTON':
+				types=['DROP_DOWN','RADIO_BUTTON','SINGLE_LINE_TEXT'];
+				break;
+			case 'FILE':
+				types=['FILE'];
+				break;
+			case 'GROUP_SELECT':
+				types=['GROUP_SELECT'];
+				break;
+			case 'LINK':
+				types=['LINK','SINGLE_LINE_TEXT'];
+				break;
+			case 'MULTI_LINE_TEXT':
+				types=['MULTI_LINE_TEXT'];
+				break;
+			case 'NUMBER':
+			case 'RECORD_NUMBER':
+				types=['NUMBER'];
+				break;
+			case 'ORGANIZATION_SELECT':
+				types=['ORGANIZATION_SELECT'];
+				break;
+			case 'RICH_TEXT':
+				types=['RICH_TEXT'];
+				break;
+			case 'SINGLE_LINE_TEXT':
+				types=['SINGLE_LINE_TEXT'];
+				break;
+			case 'TIME':
+				types=['TIME'];
+				break;
+			case 'USER_SELECT':
+				types=['USER_SELECT'];
+				break;
+		}
+		return ($.inArray(target.type,types)!=-1);
+	},
 	queries:function(){
 		var queries=[];
 		var hash=null;

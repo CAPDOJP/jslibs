@@ -93,9 +93,12 @@ jQuery.noConflict();
 		},
 		/* data load */
 		loaddatas:function(){
-	        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:kintone.app.getId(),query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[kintone.app.getId()].toString()},function(resp){
-	        	if (vars.apps[kintone.app.getId()]==null) vars.apps[kintone.app.getId()]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[kintone.app.getId()],resp.records);
+			var filters=kintone.app.getQuery();
+			if (filters==null) filters='order by $id asc';
+			else filters=filters.replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,'');
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:kintone.app.getId(),query:filters+' limit '+limit.toString()+' offset '+vars.offset[kintone.app.getId()].toString()},function(resp){
+				if (vars.apps[kintone.app.getId()]==null) vars.apps[kintone.app.getId()]=resp.records;
+				else Array.prototype.push.apply(vars.apps[kintone.app.getId()],resp.records);
 				vars.offset[kintone.app.getId()]+=limit;
 				if (resp.records.length==limit) functions.loaddatas();
 				else
@@ -135,11 +138,11 @@ jQuery.noConflict();
 					if (vars.config['chasemode']=='1' && $.isNumeric(vars.config['chasetimespan']))
 					{
 						var timespan=parseFloat(vars.config['chasetimespan'])*1000;
-				        setInterval(function(){
+						setInterval(function(){
 							/* swtich view of marker */
 							if (vars.isdisplaymap)
 								if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
-				        },timespan);
+						},timespan);
 					}
 				}
 			},function(error){});
@@ -178,6 +181,8 @@ jQuery.noConflict();
 		/* check display map */
 		if (!'map' in vars.config) return event;
 		if (vars.config['map']!='1') return event;
+		/* check view type */
+		if (event.viewType.toUpperCase()=='CALENDAR') return event;
 		/* initialize valiable */
 		vars.markers=[];
 		/* create currentlocation checkbox */
