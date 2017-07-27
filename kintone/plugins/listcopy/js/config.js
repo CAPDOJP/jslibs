@@ -20,42 +20,39 @@ jQuery.noConflict();
 		appexcludes:[
 			'CALC',
 			'CATEGORY',
+			'CREATED_TIME',
+			'CREATOR',
 			'GROUP',
+			'MODIFIER',
 			'RECORD_NUMBER',
 			'REFERENCE_TABLE',
 			'STATUS',
 			'STATUS_ASSIGNEE',
-			'SUBTABLE'
+			'SUBTABLE',
+			'UPDATED_TIME'
 		],
 		keyexcludes:[
 			'CATEGORY',
-			'CHECK_BOX',
 			'CREATED_TIME',
 			'CREATOR',
-			'DROP_DOWN',
-			'FILE',
 			'GROUP',
-			'GROUP_SELECT',
 			'MODIFIER',
-			'MULTI_LINE_TEXT',
-			'MULTI_SELECT',
-			'ORGANIZATION_SELECT',
-			'RADIO_BUTTON',
 			'REFERENCE_TABLE',
-			'RICH_TEXT',
 			'STATUS',
 			'STATUS_ASSIGNEE',
 			'SUBTABLE',
-			'TIME',
-			'UPDATED_TIME',
-			'USER_SELECT'
+			'UPDATED_TIME'
 		],
 		viewexcludes:[
 			'CATEGORY',
+			'CREATED_TIME',
+			'CREATOR',
+			'MODIFIER',
 			'REFERENCE_TABLE',
 			'STATUS',
 			'STATUS_ASSIGNEE',
-			'SUBTABLE'
+			'SUBTABLE',
+			'UPDATED_TIME'
 		]
 	};
 	var functions={
@@ -91,15 +88,15 @@ jQuery.noConflict();
 					if ($.inArray(values.type,vars.keyexcludes)<0) $('select#keyto').append($('<option>').attr('value',values.code).text(values.label));
 				});
 				/* initialize copy fields elements */
-				for (var $i=0;$i<vars.rows.length;$i++)
+				for (var i=0;i<vars.rows.length;i++)
 				{
-					$('select#copyto',vars.rows.eq($i)).empty();
-					$('select#copyto',vars.rows.eq($i)).append($('<option>').attr('value','').text('コピーしない'));
+					$('select#copyto',vars.rows.eq(i)).empty();
+					$('select#copyto',vars.rows.eq(i)).append($('<option>').attr('value','').text('コピーしない'));
 					$.each(resp.properties,function(key,values){
 						/* check exclude field */
 						if ($.inArray(values.code,mappings)<0 && $.inArray(values.type,vars.appexcludes)<0)
-							if ($.isvalidtype(vars.fieldinfos[$('input#copyfrom',vars.rows.eq($i)).val()],values))
-								$('select#copyto',vars.rows.eq($i)).append($('<option>').attr('value',values.code).text(values.label));
+							if ($.isvalidtype(vars.fieldinfos[$('input#copyfrom',vars.rows.eq(i)).val()],values))
+								$('select#copyto',vars.rows.eq(i)).append($('<option>').attr('value',values.code).text(values.label));
 					});
 				};
 				if (callback!=null) callback();
@@ -113,16 +110,30 @@ jQuery.noConflict();
 			$('select#keyfrom').append($('<option>').attr('value','').text('指定しない'));
 			$.each(fields,function(index){
 				if (fields[index] in vars.fieldinfos)
-					if ((vars.fieldinfos[fields[index]].required && vars.fieldinfos[fields[index]].unique) || vars.fieldinfos[fields[index]].type=='RECORD_NUMBER')
+					if (vars.fieldinfos[fields[index]].required || vars.fieldinfos[fields[index]].type=='RECORD_NUMBER')
 						$('select#keyfrom').append($('<option>').attr('value',vars.fieldinfos[fields[index]].code).text(vars.fieldinfos[fields[index]].label));
 			});
-			functions.switchdisplay('')
+			functions.switching('')
 			/* create copyfields rows */
 			$('.copyfields').empty();
 			$.each(fields,function(index){
 				if (fields[index] in vars.fieldinfos)
 				{
+					var disabled=true;
+					if (!vars.fieldinfos[fields[index]].lookup)
+					{
+						switch (vars.fieldinfos[fields[index]].type)
+						{
+							case 'CALC':
+								if (vars.fieldinfos[fields[index]].format.match(/^NUMBER/g)!=null) disabled=false;
+								break;
+							case 'NUMBER':
+								disabled=false;
+								break;
+						}
+					}
 					row=vars.template.clone(true);
+					row.find('input#sum').prop('disabled',disabled);
 					row.find('input#copyfrom').val(vars.fieldinfos[fields[index]].code);
 					row.find('span#copyfromname').text(vars.fieldinfos[fields[index]].label);
 					$('.copyfields').append(row);
@@ -131,16 +142,16 @@ jQuery.noConflict();
 			vars.rows=$('.copyfields').find('tr');
 			if (callback!=null) callback();
 		},
-		switchdisplay:function(value){
+		switching:function(value){
 			if (value.length==0)
 			{
-				$('div.keyto').css({'display':'none'});
-				$('span.keyto').css({'display':'inline-block'});
+				$('div.switch').css({'display':'none'});
+				$('span.switch').css({'display':'inline-block'});
 			}
 			else
 			{
-				$('div.keyto').css({'display':'inline-block'});
-				$('span.keyto').css({'display':'none'});
+				$('div.switch').css({'display':'inline-block'});
+				$('span.switch').css({'display':'none'});
 			}
 		}
 	};
@@ -184,17 +195,22 @@ jQuery.noConflict();
 					$('select#copyapp').val(config['copyapp']);
 					functions.reloadapp(function(){
 						var copyfields=JSON.parse(config['copyfields']);
-						for (var $i=0;$i<vars.rows.length;$i++) $('select#copyto',vars.rows.eq($i)).val(copyfields[$('input#copyfrom',vars.rows.eq($i)).val()]);
+						var sumfields=JSON.parse(config['sumfields']);
+						for (var i=0;i<vars.rows.length;i++)
+						{
+							$('select#copyto',vars.rows.eq(i)).val(copyfields[$('input#copyfrom',vars.rows.eq(i)).val()]);
+							$('input#sum',vars.rows.eq(i)).prop('checked',(sumfields[$('input#copyfrom',vars.rows.eq(i)).val()]=='1'));
+						}
 						$('select#keyfrom').val(config['keyfrom']);
 						$('select#keyto').val(config['keyto']);
-						functions.switchdisplay(config['keyto']);
+						functions.switching(config['keyfrom']);
 					});
 				}
 				else functions.reloadapp();
 				/* events */
 				$('select#copyview').on('change',function(){functions.reloadview(function(){functions.reloadapp()})});
 				$('select#copyapp').on('change',function(){functions.reloadapp()});
-				$('select#keyfrom').on('change',function(){functions.switchdisplay($(this).val());});
+				$('select#keyfrom').on('change',function(){functions.switching($(this).val());});
 			});
 		});
 	});
@@ -204,11 +220,23 @@ jQuery.noConflict();
 	$('button#submit').on('click',function(e){
 		var config=[];
 		var copyfields={};
-		for (var $i=0;$i<vars.rows.length;$i++) copyfields[$('input#copyfrom',vars.rows.eq($i)).val()]=$('select#copyto',vars.rows.eq($i)).val();
+		var sumfields={};
+		for (var i=0;i<vars.rows.length;i++)
+		{
+			copyfields[$('input#copyfrom',vars.rows.eq(i)).val()]=$('select#copyto',vars.rows.eq(i)).val();
+			sumfields[$('input#copyfrom',vars.rows.eq(i)).val()]=($('input#sum',vars.rows.eq(i)).prop('checked'))?'1':'0';
+		}
+		/* check key field */
+		if ($('select#keyfrom').val().length!=0 && copyfields[$('select#keyfrom').val()].length==0)
+		{
+			swal('Error!','キーに指定したフィールドはコピー先を指定して下さい。','error');
+			return;
+		}
 		/* setup config */
 		config['copyview']=$('select#copyview').val();
 		config['copyapp']=$('select#copyapp').val();
 		config['copyfields']=JSON.stringify(copyfields);
+		config['sumfields']=JSON.stringify(sumfields);
 		config['keyfrom']=$('select#keyfrom').val();
 		config['keyto']=$('select#keyto').val();
 		/* save config */

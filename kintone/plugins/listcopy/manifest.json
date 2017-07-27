@@ -3,9 +3,9 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone 一覧レコードコピープラグイン",
+        "ja":"kintone 一覧レコード集計/コピープラグイン",
         "en":"kintone List Copy plug-in",
-        "zh":"kintone 一覧レコードコピープラグイン"
+        "zh":"kintone 一覧レコード集計/コピープラグイン"
     },
     "description":{
         "ja":"一覧に表示中のレコードを別アプリにコピーするプラグインです。",

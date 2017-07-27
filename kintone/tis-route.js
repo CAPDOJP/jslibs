@@ -62,7 +62,7 @@ var RouteMap=function(options){
 		'position':'absolute',
 		'top':'0px',
 		'width':'100%',
-		'z-index':'888'
+		'z-index':'1'
 	}).attr('id','mapcontents');
 	this.buttonblock=div.clone(true).css({
 		'background-color':'transparent',
@@ -72,7 +72,7 @@ var RouteMap=function(options){
 		'text-align':'right',
 		'top':'0px',
 		'width':'100%',
-		'z-index':'999'
+		'z-index':'2'
 	}).append(
 		$('<button id="mapclose">')
 		.css({

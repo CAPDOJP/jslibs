@@ -462,14 +462,20 @@
 div.listcopy{
   padding-bottom:15px
 }
+div.listcopy table thead tr:last-of-type{
+  border-bottom: 1px solid #d6d1cc;
+}
+div.listcopy table thead tr:last-of-type th{
+  text-align:center;
+}
 div.listcopy table thead tr.keyfields th{
   line-height:1;
   padding:3px;
 }
-div.listcopy table thead tr.keyfields th div.keyto{
+div.listcopy table thead tr.keyfields th div.switch{
   display:none;
 }
-div.listcopy table thead tr.keyfields th span.keyto{
+div.listcopy table thead tr.keyfields th span.switch{
   display:inline-block;
 }
 div.listcopy table thead tr:not(.keyfields) th{
@@ -484,4 +490,11 @@ div.listcopy table tbody.copyfields tr:nth-of-type(even){
 div.listcopy table tbody.copyfields tr td{
   line-height:1;
   padding:3px;
+}
+div.listcopy table tbody.copyfields tr td:first-of-type{
+  width:35px;
+  text-align:center;
+}
+div.listcopy table tfoot tr td{
+  padding-top:10px;
 }
