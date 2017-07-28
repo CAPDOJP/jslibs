@@ -12,7 +12,7 @@
 					</div>
 				</th>
 				<th></th>
-				<th>
+				<th colspan="2">
 					<div class="kintoneplugin-label">コピー先アプリ</div>
 					<div class="kintoneplugin-desc">コピー先となるアプリを選択して下さい。</div>
 					<div class="kintoneplugin-select-outer">
@@ -23,7 +23,7 @@
 				</th>
 			</tr>
 			<tr>
-				<th colspan="4">
+				<th colspan="5">
 					<div class="kintoneplugin-label">上書きキーフィールド設定</div>
 					<div class="kintoneplugin-desc">コピー先アプリのデータを上書きする場合は、上書き条件となるキーフィールドを指定して下さい。</div>
 					<div class="kintoneplugin-caution">*キーに指定出来るフィールドは「必須項目にする」にチェックが入っているものに限ります。</div>
@@ -48,9 +48,13 @@
 					</div>
 					<span class="switch">コピー元のキーフィールドを選択して下さい。</span>
 				</th>
+				<th>
+					<button><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></button>
+					<button><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></button>
+				</th>
 			</tr>
 			<tr>
-				<th colspan="4">
+				<th colspan="5">
 					<div class="kintoneplugin-label">コピーフィールド設定</div>
 				</th>
 			</tr>
@@ -58,7 +62,7 @@
 				<th>合算</th>
 				<th>コピー元</th>
 				<th>&nbsp;</th>
-				<th>コピー先</th>
+				<th colspan="2">コピー先</th>
 			</tr>
 		</thead>
 		<tbody class="copyfields">
@@ -69,7 +73,7 @@
 					<input type="hidden" id="copyfrom">
 				</td>
 				<td>&nbsp;→&nbsp;</td>
-				<td>
+				<td colspan="2">
 					<div class="kintoneplugin-select-outer">
 						<div class="kintoneplugin-select">
 							<select id="copyto"></select>
@@ -80,7 +84,7 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="4">
+				<td colspan="5">
 					<div class="kintoneplugin-label">合算チェックボックスについて</div>
 					<div class="kintoneplugin-desc">合算チェックボックスにチェックを付いている場合は、コピー先が指定されている他のフィールドの値を調べ、<br>それらが同じレコード毎に合算した結果をコピーします。</div>
 					<div class="kintoneplugin-caution">*合算可能なフィールドはルックアップを除く数値フィールド/数値形式の計算フィールドに限ります。</div>

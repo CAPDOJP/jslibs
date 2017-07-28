@@ -462,6 +462,9 @@
 div.listcopy{
   padding-bottom:15px
 }
+div.listcopy div.kintoneplugin-select-outer{
+  margin:1px 0px;
+}
 div.listcopy table thead tr:last-of-type{
   border-bottom: 1px solid #d6d1cc;
 }
@@ -471,6 +474,18 @@ div.listcopy table thead tr:last-of-type th{
 div.listcopy table thead tr.keyfields th{
   line-height:1;
   padding:3px;
+}
+div.listcopy table thead tr.keyfields th:last-of-type{
+  width:52px;
+}
+div.listcopy table thead tr.keyfields th button{
+  background-color:transparent;
+  border:none;
+  display:inline-block;
+  width:50%;
+}
+div.listcopy table thead tr.keyfields th button img{
+  width:100%;
 }
 div.listcopy table thead tr.keyfields th div.switch{
   display:none;
