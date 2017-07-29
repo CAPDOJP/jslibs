@@ -37,10 +37,12 @@ jQuery.noConflict();
 			var record=null;
 			var body={};
 			var filters=[];
+			var querykeys={};
 			var summaries=[];
 			var summarykeys=[];
 			var summaryfields=[];
 			var copyfields=JSON.parse(vars.config.copyfields);
+			var keyfields=JSON.parse(vars.config.keyfields);
 			var sumfields=JSON.parse(vars.config.sumfields);
 			/* summary */
 			$.each(copyfields,function(key,values){
@@ -85,10 +87,12 @@ jQuery.noConflict();
 				swal('Error!','データがありません。','error');
 				return;
 			}
+			/* query */
+			$.each(keyfields,function(key,values){if (key.length!=0) querykeys[key]=values;});
 			vars.progress.find('.message').text('コピーしています');
 			vars.progress.find('.progressbar').find('.progresscell').width(0);
 			vars.progress.show();
-			if (vars.config.keyfrom.length!=0)
+			if (Object.keys(querykeys).length!=0)
 			{
 				/* update */
 				functions.loaddatas(vars.config.copyapp,function(){
@@ -96,37 +100,45 @@ jQuery.noConflict();
 						if (error) return false;
 						record=summaries[index];
 						filters.push({counter:0,filter:[]});
-						filters[index].filter=$.grep(vars.apps,function(item,index){return item[vars.config.keyto].value==record[vars.config.keyfrom].value;});
-						for (var i=0;i<filters[index].filter.length;i++)
+						filters[index].filter=$.grep(vars.apps,function(item,index){
+							var ismatch=true;
+							$.each(querykeys,function(key,values){if (item[values].value!=record[key].value) ismatch=false;});
+							return ismatch;
+						});
+						if (filters[index].filter.length!=0)
 						{
-							if (error) return false;
-							body={
-								app:vars.config.copyapp,
-								id:filters[index].filter[i]['$id'].value,
-								record:{}
-							};
-							$.each(copyfields,function(key,values){
-								if (values.length!=0) body.record[values]={value:record[key].value};
-							});
-							kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-								filters[index].counter++;
-								if (filters[index].counter==filters[index].filter.length)
-								{
-									counter++;
-									if (counter<summaries.length) vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/summaries.length));
-									else
+							for (var i=0;i<filters[index].filter.length;i++)
+							{
+								if (error) return false;
+								body={
+									app:vars.config.copyapp,
+									id:filters[index].filter[i]['$id'].value,
+									record:{}
+								};
+								$.each(copyfields,function(key,values){
+									if (values.length!=0) body.record[values]={value:record[key].value};
+								});
+								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+									filters[index].counter++;
+									if (filters[index].counter==filters[index].filter.length)
 									{
-										vars.progress.hide();
-										swal('登録完了','データを登録しました。','success');
+										counter++;
+										if (counter<summaries.length) vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/summaries.length));
+										else
+										{
+											vars.progress.hide();
+											swal('登録完了','データを登録しました。','success');
+										}
 									}
-								}
-							},function(error){
-								vars.progress.hide();
-								swal('Error!',error.message,'error');
-								error=true;
-							});
-							update=true;
+								},function(error){
+									vars.progress.hide();
+									swal('Error!',error.message,'error');
+									error=true;
+								});
+								update=true;
+							}
 						}
+						else counter++;
 					});
 					if (!error && !update)
 					{

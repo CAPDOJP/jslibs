@@ -463,10 +463,16 @@ div.listcopy{
   padding-bottom:15px
 }
 div.listcopy div.kintoneplugin-select-outer{
-  margin:1px 0px;
+  margin:2px 0px;
 }
-div.listcopy table thead tr:last-of-type{
-  border-bottom: 1px solid #d6d1cc;
+div.listcopy table th,
+div.listcopy table td{
+  white-space:nowrap;
+}
+div.listcopy table th.separate,
+div.listcopy table td.separate{
+  text-align:center;
+  width:35px;
 }
 div.listcopy table thead tr:last-of-type th{
   text-align:center;
@@ -475,29 +481,27 @@ div.listcopy table thead tr.keyfields th{
   line-height:1;
   padding:3px;
 }
-div.listcopy table thead tr.keyfields th:last-of-type{
-  width:52px;
-}
-div.listcopy table thead tr.keyfields th button{
-  background-color:transparent;
-  border:none;
-  display:inline-block;
-  width:50%;
-}
-div.listcopy table thead tr.keyfields th button img{
-  width:100%;
-}
 div.listcopy table thead tr.keyfields th div.switch{
   display:none;
 }
 div.listcopy table thead tr.keyfields th span.switch{
   display:inline-block;
 }
+div.listcopy table thead tr.keyfields th.button{
+  width:28px;
+}
+div.listcopy table thead tr.keyfields th.button img{
+  cursor:pointer;
+  display:block;
+  margin:0px;
+  padding:0px;
+  width:100%;
+}
 div.listcopy table thead tr:not(.keyfields) th{
   padding-top:10px;
 }
 div.listcopy table tbody.copyfields tr{
-  border-bottom: 1px solid #d6d1cc;
+  border-top:1px solid #d6d1cc;
 }
 div.listcopy table tbody.copyfields tr:nth-of-type(even){
   background-color:#fffcf2;
@@ -506,7 +510,7 @@ div.listcopy table tbody.copyfields tr td{
   line-height:1;
   padding:3px;
 }
-div.listcopy table tbody.copyfields tr td:first-of-type{
+div.listcopy table tbody.copyfields tr td.summary{
   width:35px;
   text-align:center;
 }

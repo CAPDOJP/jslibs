@@ -13,8 +13,10 @@ jQuery.noConflict();
 	"use strict";
 	var vars={
 		offset:0,
-		rows:null,
-		template:null,
+		copyrows:null,
+		copytemplate:null,
+		keyrows:null,
+		keytemplate:null,
 		fieldinfos:{},
 		viewinfos:{},
 		appexcludes:[
@@ -56,6 +58,21 @@ jQuery.noConflict();
 		]
 	};
 	var functions={
+		addkey:function(){
+			$('.copyfieldstitle').before(vars.keytemplate.clone(true));
+			vars.keyrows=$('.keyfields');
+			/* switch view of button */
+			$('img.del',vars.keyrows.first()).css({'display':'none'});
+			/* events */
+			$('img.add',vars.keyrows.last()).on('click',function(){functions.addkey()});
+			$('img.del',vars.keyrows.last()).on('click',function(){functions.delkey($(this).closest('tr'))});
+			$('select#keyfrom',vars.keyrows.last()).on('change',function(){functions.switching($(this).closest('tr'),$(this).val());});
+			functions.switching(vars.keyrows.last(),'');
+		},
+		delkey:function(row){
+			row.remove();
+			vars.keyrows=$('.keyfields');
+		},
 		loadapps:function(callback){
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
 				/* setup app lists */
@@ -73,6 +90,7 @@ jQuery.noConflict();
 		reloadapp:function(callback){
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:$('select#copyapp').val()},function(resp){
 				var mappings=[];
+				var row=null;
 				/* append lookup exclude fields */
 				$.each(resp.properties,function(key,values){
 					if (values.lookup)
@@ -83,20 +101,24 @@ jQuery.noConflict();
 					}
 				});
 				/* initialize key fields elements */
-				$('select#keyto').empty();
+				row=vars.keytemplate;
+				$('select#keyto',row).empty();
 				$.each(resp.properties,function(key,values){
-					if ($.inArray(values.type,vars.keyexcludes)<0) $('select#keyto').append($('<option>').attr('value',values.code).text(values.label));
+					if ($.inArray(values.type,vars.keyexcludes)<0) $('select#keyto',row).append($('<option>').attr('value',values.code).text(values.label));
 				});
+				/* create keyfields rows */
+				if (vars.keyrows!=null) vars.keyrows.remove();
+				functions.addkey();
 				/* initialize copy fields elements */
-				for (var i=0;i<vars.rows.length;i++)
+				for (var i=0;i<vars.copyrows.length;i++)
 				{
-					$('select#copyto',vars.rows.eq(i)).empty();
-					$('select#copyto',vars.rows.eq(i)).append($('<option>').attr('value','').text('コピーしない'));
+					$('select#copyto',vars.copyrows.eq(i)).empty();
+					$('select#copyto',vars.copyrows.eq(i)).append($('<option>').attr('value','').text('コピーしない'));
 					$.each(resp.properties,function(key,values){
 						/* check exclude field */
 						if ($.inArray(values.code,mappings)<0 && $.inArray(values.type,vars.appexcludes)<0)
-							if ($.isvalidtype(vars.fieldinfos[$('input#copyfrom',vars.rows.eq(i)).val()],values))
-								$('select#copyto',vars.rows.eq(i)).append($('<option>').attr('value',values.code).text(values.label));
+							if ($.isvalidtype(vars.fieldinfos[$('input#copyfrom',vars.copyrows.eq(i)).val()],values))
+								$('select#copyto',vars.copyrows.eq(i)).append($('<option>').attr('value',values.code).text(values.label));
 					});
 				};
 				if (callback!=null) callback();
@@ -106,14 +128,17 @@ jQuery.noConflict();
 			var fields=vars.viewinfos[$('select#copyview').val()].fields;
 			var row=null;
 			/* initialize key fields elements */
-			$('select#keyfrom').empty();
-			$('select#keyfrom').append($('<option>').attr('value','').text('指定しない'));
+			row=vars.keytemplate;
+			$('select#keyfrom',row).empty();
+			$('select#keyfrom',row).append($('<option>').attr('value','').text('指定しない'));
 			$.each(fields,function(index){
 				if (fields[index] in vars.fieldinfos)
 					if (vars.fieldinfos[fields[index]].required || vars.fieldinfos[fields[index]].type=='RECORD_NUMBER')
-						$('select#keyfrom').append($('<option>').attr('value',vars.fieldinfos[fields[index]].code).text(vars.fieldinfos[fields[index]].label));
+						$('select#keyfrom',row).append($('<option>').attr('value',vars.fieldinfos[fields[index]].code).text(vars.fieldinfos[fields[index]].label));
 			});
-			functions.switching('')
+			/* create keyfields rows */
+			if (vars.keyrows!=null) vars.keyrows.remove();
+			functions.addkey();
 			/* create copyfields rows */
 			$('.copyfields').empty();
 			$.each(fields,function(index){
@@ -132,26 +157,26 @@ jQuery.noConflict();
 								break;
 						}
 					}
-					row=vars.template.clone(true);
-					row.find('input#sum').prop('disabled',disabled);
-					row.find('input#copyfrom').val(vars.fieldinfos[fields[index]].code);
-					row.find('span#copyfromname').text(vars.fieldinfos[fields[index]].label);
+					row=vars.copytemplate.clone(true);
+					$('input#sum',row).prop('disabled',disabled);
+					$('input#copyfrom',row).val(vars.fieldinfos[fields[index]].code);
+					$('span#copyfromname',row).text(vars.fieldinfos[fields[index]].label);
 					$('.copyfields').append(row);
 				}
 			});
-			vars.rows=$('.copyfields').find('tr');
+			vars.copyrows=$('.copyfields').find('tr');
 			if (callback!=null) callback();
 		},
-		switching:function(value){
+		switching:function(row,value){
 			if (value.length==0)
 			{
-				$('div.switch').css({'display':'none'});
-				$('span.switch').css({'display':'inline-block'});
+				$('div.switch',row).css({'display':'none'});
+				$('span.switch',row).css({'display':'inline-block'});
 			}
 			else
 			{
-				$('div.switch').css({'display':'inline-block'});
-				$('span.switch').css({'display':'none'});
+				$('div.switch',row).css({'display':'inline-block'});
+				$('span.switch',row).css({'display':'none'});
 			}
 		}
 	};
@@ -181,7 +206,8 @@ jQuery.noConflict();
 				return;
 			}
 			/* initialize valiable */
-			vars.template=$('.copyfields').find('tr').first().clone(false);
+			vars.copytemplate=$('.copyfields').find('tr').first().clone(true);
+			vars.keytemplate=$('.keyfields').first().clone(true);
 			/* setup config */
 			var config=kintone.plugin.app.getConfig(PLUGIN_ID);
 			if (Object.keys(config).length!==0) $('select#copyview').val(config['copyview']);
@@ -194,23 +220,30 @@ jQuery.noConflict();
 				{
 					$('select#copyapp').val(config['copyapp']);
 					functions.reloadapp(function(){
+						var add=false;
+						var row=0;
 						var copyfields=JSON.parse(config['copyfields']);
+						var keyfields=JSON.parse(config['keyfields']);
 						var sumfields=JSON.parse(config['sumfields']);
-						for (var i=0;i<vars.rows.length;i++)
+						for (var i=0;i<vars.copyrows.length;i++)
 						{
-							$('select#copyto',vars.rows.eq(i)).val(copyfields[$('input#copyfrom',vars.rows.eq(i)).val()]);
-							$('input#sum',vars.rows.eq(i)).prop('checked',(sumfields[$('input#copyfrom',vars.rows.eq(i)).val()]=='1'));
+							$('select#copyto',vars.copyrows.eq(i)).val(copyfields[$('input#copyfrom',vars.copyrows.eq(i)).val()]);
+							$('input#sum',vars.copyrows.eq(i)).prop('checked',(sumfields[$('input#copyfrom',vars.copyrows.eq(i)).val()]=='1'));
 						}
-						$('select#keyfrom').val(config['keyfrom']);
-						$('select#keyto').val(config['keyto']);
-						functions.switching(config['keyfrom']);
+						$.each(keyfields,function(key,values){
+							if (add) functions.addkey();
+							else add=true;
+							row=vars.keyrows.last();
+							$('select#keyfrom',row).val(key);
+							$('select#keyto',row).val(values);
+							functions.switching(row,key);
+						});
 					});
 				}
 				else functions.reloadapp();
 				/* events */
 				$('select#copyview').on('change',function(){functions.reloadview(function(){functions.reloadapp()})});
 				$('select#copyapp').on('change',function(){functions.reloadapp()});
-				$('select#keyfrom').on('change',function(){functions.switching($(this).val());});
 			});
 		});
 	});
@@ -218,27 +251,37 @@ jQuery.noConflict();
 	 button events
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
+		var error=false;
 		var config=[];
 		var copyfields={};
+		var keyfields={};
 		var sumfields={};
-		for (var i=0;i<vars.rows.length;i++)
+		for (var i=0;i<vars.copyrows.length;i++)
 		{
-			copyfields[$('input#copyfrom',vars.rows.eq(i)).val()]=$('select#copyto',vars.rows.eq(i)).val();
-			sumfields[$('input#copyfrom',vars.rows.eq(i)).val()]=($('input#sum',vars.rows.eq(i)).prop('checked'))?'1':'0';
+			copyfields[$('input#copyfrom',vars.copyrows.eq(i)).val()]=$('select#copyto',vars.copyrows.eq(i)).val();
+			sumfields[$('input#copyfrom',vars.copyrows.eq(i)).val()]=($('input#sum',vars.copyrows.eq(i)).prop('checked'))?'1':'0';
 		}
-		/* check key field */
-		if ($('select#keyfrom').val().length!=0 && copyfields[$('select#keyfrom').val()].length==0)
+		for (var i=0;i<vars.keyrows.length;i++)
 		{
-			swal('Error!','キーに指定したフィールドはコピー先を指定して下さい。','error');
-			return;
+			if ($('select#keyfrom',vars.keyrows.eq(i)).val().length!=0)
+			{
+				/* check key field */
+				if (copyfields[$('select#keyfrom',vars.keyrows.eq(i)).val()].length==0)
+				{
+					swal('Error!','キーに指定したフィールドはコピー先を指定して下さい。','error');
+					error=true;
+					return false;
+				}
+				keyfields[$('select#keyfrom',vars.keyrows.eq(i)).val()]=$('select#keyto',vars.keyrows.eq(i)).val();
+			}
 		}
+		if (error) return;
 		/* setup config */
 		config['copyview']=$('select#copyview').val();
 		config['copyapp']=$('select#copyapp').val();
 		config['copyfields']=JSON.stringify(copyfields);
+		config['keyfields']=JSON.stringify(keyfields);
 		config['sumfields']=JSON.stringify(sumfields);
-		config['keyfrom']=$('select#keyfrom').val();
-		config['keyto']=$('select#keyto').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});
