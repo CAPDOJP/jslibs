@@ -19,6 +19,7 @@ jQuery.noConflict();
 		keytemplate:null,
 		fieldinfos:{},
 		viewinfos:{},
+		requires:[],
 		appexcludes:[
 			'CALC',
 			'CATEGORY',
@@ -91,14 +92,17 @@ jQuery.noConflict();
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:$('select#copyapp').val()},function(resp){
 				var mappings=[];
 				var row=null;
-				/* append lookup exclude fields */
+				vars.requires=[];
 				$.each(resp.properties,function(key,values){
+					/* append lookup exclude fields */
 					if (values.lookup)
 					{
 						$.each(values.lookup.fieldMappings,function(index,values){
 							if ($.inArray(values.field,mappings)<0) mappings.push(values.field);
 						});
 					}
+					/* append required fields */
+					if (values.required) vars.requires.push(values);
 				});
 				/* initialize key fields elements */
 				row=vars.keytemplate;
@@ -252,6 +256,7 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
 		var error=false;
+		var errormessage='';
 		var config=[];
 		var copyfields={};
 		var keyfields={};
@@ -260,6 +265,8 @@ jQuery.noConflict();
 		{
 			copyfields[$('input#copyfrom',vars.copyrows.eq(i)).val()]=$('select#copyto',vars.copyrows.eq(i)).val();
 			sumfields[$('input#copyfrom',vars.copyrows.eq(i)).val()]=($('input#sum',vars.copyrows.eq(i)).prop('checked'))?'1':'0';
+			/* check equired fields */
+			vars.requires.some(function(value,index){if (value.code==$('select#copyto',vars.copyrows.eq(i)).val()) vars.requires.splice(index,1);});
 		}
 		for (var i=0;i<vars.keyrows.length;i++)
 		{
@@ -276,6 +283,12 @@ jQuery.noConflict();
 			}
 		}
 		if (error) return;
+		if (Object.keys(keyfields).length==0 && vars.requires.length!=0)
+		{
+			for (var i=0;i<vars.requires.length;i++) errormessage+='\n'+vars.requires[i].label;
+			swal('Error!','以下のコピー先フィールドは必須入力となっています。'+errormessage,'error');
+			return;
+		}
 		/* setup config */
 		config['copyview']=$('select#copyview').val();
 		config['copyapp']=$('select#copyapp').val();

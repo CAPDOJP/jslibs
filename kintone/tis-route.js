@@ -209,6 +209,7 @@ RouteMap.prototype={
 		var options=$.extend({
 			markers:[],
 			markerfontsize:null,
+			isextensionindex:false,
 			isopeninfowindow:true,
 			callback:null
 		},options);
@@ -229,7 +230,7 @@ RouteMap.prototype={
 		balloons=this.balloons;
 		/* initialize renderer */
 		renderer.setMap(null);
-		var addmarker=function(latlng,childindex,colorsindex,label){
+		var addmarker=function(latlng,markerindex,colorsindex,label){
 			/* append markers */
 			var marker=null;
 			if (options.markerfontsize!=null)
@@ -237,7 +238,7 @@ RouteMap.prototype={
 				marker=new google.maps.Marker({
 					map:map,
 					position:latlng,
-					icon:'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.55|0|'+colors[colorsindex].back+'|'+options.markerfontsize.toString()+'|_|'+((childindex==-1)?'':childindex.toString())
+					icon:'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.55|0|'+colors[colorsindex].back+'|'+options.markerfontsize.toString()+'|_|'+markerindex.toString()
 				});
 			}
 			else
@@ -245,7 +246,7 @@ RouteMap.prototype={
 				marker=new google.maps.Marker({
 					map:map,
 					position:latlng,
-					icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+((childindex==-1)?'':childindex.toString())+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+					icon:'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld='+markerindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
 				});
 			}
 			markers.push(marker);
@@ -266,14 +267,16 @@ RouteMap.prototype={
 				break;
 			case 1:
 				/* append markers */
-				var latlng=new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng);
-				if ('serialnumber' in options.markers[0]) serialnumber=(options.markers[0].serialnumber)?1:-1;
-				else serialnumber=1
-				addmarker(latlng,
-					serialnumber,
-					(('colors' in options.markers[0])?options.markers[0].colors:0),
-					(('label' in options.markers[0])?options.markers[0].label:'')
-				);
+				var values=$.extend({
+					colors:0,
+					label:'',
+					lat:0,
+					lng:0,
+					serialnumber:true,
+					extensionindex:''
+				},options.markers[0]);
+				if (options.isextensionindex) addmarker(new google.maps.LatLng(values.lat,values.lng),values.extensionindex,values.colors,values.label);
+				else addmarker(new google.maps.LatLng(values.lat,values.lng),((values.serialnumber)?'1':''),values.colors,values.label);
 				/* setup center position */
 				map.setCenter(latlng);
 				if (options.callback!=null) options.callback();
@@ -329,10 +332,12 @@ RouteMap.prototype={
 									label:'',
 									lat:0,
 									lng:0,
-									serialnumber:true
+									serialnumber:true,
+									extensionindex:''
 								},values);
 								if (values.serialnumber) serialnumber++;
-								addmarker(new google.maps.LatLng(values.lat,values.lng),((values.serialnumber)?serialnumber:-1),values.colors,values.label);
+								if (options.isextensionindex) addmarker(new google.maps.LatLng(values.lat,values.lng),values.extensionindex,values.colors,values.label);
+								else addmarker(new google.maps.LatLng(values.lat,values.lng),((values.serialnumber)?serialnumber.toString():''),values.colors,values.label);
 							});
 							renderer.setDirections(result);
 							renderer.setMap(map);
@@ -350,10 +355,12 @@ RouteMap.prototype={
 							label:'',
 							lat:0,
 							lng:0,
-							serialnumber:true
+							serialnumber:true,
+							extensionindex:''
 						},values);
 						if (values.serialnumber) serialnumber++;
-						addmarker(new google.maps.LatLng(values.lat,values.lng),((values.serialnumber)?serialnumber:-1),values.colors,values.label);
+						if (options.isextensionindex) addmarker(new google.maps.LatLng(values.lat,values.lng),values.extensionindex,values.colors,values.label);
+						else addmarker(new google.maps.LatLng(values.lat,values.lng),((values.serialnumber)?serialnumber.toString():''),values.colors,values.label);
 					});
 					/* setup center position */
 					map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));

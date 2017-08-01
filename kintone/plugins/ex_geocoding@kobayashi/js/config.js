@@ -20,6 +20,9 @@ jQuery.noConflict();
 			/* check field type */
 			switch (values.type)
 			{
+				case 'DATE':
+					$('select#datespan').append($('<option>').attr('value',values.code).text(values.label));
+					break;
 				case 'NUMBER':
 					/* exclude lookup */
 					if (!values.lookup)
@@ -53,6 +56,7 @@ jQuery.noConflict();
 	        	$('select#spacer').val(config['spacer']);
 	        	$('input#mapheight').val(config['mapheight']);
 	        	$('select#information').val(config['information']);
+	        	$('select#datespan').val(config['datespan']);
 	        	$('input#chasetimespan').val(config['chasetimespan']);
 	        	$('input#apikey').val(config['apikey']);
 	        	if (config['map']=='1') $('input#map').prop('checked',true);
@@ -127,6 +131,7 @@ jQuery.noConflict();
         config['map']=($('input#map').prop('checked'))?'1':'0';
         config['mapheight']=$('input#mapheight').val();
         config['information']=$('select#information').val();
+        config['datespan']=$('select#datespan').val();
         config['chasemode']=($('input#chasemode').prop('checked'))?'1':'0';
         config['chasetimespan']=$('input#chasetimespan').val();
         config['apikey']=$('input#apikey').val();
