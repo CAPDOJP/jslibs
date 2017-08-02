@@ -8,9 +8,9 @@
         "zh":"kintone 一覧レコード集計/コピープラグイン"
     },
     "description":{
-        "ja":"別アプリの一覧レコードを集計/コピーするプラグインです。",
-        "en":"This plug-in to aggregates / copies list records of another application",
-        "zh":"別アプリの一覧レコードを集計/コピーするプラグインです。"
+        "ja":"一覧に表示中のレコードを別アプリにコピーするプラグインです。",
+        "en":"This plug-in to copies the record displayed in the list to another application",
+        "zh":"一覧に表示中のレコードを別アプリにコピーするプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{

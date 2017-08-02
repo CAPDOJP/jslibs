@@ -133,7 +133,7 @@ jQuery.noConflict();
 										var datefrom=new Date(record[vars.config['datespan']].value);
 										var dateto=new Date();
 										var datediff=dateto.getTime()-datefrom.getTime();
-										datespan=(Math.floor(datediff/(1000*60*60*24))+1).toString();
+										datespan=Math.floor(datediff/(1000*60*60*24)).toString();
 									}
 								label='';
 								label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
@@ -213,6 +213,30 @@ jQuery.noConflict();
 					callback:function(){
 						if (vars.displaydatespan.find('input[type=checkbox]').prop('checked'))
 						{
+							var latlng=null;
+							var olddate=new Date();
+							var oldid=Number.MAX_SAFE_INTEGER;
+							$.each(vars.apps[kintone.app.getId()],function(index,values){
+								var record=values
+								if (record[vars.config['datespan']].value!=null)
+								{
+									var checkdate=new Date(record[vars.config['datespan']].value);
+									if (checkdate<olddate)
+									{
+										olddate=checkdate;
+										latlng=new google.maps.LatLng(parseFloat('0'+record[vars.config['lat']].value),parseFloat('0'+record[vars.config['lng']].value));
+									}
+									if (checkdate.format('Y-m-d')==olddate.format('Y-m-d'))
+									{
+										if (record['$id'].value<oldid)
+										{
+											oldid=record['$id'].value;
+											latlng=new google.maps.LatLng(parseFloat('0'+record[vars.config['lat']].value),parseFloat('0'+record[vars.config['lng']].value));
+										}
+									}
+								}
+							});
+							if (latlng!=null) vars.map.map.setCenter(latlng);
 						}
 					}
 				});
@@ -255,7 +279,7 @@ jQuery.noConflict();
 		vars.displaydatespan=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="datespan">')
 			.on('change',function(e){
-				functions.reloadmap();
+				functions.reloadmap(vars.currentlocation.find('input[type=checkbox]').prop('checked'));
 			})
 		)
 		.append($('<span>経過日数を表示</span>'));

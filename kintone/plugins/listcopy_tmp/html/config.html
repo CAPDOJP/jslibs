@@ -3,16 +3,6 @@
 		<thead>
 			<tr>
 				<th colspan="2">
-					<div class="kintoneplugin-label">コピー元アプリ</div>
-					<div class="kintoneplugin-desc">コピー元となるアプリを選択して下さい。</div>
-					<div class="kintoneplugin-select-outer">
-						<div class="kintoneplugin-select">
-							<select id="copyapp"></select>
-						</div>
-					</div>
-				</th>
-				<th class="separate"></th>
-				<th colspan="3">
 					<div class="kintoneplugin-label">コピー元一覧</div>
 					<div class="kintoneplugin-desc">コピー元となる一覧を選択して下さい。</div>
 					<div class="kintoneplugin-select-outer">
@@ -21,11 +11,21 @@
 						</div>
 					</div>
 				</th>
+				<th class="separate"></th>
+				<th colspan="3">
+					<div class="kintoneplugin-label">コピー先アプリ</div>
+					<div class="kintoneplugin-desc">コピー先となるアプリを選択して下さい。</div>
+					<div class="kintoneplugin-select-outer">
+						<div class="kintoneplugin-select">
+							<select id="copyapp"></select>
+						</div>
+					</div>
+				</th>
 			</tr>
 			<tr>
 				<th colspan="6">
 					<div class="kintoneplugin-label">上書きキーフィールド設定</div>
-					<div class="kintoneplugin-desc">アプリのデータを上書きする場合は、上書き条件となるキーフィールドを指定して下さい。</div>
+					<div class="kintoneplugin-desc">コピー先アプリのデータを上書きする場合は、上書き条件となるキーフィールドを指定して下さい。</div>
 					<div class="kintoneplugin-caution">*キーに指定出来るフィールドは「必須項目にする」にチェックが入っているものに限ります。</div>
 					<div class="kintoneplugin-caution">*コピー元一覧のキーフィールド値に重複がある場合は、最後のレコードが有効になります。</div>
 					<div class="kintoneplugin-caution">*キーフィールドを「指定しない」とした場合は、上書きではなく追加となります。</div>
@@ -67,16 +67,16 @@
 			<tr>
 				<td class="summary"><input type="checkbox" id="sum" value="0"></td>
 				<td>
-					<div class="kintoneplugin-select-outer">
-						<div class="kintoneplugin-select">
-							<select id="copyfrom"></select>
-						</div>
-					</div>
+					<span id="copyfromname"></span>
+					<input type="hidden" id="copyfrom">
 				</td>
 				<td class="separate">&nbsp;→&nbsp;</td>
 				<td colspan="3">
-					<span id="copytoname"></span>
-					<input type="hidden" id="copyto">
+					<div class="kintoneplugin-select-outer">
+						<div class="kintoneplugin-select">
+							<select id="copyto"></select>
+						</div>
+					</div>
 				</td>
 			</tr>
 		</tbody>
@@ -84,17 +84,8 @@
 			<tr>
 				<td colspan="6">
 					<div class="kintoneplugin-label">合算チェックボックスについて</div>
-					<div class="kintoneplugin-desc">合算チェックボックスにチェックが付いている場合は、コピー先が指定されている他のフィールドの値を調べ、<br>それらが同じレコード毎に合算した結果をコピーします。</div>
+					<div class="kintoneplugin-desc">合算チェックボックスにチェックを付いている場合は、コピー先が指定されている他のフィールドの値を調べ、<br>それらが同じレコード毎に合算した結果をコピーします。</div>
 					<div class="kintoneplugin-caution">*合算可能なフィールドはルックアップを除く数値フィールド/数値形式の計算フィールドに限ります。</div>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="6">
-					<div class="kintoneplugin-label">コピーボタンラベル</div>
-					<div class="kintoneplugin-desc">コピーボタンに表示するテキストを入力して下さい。</div>
-					<div class="kintoneplugin-input-outer">
-						<input type="text" id="buttonlabel" class="kintoneplugin-input-text" value="" >
-					</div>
 				</td>
 			</tr>
 		</tfoot>
