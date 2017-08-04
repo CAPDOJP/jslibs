@@ -1677,13 +1677,13 @@ jQuery.fn.refererAction = function(options){
 		});
 	});
 }
-jQuery.fn.refererShow = function(target,table,rowindex,callback){
+jQuery.fn.refererShow = function(target,table,rowindex,callback,query){
 	var form=$(this);
 	if (target!=null) $.data(form[0],'active',target);
 	if (table!=null) $.data(form[0],'table',table);
 	if (rowindex!=null) $.data(form[0],'rowindex',rowindex);
 	//クエリ生成
-	var query='';
+	if (query==null) query=='';
 	$.each(form.find('input[id^=keys]'),function(){
 		var keys=$(this).attr('id').replace('keys','');
 		if (!$('input#'+keys,$.data(form[0],'active'))) return;

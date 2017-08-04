@@ -202,8 +202,8 @@ jQuery.noConflict();
 			if (sort.length!=0) query+='order by '+sort+' ';
 			query+='limit '+vars.limit.toString()+' offset '+vars.offset[appkey].toString();
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:query},function(resp){
-	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=vars.limit;
 				if (resp.records.length==vars.limit) functions.loaddatas(appkey,filter,sort,callback);
 				else

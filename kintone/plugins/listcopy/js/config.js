@@ -102,6 +102,7 @@ jQuery.noConflict();
 				});
 				kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:$('select#copyapp').val()},function(resp){
 					var error=true;
+					var row=null;
 					/* setup view lists */
 					$('select#copyview').empty();
 					$.each(resp.views,function(key,values){
@@ -115,6 +116,23 @@ jQuery.noConflict();
 					if (error)
 					{
 						swal('Error!','表形式の一覧が作成されていません。','error');
+						/* clear keyfields lists */
+						row=vars.keytemplate;
+						$('select#keyfrom',row).empty();
+						$('select#keyfrom',row).append($('<option>').attr('value','').text('指定しない'));
+						/* create keyfields rows */
+						if (vars.keyrows!=null) vars.keyrows.remove();
+						functions.addkey();
+						$('img.del',vars.keyrows.first()).css({'display':'none'});
+						/* clear copyfields lists */
+						for (var i=0;i<vars.copyrows.length;i++)
+						{
+							row=vars.copyrows.eq(i);
+							$('input#sum',row).prop('disabled',true);
+							$('select#copyfrom',row).empty();
+							$('select#copyfrom',row).append($('<option>').attr('value','').text('コピーしない'));
+						};
+						$('input#buttonlabel').val('');
 						return;
 					}
 					if (viewid.length!=0) $('select#copyview').val(viewid);
@@ -281,6 +299,16 @@ jQuery.noConflict();
 		var copyfields={};
 		var keyfields={};
 		var sumfields={};
+		if ($('select#copyview').val()==null)
+		{
+			swal('Error!','コピー元一覧を選択して下さい。','error');
+			return;
+		}
+		if ($('input#buttonlabel').val()=='')
+		{
+			swal('Error!','コピーボタンラベルを入力して下さい。','error');
+			return;
+		}
 		for (var i=0;i<vars.copyrows.length;i++)
 		{
 			row=vars.copyrows.eq(i);
@@ -313,11 +341,6 @@ jQuery.noConflict();
 			swal('Error!','以下のフィールドは必須入力となっています。'+errormessage,'error');
 			return;
 		}
-	    if ($('input#buttonlabel').val()=='')
-	    {
-	    	swal('Error!','コピーボタンラベルを入力して下さい。','error');
-	    	return;
-	    }
 		/* setup config */
 		config['copyview']=$('select#copyview').val();
 		config['copyapp']=$('select#copyapp').val();
