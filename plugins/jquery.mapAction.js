@@ -394,10 +394,10 @@ DynamicMap.prototype={
 						{
 							case 'input':
 							case 'textarea':
-								options.target.val(json.results[0].formatted_address.replace('日本, ',''));
+								options.target.val(json.results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
 								break;
 							default:
-								options.target.text(json.results[0].formatted_address.replace('日本, ',''));
+								options.target.text(json.results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
 								break;
 						}
 					}
