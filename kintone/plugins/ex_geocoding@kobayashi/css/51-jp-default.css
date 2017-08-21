@@ -451,9 +451,6 @@
   transition: background-color 0s linear;
 }
 /* Custom */
-div.kintoneplugin-row{
-  padding-bottom:15px
-}
 div.kintoneplugin-row table td{
   border-bottom:1px dotted #d6d1cc;
   padding:3px;

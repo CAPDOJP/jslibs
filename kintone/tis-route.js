@@ -98,6 +98,7 @@ var RouteMap=function(options){
 		$('head').append(api);
 	}
 	/* setup map */
+	this.colors=$.markercolors();
 	this.markers=[];
 	this.balloons=[];
 	this.map=null;
@@ -171,7 +172,7 @@ RouteMap.prototype={
 			isopeninfowindow:true,
 			callback:null
 		},options);
-		var colors=markercolors;
+		var colors=this.colors;
 		var map=this.map;
 		var renderer=this.directionsRenderer;
 		var service=this.directionsService;
@@ -329,51 +330,70 @@ RouteMap.prototype={
 		if (this.isfullscreen) this.container.css({'bottom':'0px'});
 	}
 };
-var markercolors=[
-	{
-		name:'赤',
-		back:'dc143c',
-		fore:'000000'
-	},
-	{
-		name:'青',
-		back:'0000cd',
-		fore:'ffffff'
-	},
-	{
-		name:'黄',
-		back:'ffff00',
-		fore:'000000'
-	},
-	{
-		name:'紫',
-		back:'4b0082',
-		fore:'ffffff'
-	},
-	{
-		name:'緑',
-		back:'008000',
-		fore:'000000'
-	},
-	{
-		name:'茶',
-		back:'8b4513',
-		fore:'000000'
-	},
-	{
-		name:'水色',
-		back:'87ceeb',
-		fore:'000000'
-	},
-	{
-		name:'黄緑',
-		back:'9acd32',
-		fore:'000000'
-	}
-];
 jQuery.extend({
-	markercolorindexes:function(){
-		return markercolors;
+	markercolors:function(){
+		return [
+			{
+				name:'赤',
+				back:'FA8273',
+				fore:'000000'
+			},
+			{
+				name:'黄',
+				back:'FFF07D',
+				fore:'000000'
+			},
+			{
+				name:'緑',
+				back:'7DC87D',
+				fore:'000000'
+			},
+			{
+				name:'青',
+				back:'69B4C8',
+				fore:'ffffff'
+			},
+			{
+				name:'紫',
+				back:'827DB9',
+				fore:'ffffff'
+			},
+			{
+				name:'ピンク',
+				back:'E16EA5',
+				fore:'000000'
+			},
+			{
+				name:'サーモン',
+				back:'FA7382',
+				fore:'000000'
+			},
+			{
+				name:'茶',
+				back:'FFB46E',
+				fore:'000000'
+			},
+			{
+				name:'黄緑',
+				back:'B4DC69',
+				fore:'000000'
+			},
+			{
+				name:'ターコイズ',
+				back:'64C3AF',
+				fore:'000000'
+			},
+			{
+				name:'薄青',
+				back:'87ceeb',
+				fore:'000000'
+			},
+			{
+				name:'ラベンダー',
+				back:'B473B4',
+				fore:'000000'
+			}
+		];
 	}
 });
 jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,isreload){

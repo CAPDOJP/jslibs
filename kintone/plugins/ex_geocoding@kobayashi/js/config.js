@@ -25,6 +25,9 @@ jQuery.noConflict();
 			row=vars.colorrows.last();
 			$('img.add',row).on('click',function(){functions.addcolor()});
 			$('img.del',row).on('click',function(){functions.delcolor($(this).closest('tr'))});
+			$('select#datespancolor',row).on('change',function(){
+				$(this).css({'background-color':$(this).find('option:selected').css('background-color')})
+			});
 		},
 		delcolor:function(row){
 			row.remove();
@@ -40,16 +43,25 @@ jQuery.noConflict();
 		/* initialize valiable */
 		vars.colortemplate=$('.colorfields').first().clone(true);
 		/* setup colorfields lists */
-		var colors=$.markercolorindexes();
+		var colors=$.markercolors();
 		var row=vars.colortemplate;
 		$('select#datespancolor',row).empty();
+		$('select#currentcolor').append($('<option>').attr('value','').css({'background-color':'#FFFFFF'}));
+		$('select#defaultcolor').append($('<option>').attr('value','').css({'background-color':'#FFFFFF'}));
+		$('select#datespancolor',row).append($('<option>').attr('value','').css({'background-color':'#FFFFFF'}));
 		$.each(colors,function(index){
-			$('select#currentcolor').append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
-			$('select#defaultcolor').append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
-			$('select#datespancolor',row).append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
+			$('select#currentcolor').on('change',function(){
+				$(this).css({'background-color':$(this).find('option:selected').css('background-color')})
+			}).append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
+			$('select#defaultcolor').on('change',function(){
+				$(this).css({'background-color':$(this).find('option:selected').css('background-color')})
+			}).append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
+			$('select#datespancolor',row).on('change',function(){
+				$(this).css({'background-color':$(this).find('option:selected').css('background-color')})
+			}).append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
 		});
 		/* create colorfields rows */
-		if (vars.colorrows!=null) vars.colorrows.remove();
+		$('.colorfields').remove();
 		functions.addcolor();
 		$('img.del',vars.colorrows.first()).css({'display':'none'});
 		$.each(resp.properties,function(index,values){
@@ -84,41 +96,49 @@ jQuery.noConflict();
 					$('select#spacer').append($('<option>').attr('value',values.elementId).text(values.elementId));
 					break;
 			}
-	        if (Object.keys(config).length!==0)
-	        {
-	        	$('select#address').val(config['address']);
-	        	$('select#lat').val(config['lat']);
-	        	$('select#lng').val(config['lng']);
-	        	$('select#spacer').val(config['spacer']);
-	        	$('input#mapheight').val(config['mapheight']);
-	        	$('select#information').val(config['information']);
-	        	$('select#datespan').val(config['datespan']);
-	        	$('select#currentcolor').val(config['currentcolor']);
-	        	$('select#defaultcolor').val(config['defaultcolor']);
-				var colorfields=JSON.parse(config['colorfields']);
-				$.each(colorfields,function(key,values){
-					if (add) functions.addcolor();
-					else add=true;
-					row=vars.colorrows.last();
-					$('input#datespanday',row).val(key);
-					$('select#datespancolor',row).val(values);
-				});
-	        	$('input#chasetimespan').val(config['chasetimespan']);
-	        	$('input#apikey').val(config['apikey']);
-	        	if (config['map']=='1') $('input#map').prop('checked',true);
-	        	if (config['chasemode']=='1') $('input#chasemode').prop('checked',true);
-	        }
-	        else
-	        {
-	        	$('input#mapheight').val('50');
-	        	$('input#chasetimespan').val('10');
-	        }
 		});
+        if (Object.keys(config).length!==0)
+        {
+        	$('select#address').val(config['address']);
+        	$('select#lat').val(config['lat']);
+        	$('select#lng').val(config['lng']);
+        	$('select#spacer').val(config['spacer']);
+        	$('input#mapheight').val(config['mapheight']);
+        	$('select#information').val(config['information']);
+        	$('select#datespan').val(config['datespan']);
+        	$('select#currentcolor').val(config['currentcolor']);
+        	$('select#defaultcolor').val(config['defaultcolor']);
+			var add=false;
+			var colorfields=JSON.parse(config['colorfields']);
+			$.each(colorfields,function(key,values){
+				if (add) functions.addcolor();
+				else add=true;
+				row=vars.colorrows.last();
+				$('input#datespanday',row).val(key);
+				$('select#datespancolor',row).val(values);
+			});
+        	$('input#chasetimespan').val(config['chasetimespan']);
+        	$('input#apikey').val(config['apikey']);
+        	if (config['map']=='1') $('input#map').prop('checked',true);
+        	if (config['chasemode']=='1') $('input#chasemode').prop('checked',true);
+        }
+        else
+        {
+        	$('input#mapheight').val('50');
+        	$('input#chasetimespan').val('10');
+        	$('select#currentcolor').val($('select#currentcolor').find('option').first().val());
+        	$('select#defaultcolor').val($('select#defaultcolor').find('option').first().val());
+			$.each($('select#datespancolor'),function(){$(this).css({'background-color':$(this).find('option').first().val()})});
+        }
+		$('select#currentcolor').css({'background-color':$('select#currentcolor').find('option:selected').css('background-color')});
+		$('select#defaultcolor').css({'background-color':$('select#defaultcolor').find('option:selected').css('background-color')});
+		$.each($('select#datespancolor'),function(){$(this).css({'background-color':$(this).find('option:selected').css('background-color')})});
 	},function(error){});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
+		var error=false;
         var config=[];
 		var colorfields={};
 	    /* check values */
@@ -147,13 +167,6 @@ jQuery.noConflict();
 	    	swal('Error!','緯度表示フィールドと経度表示フィールドは異なるフィールドを選択して下さい。','error');
 	    	return;
 	    }
-		for (var i=0;i<vars.colorrows.length;i++)
-		{
-			row=vars.colorrows.eq(i);
-			if ($('input#datespanday',row).val().length!=0)
-				colorfields[$('input#datespanday',row).val()]=$('select#datespancolor',row).val();
-		}
-		if (error) return;
 	    if ($('input#map').prop('checked'))
 	    {
 		    if ($('input#mapheight').val()=='') $('input#mapheight').val('50');
@@ -162,12 +175,36 @@ jQuery.noConflict();
 		    	swal('Error!','一覧地図高さは数値を入力して下さい。','error');
 		    	return;
 		    }
+		    if ($('select#currentcolor').val()=='')
+		    {
+		    	swal('Error!','マーカー現在地色を選択して下さい。','error');
+		    	return;
+		    }
+		    if ($('select#defaultcolor').val()=='')
+		    {
+		    	swal('Error!','マーカー規定色を選択して下さい。','error');
+		    	return;
+		    }
+			for (var i=0;i<vars.colorrows.length;i++)
+			{
+				var row=vars.colorrows.eq(i);
+				if ($('input#datespanday',row).val().length!=0)
+				{
+				    if ($('select#datespancolor',row).val()=='')
+				    {
+				    	swal('Error!','マーカー色を選択して下さい。','error');
+				    	error=true;
+				    }
+					colorfields[$('input#datespanday',row).val().toString()]=$('select#datespancolor',row).val();
+				}
+			}
 		    if ($('input#apikey').val()=='')
 		    {
 		    	swal('Error!','Google Maps APIキーを入力して下さい。','error');
 		    	return;
 		    }
 	    }
+	    if (error) return;
 	    if ($('input#chasemode').prop('checked'))
 	    {
 		    if ($('input#chasetimespan').val()=='') $('input#chasetimespan').val('10');
@@ -186,6 +223,8 @@ jQuery.noConflict();
         config['mapheight']=$('input#mapheight').val();
         config['information']=$('select#information').val();
         config['datespan']=$('select#datespan').val();
+        config['currentcolor']=$('select#currentcolor').val();
+        config['defaultcolor']=$('select#defaultcolor').val();
 		config['colorfields']=JSON.stringify(colorfields);
         config['chasemode']=($('input#chasemode').prop('checked'))?'1':'0';
         config['chasetimespan']=$('input#chasetimespan').val();
