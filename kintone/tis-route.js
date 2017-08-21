@@ -371,6 +371,11 @@ var markercolors=[
 		fore:'000000'
 	}
 ];
+jQuery.extend({
+	markercolorindexes:function(){
+		return markercolors;
+	}
+});
 jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,isreload){
 	return new RouteMap({
 		apiikey:apiikey,

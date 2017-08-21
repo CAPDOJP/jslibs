@@ -37,16 +37,16 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
         var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-        var colors=new RouteMap();
 		/* initialize valiable */
 		vars.colortemplate=$('.colorfields').first().clone(true);
 		/* setup colorfields lists */
-		row=vars.colortemplate;
+		var colors=$.markercolorindexes();
+		var row=vars.colortemplate;
 		$('select#datespancolor',row).empty();
-		$.each(colors.colors,function(index){
-			$('select#currentcolor').append($('<option>').attr('value',index).css({'background-color':'#'+colors.colors[index].back}));
-			$('select#defaultcolor').append($('<option>').attr('value',index).css({'background-color':'#'+colors.colors[index].back}));
-			$('select#datespancolor',row).append($('<option>').attr('value',index).css({'background-color':'#'+colors.colors[index].back}));
+		$.each(colors,function(index){
+			$('select#currentcolor').append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
+			$('select#defaultcolor').append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
+			$('select#datespancolor',row).append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
 		});
 		/* create colorfields rows */
 		if (vars.colorrows!=null) vars.colorrows.remove();
