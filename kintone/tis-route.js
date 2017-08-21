@@ -88,7 +88,7 @@ var RouteMap=function(options){
 	);
 	this.container.append(this.contents);
 	if (this.isfullscreen) this.container.append(this.buttonblock);
-	options.container.append(this.container);
+	if (options.container!=null) options.container.append(this.container);
 	/* setup google map */
 	if (!options.isreload)
 	{
@@ -146,7 +146,7 @@ var RouteMap=function(options){
 	this.directionsRenderer=null;
 	this.directionsService=null;
 	/* loading wait */
-	waitgoogle(function(){
+	if (options.container!=null) waitgoogle(function(){
 		var latlng=new google.maps.LatLng(0,0);
 		var param={
 			center:latlng,
