@@ -125,6 +125,8 @@ jQuery.noConflict();
 							var lng=parseFloat('0'+record[vars.config['lng']].value);
 							var label='';
 							var datespan='';
+							var colors=vars.config['defaultcolor'];
+							var colorfields=JSON.parse(vars.config['colorfields']);
 							if (lat+lng!=0)
 							{
 								if (vars.config["datespan"].length!=0)
@@ -135,11 +137,13 @@ jQuery.noConflict();
 										var datediff=dateto.getTime()-datefrom.getTime();
 										datespan=Math.floor(datediff/(1000*60*60*24)).toString();
 									}
+								var keep=datespan;
+								$.each(colorfields,function(key,values){if (keep<key) colors=values;});
 								label='';
 								label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
 								label+='<br><a href="https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 								vars.markers.push({
-									colors:6,
+									colors:colors,
 									label:label,
 									lat:lat,
 									lng:lng,
@@ -180,7 +184,7 @@ jQuery.noConflict();
 					if (addcurrentlocation)
 					{
 						markers.unshift({
-							colors:0,
+							colors:vars.config['currentcolor'],
 							label:'現在地',
 							lat:latlng.lat(),
 							lng:latlng.lng(),

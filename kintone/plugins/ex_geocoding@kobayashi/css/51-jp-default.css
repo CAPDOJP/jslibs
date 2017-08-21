@@ -454,25 +454,13 @@
 div.kintoneplugin-row{
   padding-bottom:15px
 }
-div.kintoneplugin-row div.kintoneplugin-select-outer{
-  margin:2px 0px;
-}
 div.kintoneplugin-row table td{
-  white-space:nowrap;
-}
-div.kintoneplugin-row table thead tr td{
-  line-height:1;
+  border-bottom:1px dotted #d6d1cc;
   padding:3px;
-}
-div.kintoneplugin-row table tbody tr{
-  border-top:1px solid #d6d1cc;
+  white-space:nowrap;
 }
 div.kintoneplugin-row table tbody tr:nth-of-type(even){
   background-color:#fffcf2;
-}
-div.kintoneplugin-row table tbody tr td{
-  line-height:1;
-  padding:3px;
 }
 div.kintoneplugin-row table tbody tr td.button{
   width:28px;

@@ -11,11 +11,47 @@
 jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
+	var vars={
+		colorrows:null,
+		colortemplate:null
+	};
+	var functions={
+		addcolor:function(){
+			var row=null;
+			$('.block table tbody').append(vars.colortemplate.clone(true));
+			/* initialize valiable */
+			vars.colorrows=$('.colorfields');
+			/* events */
+			row=vars.colorrows.last();
+			$('img.add',row).on('click',function(){functions.addcolor()});
+			$('img.del',row).on('click',function(){functions.delcolor($(this).closest('tr'))});
+		},
+		delcolor:function(row){
+			row.remove();
+			/* initialize valiable */
+			vars.colorrows=$('.colorfields');
+		},
+	};
 	/*---------------------------------------------------------------
 	 initialize fields
 	---------------------------------------------------------------*/
 	kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
         var config=kintone.plugin.app.getConfig(PLUGIN_ID);
+        var colors=new RouteMap();
+		/* initialize valiable */
+		vars.colortemplate=$('.colorfields').first().clone(true);
+		/* setup colorfields lists */
+		row=vars.colortemplate;
+		$('select#datespancolor',row).empty();
+		$.each(colors.colors,function(index){
+			$('select#currentcolor').append($('<option>').attr('value',index).css({'background-color':'#'+colors.colors[index].back}));
+			$('select#defaultcolor').append($('<option>').attr('value',index).css({'background-color':'#'+colors.colors[index].back}));
+			$('select#datespancolor',row).append($('<option>').attr('value',index).css({'background-color':'#'+colors.colors[index].back}));
+		});
+		/* create colorfields rows */
+		if (vars.colorrows!=null) vars.colorrows.remove();
+		functions.addcolor();
+		$('img.del',vars.colorrows.first()).css({'display':'none'});
 		$.each(resp.properties,function(index,values){
 			/* check field type */
 			switch (values.type)
@@ -57,6 +93,16 @@ jQuery.noConflict();
 	        	$('input#mapheight').val(config['mapheight']);
 	        	$('select#information').val(config['information']);
 	        	$('select#datespan').val(config['datespan']);
+	        	$('select#currentcolor').val(config['currentcolor']);
+	        	$('select#defaultcolor').val(config['defaultcolor']);
+				var colorfields=JSON.parse(config['colorfields']);
+				$.each(colorfields,function(key,values){
+					if (add) functions.addcolor();
+					else add=true;
+					row=vars.colorrows.last();
+					$('input#datespanday',row).val(key);
+					$('select#datespancolor',row).val(values);
+				});
 	        	$('input#chasetimespan').val(config['chasetimespan']);
 	        	$('input#apikey').val(config['apikey']);
 	        	if (config['map']=='1') $('input#map').prop('checked',true);
@@ -74,6 +120,7 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
         var config=[];
+		var colorfields={};
 	    /* check values */
 	    if ($('select#address').val()=='')
 	    {
@@ -100,6 +147,13 @@ jQuery.noConflict();
 	    	swal('Error!','緯度表示フィールドと経度表示フィールドは異なるフィールドを選択して下さい。','error');
 	    	return;
 	    }
+		for (var i=0;i<vars.colorrows.length;i++)
+		{
+			row=vars.colorrows.eq(i);
+			if ($('input#datespanday',row).val().length!=0)
+				colorfields[$('input#datespanday',row).val()]=$('select#datespancolor',row).val();
+		}
+		if (error) return;
 	    if ($('input#map').prop('checked'))
 	    {
 		    if ($('input#mapheight').val()=='') $('input#mapheight').val('50');
@@ -132,6 +186,7 @@ jQuery.noConflict();
         config['mapheight']=$('input#mapheight').val();
         config['information']=$('select#information').val();
         config['datespan']=$('select#datespan').val();
+		config['colorfields']=JSON.stringify(colorfields);
         config['chasemode']=($('input#chasemode').prop('checked'))?'1':'0';
         config['chasetimespan']=$('input#chasetimespan').val();
         config['apikey']=$('input#apikey').val();
