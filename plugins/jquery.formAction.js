@@ -1258,13 +1258,9 @@ jQuery.fn.colorSelector = function(colors){
 		}
 		colorpicker=$('<div>').css({
 			'border':'1px solid #DCDCDC',
-			'height':$(window).height()-(target.offset().top+target.outerHeight(false)),
-			'left':target.offset().left,
 			'overflow-x':'hidden',
 			'overflow-y':'scroll',
 			'position':'fixed',
-			'top':target.offset().top+target.outerHeight(false),
-			'width':target.outerWidth(false).toString()+'px',
 			'z-index':'999999'
 		});
 		target.css({'background-color':colors[0]})
@@ -1284,9 +1280,9 @@ jQuery.fn.colorSelector = function(colors){
 				.on('click',function(){target.val(options.eq(i).val());colorpicker.hide();})
 			);
 		}
-		$(window).on('resize scroll',function(){
+		$(window).on('load resize scroll',function(){
 			colorpicker.css({
-				'height':$(window).height()-(target.offset().top+target.outerHeight(false)),
+				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
 				'left':target.offset().left,
 				'top':target.offset().top+target.outerHeight(false),
 				'width':target.outerWidth(false).toString()+'px'
