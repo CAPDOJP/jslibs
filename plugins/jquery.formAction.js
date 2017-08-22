@@ -1257,6 +1257,7 @@ jQuery.fn.colorSelector = function(colors){
 			return;
 		}
 		colorpicker=$('<div>').css({
+			'border':'1px solid #DCDCDC',
 			'height':$(window).height()-(target.offset().top+target.outerHeight(false)),
 			'left':target.offset().left,
 			'overflow-x':'hidden',
