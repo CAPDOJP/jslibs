@@ -1271,8 +1271,7 @@ jQuery.fn.colorSelector = function(colors){
 			colorpicker.append(
 				$('<div>').css({
 					'background-color':colors[i],
-					'display':'inline-block',
-					'height':'calc('+target.height()+' - 4px)',
+					'height':'calc('+target.height()+'px - 4px)',
 					'margin':'2px',
 					'width':'calc(100% - 4px)'
 				})
