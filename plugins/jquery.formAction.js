@@ -1251,6 +1251,7 @@ jQuery.fn.colorSelector = function(colors){
 		var target=$(this);
 		var colorpicker=null;
 		var options=target.find('option').hide();
+		var position={x:0,y:0};
 		if (colors.length!=options.length)
 		{
 			alert('色情報と選択リスト要素の数が一致しません。');
@@ -1269,10 +1270,12 @@ jQuery.fn.colorSelector = function(colors){
 		.off('touchstart.selector mousedown.selector')
 		.on('touchstart.selector mousedown.selector',function(e){
 			$('div.colorpicker').hide();
+			position.x=target.offset().left-$(window).scrollLeft();
+			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
 			colorpicker.css({
-				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
-				'left':target.offset().left,
-				'top':target.offset().top+target.outerHeight(false),
+				'height':($(window).height()-position.y).toString()+'px',
+				'left':position.x,
+				'top':position.y,
 				'width':target.outerWidth(false).toString()+'px'
 			}).show();
 			e.stopPropagation();
@@ -1296,10 +1299,12 @@ jQuery.fn.colorSelector = function(colors){
 			);
 		}
 		$(window).on('resize scroll',function(){
+			position.x=target.offset().left-$(window).scrollLeft();
+			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
 			colorpicker.css({
-				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
-				'left':target.offset().left,
-				'top':target.offset().top+target.outerHeight(false),
+				'height':($(window).height()-position.y).toString()+'px',
+				'left':position.x,
+				'top':position.y,
 				'width':target.outerWidth(false).toString()+'px'
 			});
 		});
