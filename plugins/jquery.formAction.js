@@ -1269,6 +1269,7 @@ jQuery.fn.colorSelector = function(colors){
 			'max-width':'calc(100% - 2em)',
 			'overflow-x':'hidden',
 			'overflow-y':'scroll',
+			'padding':'1px',
 			'position':'fixed',
 			'top':'50%',
 			'z-index':'9999999',
