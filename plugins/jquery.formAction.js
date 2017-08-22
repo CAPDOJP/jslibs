@@ -1284,8 +1284,9 @@ jQuery.fn.colorSelector = function(colors){
 				})
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('click',function(){
-					target.css({'background-color':colors[i]})
-					target.val(options.eq(i).val());
+					var index=colorpicker.find('div').index($(this));
+					target.css({'background-color':colors[index]})
+					target.val(options.eq(index).val());
 					colorpicker.hide();
 				})
 			);
