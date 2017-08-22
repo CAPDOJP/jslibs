@@ -1266,8 +1266,8 @@ jQuery.fn.colorSelector = function(colors){
 			'z-index':'9999999'
 		}).on('touchstart mousedown',function(e){e.stopPropagation();})
 		target.css({'background-color':colors[0]})
-		.off('touchstart mousedown')
-		.on('touchstart mousedown',function(e){
+		.off('touchstart.selector mousedown.selector')
+		.on('touchstart.selector mousedown.selector',function(e){
 			colorpicker.css({
 				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
 				'left':target.offset().left,
