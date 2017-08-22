@@ -1265,7 +1265,15 @@ jQuery.fn.colorSelector = function(colors){
 		});
 		target.css({'background-color':colors[0]})
 		.on('change',function(){target.css({'background-color':colors[options.index(target.find('option:selected'))]})})
-		.on('touchstart mousedown',function(e){colorpicker.show();e.stopPropagation();});
+		.on('touchstart mousedown',function(e){
+			colorpicker.css({
+				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
+				'left':target.offset().left,
+				'top':target.offset().top+target.outerHeight(false),
+				'width':target.outerWidth(false).toString()+'px'
+			}).show();
+			e.stopPropagation();
+		});
 		for (var i=0;i<colors.length;i++)
 		{
 			colorpicker.append(
@@ -1279,7 +1287,7 @@ jQuery.fn.colorSelector = function(colors){
 				.on('click',function(){target.val(options.eq(i).val());colorpicker.hide();})
 			);
 		}
-		$(window).on('load resize scroll',function(){
+		$(window).on('resize scroll',function(){
 			colorpicker.css({
 				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
 				'left':target.offset().left,
