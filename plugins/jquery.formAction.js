@@ -1266,7 +1266,10 @@ jQuery.fn.colorSelector = function(colors){
 		})
 		.on('touchstart mousedown',function(e){e.stopPropagation();})
 		target.css({'background-color':colors[options.index(target.find('option:selected'))]})
-		.on('change',function(){target.css({'background-color':colors[options.index(target.find('option:selected'))]})})
+		.on('change',function(){
+			target.css({'background-color':colors[options.index(target.find('option:selected'))]});
+			console.log(options.index(target.find('option:selected')));
+		})
 		.on('touchstart mousedown',function(e){
 			colorpicker.css({
 				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
