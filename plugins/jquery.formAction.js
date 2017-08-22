@@ -1266,7 +1266,7 @@ jQuery.fn.colorSelector = function(colors){
 			'position':'fixed',
 			'z-index':'9999999'
 		}).on('touchstart mousedown',function(e){e.stopPropagation();})
-		target.css({'background-color':colors[0]})
+		target.css({'background-color':colors[target.find('option').index(target.find('option:selected'))]})
 		.off('touchstart.selector mousedown.selector')
 		.on('touchstart.selector mousedown.selector',function(e){
 			$('div.colorlist').hide();
