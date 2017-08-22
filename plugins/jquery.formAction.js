@@ -1290,6 +1290,7 @@ jQuery.fn.colorSelector = function(colors){
 			colorlist.append(
 				$('<div>').css({
 					'background-color':colors[i],
+					'cursor':'pointer',
 					'display':'inline-block',
 					'padding-top':'calc(25% - 4px)',
 					'margin':'2px',
