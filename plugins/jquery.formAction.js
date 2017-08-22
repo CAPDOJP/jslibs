@@ -1280,14 +1280,7 @@ jQuery.fn.colorSelector = function(colors){
 		.off('touchstart.selector mousedown.selector')
 		.on('touchstart.selector mousedown.selector',function(e){
 			$('div.colorlist').hide();
-			position.x=target.offset().left-$(window).scrollLeft();
-			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
-			colorlist.css({
-				'height':($(window).height()-position.y).toString()+'px',
-				'left':position.x,
-				'top':position.y,
-				'width':target.outerWidth(false).toString()+'px'
-			}).show();
+			colorlist.show();
 			return false;
 		});
 		for (var i=0;i<colors.length;i++)
