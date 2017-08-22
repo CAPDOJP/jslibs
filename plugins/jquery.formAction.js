@@ -1243,6 +1243,58 @@ jQuery.fn.sendparts = function(options){
 }
 /*
 *--------------------------------------------------------------------
+* 色選択リスト
+* -------------------------------------------------------------------
+*/
+jQuery.fn.colorSelector = function(colors){
+	return $(this).each(function(){
+		var target=$(this);
+		var colorpicker=null;
+		var options=target.find('option').hide();
+		if (colors.length!=options.length)
+		{
+			alert('色情報と選択リスト要素の数が一致しません。');
+			return;
+		}
+		colorpicker=$('<div>').css({
+			'height':$(window).height()-(target.offset().top+target.outerHeight(false)),
+			'left':target.offset().left,
+			'overflow-x':'hidden',
+			'overflow-y':'scroll',
+			'position':'fixed',
+			'top':target.offset().top+target.outerHeight(false),
+			'width':target.outerWidth(false).toString()+'px'
+		});
+		target.css({'background-color':colors[0]})
+		.on('change',function(){target.css({'background-color':colors[options.index(target.find('option:selected'))]})})
+		.on('touchstart mousedown',function(){colorpicker.show();e.stopPropagation();});
+		for (var i=0;i<colors.length;i++)
+		{
+			colorpicker.append(
+				$('<div>').css({
+					'background-color':colors[i],
+					'display':'inline-block',
+					'height':'calc('+target.height()+' - 4px)',
+					'margin':'2px',
+					'width':'calc(100% - 4px)'
+				})
+				.on('touchstart mousedown',function(e){e.stopPropagation();})
+				.on('click',function(){target.val(options.eq(i).val());colorpicker.hide();})
+			);
+		}
+		$(window).on('resize scroll',function(){
+			colorpicker.css({
+				'height':$(window).height()-(target.offset().top+target.outerHeight(false)),
+				'left':target.offset().left,
+				'top':target.offset().top+target.outerHeight(false),
+				'width':target.outerWidth(false).toString()+'px'
+			});
+		});
+		$('body').on('touchstart mousedown',function(){colorpicker.hide();}).append(colorpicker);
+	});
+}
+/*
+*--------------------------------------------------------------------
 * 日付フォーマット
 * -------------------------------------------------------------------
 */
