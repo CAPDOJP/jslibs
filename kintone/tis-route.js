@@ -334,63 +334,113 @@ jQuery.extend({
 	markercolors:function(){
 		return [
 			{
-				name:'赤',
-				back:'FA8273',
+				name:'レッド',
+				back:'e60012',
 				fore:'000000'
 			},
 			{
-				name:'黄',
-				back:'FFF07D',
+				name:'オレンジ',
+				back:'f39700',
+				fore:'000000'
+			},
+			{
+				name:'シルバー',
+				back:'9caeb7',
+				fore:'000000'
+			},
+			{
+				name:'スカイ',
+				back:'00a7db',
+				fore:'ffffff'
+			},
+			{
+				name:'グリーン',
+				back:'009944',
+				fore:'000000'
+			},
+			{
+				name:'ゴールド',
+				back:'d7c447',
+				fore:'000000'
+			},
+			{
+				name:'ブルー',
+				back:'0079c2',
+				fore:'ffffff'
+			},
+			{
+				name:'パープル',
+				back:'9b7cb6',
+				fore:'000000'
+			},
+			{
+				name:'エメラルド',
+				back:'00ada9',
+				fore:'000000'
+			},
+			{
+				name:'ブラウン',
+				back:'bb641d',
+				fore:'000000'
+			},
+			{
+				name:'ローズ',
+				back:'e85298',
+				fore:'000000'
+			},
+			{
+				name:'リーフ',
+				back:'6cbb5a',
+				fore:'000000'
+			},
+			{
+				name:'ルビー',
+				back:'b6007a',
+				fore:'000000'
+			},
+			{
+				name:'臙脂',
+				back:'e5171f',
+				fore:'000000'
+			},
+			{
+				name:'京紫',
+				back:'522886',
+				fore:'000000'
+			},
+			{
+				name:'縹',
+				back:'0078ba',
 				fore:'000000'
 			},
 			{
 				name:'緑',
-				back:'7DC87D',
+				back:'019a66',
 				fore:'000000'
 			},
 			{
-				name:'紫',
-				back:'827DB9',
-				fore:'ffffff'
-			},
-			{
-				name:'ピンク',
-				back:'E16EA5',
+				name:'紅梅',
+				back:'e44d93',
 				fore:'000000'
 			},
 			{
-				name:'サーモン',
-				back:'FA7382',
+				name:'マルーン',
+				back:'814721',
 				fore:'000000'
 			},
 			{
-				name:'青',
-				back:'69B4C8',
-				fore:'ffffff'
-			},
-			{
-				name:'茶',
-				back:'FFB46E',
+				name:'萌黄',
+				back:'a9cc51',
 				fore:'000000'
 			},
 			{
-				name:'黄緑',
-				back:'B4DC69',
+				name:'柑子',
+				back:'ee7b1a',
 				fore:'000000'
 			},
 			{
-				name:'ターコイズ',
-				back:'64C3AF',
-				fore:'000000'
-			},
-			{
-				name:'薄青',
-				back:'87ceeb',
-				fore:'000000'
-			},
-			{
-				name:'ラベンダー',
-				back:'B473B4',
+				name:'セルリアンブルー',
+				back:'00a0de',
 				fore:'000000'
 			}
 		];
