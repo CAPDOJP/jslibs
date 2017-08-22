@@ -1271,6 +1271,7 @@ jQuery.fn.colorSelector = function(colors){
 			'overflow-y':'scroll',
 			'padding':'1px',
 			'position':'fixed',
+			'text-align':'left',
 			'top':'50%',
 			'z-index':'9999999',
 			'width':'400px',

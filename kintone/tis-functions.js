@@ -286,24 +286,30 @@ jQuery.fn.colorSelector = function(colors){
 		colorlist=$('<div class="colorlist">').css({
 			'background-color':'#F3F3F3',
 			'border':'1px solid #DCDCDC',
+			'border-radius':'0.25em',
+			'box-shadow':'0px 0px 2px rgba(0,0,0,0.5)',
+			'height':'400px',
+			'left':'50%',
 			'margin':'0px',
+			'max-height':'calc(100% - 2em)',
+			'max-width':'calc(100% - 2em)',
 			'overflow-x':'hidden',
 			'overflow-y':'scroll',
+			'padding':'1px',
 			'position':'fixed',
-			'z-index':'9999999'
-		}).on('touchstart mousedown',function(e){e.stopPropagation();})
+			'text-align':'left',
+			'top':'50%',
+			'z-index':'9999999',
+			'width':'400px',
+			'-webkit-transform':'translate(-50%,-50%)',
+			'-ms-transform':'translate(-50%,-50%)',
+			'transform':'translate(-50%,-50%)'
+		}).on('touchstart mousedown',function(e){e.stopPropagation();}).hide();
 		target.css({'background-color':colors[target.find('option').index(target.find('option:selected'))]})
 		.off('touchstart.selector mousedown.selector')
 		.on('touchstart.selector mousedown.selector',function(e){
 			$('div.colorlist').hide();
-			position.x=target.offset().left-$(window).scrollLeft();
-			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
-			colorlist.css({
-				'height':($(window).height()-position.y).toString()+'px',
-				'left':position.x,
-				'top':position.y,
-				'width':target.outerWidth(false).toString()+'px'
-			}).show();
+			colorlist.show();
 			return false;
 		});
 		for (var i=0;i<colors.length;i++)
@@ -311,9 +317,11 @@ jQuery.fn.colorSelector = function(colors){
 			colorlist.append(
 				$('<div>').css({
 					'background-color':colors[i],
-					'height':'calc('+target.height()+'px - 4px)',
+					'cursor':'pointer',
+					'display':'inline-block',
+					'padding-top':'calc(25% - 4px)',
 					'margin':'2px',
-					'width':'calc(100% - 4px)'
+					'width':'calc(25% - 4px)'
 				})
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('click',function(){
@@ -324,17 +332,7 @@ jQuery.fn.colorSelector = function(colors){
 				})
 			);
 		}
-		$(window).on('resize scroll',function(){
-			position.x=target.offset().left-$(window).scrollLeft();
-			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
-			colorlist.css({
-				'height':($(window).height()-position.y).toString()+'px',
-				'left':position.x,
-				'top':position.y,
-				'width':target.outerWidth(false).toString()+'px'
-			});
-		});
-		$('body').on('touchstart mousedown',function(){colorlist.hide();}).append(colorlist.hide());
+		$('body').on('touchstart mousedown',function(){colorlist.hide();}).append(colorlist);
 	});
 }
 /*
