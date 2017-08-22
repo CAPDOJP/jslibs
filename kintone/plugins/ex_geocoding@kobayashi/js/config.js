@@ -12,6 +12,7 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
+		colors:null,
 		colorrows:null,
 		colortemplate:null
 	};
@@ -25,9 +26,7 @@ jQuery.noConflict();
 			row=vars.colorrows.last();
 			$('img.add',row).on('click',function(){functions.addcolor()});
 			$('img.del',row).on('click',function(){functions.delcolor($(this).closest('tr'))});
-			$('select#datespancolor',row).on('change',function(){
-				$(this).css({'background-color':$(this).find('option:selected').css('background-color')})
-			});
+			$('select#datespancolor',row).colorSelector(vars.colors);
 		},
 		delcolor:function(row){
 			row.remove();
@@ -43,22 +42,15 @@ jQuery.noConflict();
 		/* initialize valiable */
 		vars.colortemplate=$('.colorfields').first().clone(true);
 		/* setup colorfields lists */
-		var colors=$.markercolors();
 		var row=vars.colortemplate;
+		vars.colors=$.markercolors();
+		$('select#currentcolor').empty();
+		$('select#defaultcolor').empty();
 		$('select#datespancolor',row).empty();
-		$('select#currentcolor').append($('<option>').attr('value','').css({'background-color':'#FFFFFF'}));
-		$('select#defaultcolor').append($('<option>').attr('value','').css({'background-color':'#FFFFFF'}));
-		$('select#datespancolor',row).append($('<option>').attr('value','').css({'background-color':'#FFFFFF'}));
-		$.each(colors,function(index){
-			$('select#currentcolor').on('change',function(){
-				$(this).css({'background-color':$(this).find('option:selected').css('background-color')})
-			}).append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
-			$('select#defaultcolor').on('change',function(){
-				$(this).css({'background-color':$(this).find('option:selected').css('background-color')})
-			}).append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
-			$('select#datespancolor',row).on('change',function(){
-				$(this).css({'background-color':$(this).find('option:selected').css('background-color')})
-			}).append($('<option>').attr('value',index).css({'background-color':'#'+colors[index].back}));
+		$.each(vars.colors,function(index){
+			$('select#currentcolor').append($('<option>').attr('value',index));
+			$('select#defaultcolor').append($('<option>').attr('value',index));
+			$('select#datespancolor',row).append($('<option>').attr('value',index));
 		});
 		/* create colorfields rows */
 		$('.colorfields').remove();
@@ -130,9 +122,11 @@ jQuery.noConflict();
         	$('select#defaultcolor').val($('select#defaultcolor').find('option').first().val());
 			$.each($('select#datespancolor'),function(){$(this).css({'background-color':$(this).find('option').first().val()})});
         }
-		$('select#currentcolor').css({'background-color':$('select#currentcolor').find('option:selected').css('background-color')});
-		$('select#defaultcolor').css({'background-color':$('select#defaultcolor').find('option:selected').css('background-color')});
-		$.each($('select#datespancolor'),function(){$(this).css({'background-color':$(this).find('option:selected').css('background-color')})});
+		$('select#currentcolor').colorSelector(vars.colors).css({'background-color':vars.colors[$('select#currentcolor').find('option').index($('select#currentcolor').find('option:selected'))]});
+		$('select#defaultcolor').colorSelector(vars.colors).css({'background-color':vars.colors[$('select#defaultcolor').find('option').index($('select#defaultcolor').find('option:selected'))]});
+		$.each($('select#datespancolor'),function(){
+			$(this).colorSelector(vars.colors).css({'background-color':vars.colors[$(this).find('option').index($(this).find('option:selected'))]});
+		});
 	},function(error){});
 	/*---------------------------------------------------------------
 	 button events

@@ -266,6 +266,79 @@ jQuery.fn.fields=function(fieldcode){
 }
 /*
 *--------------------------------------------------------------------
+* color selector
+*--------------------------------------------------------------------
+* parameters
+* colors:color list
+* -------------------------------------------------------------------
+*/
+jQuery.fn.colorSelector = function(colors){
+	return $(this).each(function(){
+		var target=$(this);
+		var colorlist=null;
+		var options=target.find('option').hide();
+		var position={x:0,y:0};
+		if (colors.length!=options.length)
+		{
+			alert('色情報と選択リスト要素の数が一致しません。');
+			return;
+		}
+		colorlist=$('<div class="colorlist">').css({
+			'background-color':'#F3F3F3',
+			'border':'1px solid #DCDCDC',
+			'margin':'0px',
+			'overflow-x':'hidden',
+			'overflow-y':'scroll',
+			'position':'fixed',
+			'z-index':'9999999'
+		}).on('touchstart mousedown',function(e){e.stopPropagation();})
+		target.css({'background-color':colors[0]})
+		.off('touchstart.selector mousedown.selector')
+		.on('touchstart.selector mousedown.selector',function(e){
+			$('div.colorlist').hide();
+			position.x=target.offset().left-$(window).scrollLeft();
+			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
+			colorlist.css({
+				'height':($(window).height()-position.y).toString()+'px',
+				'left':position.x,
+				'top':position.y,
+				'width':target.outerWidth(false).toString()+'px'
+			}).show();
+			return false;
+		});
+		for (var i=0;i<colors.length;i++)
+		{
+			colorlist.append(
+				$('<div>').css({
+					'background-color':colors[i],
+					'height':'calc('+target.height()+'px - 4px)',
+					'margin':'2px',
+					'width':'calc(100% - 4px)'
+				})
+				.on('touchstart mousedown',function(e){e.stopPropagation();})
+				.on('click',function(){
+					var index=colorlist.find('div').index($(this));
+					target.css({'background-color':colors[index]});
+					target.val(options.eq(index).val());
+					colorlist.hide();
+				})
+			);
+		}
+		$(window).on('resize scroll',function(){
+			position.x=target.offset().left-$(window).scrollLeft();
+			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
+			colorlist.css({
+				'height':($(window).height()-position.y).toString()+'px',
+				'left':position.x,
+				'top':position.y,
+				'width':target.outerWidth(false).toString()+'px'
+			});
+		});
+		$('body').on('touchstart mousedown',function(){colorlist.hide();}).append(colorlist);
+	});
+}
+/*
+*--------------------------------------------------------------------
 * setup lists
 *--------------------------------------------------------------------
 * parameters
