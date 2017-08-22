@@ -1288,9 +1288,10 @@ jQuery.fn.colorSelector = function(colors){
 			colorlist.append(
 				$('<div>').css({
 					'background-color':colors[i],
-					'height':'calc('+target.height()+'px - 4px)',
+					'display':'inline-block',
+					'padding-top':'calc(30% - 4px)',
 					'margin':'2px',
-					'width':'calc(100% - 4px)'
+					'width':'calc(30% - 4px)'
 				})
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('click',function(){
