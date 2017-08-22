@@ -349,9 +349,9 @@ jQuery.extend({
 				fore:'000000'
 			},
 			{
-				name:'スカイ',
-				back:'00a7db',
-				fore:'000000'
+				name:'ブルー',
+				back:'0079c2',
+				fore:'ffffff'
 			},
 			{
 				name:'グリーン',
@@ -364,9 +364,9 @@ jQuery.extend({
 				fore:'000000'
 			},
 			{
-				name:'ブルー',
-				back:'0079c2',
-				fore:'ffffff'
+				name:'スカイ',
+				back:'00a7db',
+				fore:'000000'
 			},
 			{
 				name:'パープル',
