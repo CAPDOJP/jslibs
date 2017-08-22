@@ -1308,7 +1308,7 @@ jQuery.fn.colorSelector = function(colors){
 				'width':target.outerWidth(false).toString()+'px'
 			});
 		});
-		$('body').on('touchstart mousedown',function(){colorlist.hide();}).append(colorlist);
+		$('body').on('touchstart mousedown',function(){colorlist.hide();}).append(colorlist.hide());
 	});
 }
 /*
