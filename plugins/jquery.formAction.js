@@ -1265,7 +1265,7 @@ jQuery.fn.colorSelector = function(colors){
 			'z-index':'9999999'
 		})
 		.on('touchstart mousedown',function(e){e.stopPropagation();})
-		target.css({'background-color':colors[0]})
+		target.css({'background-color':colors[options.index(target.find('option:selected'))]})
 		.on('change',function(){target.css({'background-color':colors[options.index(target.find('option:selected'))]})})
 		.on('touchstart mousedown',function(e){
 			colorpicker.css({
@@ -1286,7 +1286,10 @@ jQuery.fn.colorSelector = function(colors){
 					'width':'calc(100% - 4px)'
 				})
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
-				.on('click',function(){target.val(options.eq(i).val());colorpicker.hide();})
+				.on('click',function(){
+					console.log(options.eq(i).val());
+					target.val(options.eq(i).val());colorpicker.hide();
+				})
 			);
 		}
 		$(window).on('resize scroll',function(){
