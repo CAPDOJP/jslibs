@@ -1287,7 +1287,7 @@ jQuery.fn.colorSelector = function(colors){
 				})
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('click',function(){
-					console.log(options.eq(i).val());
+					console.log(i);
 					target.val(options.eq(i).val());colorpicker.hide();
 				})
 			);
