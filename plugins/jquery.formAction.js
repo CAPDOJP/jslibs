@@ -1263,10 +1263,8 @@ jQuery.fn.colorSelector = function(colors){
 			'overflow-y':'scroll',
 			'position':'fixed',
 			'z-index':'9999999'
-		})
-		.on('touchstart mousedown',function(e){e.stopPropagation();})
-		target
-		.on('touchstart mousedown',function(e){
+		}).on('touchstart mousedown',function(e){e.stopPropagation();})
+		target.on('touchstart mousedown',function(e){
 			colorpicker.css({
 				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
 				'left':target.offset().left,
