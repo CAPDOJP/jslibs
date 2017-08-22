@@ -334,6 +334,9 @@ jQuery.fn.colorSelector = function(colors){
 				'width':target.outerWidth(false).toString()+'px'
 			});
 		});
+		$(window).on('load',function(){
+			$('div.colorlist').hide();
+		});
 		$('body').on('touchstart mousedown',function(){colorlist.hide();}).append(colorlist);
 	});
 }

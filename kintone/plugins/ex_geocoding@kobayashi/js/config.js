@@ -43,7 +43,8 @@ jQuery.noConflict();
 		vars.colortemplate=$('.colorfields').first().clone(true);
 		/* setup colorfields lists */
 		var row=vars.colortemplate;
-		vars.colors=$.markercolors();
+		vars.colors=[];
+		$.each($.markercolors(),function(index,values){vars.colors.push('#'+values.back);});
 		$('select#currentcolor').empty();
 		$('select#defaultcolor').empty();
 		$('select#datespancolor',row).empty();
