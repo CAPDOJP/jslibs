@@ -339,7 +339,7 @@ jQuery.extend({
 			{name:'ブルー',back:'0079c2',fore:'ffffff'},
 			{name:'グリーン',back:'009944',fore:'000000'},
 			{name:'ゴールド',back:'d7c447',fore:'000000'},
-			{name:'スカイ',back:'00a7db',fore:'000000'	},
+			{name:'スカイ',back:'00a7db',fore:'000000'},
 			{name:'パープル',back:'9b7cb6',fore:'000000'},
 			{name:'エメラルド',back:'00ada9',fore:'000000'},
 			{name:'ブラウン',back:'bb641d',fore:'000000'},
