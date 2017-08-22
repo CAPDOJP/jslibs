@@ -351,7 +351,7 @@ jQuery.extend({
 			{
 				name:'スカイ',
 				back:'00a7db',
-				fore:'ffffff'
+				fore:'000000'
 			},
 			{
 				name:'グリーン',
@@ -396,7 +396,7 @@ jQuery.extend({
 			{
 				name:'ルビー',
 				back:'b6007a',
-				fore:'000000'
+				fore:'ffffff'
 			},
 			{
 				name:'臙脂',
@@ -406,12 +406,12 @@ jQuery.extend({
 			{
 				name:'京紫',
 				back:'522886',
-				fore:'000000'
+				fore:'ffffff'
 			},
 			{
 				name:'縹',
 				back:'0078ba',
-				fore:'000000'
+				fore:'ffffff'
 			},
 			{
 				name:'緑',
@@ -426,7 +426,7 @@ jQuery.extend({
 			{
 				name:'マルーン',
 				back:'814721',
-				fore:'000000'
+				fore:'ffffff'
 			},
 			{
 				name:'萌黄',
