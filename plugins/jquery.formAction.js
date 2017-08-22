@@ -1261,7 +1261,7 @@ jQuery.fn.colorSelector = function(colors){
 			'overflow-x':'hidden',
 			'overflow-y':'scroll',
 			'position':'fixed',
-			'z-index':'999999'
+			'z-index':'9999999'
 		});
 		target.css({'background-color':colors[0]})
 		.on('change',function(){target.css({'background-color':colors[options.index(target.find('option:selected'))]})})
