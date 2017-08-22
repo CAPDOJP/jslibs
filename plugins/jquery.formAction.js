@@ -1249,7 +1249,7 @@ jQuery.fn.sendparts = function(options){
 jQuery.fn.colorSelector = function(colors){
 	return $(this).each(function(){
 		var target=$(this);
-		var colorpicker=null;
+		var colorlist=null;
 		var options=target.find('option').hide();
 		var position={x:0,y:0};
 		if (colors.length!=options.length)
@@ -1257,7 +1257,7 @@ jQuery.fn.colorSelector = function(colors){
 			alert('色情報と選択リスト要素の数が一致しません。');
 			return;
 		}
-		colorpicker=$('<div class="colorselector">').css({
+		colorlist=$('<div class="colorlist">').css({
 			'background-color':'#F3F3F3',
 			'border':'1px solid #DCDCDC',
 			'margin':'0px',
@@ -1269,10 +1269,10 @@ jQuery.fn.colorSelector = function(colors){
 		target.css({'background-color':colors[0]})
 		.off('touchstart.selector mousedown.selector')
 		.on('touchstart.selector mousedown.selector',function(e){
-			$('div.colorpicker').hide();
+			$('div.colorlist').hide();
 			position.x=target.offset().left-$(window).scrollLeft();
 			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
-			colorpicker.css({
+			colorlist.css({
 				'height':($(window).height()-position.y).toString()+'px',
 				'left':position.x,
 				'top':position.y,
@@ -1282,7 +1282,7 @@ jQuery.fn.colorSelector = function(colors){
 		});
 		for (var i=0;i<colors.length;i++)
 		{
-			colorpicker.append(
+			colorlist.append(
 				$('<div>').css({
 					'background-color':colors[i],
 					'height':'calc('+target.height()+'px - 4px)',
@@ -1291,24 +1291,24 @@ jQuery.fn.colorSelector = function(colors){
 				})
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('click',function(){
-					var index=colorpicker.find('div').index($(this));
+					var index=colorlist.find('div').index($(this));
 					target.css({'background-color':colors[index]});
 					target.val(options.eq(index).val());
-					colorpicker.hide();
+					colorlist.hide();
 				})
 			);
 		}
 		$(window).on('resize scroll',function(){
 			position.x=target.offset().left-$(window).scrollLeft();
 			position.y=target.offset().top+target.outerHeight(false)-$(window).scrollTop();
-			colorpicker.css({
+			colorlist.css({
 				'height':($(window).height()-position.y).toString()+'px',
 				'left':position.x,
 				'top':position.y,
 				'width':target.outerWidth(false).toString()+'px'
 			});
 		});
-		$('body').on('touchstart mousedown',function(){colorpicker.hide();}).append(colorpicker);
+		$('body').on('touchstart mousedown',function(){colorlist.hide();}).append(colorlist);
 	});
 }
 /*
