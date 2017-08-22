@@ -349,11 +349,6 @@ jQuery.extend({
 				fore:'000000'
 			},
 			{
-				name:'青',
-				back:'69B4C8',
-				fore:'ffffff'
-			},
-			{
 				name:'紫',
 				back:'827DB9',
 				fore:'ffffff'
@@ -367,6 +362,11 @@ jQuery.extend({
 				name:'サーモン',
 				back:'FA7382',
 				fore:'000000'
+			},
+			{
+				name:'青',
+				back:'69B4C8',
+				fore:'ffffff'
 			},
 			{
 				name:'茶',
