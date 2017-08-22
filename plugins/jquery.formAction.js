@@ -1278,7 +1278,7 @@ jQuery.fn.colorSelector = function(colors){
 				'top':position.y,
 				'width':target.outerWidth(false).toString()+'px'
 			}).show();
-			e.stopPropagation();
+			return false;
 		});
 		for (var i=0;i<colors.length;i++)
 		{
