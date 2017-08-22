@@ -1256,7 +1256,7 @@ jQuery.fn.colorSelector = function(colors){
 			alert('色情報と選択リスト要素の数が一致しません。');
 			return;
 		}
-		colorpicker=$('<div>').css({
+		colorpicker=$('<div class="colorselector">').css({
 			'background-color':'#F3F3F3',
 			'border':'1px solid #DCDCDC',
 			'margin':'0px',
@@ -1268,6 +1268,7 @@ jQuery.fn.colorSelector = function(colors){
 		target.css({'background-color':colors[0]})
 		.off('touchstart.selector mousedown.selector')
 		.on('touchstart.selector mousedown.selector',function(e){
+			$.each($('.colorpicker'),function(){if ($(this)[0]!=colorpicker[0]) $(this).hide();});
 			colorpicker.css({
 				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
 				'left':target.offset().left,
