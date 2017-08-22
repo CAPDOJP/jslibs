@@ -355,7 +355,8 @@ jQuery.extend({
 			{name:'萌黄',back:'a9cc51',fore:'000000'},
 			{name:'柑子',back:'ee7b1a',fore:'000000'},
 			{name:'セルリアンブルー',back:'00a0de',fore:'000000'},
-			{name:'ホワイト',back:'ffffff',fore:'000000'}
+			{name:'ホワイト',back:'ffffff',fore:'000000'},
+			{name:'ブラック',back:'000000',fore:'ffffff'}
 		];
 	}
 });
