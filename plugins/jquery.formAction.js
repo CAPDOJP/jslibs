@@ -1259,12 +1259,14 @@ jQuery.fn.colorSelector = function(colors){
 		colorpicker=$('<div>').css({
 			'background-color':'#F3F3F3',
 			'border':'1px solid #DCDCDC',
+			'margin':'0px',
 			'overflow-x':'hidden',
 			'overflow-y':'scroll',
 			'position':'fixed',
 			'z-index':'9999999'
 		}).on('touchstart mousedown',function(e){e.stopPropagation();})
-		target.on('touchstart mousedown',function(e){
+		target.css({'background-color':colors[0]})
+		.on('touchstart mousedown',function(e){
 			colorpicker.css({
 				'height':($(window).height()-(target.offset().top+target.outerHeight(false))).toString()+'px',
 				'left':target.offset().left,
@@ -1285,7 +1287,7 @@ jQuery.fn.colorSelector = function(colors){
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('click',function(){
 					var index=colorpicker.find('div').index($(this));
-					target.css({'background-color':colors[index]})
+					target.css({'background-color':colors[index]});
 					target.val(options.eq(index).val());
 					colorpicker.hide();
 				})
