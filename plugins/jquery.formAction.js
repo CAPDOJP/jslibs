@@ -1262,19 +1262,20 @@ jQuery.fn.colorSelector = function(colors){
 			'border':'1px solid #DCDCDC',
 			'border-radius':'0.25em',
 			'box-shadow':'0px 0px 2px rgba(0,0,0,0.5)',
-			'bottom':'1em',
 			'height':'600px',
-			'left':'1em',
+			'left':'50%',
 			'margin':'0px',
 			'max-height':'calc(100% - 2em)',
 			'max-width':'calc(100% - 2em)',
 			'overflow-x':'hidden',
 			'overflow-y':'scroll',
 			'position':'fixed',
-			'right':'1em',
-			'top':'1em',
+			'top':'50%',
 			'z-index':'9999999',
-			'width':'600px'
+			'width':'600px',
+			'-webkit-transform':'translate(-50%,-50%)',
+			'-ms-transform':'translate(-50%,-50%)',
+			'transform':'translate(-50%,-50%)'
 		}).on('touchstart mousedown',function(e){e.stopPropagation();}).hide();
 		target.css({'background-color':colors[target.find('option').index(target.find('option:selected'))]})
 		.off('touchstart.selector mousedown.selector')
@@ -1289,9 +1290,9 @@ jQuery.fn.colorSelector = function(colors){
 				$('<div>').css({
 					'background-color':colors[i],
 					'display':'inline-block',
-					'padding-top':'calc(30% - 4px)',
+					'padding-top':'calc(25% - 4px)',
 					'margin':'2px',
-					'width':'calc(30% - 4px)'
+					'width':'calc(25% - 4px)'
 				})
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('click',function(){
