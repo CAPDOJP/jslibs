@@ -1268,7 +1268,7 @@ jQuery.fn.colorSelector = function(colors){
 		});
 		target.css({'background-color':colors[0]})
 		.on('change',function(){target.css({'background-color':colors[options.index(target.find('option:selected'))]})})
-		.on('touchstart mousedown',function(){colorpicker.show();e.stopPropagation();});
+		.on('touchstart mousedown',function(e){colorpicker.show();e.stopPropagation();});
 		for (var i=0;i<colors.length;i++)
 		{
 			colorpicker.append(
