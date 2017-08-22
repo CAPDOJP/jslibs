@@ -1257,12 +1257,14 @@ jQuery.fn.colorSelector = function(colors){
 			return;
 		}
 		colorpicker=$('<div>').css({
+			'background-color':'#F3F3F3',
 			'border':'1px solid #DCDCDC',
 			'overflow-x':'hidden',
 			'overflow-y':'scroll',
 			'position':'fixed',
 			'z-index':'9999999'
-		});
+		})
+		.on('touchstart mousedown',function(e){e.stopPropagation();})
 		target.css({'background-color':colors[0]})
 		.on('change',function(){target.css({'background-color':colors[options.index(target.find('option:selected'))]})})
 		.on('touchstart mousedown',function(e){
