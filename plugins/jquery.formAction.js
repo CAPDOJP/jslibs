@@ -1262,7 +1262,7 @@ jQuery.fn.colorSelector = function(colors){
 			'border':'1px solid #DCDCDC',
 			'border-radius':'0.25em',
 			'box-shadow':'0px 0px 2px rgba(0,0,0,0.5)',
-			'height':'600px',
+			'height':'400px',
 			'left':'50%',
 			'margin':'0px',
 			'max-height':'calc(100% - 2em)',
@@ -1273,7 +1273,7 @@ jQuery.fn.colorSelector = function(colors){
 			'position':'fixed',
 			'top':'50%',
 			'z-index':'9999999',
-			'width':'600px',
+			'width':'400px',
 			'-webkit-transform':'translate(-50%,-50%)',
 			'-ms-transform':'translate(-50%,-50%)',
 			'transform':'translate(-50%,-50%)'
