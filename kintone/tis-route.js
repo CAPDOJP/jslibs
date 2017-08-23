@@ -124,7 +124,7 @@ var RouteMap=function(options){
 	});
 	var my=this;
 	this.container.on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
-		e.preventDefault();
+		if (this.isfullscreen) e.preventDefault();
 	});
 };
 RouteMap.prototype={
