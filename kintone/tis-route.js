@@ -109,7 +109,8 @@ var RouteMap=function(options){
 		var latlng=new google.maps.LatLng(0,0);
 		var param={
 			center:latlng,
-			fullscreenControl:(!this.isfullscreen),
+			fullscreenControl:true,
+			fullscreenControlOptions:{position:google.maps.ControlPosition.BOTTOM_LEFT},
 			gestureHandling:((this.isfullscreen)?'greedy':'auto'),
 			mapTypeControl:false,
 			overviewMapControl:false,
