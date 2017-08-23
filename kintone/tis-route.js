@@ -118,12 +118,9 @@ var RouteMap=function(options){
 			zoomControl:true,
 			zoom:14
 		};
-		if (this.isfullscreen)
-		{
-			param.gestureHandling='greedy';
-			param.overviewMapControl=true;
-			param.streetViewControl=true;
-		}
+		param.gestureHandling='greedy';
+		param.overviewMapControl=true;
+		param.streetViewControl=true;
 		my.map=new google.maps.Map(document.getElementById(my.contents.attr('id')),param);
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
