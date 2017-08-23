@@ -53,7 +53,7 @@ var RouteMap=function(options){
 			'bottom':'-100%',
 			'left':'0px',
 			'position':'fixed',
-			'z-index':'999999'
+			'z-index':'9999'
 		});
 	}
 	this.contents=div.clone(true).css({
