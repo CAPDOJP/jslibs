@@ -131,7 +131,7 @@ var RouteMap=function(options){
 		if (left>rect.width) return;
 		if (top<0) return;
 		if (top>rect.height) return;
-		console.log('aaa');
+		console.log('left：'+left+'top：'+top);
 		e.stopPropagation();
 	});
 };
