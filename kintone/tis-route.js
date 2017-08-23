@@ -53,7 +53,7 @@ var RouteMap=function(options){
 			'bottom':'-100%',
 			'left':'0px',
 			'position':'fixed',
-			'z-index':'9999'
+			'z-index':'999999'
 		});
 	}
 	this.contents=div.clone(true).css({
@@ -66,12 +66,14 @@ var RouteMap=function(options){
 	}).attr('id','mapcontents');
 	this.buttonblock=div.clone(true).css({
 		'background-color':'transparent',
-		'left':'0px',
+		'display':'inline-block',
 		'padding':'5px',
 		'position':'absolute',
+		'right':'0px',
 		'text-align':'right',
 		'top':'0px',
-		'width':'100%',
+		'white-space':'nowrap',
+		'width':'auto',
 		'z-index':'2'
 	}).append(
 		$('<button id="mapclose">')
