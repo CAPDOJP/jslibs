@@ -109,7 +109,6 @@ var RouteMap=function(options){
 		var latlng=new google.maps.LatLng(0,0);
 		var param={
 			center:latlng,
-			gestureHandling:'auto',
 			mapTypeControl:false,
 			overviewMapControl:false,
 			panControl:true,
@@ -118,9 +117,6 @@ var RouteMap=function(options){
 			zoomControl:true,
 			zoom:14
 		};
-		param.gestureHandling='greedy';
-		param.overviewMapControl=true;
-		param.streetViewControl=true;
 		my.map=new google.maps.Map(document.getElementById(my.contents.attr('id')),param);
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
