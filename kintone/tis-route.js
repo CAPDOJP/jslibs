@@ -124,8 +124,8 @@ var RouteMap=function(options){
 	});
 	var my=this;
 	$(document).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
-		var left=event.pageX-my.container.offset().left;
-		var top=event.pageY-my.container.offset().top;
+		var left=e.pageX-my.container.offset().left;
+		var top=e.pageY-my.container.offset().top;
 		var rect=my.container[0].getBoundingClientRect();
 		if (left<0) return;
 		if (left>rect.width) return;
