@@ -113,7 +113,7 @@ var RouteMap=function(options){
 			center:latlng,
 			fullscreenControl:true,
 			fullscreenControlOptions:{position:google.maps.ControlPosition.BOTTOM_LEFT},
-			gestureHandling:((this.isfullscreen)?'greedy':'auto'),
+			gestureHandling:((my.isfullscreen)?'greedy':'auto'),
 			mapTypeControl:false,
 			overviewMapControl:false,
 			panControl:true,
