@@ -123,15 +123,7 @@ var RouteMap=function(options){
 		if (my.loadedcallback!=null) my.loadedcallback();
 	});
 	var my=this;
-	$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
-		var left=event.pageX-my.container.offset().left;
-		var top=event.pageY-my.container.offset().top;
-		var rect=my.container[0].getBoundingClientRect();
-		if (left<0) return;
-		if (left>rect.width) return;
-		if (top<0) return;
-		if (top>rect.height) return;
-		e.stopPropagation();
+	this.container.on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
 		e.preventDefault();
 	});
 };
