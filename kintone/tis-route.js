@@ -113,11 +113,12 @@ var RouteMap=function(options){
 			overviewMapControl:false,
 			panControl:true,
 			scaleControl:false,
-			scrollwheel:true,
+			scrollwheel:false,
 			streetViewControl:false,
 			zoomControl:true,
 			zoom:14
 		};
+		if (this.isfullscreen) param.scrollwheel=true;
 		my.map=new google.maps.Map(document.getElementById(my.contents.attr('id')),param);
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
