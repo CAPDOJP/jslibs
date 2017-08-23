@@ -113,6 +113,7 @@ var RouteMap=function(options){
 			overviewMapControl:false,
 			panControl:true,
 			scaleControl:false,
+			scrollwheel:true,
 			streetViewControl:false,
 			zoomControl:true,
 			zoom:14
@@ -121,18 +122,6 @@ var RouteMap=function(options){
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
 		if (my.loadedcallback!=null) my.loadedcallback();
-	});
-	var my=this;
-	$(document).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
-		var left=e.pageX-my.container.offset().left;
-		var top=e.pageY-my.container.offset().top;
-		var rect=my.container[0].getBoundingClientRect();
-		if (left<0) return;
-		if (left>rect.width) return;
-		if (top<0) return;
-		if (top>rect.height) return;
-		console.log('left：'+left+'top：'+top);
-		e.stopPropagation();
 	});
 };
 RouteMap.prototype={
