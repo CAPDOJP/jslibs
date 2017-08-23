@@ -122,6 +122,18 @@ var RouteMap=function(options){
 		my.directionsService=new google.maps.DirectionsService();
 		if (my.loadedcallback!=null) my.loadedcallback();
 	});
+	var my=this;
+	$(window).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
+		var left=event.pageX-my.container.offset().left;
+		var top=event.pageY-my.container.offset().top;
+		var rect=my.container[0].getBoundingClientRect();
+		if (left<0) return;
+		if (left>rect.width) return;
+		if (top<0) return;
+		if (top>rect.height) return;
+		e.stopPropagation();
+		e.preventDefault();
+	});
 };
 RouteMap.prototype={
 	/* close information widnow */

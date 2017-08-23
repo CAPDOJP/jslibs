@@ -383,7 +383,10 @@ jQuery.noConflict();
 												ids:[index]
 											};
 											kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
-												row.remove();
+												var rowindex=vars.rows.find('tr').index(row);
+												var rowspan=parseInt('0'+row.find('td').first().attr('rowspan'));
+												if (rowspan==0) rowspan=1;
+												for (var i=rowindex;i<rowindex+rowspan;i++) vars.rows.find('tr').eq(rowindex).remove();
 											},function(error){});
 										});
 									}
