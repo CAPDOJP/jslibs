@@ -121,6 +121,7 @@ var RouteMap=function(options){
 		if (this.isfullscreen)
 		{
 			param.gestureHandling='greedy';
+			param.overviewMapControl=true;
 			param.streetViewControl=true;
 		}
 		my.map=new google.maps.Map(document.getElementById(my.contents.attr('id')),param);
