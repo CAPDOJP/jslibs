@@ -109,12 +109,13 @@ var RouteMap=function(options){
 		var latlng=new google.maps.LatLng(0,0);
 		var param={
 			center:latlng,
+			fullscreenControl:false,
 			gestureHandling:((this.isfullscreen)?'greedy':'auto'),
 			mapTypeControl:false,
 			overviewMapControl:false,
 			panControl:true,
 			scaleControl:false,
-			streetViewControl:false,
+			streetViewControl:true,
 			zoomControl:true,
 			zoom:14
 		};
