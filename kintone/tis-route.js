@@ -123,8 +123,15 @@ var RouteMap=function(options){
 		if (my.loadedcallback!=null) my.loadedcallback();
 	});
 	var my=this;
-	this.contents.on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
-		if (!this.isfullscreen) return;
+	$(document).on(('onwheel' in document)?'wheel':('onmousewheel' in document)?'mousewheel':'DOMMouseScroll',function(e,delta,deltaX,deltaY){
+		var left=e.pageX-my.container.offset().left;
+		var top=e.pageY-my.container.offset().top;
+		var rect=my.container[0].getBoundingClientRect();
+		if (left<0) return;
+		if (left>rect.width) return;
+		if (top<0) return;
+		if (top>rect.height) return;
+		console.log('aaa');
 		e.stopPropagation();
 	});
 };
