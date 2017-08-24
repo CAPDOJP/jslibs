@@ -84,7 +84,7 @@ var DynamicMap=function(options){
 		overviewMapControl:false,
 		panControl:true,
 		scaleControl:false,
-		streetViewControl:false,
+		streetViewControl:true,
 		zoomControl:true,
 		zoom:14
 	};
