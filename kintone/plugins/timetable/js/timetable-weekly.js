@@ -172,12 +172,13 @@ jQuery.noConflict();
 		/* reload datas */
 		loaddatas:function(appkey,callback){
 			var sort='';
-			var query='';
+			var query=kintone.app.getQueryCondition();
 			var body={
 				app:appkey,
-				query:query,
+				query:'',
 				fields:vars.fields
 			};
+			query+=((query.length!=0)?' and ':'');
 			query+=vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'"';
 			query+=' and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
 			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
@@ -222,6 +223,7 @@ jQuery.noConflict();
 		var next=$('<button id="next" class="customview-button next-button">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
 		/* append elements */
+		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(week[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);

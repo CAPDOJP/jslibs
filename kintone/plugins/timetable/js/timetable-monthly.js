@@ -136,16 +136,19 @@ jQuery.noConflict();
 		/* reload datas */
 		loaddatas:function(appkey,callback){
 			var sort='';
+			var query=kintone.app.getQueryCondition();
 			var body={
 				app:appkey,
-				query:vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"',
+				query:'',
 				fields:vars.fields
 			};
+			query+=((query.length!=0)?' and ':'');
+			query+=vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
 			sort=' order by ';
 			sort+=vars.config['date']+' asc,';
 			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
 			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
-			body.query+=sort;
+			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
 	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
@@ -170,6 +173,7 @@ jQuery.noConflict();
 		var next=$('<button id="next" class="customview-button next-button">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
 		/* append elements */
+		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(month[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);

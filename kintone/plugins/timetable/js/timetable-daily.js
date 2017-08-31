@@ -191,12 +191,13 @@ jQuery.noConflict();
 		/* reload datas */
 		loaddatas:function(appkey,callback){
 			var sort='';
-			var query='';
+			var query=kintone.app.getQueryCondition();
 			var body={
 				app:appkey,
-				query:query,
+				query:'',
 				fields:vars.fields
 			};
+			query+=((query.length!=0)?' and ':'');
 			query+=vars.config['date']+'="'+vars.date.format('Y-m-d')+'"';
 			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
 			query+=' and '+vars.config['totime']+'<="'+('0'+vars.config['endhour']).slice(-2)+':59"';
@@ -234,6 +235,7 @@ jQuery.noConflict();
 		var guidefrom=$('<div class="guidefrom">');
 		var guideto=$('<div class="guideto">');
 		/* append elements */
+		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(date[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
@@ -341,7 +343,7 @@ jQuery.noConflict();
 			}
 		});
 		/* create routemap box */
-		if (vars.config['route']=='1') vars.route=$('body').routemap(vars.config['apikey']);
+		if (vars.config['route']=='1') vars.route=$('body').routemap(vars.config['apikey'],true,true,null,(vars.route!=null));
 		/* get fields of app */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fields=['$id'];

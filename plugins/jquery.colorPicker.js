@@ -229,7 +229,7 @@ var colorPicker = function(options){
 			my.toHSB(color)
 			/* 倍率セット */
 			my.attachvolume();
-			if (options.callback) options.callback('#'+color);
+			if (my.callback) my.callback('#'+color);
 		}
 	});
 	/* 色相スライダー生成 */
