@@ -15,7 +15,7 @@ var ECTrack=function(options){
 		trackingid:('trackingid' in options)?options.trackingid:'',
 		affiliation:('affiliation' in options)?options.affiliation:'',
 		taxrate:('taxrate' in options)?options.taxrate:0,
-		currency:('currency' in options)?options.currency:'',
+		currency:('currency' in options)?options.currency:''
 	};
 	/* load script */
 	if (!('GoogleAnalyticsObject' in window))
