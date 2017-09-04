@@ -14,7 +14,8 @@ var ECTrack=function(options){
 	this.options={
 		trackingid:('trackingid' in options)?options.trackingid:'',
 		affiliation:('affiliation' in options)?options.affiliation:'',
-		taxrate:('taxrate' in options)?options.taxrate:0
+		taxrate:('taxrate' in options)?options.taxrate:0,
+		currency:('currency' in options)?options.currency:'',
 	};
 	/* load script */
 	if (!('GoogleAnalyticsObject' in window))
@@ -60,7 +61,8 @@ ECTrack.prototype={
 			'affiliation':this.options.affiliation,
 			'revenue':bill.total.toString(),
 			'shipping':options.shipping.toString(),
-			'tax':bill.tax.toString()
+			'tax':bill.tax.toString(),
+			'currency':this.options.currency
 		});
 		/* add item */
 		for (var i=0;i<options.items.length;i++)
