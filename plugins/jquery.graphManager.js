@@ -37,6 +37,7 @@ var graphManager = function(options){
 	var options=$.extend({
 		canvas:null,
 		type:'line',
+		scale:0,
 		captions:[],
 		markers:[],
 		values:[]
@@ -47,6 +48,7 @@ var graphManager = function(options){
 	/* 変数定義 */
 	this.graph=options.canvas;
 	this.type=options.type;
+	this.scale=options.scale;
 	this.captions=options.captions;
 	this.markers=options.markers;
 	this.values=options.values;
@@ -127,16 +129,15 @@ graphManager.prototype={
 				var ratio=0;
 				var caption={height:0,width:0};
                 var plot={height:0,width:0};
-				var scale={height:0,width:0,amount:0};
+				var scale={height:0,width:((this.scale==0)?this.maxvalue.length*parseInt(this.style.fontSize):this.scale),amount:0};
 				padding={left:10,right:15,top:15,bottom:5,holizontal:0,vertical:0,caption:10,scale:10};
 		        padding.holizontal=padding.left+padding.right+padding.scale;
 		        padding.vertical=padding.top+padding.bottom+padding.caption;
                 plot.height=this.graph.height()-parseFloat(this.style.fontSize)-padding.vertical;
-                plot.width=(this.graph.width()-padding.holizontal)/7*6;
+                plot.width=this.graph.width()-padding.holizontal-scale.width;
 				caption.height=parseFloat(this.style.fontSize)+padding.caption;
 				caption.width=plot.width/this.captions.length;
 				scale.height=plot.height/(interval-1);
-				scale.width=plot.width/6;
                 scale.amount=(this.maxvalue-this.minvalue)/(interval-1);
 				/* 描画設定 */
 				this.context.font=this.style.fontStyle+' '+this.style.fontVariant+' '+this.style.fontWeight+' '+(parseFloat(this.style.fontSize)*0.75)+'px '+this.style.fontFamily;
