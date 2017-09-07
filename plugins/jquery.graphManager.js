@@ -130,6 +130,9 @@ graphManager.prototype={
 				var caption={height:0,width:0};
                 var plot={height:0,width:0};
 				var scale={height:0,width:0,amount:0};
+				padding={left:10,right:15,top:15,bottom:5,holizontal:0,vertical:0,caption:10,scale:10};
+		        padding.holizontal=padding.left+padding.right+padding.scale;
+		        padding.vertical=padding.top+padding.bottom+padding.caption;
                 scale.amount=(this.maxvalue-this.minvalue)/(interval-1);
 				if (this.scale==0)
 				{
@@ -143,14 +146,11 @@ graphManager.prototype={
 					scale.width=scalelength*parseFloat(this.style.fontSize);
 				}
 				else scale.width=this.scale;
-				padding={left:10,right:15,top:15,bottom:5,holizontal:0,vertical:0,caption:10,scale:10};
-		        padding.holizontal=padding.left+padding.right+padding.scale;
-		        padding.vertical=padding.top+padding.bottom+padding.caption;
+				scale.height=(this.graph.height()-parseFloat(this.style.fontSize)-padding.vertical)/(interval-1);
                 plot.height=this.graph.height()-parseFloat(this.style.fontSize)-padding.vertical;
                 plot.width=this.graph.width()-padding.holizontal-scale.width;
 				caption.height=parseFloat(this.style.fontSize)+padding.caption;
 				caption.width=plot.width/this.captions.length;
-				scale.height=plot.height/(interval-1);
 				/* 描画設定 */
 				this.context.font=this.style.fontStyle+' '+this.style.fontVariant+' '+this.style.fontWeight+' '+(parseFloat(this.style.fontSize)*0.75)+'px '+this.style.fontFamily;
 				this.context.lineCap='round';
