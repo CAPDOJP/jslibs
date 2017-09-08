@@ -341,9 +341,9 @@ Date.prototype.TimeFormat = function(pattern){
 	//時間
 	if (pattern.match(/^H$/g)!=null) return hour;
 	//分
-	if (pattern.match(/^H:i$/g)!=null) return hour+'-'+minute;
+	if (pattern.match(/^H:i$/g)!=null) return hour+':'+minute;
 	//秒
-	if (pattern.match(/^H:i:s$/g)!=null) return hour+'-'+minute+'-'+second;
+	if (pattern.match(/^H:i:s$/g)!=null) return hour+':'+minute+':'+second;
 	return '';
 }
 })(jQuery);
