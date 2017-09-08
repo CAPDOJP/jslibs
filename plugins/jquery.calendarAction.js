@@ -326,4 +326,24 @@ Date.prototype.DateFormat = function(pattern){
 	if (pattern.match(/^Y\/m\/d$/g)!=null) return year+'/'+month+'/'+day;
 	return '';
 }
+/*
+*--------------------------------------------------------------------
+* 時間フォーマット
+*--------------------------------------------------------------------
+* parameters
+* pattern:フォーマットパターン
+* -------------------------------------------------------------------
+*/
+Date.prototype.TimeFormat = function(pattern){
+	var hour=('0'+this.getHours()).slice(-2);
+	var minute=('0'+this.getMinutes()).slice(-2);
+	var second=('0'+this.getSeconds()).slice(-2);
+	//時間
+	if (pattern.match(/^H$/g)!=null) return hour;
+	//分
+	if (pattern.match(/^H:i$/g)!=null) return hour+'-'+minute;
+	//秒
+	if (pattern.match(/^H:i:s$/g)!=null) return hour+'-'+minute+'-'+second;
+	return '';
+}
 })(jQuery);
