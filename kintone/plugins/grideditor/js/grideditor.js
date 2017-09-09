@@ -367,8 +367,10 @@ jQuery.noConflict();
 							case 'GROUP_SELECT':
 							case 'ORGANIZATION_SELECT':
 							case 'USER_SELECT':
-								console.log(fieldinfo.defaultValue);
-								fieldvalue=[{code:fieldinfo.defaultValue}];
+								fieldvalue=[];
+								$.each(fieldinfo.defaultValue,function(index,values){
+									fieldvalue.push({code:values.code});
+								});
 								break;
 							default:
 								fieldvalue=fieldinfo.defaultValue;
