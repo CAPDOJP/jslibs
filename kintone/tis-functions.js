@@ -119,6 +119,21 @@ String.prototype.rpad=function(pattern,length){
 * get query strings
 * -------------------------------------------------------------------
 */
+var loadgroupsvalues={
+	offset:0,
+	records:null,
+	size:100
+}
+var loadorganizationsvalues={
+	offset:0,
+	records:null,
+	size:100
+}
+var loadusersvalues={
+	offset:0,
+	records:null,
+	size:100
+}
 jQuery.extend({
 	fieldparallelize:function(properties){
 		var tablecode='';
@@ -215,6 +230,60 @@ jQuery.extend({
 				break;
 		}
 		return ($.inArray(target.type,types)>-1);
+	},
+	loadgroups:function(callback,initialize){
+		if ((initialize===undefined)?true:initialize)
+		{
+			loadgroupsvalues={
+				offset:0,
+				records:null,
+				size:100
+			};
+		}
+		var query='size='+loadgroupsvalues.size.toString()+'&offset='+loadgroupsvalues.offset.toString();
+		kintone.api(kintone.api.url('/v1/groups.json?'+query,true),'GET',function(resp){
+			if (loadgroupsvalues.records==null) loadgroupsvalues.records=resp.groups;
+			else Array.prototype.push.apply(loadgroupsvalues.records,resp.groups);
+			loadgroupsvalues.offset+=loadgroupsvalues.size;
+			if (resp.groups.length==loadgroupsvalues.size) $.loadgroups(callback,false);
+			else callback(loadgroupsvalues.records);
+		},function(error){});
+	},
+	loadorganizations:function(callback,initialize){
+		if ((initialize===undefined)?true:initialize)
+		{
+			loadorganizationsvalues={
+				offset:0,
+				records:null,
+				size:100
+			};
+		}
+		var query='size='+loadorganizationsvalues.size.toString()+'&offset='+loadorganizationsvalues.offset.toString();
+		kintone.api(kintone.api.url('/v1/organizations.json?'+query,true),'GET',function(resp){
+			if (loadorganizationsvalues.records==null) loadorganizationsvalues.records=resp.organizations;
+			else Array.prototype.push.apply(loadorganizationsvalues.records,resp.organizations);
+			loadorganizationsvalues.offset+=loadorganizationsvalues.size;
+			if (resp.organizations.length==loadorganizationsvalues.size) $.loadorganizations(callback,false);
+			else callback(loadorganizationsvalues.records);
+		},function(error){});
+	},
+	loadusers:function(callback,initialize){
+		if ((initialize===undefined)?true:initialize)
+		{
+			loadusersvalues={
+				offset:0,
+				records:null,
+				size:100
+			};
+		}
+		var query='size='+loadusersvalues.size.toString()+'&offset='+loadusersvalues.offset.toString();
+		kintone.api(kintone.api.url('/v1/users.json?'+query,true),'GET',function(resp){
+			if (loadusersvalues.records==null) loadusersvalues.records=resp.users;
+			else Array.prototype.push.apply(loadusersvalues.records,resp.users);
+			loadusersvalues.offset+=loadusersvalues.size;
+			if (resp.users.length==loadusersvalues.size) $.loadusers(callback,false);
+			else callback(loadusersvalues.records);
+		},function(error){});
 	},
 	queries:function(){
 		var queries=[];
