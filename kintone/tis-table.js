@@ -103,9 +103,7 @@ var Table=function(options){
 	        	{
         			hitrow=$(this);
 					$.each(hitrow.find('td:visible'),function(){
-			        	if ($(this).offset().left<e.pageX &&
-			        		$(this).offset().left+$(this).outerWidth(true)>e.pageX)
-			        		hitcell=$(this);
+			        	if ($(this).offset().left<e.pageX && $(this).offset().left+$(this).outerWidth(true)>e.pageX) hitcell=$(this);
 					});
 	        	}
 			});
