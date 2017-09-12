@@ -324,7 +324,7 @@ jQuery.noConflict();
 					var hour=Math.floor((caller.cellindex(row,cellindex)-1)/parseInt(vars.config['scale']));
 					var minute=(caller.cellindex(row,cellindex)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.text(hour.toString().lpad('0',2)+':'+minute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellindex).offset().left-$(window).scrollTop()).toString()+'px',
+				      'left':(row.find('td').eq(cellindex).offset().left-$(window).scrollLeft()).toString()+'px',
 				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
 					});
 				},
@@ -335,11 +335,11 @@ jQuery.noConflict();
 					var fromminute=(caller.cellindex(row,cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					var tominute=caller.cellindex(row,cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.text(fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellfrom).offset().left-$(window).scrollTop()).toString()+'px',
+				      'left':(row.find('td').eq(cellfrom).offset().left-$(window).scrollLeft()).toString()+'px',
 				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
 					});
 					guideto.text(tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellto).offset().left-$(window).scrollTop()+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
+				      'left':(row.find('td').eq(cellto).offset().left-$(window).scrollLeft()+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
 				      'top':(row.offset().top-$(window).scrollTop()+row.outerHeight(true)).toString()+'px'
 					});
 				},
