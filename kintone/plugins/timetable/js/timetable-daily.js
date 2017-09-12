@@ -267,14 +267,19 @@ jQuery.noConflict();
 		});
 		/* create table */
 		container.empty();
-		if (vars.config['scalefixed']=='1') container.css({'overflow-x':'visible'});
 		var head=$('<tr></tr><tr></tr>');
 		var template=$('<tr>');
+		var spacer=$('<span>');
 		if (vars.config['route']=='1' || vars.config['segment'].length!=0)
 		{
 			head.eq(0).append($('<th class="timetable-daily-cellhead">'));
-			head.eq(1).append($('<th>'));
+			head.eq(1).append($('<th class="timetable-daily-cellhead">'));
 			template.append($('<td class="timetable-daily-cellhead">'));
+		}
+		if (vars.config['scalefixed']=='1')
+		{
+			container.css({'overflow-x':'visible'});
+			spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
 		}
 		for (var i=0;i<24;i++)
 		{
@@ -284,12 +289,12 @@ jQuery.noConflict();
 			head.eq(0).append($('<th colspan="'+vars.config['scale']+'" '+hide+'>').text(i));
 			for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
 			{
-				if (vars.config['scalefixed']=='1') head.eq(1).append($('<th '+hide+'>').append($('<div>').css({'height':'1px','width':vars.config['scalefixedwidth']+'px'})));
+				if (vars.config['scalefixed']=='1') head.eq(1).append($('<th '+hide+'>').append(spacer));
 				else head.eq(1).append($('<th '+hide+'>'));
 				template.append($('<td '+hide+'>'));
 			}
 		}
-		vars.table=$('<table id="timetable" class="customview-table timetable-daily '+((vars.config['scalefixed']=='1')?'scalefixed':'')+'">').mergetable({
+		vars.table=$('<table id="timetable" class="customview-table timetable-daily '+((vars.config['scalefixed']=='1')?'cellfixed':'')+'">').mergetable({
 			container:container,
 			head:head,
 			template:template,
@@ -319,7 +324,7 @@ jQuery.noConflict();
 					var hour=Math.floor((caller.cellindex(row,cellindex)-1)/parseInt(vars.config['scale']));
 					var minute=(caller.cellindex(row,cellindex)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.text(hour.toString().lpad('0',2)+':'+minute.toString().lpad('0',2)).show().css({
-				      'left':row.find('td').eq(cellindex).offset().left.toString()+'px',
+				      'left':(row.find('td').eq(cellindex).offset().left-$(window).scrollTop()).toString()+'px',
 				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
 					});
 				},
@@ -330,11 +335,11 @@ jQuery.noConflict();
 					var fromminute=(caller.cellindex(row,cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					var tominute=caller.cellindex(row,cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.text(fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2)).show().css({
-				      'left':row.find('td').eq(cellfrom).offset().left.toString()+'px',
+				      'left':(row.find('td').eq(cellfrom).offset().left-$(window).scrollTop()).toString()+'px',
 				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
 					});
 					guideto.text(tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellto).offset().left+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
+				      'left':(row.find('td').eq(cellto).offset().left-$(window).scrollTop()+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
 				      'top':(row.offset().top-$(window).scrollTop()+row.outerHeight(true)).toString()+'px'
 					});
 				},

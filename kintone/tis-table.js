@@ -103,8 +103,8 @@ var Table=function(options){
 	        	{
         			hitrow=$(this);
 					$.each(hitrow.find('td:visible'),function(){
-			        	if ($(this).offset().left<e.pageX-$(window).scrollTop() &&
-			        		$(this).offset().left+$(this).outerWidth(true)>e.pageX-$(window).scrollTop())
+			        	if ($(this).offset().left<e.pageX-$(window).scrollLeft() &&
+			        		$(this).offset().left+$(this).outerWidth(true)>e.pageX-$(window).scrollLeft())
 			        		hitcell=$(this);
 					});
 	        	}
