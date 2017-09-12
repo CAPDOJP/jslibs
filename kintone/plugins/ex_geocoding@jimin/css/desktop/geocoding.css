@@ -1,4 +1,27 @@
 /* individual style */
+button.customsearch-button{
+	background-color:transparent;
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png');
+	background-position:center center;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	border:none;
+	box-sizing:border-box;
+	cursor:pointer;
+	font-size:13px;
+	height:auto;
+	margin:5px;
+    outline:none;
+    padding:0px;
+    position:absolute;
+    right:0px;
+    top:0px;
+    vertical-align:top;
+	width:auto;
+}
+input.customsearch-text{
+    box-sizing:border-box;
+}
 label.customview-checkbox{
     background-color:#f7f9fa;
     border:none;

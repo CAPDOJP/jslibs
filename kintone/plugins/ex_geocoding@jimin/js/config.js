@@ -82,6 +82,7 @@ jQuery.noConflict();
 					if (!values.lookup)
 					{
 						$('select#address').append($('<option>').attr('value',values.code).text(values.label));
+						$('select#pluscode').append($('<option>').attr('value',values.code).text(values.label));
 						$('select#information').append($('<option>').attr('value',values.code).text(values.label));
 					}
 					break;
@@ -93,10 +94,10 @@ jQuery.noConflict();
         if (Object.keys(config).length!==0)
         {
         	$('select#address').val(config['address']);
+        	$('select#pluscode').val(config['pluscode']);
         	$('select#lat').val(config['lat']);
         	$('select#lng').val(config['lng']);
         	$('select#spacer').val(config['spacer']);
-        	$('input#mapheight').val(config['mapheight']);
         	$('select#information').val(config['information']);
         	$('select#datespan').val(config['datespan']);
         	$('select#currentcolor').val(config['currentcolor']);
@@ -117,7 +118,6 @@ jQuery.noConflict();
         }
         else
         {
-        	$('input#mapheight').val('50');
         	$('input#chasetimespan').val('10');
         	$('select#currentcolor').val($('select#currentcolor').find('option').first().val());
         	$('select#defaultcolor').val($('select#defaultcolor').find('option').first().val());
@@ -142,6 +142,11 @@ jQuery.noConflict();
 	    	swal('Error!','住所入力フィールドを選択して下さい。','error');
 	    	return;
 	    }
+	    if ($('select#pluscode').val()=='')
+	    {
+	    	swal('Error!','Plusコード入力フィールドを選択して下さい。','error');
+	    	return;
+	    }
 	    if ($('select#lat').val()=='')
 	    {
 	    	swal('Error!','緯度表示フィールドを選択して下さい。','error');
@@ -164,12 +169,6 @@ jQuery.noConflict();
 	    }
 	    if ($('input#map').prop('checked'))
 	    {
-		    if ($('input#mapheight').val()=='') $('input#mapheight').val('50');
-			if (!$.isNumeric($('input#mapheight').val()))
-		    {
-		    	swal('Error!','一覧地図高さは数値を入力して下さい。','error');
-		    	return;
-		    }
 		    if ($('select#currentcolor').val()=='')
 		    {
 		    	swal('Error!','マーカー現在地色を選択して下さい。','error');
@@ -211,11 +210,11 @@ jQuery.noConflict();
 	    }
 		/* setup config */
         config['address']=$('select#address').val();
+        config['pluscode']=$('select#pluscode').val();
         config['lat']=$('select#lat').val();
         config['lng']=$('select#lng').val();
         config['spacer']=$('select#spacer').val();
         config['map']=($('input#map').prop('checked'))?'1':'0';
-        config['mapheight']=$('input#mapheight').val();
         config['information']=$('select#information').val();
         config['datespan']=$('select#datespan').val();
         config['currentcolor']=$('select#currentcolor').val();

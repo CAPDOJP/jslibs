@@ -267,13 +267,14 @@ jQuery.noConflict();
 		});
 		/* create table */
 		container.empty();
+		if (vars.config['scalefixed']=='1') container.css({'overflow-x':'visible'});
 		var head=$('<tr></tr><tr></tr>');
 		var template=$('<tr>');
 		if (vars.config['route']=='1' || vars.config['segment'].length!=0)
 		{
 			head.eq(0).append($('<th class="timetable-daily-cellhead">'));
 			head.eq(1).append($('<th>'));
-			template.append($('<td>'));
+			template.append($('<td class="timetable-daily-cellhead">'));
 		}
 		for (var i=0;i<24;i++)
 		{
@@ -283,11 +284,12 @@ jQuery.noConflict();
 			head.eq(0).append($('<th colspan="'+vars.config['scale']+'" '+hide+'>').text(i));
 			for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
 			{
-				head.eq(1).append($('<th '+hide+'>'));
+				if (vars.config['scalefixed']=='1') head.eq(1).append($('<th '+hide+'>').append($('<div>').css({'height':'1px','width':vars.config['scalefixedwidth']+'px'})));
+				else head.eq(1).append($('<th '+hide+'>'));
 				template.append($('<td '+hide+'>'));
 			}
 		}
-		vars.table=$('<table id="timetable" class="customview-table timetable-daily">').mergetable({
+		vars.table=$('<table id="timetable" class="customview-table timetable-daily '+((vars.config['scalefixed']=='1')?'scalefixed':'')+'">').mergetable({
 			container:container,
 			head:head,
 			template:template,
@@ -308,7 +310,7 @@ jQuery.noConflict();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=edit';
+				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
 			},
 			callback:{
 				guidestart:function(e,caller,table,rowindex,cellindex){

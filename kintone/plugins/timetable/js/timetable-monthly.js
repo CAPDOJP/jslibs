@@ -59,10 +59,17 @@ jQuery.noConflict();
 					inner='';
 					inner+='<p>'+filter[i][vars.config['display']].value+'</p>';
 					inner+='<p>'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
-					cell.append($('<div class="timetable-monthly-cell">').css({
-						'background-color':color
-					})
-					.html(inner));
+					cell.append(
+						$('<div class="timetable-monthly-cell">').css({
+							'background-color':color,
+							'cursor':'pointer'
+						})
+						.html(inner)
+						.on('click',function(){
+							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
+						})
+						.append($('<input type="hidden">').attr('id','id').val(filter[i]['$id'].value))
+					);
 				}
 			}
 		},

@@ -89,9 +89,14 @@ jQuery.noConflict();
 					var cell=$('<div class="timetable-weekly-cell">');
 					cell.css({
 						'background-color':color,
+						'cursor':'pointer',
 						'height':(to-from)+'px',
 						'left':(vars.cellwidth*position)+'px'
-					});
+					})
+					.on('click',function(){
+						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
+					})
+					.append($('<input type="hidden">').attr('id','id').val(filter[i]['$id'].value));
 					cells.push(cell);
 					row.find('td').eq(columnindex).append(cell);
 					/* append balloon */

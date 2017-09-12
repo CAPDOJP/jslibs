@@ -193,42 +193,46 @@ jQuery.noConflict();
 					/* check geocode fields */
 					if (fieldinfo.code==vars.config['address'])
 					{
-						$.ajax({
-							url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(target.val()),
-							type:'get',
-							datatype:'json'
-						})
-						.done(function(json){
-							switch (json.status)
-							{
-								case 'OK':
-									row.find('#'+vars.config['lat']).val(json.results[0].geometry.location.lat);
-									row.find('#'+vars.config['lng']).val(json.results[0].geometry.location.lng);
-									record[vars.config['lat']]={value:row.find('#'+vars.config['lat']).val()};
-									record[vars.config['lng']]={value:row.find('#'+vars.config['lng']).val()};
-									break;
-								default:
-									$.each(vars.fieldinfos,function(index,values){
-										if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
-										{
-											row.find('#'+values.code).val('');
-											record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
-										}
-									});
-									break;
-							}
-							functions.fieldregist(target,record,fieldinfo);
-						})
-						.fail(function(){
-							$.each(vars.fieldinfos,function(index,values){
-								if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
-								{
-									row.find('#'+values.code).val('');
-									record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+						kintone.proxy(
+							'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURIComponent(target.val()),
+							'GET',
+							{},
+							{},
+							function(body,status,headers){
+								if (status>=200 && status<300){
+									var json=JSON.parse(body);
+									switch (json.status)
+									{
+										case 'OK':
+											row.find('#'+vars.config['lat']).val(json.results[0].geometry.location.lat);
+											row.find('#'+vars.config['lng']).val(json.results[0].geometry.location.lng);
+											record[vars.config['lat']]={value:row.find('#'+vars.config['lat']).val()};
+											record[vars.config['lng']]={value:row.find('#'+vars.config['lng']).val()};
+											break;
+										default:
+											$.each(vars.fieldinfos,function(index,values){
+												if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
+												{
+													row.find('#'+values.code).val('');
+													record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+												}
+											});
+											break;
+									}
+									functions.fieldregist(target,record,fieldinfo);
 								}
-							});
-							functions.fieldregist(target,record,fieldinfo);
-						});
+							},
+							function(error){
+								$.each(vars.fieldinfos,function(index,values){
+									if (values.code==vars.config['lat'] || values.code==vars.config['lng'])
+									{
+										row.find('#'+values.code).val('');
+										record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+									}
+								});
+								functions.fieldregist(target,record,fieldinfo);
+							}
+						);
 					}
 					else functions.fieldregist(target,record,fieldinfo);
 				}
@@ -272,6 +276,9 @@ jQuery.noConflict();
 						break;
 					case 'GROUP':
 						$.merge(codes,functions.fieldsort(values.layout));
+						break;
+					case 'SUBTABLE':
+						codes.push(values.code);
 						break;
 				}
 			});
@@ -335,15 +342,18 @@ jQuery.noConflict();
 					case 'CHECK_BOX':
 					case 'MULTI_SELECT':
 						$.each(cell.find('option:selected'),function(){
-							fieldvalue.push($(this).attr('value'));
+							if ($(this).attr('value').length!=0) fieldvalue.push($(this).attr('value'));
 						});
 						break;
 					case 'GROUP_SELECT':
 					case 'ORGANIZATION_SELECT':
 					case 'USER_SELECT':
 						$.each(cell.find('option:selected'),function(){
-							fieldvalue.push({code:$(this).attr('value')});
+							if ($(this).attr('value').length!=0) fieldvalue.push({code:$(this).attr('value')});
 						});
+						break;
+					case 'RADIO_BUTTON':
+						fieldvalue=(cell.val().length!=0)?cell.val():fieldinfo.defaultValue;
 						break;
 					default:
 						fieldvalue=cell.val();
@@ -497,12 +507,12 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.grideditorview) return;
 		/* initialize valiable */
 		vars.container=$('div#grideditor-container');
-	  	vars.grid=$('<table id="grideditor" class="customview-table">');
-	  	vars.header=$('<tr>');
-	  	vars.rows=$('<tbody>');
-	  	vars.template=$('<tr>');
-	  	vars.fieldinfos=[];
-	  	vars.mappings=[];
+		vars.grid=$('<table id="grideditor" class="customview-table">');
+		vars.header=$('<tr>');
+		vars.rows=$('<tbody>');
+		vars.template=$('<tr>');
+		vars.fieldinfos=[];
+		vars.mappings=[];
 		/* append elements */
 		vars.grid.append($('<thead>').append(vars.header));
 		vars.grid.append(vars.rows);
@@ -522,9 +532,9 @@ jQuery.noConflict();
 							var displayfields=['$id'];
 							/* create header and template */
 							vars.header.append($('<th>').text('No'));
-					  		vars.template.append($('<td>').append($('<label>')));
-					  		$.each(sorted,function(index){
-					  			var fieldinfo=resp.properties[sorted[index]];
+							vars.template.append($('<td>').append($('<label>')));
+							$.each(sorted,function(index){
+								var fieldinfo=resp.properties[sorted[index]];
 								if (fieldinfo)
 								{
 									/* check disabled type */
@@ -535,7 +545,7 @@ jQuery.noConflict();
 										$.each(vars.disabled,function(key,value){
 											message+=value+'\n';
 										});
-									  	swal('Error!',message,'error');
+										swal('Error!',message,'error');
 										vars.grid.hide();
 										return;
 									}
@@ -557,7 +567,7 @@ jQuery.noConflict();
 											});
 									}
 								}
-					  		});
+							});
 							/* append header field */
 							vars.header.append($('<th>').text(''));
 							/* append button field */
@@ -601,7 +611,21 @@ jQuery.noConflict();
 								/* setup field values */
 								row.find('td').first().find('label').text(record['$id'].value);
 								$.each(vars.fieldinfos,function(index,values){
-									row.find('#'+values.code).val(record[values.code].value);
+									switch (values.type)
+									{
+										case 'GROUP_SELECT':
+										case 'ORGANIZATION_SELECT':
+										case 'USER_SELECT':
+											var value=[];
+											$.each(record[values.code].value,function(index){
+												value.push(record[values.code].value[index].code);
+											});
+											row.find('#'+values.code).val(value);
+											break;
+										default:
+											row.find('#'+values.code).val(record[values.code].value);
+											break;
+									}
 								});
 								/* append row */
 								vars.rows.append(row);

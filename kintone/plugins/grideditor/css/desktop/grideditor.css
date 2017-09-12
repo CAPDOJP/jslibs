@@ -29,6 +29,9 @@ table#grideditor tbody td.timecell{
 table#grideditor tbody td.datetimecell{
     width:175px;
 }
+table#grideditor tbody td textarea{
+    height:30px;
+}
 button.referer-button-search{
 	margin:0px;
     position:absolute;

@@ -61,39 +61,103 @@ jQuery.noConflict();
 		displaymap:function(options){
 			var options=$.extend({
 				address:'',
+				pluscode:'',
 				latlng:'',
 				callback:null
 			},options);
 			if (options.address.length!=0)
-				$.ajax({
-					url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
-					type:'get',
-					datatype:'json'
-				})
-				.done(function(json){
-					switch (json.status)
-					{
-						case 'ZERO_RESULTS':
-							break;
-						case 'OVER_QUERY_LIMIT':
-							alert('リクエストが割り当て量を超えています。');
-							break;
-						case 'REQUEST_DENIED':
-							alert('リクエストが拒否されました。');
-							break;
-						case 'INVALID_REQUEST':
-							alert('クエリが不足しています。');
-							break;
-						case 'OK':
-							var latlng=json.results[0].geometry.location.lat+','+json.results[0].geometry.location.lng;
-							var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURI(options.address)+'@'+latlng+'&amp;ie=UTF8&amp;ll='+latlng+'&amp;z=14&amp;t=m&amp;output=embed';
-							vars.map.empty();
-							vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
-							if (options.callback!=null) options.callback(json);
-							break;
-					}
-				})
-				.fail(function(){alert('地図座標取得に失敗しました。');});
+				kintone.proxy(
+					'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURIComponent(options.address),
+					'GET',
+					{},
+					{},
+					function(body,status,headers){
+						if (status>=200 && status<300){
+							var json=JSON.parse(body);
+							switch (json.status)
+							{
+								case 'ZERO_RESULTS':
+									break;
+								case 'OVER_QUERY_LIMIT':
+									alert('リクエストが割り当て量を超えています。');
+									break;
+								case 'REQUEST_DENIED':
+									alert('リクエストが拒否されました。');
+									break;
+								case 'INVALID_REQUEST':
+									alert('クエリが不足しています。');
+									break;
+								case 'OK':
+									var lat=json.results[0].geometry.location.lat
+									var lng=json.results[0].geometry.location.lng;
+									var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(options.address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
+									vars.map.empty();
+									vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
+									kintone.proxy(
+										'https://plus.codes/api?address='+lat+','+lng+'&ekey='+vars.config['apikey']+'&language=ja',
+										'GET',
+										{},
+										{},
+										function(body,status,headers){
+											if (status>=200 && status<300){
+												switch (json.status)
+												{
+													case 'ZERO_RESULTS':
+													case 'OVER_QUERY_LIMIT':
+													case 'REQUEST_DENIED':
+													case 'INVALID_REQUEST':
+														break;
+													case 'OK':
+														json.results[0]['global_code']=JSON.parse(body).plus_code.global_code;
+														if (options.callback!=null) options.callback(json);
+														break;
+												}
+											}
+										},
+										function(error){alert('地図座標取得に失敗しました。\n'+error);}
+									);
+									break;
+							}
+						}
+					},
+					function(error){alert('地図座標取得に失敗しました。\n'+error);}
+				);
+			if (options.pluscode.length!=0)
+				kintone.proxy(
+					'https://plus.codes/api?address='+encodeURIComponent(options.pluscode)+'&ekey='+vars.config['apikey']+'&language=ja',
+					'GET',
+					{},
+					{},
+					function(body,status,headers){
+						if (status>=200 && status<300){
+							var json=JSON.parse(body);
+							switch (json.status)
+							{
+								case 'ZERO_RESULTS':
+									break;
+								case 'OVER_QUERY_LIMIT':
+									alert('リクエストが割り当て量を超えています。');
+									break;
+								case 'REQUEST_DENIED':
+									alert('リクエストが拒否されました。');
+									break;
+								case 'INVALID_REQUEST':
+									alert('クエリが不足しています。');
+									break;
+								case 'OK':
+									var address=json.plus_code.best_street_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}/g,'');
+									var lat=json.plus_code.geometry.location.lat;
+									var lng=json.plus_code.geometry.location.lng;
+									var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
+									vars.map.empty();
+									vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
+									if (options.callback!=null) options.callback(json);
+									break;
+							}
+						}
+					},
+					function(error){alert('地図座標取得に失敗しました。\n'+error);}
+				);
 			if (options.latlng.length!=0)
 			{
 				var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
@@ -332,38 +396,138 @@ jQuery.noConflict();
 		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record.lat.value+','+event.record.lng.value});
 		/* display map in value change event */
 		if (event.type.match(/(create|edit)/g)!=null)
-			$('body').fields(vars.config['address'])[0].on('change',function(){
-				var target=$(this);
-				functions.displaymap({
-					address:target.val(),
-					callback:function(json){
-						$('body').fields(vars.config['lat'])[0].val(json.results[0].geometry.location.lat);
-						$('body').fields(vars.config['lng'])[0].val(json.results[0].geometry.location.lng);
-					}
-				});
-			});
+		{
+			var button=null;
+			var input=null;
+			var height=0;
+			input=$('body').fields(vars.config['address'])[0];
+			button=$('<button class="customsearch-button">');
+			height=input.outerHeight(false);
+			if (height-30>0) button.css({'margin':((height-30)/2).toString()+'px','min-height':'30px','min-width':'30px'});
+			else button.css({'background-size':height.toString()+'px '+height.toString()+'px','margin':'0px','min-height':height.toString()+'px','min-width':height.toString()+'px'});
+			input.css({'padding-right':height.toString()+'px'})
+			.closest('div').append(
+				button.on('click',function(){
+					var target=$(this).closest('div').find('input');
+					if ($('body').fields(vars.config['pluscode'])[0].val().length==0)
+						functions.displaymap({
+							address:target.val(),
+							callback:function(json){
+								$('body').fields(vars.config['pluscode'])[0].val(json.results[0].global_code);
+								$('body').fields(vars.config['lat'])[0].val(json.results[0].geometry.location.lat);
+								$('body').fields(vars.config['lng'])[0].val(json.results[0].geometry.location.lng);
+							}
+						});
+				})
+			);
+			input=$('body').fields(vars.config['pluscode'])[0];
+			button=$('<button class="customsearch-button">');
+			height=input.outerHeight(false);
+			if (height-30>0) button.css({'margin':((height-30)/2).toString()+'px','min-height':'30px','min-width':'30px'});
+			else button.css({'background-size':height.toString()+'px '+height.toString()+'px','margin':'0px','min-height':height.toString()+'px','min-width':height.toString()+'px'});
+			input.css({'padding-right':height.toString()+'px'})
+			.closest('div').append(
+				button.on('click',function(){
+					var target=$(this).closest('div').find('input');
+					functions.displaymap({
+						pluscode:target.val(),
+						callback:function(json){
+							$('body').fields(vars.config['address'])[0].val(json.plus_code.best_street_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}/g,''));
+							$('body').fields(vars.config['lat'])[0].val(json.plus_code.geometry.location.lat);
+							$('body').fields(vars.config['lng'])[0].val(json.plus_code.geometry.location.lng);
+						}
+					});
+				})
+			);
+		}
 		kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
 	});
 	kintone.events.on(events.save,function(event){
-		return new kintone.Promise(function(resolve,reject){
-			kintone.proxy(
-				'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(event.record[vars.config['address']].value),
-				'GET',
-				{},
-				{},
-				function(body,status,headers){
-					if (status>=200 && status<300){
-						var json=body.replace(/^\s+|\s+$/g,'');
-						var results=JSON.parse(json).results;
-						var lat=results[0].geometry.location.lat
-						var lng=results[0].geometry.location.lng;
-						event.record[vars.config['lat']].value=lat;
-						event.record[vars.config['lng']].value=lng;
-						resolve(event);
-					}
-				}
-			);
-		});
+		if (parseFloat('0'+event.record[vars.config['lat']].value)+parseFloat('0'+event.record[vars.config['lng']].value)==0)
+		{
+			if (event.record[vars.config['pluscode']].value!=null)
+				return new kintone.Promise(function(resolve,reject){
+					kintone.proxy(
+						'https://plus.codes/api?address='+encodeURIComponent(event.record[vars.config['pluscode']].value)+'&ekey='+vars.config['apikey']+'&language=ja',
+						'GET',
+						{},
+						{},
+						function(body,status,headers){
+							if (status>=200 && status<300){
+								var json=JSON.parse(body);
+								switch (json.status)
+								{
+									case 'ZERO_RESULTS':
+									case 'OVER_QUERY_LIMIT':
+									case 'REQUEST_DENIED':
+									case 'INVALID_REQUEST':
+										break;
+									case 'OK':
+										var address=json.plus_code.best_street_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}/g,'');
+										var lat=json.plus_code.geometry.location.lat;
+										var lng=json.plus_code.geometry.location.lng;
+										event.record[vars.config['address']].value=address;
+										event.record[vars.config['lat']].value=lat;
+										event.record[vars.config['lng']].value=lng;
+										break;
+								}
+								resolve(event);
+							}
+						}
+					);
+				});
+			else
+				return new kintone.Promise(function(resolve,reject){
+					kintone.proxy(
+						'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURIComponent(event.record[vars.config['address']].value),
+						'GET',
+						{},
+						{},
+						function(body,status,headers){
+							if (status>=200 && status<300){
+								var json=JSON.parse(body);
+								switch (json.status)
+								{
+									case 'ZERO_RESULTS':
+									case 'OVER_QUERY_LIMIT':
+									case 'REQUEST_DENIED':
+									case 'INVALID_REQUEST':
+										break;
+									case 'OK':
+										var lat=json.results[0].geometry.location.lat
+										var lng=json.results[0].geometry.location.lng;
+										event.record[vars.config['lat']].value=lat;
+										event.record[vars.config['lng']].value=lng;
+										kintone.proxy(
+											'https://plus.codes/api?address='+lat+','+lng+'&ekey='+vars.config['apikey']+'&language=ja',
+											'GET',
+											{},
+											{},
+											function(body,status,headers){
+												if (status>=200 && status<300){
+													switch (json.status)
+													{
+														case 'ZERO_RESULTS':
+														case 'OVER_QUERY_LIMIT':
+														case 'REQUEST_DENIED':
+														case 'INVALID_REQUEST':
+															break;
+														case 'OK':
+															event.record[vars.config['pluscode']].value=JSON.parse(body).plus_code.global_code;
+															break;
+													}
+													resolve(event);
+												}
+											}
+										);
+										break;
+								}
+							}
+						}
+					);
+				});
+		}
+		else return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

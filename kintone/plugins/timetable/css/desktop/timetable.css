@@ -20,11 +20,18 @@ span.timetable-graphlegend-title{
 }
 /* individual style (daily) */
 table.timetable-daily{
+	background-color:#FFFFFF;
 	table-layout:fixed;
 	width:100%;
 }
-table.timetable-daily thead tr th.timetable-daily-cellhead{
-	width:10em;
+table.timetable-daily .timetable-daily-cellhead{
+	min-width:10em;
+}
+table.timetable-daily.cellfixed{
+	table-layout:auto;
+}
+table.timetable-daily.cellfixed .timetable-daily-cellhead{
+	white-space:nowrap;
 }
 table.timetable-daily thead tr:first-of-type th{
 	border-bottom:none;

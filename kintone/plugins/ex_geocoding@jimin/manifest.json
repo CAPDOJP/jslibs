@@ -3,9 +3,9 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone 住所/緯度経度変換プラグイン@小林鷹之事務所",
+        "ja":"kintone 住所/緯度経度変換プラグイン@自民党",
         "en":"kintone Geocoding plug-in",
-        "zh":"kintone 住所/緯度経度変換プラグイン@小林鷹之事務所"
+        "zh":"kintone 住所/緯度経度変換プラグイン@自民党"
     },
     "description":{
         "ja":"入力された住所を元に地図や緯度経度を表示するプラグインです。",

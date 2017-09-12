@@ -104,7 +104,9 @@ jQuery.noConflict();
         	$('select#endhour').val(config['endhour']);
         	$('select#lat').val(config['lat']);
         	$('select#lng').val(config['lng']);
+        	$('input#scalefixedwidth').val(config['scalefixedwidth']);
         	$('input#apikey').val(config['apikey']);
+        	if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
         	if (config['route']=='1') $('input#route').prop('checked',true);
 	    	/* trigger events */
         	$.data($('select#segmentdisplay')[0],'initialdata',config['segmentdisplay']);
@@ -154,6 +156,19 @@ jQuery.noConflict();
 	    {
 	    	swal('Error!','目盛り間隔を選択して下さい。','error');
 	    	return;
+	    }
+	    if ($('input#scalefixed').prop('checked'))
+	    {
+		    if ($('input#scalefixedwidth').val()=='')
+		    {
+		    	swal('Error!','目盛幅を入力して下さい。','error');
+		    	return;
+		    }
+			if (!$.isNumeric($('input#scalefixedwidth').val()))
+		    {
+		    	swal('Error!','目盛幅は数値を入力して下さい。','error');
+		    	return;
+		    }
 	    }
 	    if ($('select#starthour').val()=='')
 	    {
@@ -208,10 +223,12 @@ jQuery.noConflict();
 		    config['segmentapp']='';
 		    config['segmentappfield']='';
         }
-        config['route']=($('input#route').prop('checked'))?'1':'0';
         config['lat']=$('select#lat').val();
         config['lng']=$('select#lng').val();
+        config['scalefixedwidth']=$('input#scalefixedwidth').val();
         config['apikey']=$('input#apikey').val();
+        config['scalefixed']=($('input#scalefixed').prop('checked'))?'1':'0';
+        config['route']=($('input#route').prop('checked'))?'1':'0';
 	    /* get view lists */
 		kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
 			var req=$.extend(true,{},resp);

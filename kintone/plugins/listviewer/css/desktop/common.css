@@ -120,6 +120,7 @@ table.customview-table textarea{
 	min-height:30px;
     outline:none;
 	padding:0px 3px;
+	vertical-align:top;
 	width:100%;
 }
 table.customview-table input[type=text],
