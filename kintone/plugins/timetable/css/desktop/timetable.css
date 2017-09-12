@@ -25,13 +25,16 @@ table.timetable-daily{
 	width:100%;
 }
 table.timetable-daily .timetable-daily-cellhead{
-	min-width:10em;
+	width:10em;
 }
 table.timetable-daily.cellfixed{
 	table-layout:auto;
 }
 table.timetable-daily.cellfixed .timetable-daily-cellhead{
+	padding-left:0.5em;
+	padding-right:0.5em;
 	white-space:nowrap;
+	width:auto;
 }
 table.timetable-daily thead tr:first-of-type th{
 	border-bottom:none;

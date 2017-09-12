@@ -268,6 +268,7 @@ jQuery.noConflict();
 		/* create table */
 		container.empty();
 		var head=$('<tr></tr><tr></tr>');
+		var menus=$('div.contents-actionmenu-gaia');
 		var template=$('<tr>');
 		var spacer=$('<span>');
 		if (vars.config['route']=='1' || vars.config['segment'].length!=0)
@@ -278,7 +279,9 @@ jQuery.noConflict();
 		}
 		if (vars.config['scalefixed']=='1')
 		{
-			container.css({'overflow-x':'visible'});
+
+			menus.css({'left':'0px','position':'fixed','top':'0px'});
+			container.css({'margin-top':menus.outerHeight(true)+'px','overflow-x':'visible'});
 			spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
 		}
 		for (var i=0;i<24;i++)
@@ -289,7 +292,7 @@ jQuery.noConflict();
 			head.eq(0).append($('<th colspan="'+vars.config['scale']+'" '+hide+'>').text(i));
 			for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
 			{
-				if (vars.config['scalefixed']=='1') head.eq(1).append($('<th '+hide+'>').append(spacer));
+				if (vars.config['scalefixed']=='1') head.eq(1).append($('<th '+hide+'>').append(spacer.clone(false)));
 				else head.eq(1).append($('<th '+hide+'>'));
 				template.append($('<td '+hide+'>'));
 			}
