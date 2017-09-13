@@ -247,7 +247,7 @@ jQuery.extend({
 			loadgroupsvalues.offset+=loadgroupsvalues.size;
 			if (resp.groups.length==loadgroupsvalues.size) $.loadgroups(callback,false);
 			else callback(loadgroupsvalues.records);
-		},function(error){});
+		},function(error){callback([]);});
 	},
 	loadorganizations:function(callback,initialize){
 		if ((initialize===undefined)?true:initialize)
@@ -265,7 +265,7 @@ jQuery.extend({
 			loadorganizationsvalues.offset+=loadorganizationsvalues.size;
 			if (resp.organizations.length==loadorganizationsvalues.size) $.loadorganizations(callback,false);
 			else callback(loadorganizationsvalues.records);
-		},function(error){});
+		},function(error){callback([]);});
 	},
 	loadusers:function(callback,initialize){
 		if ((initialize===undefined)?true:initialize)
@@ -283,7 +283,7 @@ jQuery.extend({
 			loadusersvalues.offset+=loadusersvalues.size;
 			if (resp.users.length==loadusersvalues.size) $.loadusers(callback,false);
 			else callback(loadusersvalues.records);
-		},function(error){});
+		},function(error){callback([]);});
 	},
 	queries:function(){
 		var queries=[];

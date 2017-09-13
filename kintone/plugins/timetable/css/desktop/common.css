@@ -60,7 +60,6 @@ button.time-button{
 div.customview-container{
 	box-sizing:border-box;
 	font-size:13px;
-	overflow-x:auto;
 	width:100%;
 }
 p.customview-p{

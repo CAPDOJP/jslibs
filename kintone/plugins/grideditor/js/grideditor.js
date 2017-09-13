@@ -517,6 +517,26 @@ jQuery.noConflict();
 		vars.grid.append($('<thead>').append(vars.header));
 		vars.grid.append(vars.rows);
 		vars.container.empty().append(vars.grid);
+		/* fixed header */
+		var headeractions=$('div.contents-actionmenu-gaia');
+		var headerspace=$(kintone.app.getHeaderSpaceElement());
+		headeractions.parent().css({'position':'relative'});
+		headerspace.parent().css({'position':'relative'});
+		$(window).on('load resize scroll',function(e){
+			headeractions.css({
+				'left':$(window).scrollLeft().toString()+'px',
+				'position':'absolute',
+				'top':'0px',
+				'width':$(window).width().toString()+'px'
+			});
+			headerspace.css({
+				'left':$(window).scrollLeft().toString()+'px',
+				'position':'absolute',
+				'top':headeractions.outerHeight(false)+'px',
+				'width':$(window).width().toString()+'px'
+			});
+			vars.container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
+		});
 		/* load export datas */
 		$.loadgroups(function(records){
 			vars.exports.groups=records;

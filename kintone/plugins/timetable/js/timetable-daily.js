@@ -241,6 +241,26 @@ jQuery.noConflict();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
 		$('body').append(guidefrom).append(guideto);
+		/* fixed header */
+		var headeractions=$('div.contents-actionmenu-gaia');
+		var headerspace=$(kintone.app.getHeaderSpaceElement());
+		headeractions.parent().css({'position':'relative'});
+		headerspace.parent().css({'position':'relative'});
+		$(window).on('load resize scroll',function(e){
+			headeractions.css({
+				'left':$(window).scrollLeft().toString()+'px',
+				'position':'absolute',
+				'top':'0px',
+				'width':$(window).width().toString()+'px'
+			});
+			headerspace.css({
+				'left':$(window).scrollLeft().toString()+'px',
+				'position':'absolute',
+				'top':headeractions.outerHeight(false)+'px',
+				'width':$(window).width().toString()+'px'
+			});
+			container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
+		});
 		/* setup date value */
 		date.text(vars.date.format('Y-m-d'));
 		/* day pickup button */
@@ -267,7 +287,6 @@ jQuery.noConflict();
 		});
 		/* create table */
 		container.empty();
-		var actions=$('div.contents-actionmenu-gaia');
 		var head=$('<tr></tr><tr></tr>');
 		var template=$('<tr>');
 		var spacer=$('<span>');
@@ -277,20 +296,7 @@ jQuery.noConflict();
 			head.eq(1).append($('<th class="timetable-daily-cellhead">'));
 			template.append($('<td class="timetable-daily-cellhead">'));
 		}
-		if (vars.config['scalefixed']=='1')
-		{
-			actions.parent().css({'position':'relative'});
-			spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
-			$(window).on('load resize scroll',function(e){
-				actions.css({
-					'left':$(window).scrollLeft().toString()+'px',
-					'position':'absolute',
-					'top':'0px',
-					'width':$(window).width().toString()+'px'
-				});
-				container.css({'margin-top':actions.outerHeight(false)+'px','overflow-x':'visible'});
-			});
-		}
+		if (vars.config['scalefixed']=='1') spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
 		for (var i=0;i<24;i++)
 		{
 			var hide='';
