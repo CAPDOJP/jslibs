@@ -63,7 +63,7 @@ jQuery.noConflict();
 	var functions={
 		addkey:function(){
 			var row=null;
-			$('.copyfieldstitle').before(vars.keytemplate.clone(true));
+			$('.keyfieldssupplement').before(vars.keytemplate.clone(true));
 			/* initialize valiable */
 			vars.keyrows=$('.keyfields');
 			/* events */
@@ -286,6 +286,7 @@ jQuery.noConflict();
 				{
 					$('select#copyapp').val(config['copyapp']);
 					$('input#buttonlabel').val(config['buttonlabel']);
+					if (config['unmatchthrough']=='1') $('input#unmatchthrough').prop('checked',true);
 					functions.reloadapp(config['copyview'],function(){
 						var add=false;
 						var copyfields=JSON.parse(config['copyfields']);
@@ -375,6 +376,7 @@ jQuery.noConflict();
 		config['keyfields']=JSON.stringify(keyfields);
 		config['sumfields']=JSON.stringify(sumfields);
 		config['buttonlabel']=$('input#buttonlabel').val();
+		config['unmatchthrough']=($('input#unmatchthrough').prop('checked'))?'1':'0';
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

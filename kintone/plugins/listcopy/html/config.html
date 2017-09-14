@@ -27,8 +27,8 @@
 					<div class="kintoneplugin-label">上書きキーフィールド設定</div>
 					<div class="kintoneplugin-desc">アプリのデータを上書きする場合は、上書き条件となるキーフィールドを指定して下さい。</div>
 					<div class="kintoneplugin-caution">*キーに指定出来るフィールドは「必須項目にする」にチェックが入っているものに限ります。</div>
-					<div class="kintoneplugin-caution">*コピー元一覧のキーフィールド値に重複がある場合は、最後のレコードが有効になります。</div>
-					<div class="kintoneplugin-caution">*キーフィールドを「指定しない」とした場合は、上書きではなく追加となります。</div>
+					<div class="kintoneplugin-caution">*合算指定がなく、コピー元一覧のキーフィールド値に重複がある場合は、最後のレコードが有効になります。</div>
+					<div class="kintoneplugin-caution">*キーフィールドを「指定しない」とした場合は、上書きではなくすべてのレコードが追加となります。</div>
 				</th>
 			</tr>
 			<tr class="keyfields">
@@ -51,7 +51,15 @@
 				<th class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></th>
 				<th class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></th>
 			</tr>
-			<tr class="copyfieldstitle">
+			<tr class="keyfieldssupplement">
+				<th colspan="6">
+					<div class="kintoneplugin-caution">*設定した上書きキーフィールドに該当しないレコードをコピー対象としない場合は、チェックを付けて下さい。</div>
+					<div class="kintoneplugin-input-checkbox-item">
+						<label><input type="checkbox" id="unmatchthrough" value="0">コピー対象を上書きレコードに限定する</label>
+					</div>
+				</th>
+			</tr>
+			<tr>
 				<th colspan="6">
 					<div class="kintoneplugin-label">コピーフィールド設定</div>
 				</th>

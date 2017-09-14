@@ -44,7 +44,6 @@ jQuery.noConflict();
 			var keyfields=JSON.parse(vars.config.keyfields);
 			var sumfields=JSON.parse(vars.config.sumfields);
 			kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:vars.config.copyapp},function(resp){
-				var error=true;
 				$.each(resp.views,function(key,values){
 					if (values.id==vars.config.copyview)
 					{
@@ -150,7 +149,38 @@ jQuery.noConflict();
 												update=true;
 											}
 										}
-										else counter++;
+										else
+										{
+											if (vars.config["unmatchthrough"]=='1') counter++;
+											else
+											{
+												body={
+													app:kintone.app.getId(),
+													record:{}
+												};
+												$.each(copyfields,function(key,values){
+													if (values.length!=0) body.record[key]={value:record[values].value};
+												});
+												kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+													counter++;
+													if (counter<summaries.length) vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/summaries.length));
+													else
+													{
+														vars.progress.hide();
+														swal({
+															title:'登録完了',
+															text:'データを登録しました。',
+															type:'success'
+														},function(){location.reload(true);});
+													}
+												},function(error){
+													vars.progress.hide();
+													swal('Error!',error.message,'error');
+													error=true;
+												});
+												update=true;
+											}
+										}
 									});
 									if (!error && !update)
 									{
@@ -162,31 +192,36 @@ jQuery.noConflict();
 							else
 							{
 								/* register */
-								body={
-									app:kintone.app.getId(),
-									records:[]
-								};
 								$.each(summaries,function(index){
-									body.records.push({});
+									if (error) return false;
 									record=summaries[index];
+									body={
+										app:kintone.app.getId(),
+										record:{}
+									};
 									$.each(copyfields,function(key,values){
-										if (values.length!=0) body.records[index][key]={value:record[values].value};
+										if (values.length!=0) body.record[key]={value:record[values].value};
 									});
-								});
-								kintone.api(kintone.api.url('/k/v1/records',true),'POST',body,function(resp){
-									vars.progress.hide();
-									swal({
-										title:'登録完了',
-										text:'データを登録しました。',
-										type:'success'
-									},function(){location.reload(true);});
-								},function(error){
-									vars.progress.hide();
-									swal('Error!',error.message,'error');
+									kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+										counter++;
+										if (counter<summaries.length) vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/summaries.length));
+										else
+										{
+											vars.progress.hide();
+											swal({
+												title:'登録完了',
+												text:'データを登録しました。',
+												type:'success'
+											},function(){location.reload(true);});
+										}
+									},function(error){
+										vars.progress.hide();
+										swal('Error!',error.message,'error');
+										error=true;
+									});
 								});
 							}
 						});
-						error=false;
 					}
 				});
 				if (error)

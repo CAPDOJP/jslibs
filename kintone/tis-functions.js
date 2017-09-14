@@ -157,6 +157,48 @@ jQuery.extend({
 		});
 		return fields;
 	},
+	fieldvalue:function(field){
+		var value=null;
+		switch (field.type.toUpperCase())
+		{
+			case 'CATEGORY':
+			case 'CHECK_BOX':
+			case 'MULTI_SELECT':
+				if (field.value.length!=0) value=field.value.join('<br>');
+				else value='';
+				break;
+			case 'CREATOR':
+			case 'MODIFIER':
+				value=field.value.name;
+				break;
+			case 'LINK':
+				if (field.value.length!=0) value='<a href="'+field.value+'" target="_blank">'+field.value+'</a>';
+				else value='';
+				break;
+			case 'MULTI_LINE_TEXT':
+				if (field.value.length!=0) value=field.value.replace('\n','<br>');
+				else value='';
+				break;
+			case 'GROUP_SELECT':
+			case 'ORGANIZATION_SELECT':
+			case 'STATUS_ASSIGNEE':
+			case 'USER_SELECT':
+				if (field.value.length!=0)
+				{
+					value='';
+					$.each(field.value,function(index){
+						value+=field.value[index].name+'<br>';
+					});
+				}
+				else value='';
+				break;
+			default:
+				if (field.value.length!=0) value=field.value;
+				else value='';
+				break;
+		}
+		return value;
+	},
 	isvalidtype:function(criteria,target){
 		var types=[];
 		switch (criteria.type)
