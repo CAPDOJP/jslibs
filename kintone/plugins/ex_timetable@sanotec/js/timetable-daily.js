@@ -154,7 +154,7 @@ jQuery.noConflict();
 			);
 			/* cell value switching */
 			var inner=$('<p>').addClass('timetable-daily-merge-p');
-			inner.html(filter[vars.config['display']].value);
+			inner.html($.fieldvalue(filter[vars.config['display']]));
 			row.find('td').eq(from).append(inner);
 			$.each(filter,function(key,values){
 				if (values!=null)

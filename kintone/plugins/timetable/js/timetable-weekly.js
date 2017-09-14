@@ -66,11 +66,11 @@ jQuery.noConflict();
 					var fromtime=new Date(date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00');
 					var totime=new Date(date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
 					var from=(fromtime.getHours())*parseInt(vars.config['scale'])+Math.floor(fromtime.getMinutes()/(60/parseInt(vars.config['scale'])));
-					var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])));
+					var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])))-1;
 					var row=vars.table.contents.find('tr').eq(from);
 					var position=positions.min;
 					from=vars.table.contents.find('tr').eq(from).position().top;
-					to=vars.table.contents.find('tr').eq(to).position().top;
+					to=vars.table.contents.find('tr').eq(to).position().top+vars.table.contents.find('tr').outerHeight(false);
 					/* check cell appended */
 					var appended=[];
 					$.each(cells,function(index){
@@ -103,7 +103,7 @@ jQuery.noConflict();
 					var balloon=$('<div class="timetable-weekly-balloon">');
 					var inner='';
 					inner='';
-					inner+='<p class="customview-p">'+filter[i][vars.config['display']].value+'</p>';
+					inner+='<p class="customview-p">'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
 					inner+='<p class="customview-p">'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
 					$('body').append(
 						balloon.css({
@@ -134,7 +134,6 @@ jQuery.noConflict();
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
-				var color='';
 				/* initialize cells */
 			    $('div.timetable-weekly-cell').remove();
 			    $('div.timetable-weekly-balloon').remove();
@@ -155,7 +154,7 @@ jQuery.noConflict();
 					{
 						/* place the segment data */
 						$.each(vars.segment,function(index,values){
-							filter=$.grep(records,function(item,index){
+							var filter=$.grep(records,function(item,index){
 								var exists=0;
 								if (item[vars.config['date']].value==vars.fromdate.calc(i+' day').format('Y-m-d')) exists++;
 								if (item[vars.config['segment']].value==values[vars.config['segmentappfield']].value) exists++;

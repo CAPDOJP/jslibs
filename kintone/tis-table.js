@@ -80,7 +80,7 @@ var Table=function(options){
 				if (row.find('td').eq(i).hasClass(options.mergeclass)) break;
 				mergelimitfrom=i;
 			}
-			for (var i=cellindex;i<row.find('td').length-1;i++)
+			for (var i=cellindex;i<row.find('td').length;i++)
 			{
 				if (row.find('td').eq(i).hasClass(options.mergeclass)) break;
 				mergelimitto=i;

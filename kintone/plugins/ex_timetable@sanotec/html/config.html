@@ -1,18 +1,7 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">日付フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">日付を設定するフィールドを選択して下さい。【日付フィールド】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="date">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">開始時刻フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">開始時刻を設定するフィールドを選択して下さい。【時刻フィールド】</div>
+		<div class="kintoneplugin-label">開始日時フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">開始日時を設定するフィールドを選択して下さい。【日時フィールド】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="fromtime">
@@ -22,8 +11,8 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">終了時刻フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">終了時刻を設定するフィールドを選択して下さい。【時刻フィールド】</div>
+		<div class="kintoneplugin-label">終了日時フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">終了日時を設定するフィールドを選択して下さい。【日時フィールド】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="totime">
@@ -44,26 +33,36 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">区分フィールド【ルックアップフィールド】</div>
-		<div class="kintoneplugin-desc">区分毎に表示したい場合は、対象となるフィールドを選択して下さい。</div>
+		<div class="kintoneplugin-label">ツールチップフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">ツールチップに表示するフィールドを選択して下さい。</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
-				<select id="segment">
+				<select id="tooltip">
 					<option value=""></option>
 				</select>
 			</div>
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">区分名フィールド</div>
-		<div class="kintoneplugin-desc">区分毎に表示したい場合は、区分名となるルックアップ先のフィールドを選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="segmentdisplay">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
+		<div class="kintoneplugin-label">区分フィールド【ルックアップフィールド】</div>
+		<div class="kintoneplugin-desc">区分毎に表示したい場合は、対象となるフィールドを選択して下さい。</div>
+		<table>
+			<tbody class="segments">
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="segment">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">目盛り間隔<span class="kintoneplugin-require">*</span></div>
@@ -122,76 +121,6 @@
 					<option value="23">23時</option>
 				</select>
 			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">タイムテーブル設定終了時刻<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">タイムテーブル表示の終了時刻を選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="endhour">
-					<option value="0">0時</option>
-					<option value="1">1時</option>
-					<option value="2">2時</option>
-					<option value="3">3時</option>
-					<option value="4">4時</option>
-					<option value="5">5時</option>
-					<option value="6">6時</option>
-					<option value="7">7時</option>
-					<option value="8">8時</option>
-					<option value="9">9時</option>
-					<option value="10">10時</option>
-					<option value="11">11時</option>
-					<option value="12">12時</option>
-					<option value="13">13時</option>
-					<option value="14">14時</option>
-					<option value="15">15時</option>
-					<option value="16">16時</option>
-					<option value="17">17時</option>
-					<option value="18">18時</option>
-					<option value="19">19時</option>
-					<option value="20">20時</option>
-					<option value="21">21時</option>
-					<option value="22">22時</option>
-					<option value="23" selected="selected">23時</option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">ルートマップ</div>
-		<div class="kintoneplugin-desc">タイムテーブルの時刻と位置情報でルートマップを表示したい場合は、チェックを付けて下さい。</div>
-		<div class="kintoneplugin-input-checkbox-item">
-			<label><input type="checkbox" id="route" value="0">ルートマップを表示する</label>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">緯度表示フィールド</div>
-		<div class="kintoneplugin-desc">取得した緯度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="lat">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">経度表示フィールド</div>
-		<div class="kintoneplugin-desc">取得した経度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="lng">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">Google Maps APIキー</div>
-		<div class="kintoneplugin-desc">ルートマップを表示する場合は、Google Maps APIキーを取得し、取得したキーを入力して下さい。</div>
-		<div class="kintoneplugin-input-outer">
-			<input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
 		</div>
 	</div>
 </div>

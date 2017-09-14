@@ -51,13 +51,12 @@ jQuery.noConflict();
 			var color=vars.colors[colorindex%vars.colors.length];
 			if (filter.length!=0)
 			{
-				var date=vars.fromdate.calc(cell.find('div.timetable-monthly-p').text()+' day').calc('-1 day');
 				for (var i=0;i<filter.length;i++)
 				{
 					/* append cell */
 					var inner='';
 					inner='';
-					inner+='<p>'+filter[i][vars.config['display']].value+'</p>';
+					inner+='<p>'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
 					inner+='<p>'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
 					cell.append(
 						$('<div class="timetable-monthly-cell">').css({
@@ -80,7 +79,6 @@ jQuery.noConflict();
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
-				var color='';
 				/* initialize rows */
 				vars.table.contents.find('tr').show();
 				/* initialize cells */
@@ -117,7 +115,7 @@ jQuery.noConflict();
 					{
 						/* place the segment data */
 						$.each(vars.segment,function(index,values){
-							filter=$.grep(records,function(item,index){
+							var filter=$.grep(records,function(item,index){
 								var exists=0;
 								if (item[vars.config['date']].value==day.format('Y-m-d')) exists++;
 								if (item[vars.config['segment']].value==values[vars.config['segmentappfield']].value) exists++;

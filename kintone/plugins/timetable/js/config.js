@@ -25,17 +25,16 @@ jQuery.noConflict();
 			/* check field type */
 			switch (values.type)
 			{
-				case 'CATEGORY':
+				case 'CALC':
 				case 'CREATOR':
+				case 'DATETIME':
 				case 'DROP_DOWN':
-				case 'GROUP_SELECT':
 				case 'LINK':
 				case 'MODIFIER':
 				case 'NUMBER':
-				case 'ORGANIZATION_SELECT':
 				case 'RADIO_BUTTON':
+				case 'RECORD_NUMBER':
 				case 'SINGLE_LINE_TEXT':
-				case 'USER_SELECT':
 					$('select#display').append($('<option>').attr('value',values.code).text(values.label));
 					if (values.lookup)
 					{
