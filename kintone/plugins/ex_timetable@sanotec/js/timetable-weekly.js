@@ -62,23 +62,29 @@ jQuery.noConflict();
 				for (var i=0;i<filter.length;i++)
 				{
 					/* create cell */
-					var datecalc=functions.datecalc(new Date(filter[i][vars.config['fromtime']].value),new Date(filter[i][vars.config['totime']].value));
+					var datecalc=$.timetabledatecalc(new Date(filter[i][vars.config['fromtime']].value),new Date(filter[i][vars.config['totime']].value));
+					if (datecalc.to.hour<parseInt(vars.config['starthour'])-1) continue;
 					var from=(datecalc.from.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.floor(datecalc.from.minute/(60/parseInt(vars.config['scale'])));
 					var to=(datecalc.to.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.ceil(datecalc.to.minute/(60/parseInt(vars.config['scale'])))-1;
 					var row=vars.table.contents.find('tr').eq(from);
 					var position=positions.min;
+					if (from<0)
+					{
+						from=0;
+						row=vars.table.contents.find('tr').eq(from);
+					}
 					from=vars.table.contents.find('tr').eq(from).position().top;
-					to=vars.table.contents.find('tr').eq(to).position().top+vars.table.contents.find('tr').outerHeight(false);
+					to=vars.table.contents.find('tr').eq(to).position().top+vars.table.contents.find('tr').eq(to).outerHeight(false);
 					/* check cell appended */
 					var appended=[];
 					$.each(cells,function(index){
 						var cell=$(this);
-			    		var exists=false;
-			    		if ($.data(cell[0],'from')<from && $.data(cell[0],'to')>to) exists=true;
-			    		if ($.data(cell[0],'from')>from && $.data(cell[0],'from')<to) exists=true;
-			    		if ($.data(cell[0],'to')>from && $.data(cell[0],'to')<to) exists=true;
-			    		if (exists)
-			    			if ($.inArray($.data(cell[0],'position'),appended)<0) appended.push($.data(cell[0],'position'));
+						var exists=false;
+						if ($.data(cell[0],'from')<from && $.data(cell[0],'to')>to) exists=true;
+						if ($.data(cell[0],'from')>from && $.data(cell[0],'from')<to) exists=true;
+						if ($.data(cell[0],'to')>from && $.data(cell[0],'to')<to) exists=true;
+						if (exists)
+							if ($.inArray($.data(cell[0],'position'),appended)<0) appended.push($.data(cell[0],'position'));
 					});
 					/* adds 1 to the maximum value for the new position */
 					for (var i2=positions.min;i2<positions.max+2;i2++) if ($.inArray(i2,appended)<0) {position=i2;break;}
@@ -128,26 +134,6 @@ jQuery.noConflict();
 				vars.table.head.find('th').eq(columnindex).css({'min-width':vars.cellwidth*vars.cellposition+'px'});
 			}
 		},
-		datecalc:function(from,to,starthour){
-			if (starthour) from=new Date(from.format('Y-m-d')+'T'+('0'+starthour).slice(-2)+':00:00+0900');
-			var diff=to.getTime()-from.getTime();
-			var fromtime={
-				hour:from.getHours(),
-				minute:from.getMinutes()
-			};
-			var totime={
-				hour:fromtime.hour+Math.floor((fromtime.minute+diff/(1000*60))/60),
-				minute:(fromtime.minute+diff/(1000*60))%60
-			};
-			var values={
-				diffhours:Math.ceil((fromtime.minute+diff/(1000*60))/60),
-				from:fromtime,
-				to:totime,
-				formatfrom:('0'+fromtime.hour).slice(-2)+':'+('0'+fromtime.minute).slice(-2),
-				formatto:('0'+totime.hour).slice(-2)+':'+('0'+totime.minute).slice(-2)
-			};
-			return values;
-		},
 		/* reload view */
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
@@ -170,7 +156,7 @@ jQuery.noConflict();
 						.append($('<span class="customview-span timetable-graphlegend-title">').text(records[index][segmentcode].value));
 						segments.push(records[index][segmentcode].value);
 					}
-					datecalc=functions.datecalc(new Date(records[index][vars.config['fromtime']].value),new Date(records[index][vars.config['totime']].value),vars.config['starthour']);
+					datecalc=$.timetabledatecalc(new Date(records[index][vars.config['fromtime']].value),new Date(records[index][vars.config['totime']].value),vars.config['starthour']);
 					if (rows<datecalc.diffhours) rows=datecalc.diffhours;
 				});
 				/* insert row */
@@ -179,12 +165,12 @@ jQuery.noConflict();
 				{
 					vars.table.insertrow(null,function(row){
 						for (var i2=0;i2<parseInt(vars.config['scale'])-1;i2++) vars.table.insertrow(row,function(row){row.find('td').eq(0).hide();});
-						row.find('td').eq(0).attr('rowspan',parseInt(vars.config['scale'])).text(i);
+						row.find('td').eq(0).attr('rowspan',parseInt(vars.config['scale'])).text(i+parseInt(vars.config['starthour']));
 					});
 				}
 				/* initialize cells */
-			    $('div.timetable-weekly-cell').remove();
-			    $('div.timetable-weekly-balloon').remove();
+				$('div.timetable-weekly-cell').remove();
+				$('div.timetable-weekly-balloon').remove();
 				$.each(vars.table.head.find('th'),function(index){$(this).css({'width':'auto'}).empty();})
 				for (var i=0;i<7;i++)
 				{
@@ -193,7 +179,7 @@ jQuery.noConflict();
 					vars.table.head.find('th').eq(i+1).append($('<button class="customview-button time-button">').text('タイムテーブルを表示').on('click',function(){
 						var query='';
 						query+='view='+vars.config.datetimetable;
-						query+='&'+vars.config['date']+'='+$(this).closest('th').find('p').text();
+						query+='&'+vars.config['fromtime']+'='+$(this).closest('th').find('p').text();
 						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
 					}));
 					/* place the segment data */
@@ -225,14 +211,12 @@ jQuery.noConflict();
 			query+=vars.config['fromtime']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
 			query+=' and '+vars.config['fromtime']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
 			sort=' order by ';
-			sort+=vars.config['fromtime']+' asc,';
 			for (var i=0;i<vars.segments.length;i++) sort+=vars.segments[i]+' asc,';
-			sort=sort.replace(/,$/g,'');
-			sort+=' limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
+			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
@@ -244,10 +228,10 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	$(window).on('mousemove',function(e){
 		/* move balloon */
-	    $('div.timetable-weekly-balloon').css({
-	      'left':e.clientX,
-	      'top':e.clientY
-	    });
+		$('div.timetable-weekly-balloon').css({
+		  'left':e.clientX,
+		  'top':e.clientY
+		});
 	});
 	/*---------------------------------------------------------------
 	 kintone events
@@ -259,17 +243,19 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.weektimetable) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container');
+		var feed=$('<div class="timetable-dayfeed">');
 		var week=$('<span id="week" class="customview-span">');
 		var button=$('<button id="datepick" class="customview-button calendar-button">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
 		/* append elements */
+		feed.append(prev);
+		feed.append(week);
+		feed.append(button);
+		feed.append(next);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(week[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
 		vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);
 		vars.todate=vars.fromdate.calc('6 day');
@@ -286,7 +272,7 @@ jQuery.noConflict();
 			}
 		});
 		button.on('click',function(){
-		    vars.calendar.show({activedate:vars.fromdate});
+			vars.calendar.show({activedate:vars.fromdate});
 		});
 		/* day feed button */
 		$.each([prev,next],function(){

@@ -70,7 +70,7 @@ jQuery.noConflict();
 					var row=vars.table.contents.find('tr').eq(from);
 					var position=positions.min;
 					from=vars.table.contents.find('tr').eq(from).position().top;
-					to=vars.table.contents.find('tr').eq(to).position().top+vars.table.contents.find('tr').outerHeight(false);
+					to=vars.table.contents.find('tr').eq(to).position().top+vars.table.contents.find('tr').eq(to).outerHeight(false);
 					/* check cell appended */
 					var appended=[];
 					$.each(cells,function(index){
@@ -221,17 +221,19 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.weektimetable) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container');
+		var feed=$('<div class="timetable-dayfeed">');
 		var week=$('<span id="week" class="customview-span">');
 		var button=$('<button id="datepick" class="customview-button calendar-button">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
 		/* append elements */
+		feed.append(prev);
+		feed.append(week);
+		feed.append(button);
+		feed.append(next);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(week[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
 		vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);
 		vars.todate=vars.fromdate.calc('6 day');

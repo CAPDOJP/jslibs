@@ -173,15 +173,17 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.monthtimetable) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container');
+		var feed=$('<div class="timetable-dayfeed">');
 		var month=$('<span id="month" class="customview-span">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
 		/* append elements */
+		feed.append(prev);
+		feed.append(month);
+		feed.append(next);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(month[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
 		vars.fromdate=vars.fromdate.calc('first-of-month');
 		vars.todate=vars.fromdate.calc('1 month').calc('-1 day');

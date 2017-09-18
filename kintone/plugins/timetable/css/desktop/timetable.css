@@ -2,6 +2,14 @@
 *.hide{
 	display:none;
 }
+div.timetable-dayfeed{
+	display:inline-block;
+	line-height:30px;
+	padding-top:9px;
+}
+div.timetable-dayfeed *{
+	vertical-align:top;
+}
 div.timetable-graphlegend{
 	padding:6px 3px;
 	text-align:center;

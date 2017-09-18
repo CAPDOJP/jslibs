@@ -178,12 +178,12 @@ DynamicMap.prototype={
 		balloons=this.balloons;
 		/*ルート初期化*/
 		renderer.setMap(null);
-		var addmarker=function(latlng,childindex,colorsindex,label){
+		var addmarker=function(latlng,markerindex,colorsindex,label){
 			/*マーカー配置*/
 			var marker=new google.maps.Marker({
 				map:map,
 				position:latlng,
-				icon:'https://chart.apis.google.com/chart?chst=d_map_pin_letter_withshadow&chld='+childindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+				icon:'https://chart.apis.google.com/chart?chst=d_map_pin_letter_withshadow&chld='+markerindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
 			});
 			markers.push(marker);
 			/*吹き出し配置*/

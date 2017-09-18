@@ -227,19 +227,20 @@ jQuery.noConflict();
 		if (vars.config['date'] in queries) vars.date=new Date(queries[vars.config['date']]);
 		/* initialize valiable */
 		var container=$('div#timetable-container');
+		var feed=$('<div class="timetable-dayfeed">');
 		var date=$('<span id="date" class="customview-span">');
 		var button=$('<button id="datepick" class="customview-button calendar-button">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
-		var next=$('<button id="next" class="customview-button next-button">');
 		var guidefrom=$('<div class="guidefrom">');
 		var guideto=$('<div class="guideto">');
 		/* append elements */
+		feed.append(prev);
+		feed.append(date);
+		feed.append(button);
+		feed.append(next);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(date[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		$('body').append(guidefrom).append(guideto);
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
@@ -323,6 +324,11 @@ jQuery.noConflict();
 				var tohour=Math.floor(caller.cellindex(cell.parent(),cellto)/parseInt(vars.config['scale']));
 				var fromminute=(caller.cellindex(cell.parent(),cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 				var tominute=caller.cellindex(cell.parent(),cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
+				if (tohour=='24' && tominute=='00')
+				{
+					tohour='23';
+					tominute='59';
+				}
 				query+=vars.config['date']+'='+vars.date.format('Y-m-d');
 				query+='&'+vars.config['fromtime']+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
 				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);

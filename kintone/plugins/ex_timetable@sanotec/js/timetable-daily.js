@@ -15,15 +15,16 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		date:new Date(),
-		calendar:null,
-		route:null,
-		segment:null,
+		fromdate:new Date(),
+		todate:new Date(),
+		fromcalendar:null,
+		tocalendar:null,
 		table:null,
 		apps:{},
 		config:{},
 		offset:{},
-		fields:[]
+		fields:[],
+		segments:[]
 	};
 	var events={
 		lists:[
@@ -37,72 +38,31 @@ jQuery.noConflict();
 	var limit=500;
 	var functions={
 		/* rebuild view */
-		build:function(filter,segment,segmentname,colorindex){
+		build:function(filter,segments,colorindex){
 			var color=colorindex%12;
 			/* insert row */
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
-				var inner='';
-				if (vars.config['segment'].length!=0)
-				{
-					inner+='<p class="customview-p">'+segmentname+'</p>';
-					inner+='<input type="hidden" id="segment" value="'+segment+'" />';
-					baserow.find('td').eq(0).html(inner);
-				}
-				if (vars.config['route']=='1')
-				{
-					baserow.find('td').eq(0).append($('<button class="customview-button compass-button">').text('地図を表示').on('click',function(){
-						/* display routemap */
-						var markers=[];
-						var rowindex=vars.table.contents.find('tr').index($(this).closest('tr'));
-						var rowspan=(parseInt('0'+baserow.find('td').eq(0).attr('rowspan'))!=0)?parseInt('0'+baserow.find('td').eq(0).attr('rowspan')):1;
-						for (var i=rowindex;i<rowindex+rowspan;i++)
-						{
-							var row=vars.table.contents.find('tr').eq(i);
-							$.each(row.find('td'),function(index){
-								if ($(this).find('input#\\$id').size())
-								{
-									var lat=parseFloat('0'+$(this).find('input#'+vars.config['lat']).val());
-									var lng=parseFloat('0'+$(this).find('input#'+vars.config['lng']).val());
-									if (lat+lng!=0)
-										markers.push({
-											from:vars.table.cellindex(row,index),
-											label:$(this).find('p').text(),
-											lat:$(this).find('input#'+vars.config['lat']).val(),
-											lng:$(this).find('input#'+vars.config['lng']).val()
-										});
-								}
-							});
-						}
-						if (markers.length==0)
-						{
-					    	swal('Error!','位置情報が設定されたセルがありません。','error');
-							return;
-						}
-						markers.sort(function(a,b){
-							if(a.from<b.from) return -1;
-							if(a.from>b.from) return 1;
-							return 0;
-    					});
-						vars.route.reloadmap({markers:markers});
-					}));
-				}
+				for (var i=0;i<segments.length;i++) baserow.find('td').eq(i).html('<p class="customview-p">'+segments[i]+'</p>');
 				if (filter.length!=0)
 				{
 					for (var i=0;i<filter.length;i++)
 					{
 						/* create cell */
-						var fromtime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00');
-						var totime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
-						var from=(fromtime.getHours())*parseInt(vars.config['scale'])+Math.floor(fromtime.getMinutes()/(60/parseInt(vars.config['scale'])));
-						var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])))-1;
+						var datecalc=$.timetabledatecalc(
+							new Date(filter[i][vars.config['fromtime']].value),
+							new Date(filter[i][vars.config['totime']].value),
+							null,
+							new Date(vars.fromdate.format('Y-m-d')+'T00:00:00+0900')
+						);
+						if (datecalc.to.hour<parseInt(vars.config['starthour'])-1) continue;
+						var from=(datecalc.from.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.floor(datecalc.from.minute/(60/parseInt(vars.config['scale'])));
+						var to=(datecalc.to.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.ceil(datecalc.to.minute/(60/parseInt(vars.config['scale'])))-1;
 						var fromindex=0;
 						var toindex=0;
-						if (vars.config['route']=='1' || vars.config['segment'].length!=0)
-						{
-							from++;
-							to++;
-						}
+						if (from<0) from=0;
+						from+=vars.segments.length;
+						to+=vars.segments.length;
 						/* check cell merged */
 						var isinsertrow=true;
 						var mergerow=baserow;
@@ -125,14 +85,14 @@ jQuery.noConflict();
 								functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
 								rowspan++;
 								/* check row merged */
-								if (vars.config['route']=='1' || vars.config['segment'].length!=0)
+								for (var i2=0;i2<segments.length;i2++)
 								{
-									baserow.find('td').eq(0).attr('rowspan',rowspan);
-							        mergerow.find('td').eq(0).html(baserow.find('td').eq(0).html()).hide();
+									baserow.find('td').eq(i2).attr('rowspan',rowspan);
+									mergerow.find('td').eq(i2).html(baserow.find('td').eq(i2).html()).hide();
 								}
 								/* setup merge class */
 								$.each(row.find('td'),function(index){
-								    $(this).addClass('timetable-daily-merge'+color);
+									$(this).addClass('timetable-daily-merge'+color);
 								})
 							});
 						}
@@ -141,26 +101,43 @@ jQuery.noConflict();
 				}
 				/* setup merge class */
 				$.each(row.find('td'),function(index){
-				    $(this).addClass('timetable-daily-merge'+color);
+					$(this).addClass('timetable-daily-merge'+color);
 				})
 			});
 		},
 		/* setup merge cell value */
 		mergeaftervalue:function(row,from,to,filter){
+			var cell=row.find('td').eq(from);
 			vars.table.mergecell(
-				row.find('td').eq(from),
+				cell,
 				from,
 				to
 			);
 			/* cell value switching */
 			var inner=$('<p>').addClass('timetable-daily-merge-p');
 			inner.html($.fieldvalue(filter[vars.config['display']]));
-			row.find('td').eq(from).append(inner);
+			cell.append(inner);
 			$.each(filter,function(key,values){
 				if (values!=null)
 					if (values.value!=null)
-						row.find('td').eq(from).append($('<input type="hidden">').attr('id',key).val(values.value));
+						cell.append($('<input type="hidden">').attr('id',key).val(values.value));
 			})
+			/* append balloon */
+			var balloon=$('<div class="timetable-daily-balloon">');
+			$('body').append(
+				balloon.css({
+					'z-index':(100+$('div.timetable-daily-balloon').length).toString()
+				})
+				.html('<p class="customview-p">'+$.fieldvalue(filter[vars.config['tooltip']])+'</p>')
+			);
+			/* setup cell datas */
+			$.data(cell[0],'balloon',balloon);
+			/* mouse events */
+			cell.on({
+				'click':function(){window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';},
+				'mouseenter':function(){$.data($(this)[0],'balloon').addClass('timetable-daily-balloon-show');},
+				'mouseleave':function(){$.data($(this)[0],'balloon').removeClass('timetable-daily-balloon-show');}
+			});
 		},
 		/* reload view */
 		load:function(){
@@ -169,23 +146,99 @@ jQuery.noConflict();
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
-				/* initialize table */
-				vars.table.clearrows();
-				if (vars.config['segment'].length!=0)
+				var segments=[];
+				var datecalc={};
+				var columns=0;
+				/* clear balloon */
+				$('div.timetable-daily-balloon').remove();
+				/* create segments */
+				$.each(records,function(index){
+					var segment='';
+					for (var i=0;i<vars.segments.length;i++) segment+=records[index][vars.segments[i]].value+',';
+					segment=segment.replace(/,$/g,'');
+					if (segments.indexOf(segment)<0) segments.push(segment);
+					datecalc=$.timetabledatecalc(vars.fromdate,new Date(records[index][vars.config['totime']].value),vars.config['starthour']);
+					if (columns<datecalc.diffhours) columns=datecalc.diffhours;
+				});
+				/* create table */
+				var container=$('div#timetable-container').empty();
+				var head=$('<tr></tr><tr></tr>');
+				var template=$('<tr>');
+				var spacer=$('<span>');
+				for (var i=0;i<vars.segments.length;i++)
 				{
-					/* place the segment data */
-					$.each(vars.segment,function(index,values){
-						var filter=$.grep(records,function(item,index){return item[vars.config['segment']].value==values[vars.config['segmentappfield']].value;});
-						/* rebuild view */
-						functions.build(filter,values[vars.config['segmentappfield']].value,values[vars.config['segmentdisplay']].value,index);
+					head.eq(0).append($('<th class="timetable-daily-cellhead">'));
+					head.eq(1).append($('<th class="timetable-daily-cellhead">'));
+					template.append($('<td class="timetable-daily-cellhead">'));
+				}
+				if (vars.config['scalefixed']=='1') spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
+				/* insert column */
+				for (var i=0;i<columns;i++)
+				{
+					head.eq(0).append($('<th colspan="'+vars.config['scale']+'">').text(i+parseInt(vars.config['starthour'])));
+					for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
+					{
+						if (vars.config['scalefixed']=='1') head.eq(1).append($('<th>').append(spacer.clone(false)));
+						else head.eq(1).append($('<th>'));
+						template.append($('<td>'));
+					}
+				}
+				if (records.length!=0)
+				{
+					vars.table=$('<table id="timetable" class="customview-table timetable-daily '+((vars.config['scalefixed']=='1')?'cellfixed':'')+'">').mergetable({
+						container:container,
+						head:head,
+						template:template,
+						merge:false,
+						mergeclass:'timetable-daily-merge'
 					});
+					/* place the segment data */
+					for (var i=0;i<segments.length;i++)
+					{
+						var segment=segments[i].split(',');
+						var filter=$.grep(records,function(item,index){
+							var exists=0;
+							for (var i2=0;i2<vars.segments.length;i2++) if (item[vars.segments[i2]].value==segment[i2]) exists++;
+							return exists==vars.segments.length;
+						});
+						/* rebuild view */
+						functions.build(filter,segment,i);
+					}
+					/* merge row */
+					var rowspans=[];
+					for (var i=0;i<vars.segments.length;i++) rowspans.push({cache:'',index:0,rowspan:0});
+					$.each(vars.table.contents.find('tr'),function(index){
+						var row=vars.table.contents.find('tr').eq(index);
+						for (var i=0;i<vars.segments.length;i++)
+						{
+							var cell=row.find('td').eq(i);
+							if (rowspans[i].cache!=cell.find('p').text())
+							{
+								if (rowspans[i].index!=0)
+								{
+									vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].rowspan);
+									for (var i2=rowspans[i].index+1;i2<index;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
+								}
+								rowspans[i].cache=cell.find('p').text();
+								rowspans[i].index=index;
+								rowspans[i].rowspan=0;
+							}
+							rowspans[i].rowspan+=(parseInt('0'+cell.attr('rowspan'))!=0)?parseInt('0'+cell.attr('rowspan'))-1:1;
+						}
+					});
+					var index=vars.table.contents.find('tr').length-1;
+					var row=vars.table.contents.find('tr').last();
+					for (var i=0;i<vars.segments.length;i++)
+					{
+						var cell=row.find('td').eq(i);
+						if (rowspans[i].cache==cell.find('p').text() && rowspans[i].index!=index)
+						{
+							vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].rowspan);
+							for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
+						}
+					}
 				}
-				else
-				{
-					var filter=$.grep(records,function(item,index){return true;});
-					/* rebuild view */
-					functions.build(filter,'','',0);
-				}
+				else swal('Error!','条件に該当するレコードが見つかりませんでした。','error');
 			});
 		},
 		/* reload datas */
@@ -198,22 +251,31 @@ jQuery.noConflict();
 				fields:vars.fields
 			};
 			query+=((query.length!=0)?' and ':'');
-			query+=vars.config['date']+'="'+vars.date.format('Y-m-d')+'"';
-			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
-			query+=' and '+vars.config['totime']+'<="'+('0'+vars.config['endhour']).slice(-2)+':59"';
+			query+=vars.config['fromtime']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
+			query+=' and '+vars.config['fromtime']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
 			sort=' order by ';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			for (var i=0;i<vars.segments.length;i++) sort+=vars.segments[i]+' asc,';
 			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
 			},function(error){});
 		}
 	};
+	/*---------------------------------------------------------------
+	 mouse events
+	---------------------------------------------------------------*/
+	$(window).on('mousemove',function(e){
+		/* move balloon */
+		$('div.timetable-daily-balloon').css({
+		  'left':e.clientX,
+		  'top':e.clientY
+		});
+	});
 	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
@@ -224,23 +286,34 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.datetimetable) return;
 		/* get query strings */
 		var queries=$.queries();
-		if (vars.config['date'] in queries) vars.date=new Date(queries[vars.config['date']]);
+		if (vars.config['fromtime'] in queries)
+		{
+			vars.fromdate=new Date(queries[vars.config['fromtime']]);
+			vars.todate=new Date(queries[vars.config['fromtime']]);
+		}
 		/* initialize valiable */
 		var container=$('div#timetable-container');
-		var date=$('<span id="date" class="customview-span">');
-		var button=$('<button id="datepick" class="customview-button calendar-button">');
-		var prev=$('<button id="prev" class="customview-button prev-button">');
-		var next=$('<button id="next" class="customview-button next-button">');
-		var next=$('<button id="next" class="customview-button next-button">');
-		var guidefrom=$('<div class="guidefrom">');
-		var guideto=$('<div class="guideto">');
+		var feed=$('<div class="timetable-dayfeed">');
+		var fromdate=$('<span id="date" class="customview-span">');
+		var frombutton=$('<button id="datepick" class="customview-button calendar-button">');
+		var fromprev=$('<button id="prev" class="customview-button prev-button">');
+		var fromnext=$('<button id="next" class="customview-button next-button">');
+		var todate=$('<span id="date" class="customview-span">');
+		var tobutton=$('<button id="datepick" class="customview-button calendar-button">');
+		var toprev=$('<button id="prev" class="customview-button prev-button">');
+		var tonext=$('<button id="next" class="customview-button next-button">');
 		/* append elements */
+		feed.append(fromprev);
+		feed.append(fromdate);
+		feed.append(frombutton);
+		feed.append(fromnext);
+		feed.append($('<span class="customview-span">').text(' ~ '));
+		feed.append(toprev);
+		feed.append(todate);
+		feed.append(tobutton);
+		feed.append(tonext);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(date[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
-		$('body').append(guidefrom).append(guideto);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
 		var headerspace=$(kintone.app.getHeaderSpaceElement());
@@ -262,144 +335,55 @@ jQuery.noConflict();
 			container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
 		});
 		/* setup date value */
-		date.text(vars.date.format('Y-m-d'));
+		fromdate.text(vars.fromdate.format('Y-m-d'));
+		todate.text(vars.todate.format('Y-m-d'));
 		/* day pickup button */
-		vars.calendar=$('body').calendar({
+		vars.fromcalendar=$('body').calendar({
 			selected:function(target,value){
-				vars.date=new Date(value);
-				date.text(value);
+				vars.fromdate=new Date(value);
+				fromdate.text(value);
 				/* reload view */
 				functions.load();
 			}
 		});
-		button.on('click',function(){
-		    vars.calendar.show({activedate:vars.date});
+		frombutton.on('click',function(){vars.fromcalendar.show({activedate:vars.fromdate});});
+		vars.tocalendar=$('body').calendar({
+			selected:function(target,value){
+				vars.todate=new Date(value);
+				todate.text(value);
+				/* reload view */
+				functions.load();
+			}
 		});
+		tobutton.on('click',function(){vars.tocalendar.show({activedate:vars.todate});});
 		/* day feed button */
-		$.each([prev,next],function(){
+		$.each([fromprev,fromnext],function(){
 			$(this).on('click',function(){
 				var days=($(this).attr('id')=='next')?1:-1;
-				vars.date=vars.date.calc(days+' day');
-				date.text(vars.date.format('Y-m-d'));
+				vars.fromdate=vars.fromdate.calc(days+' day');
+				fromdate.text(vars.fromdate.format('Y-m-d'));
 				/* reload view */
 				functions.load();
 			});
 		});
-		/* create table */
-		container.empty();
-		var head=$('<tr></tr><tr></tr>');
-		var template=$('<tr>');
-		var spacer=$('<span>');
-		if (vars.config['route']=='1' || vars.config['segment'].length!=0)
-		{
-			head.eq(0).append($('<th class="timetable-daily-cellhead">'));
-			head.eq(1).append($('<th class="timetable-daily-cellhead">'));
-			template.append($('<td class="timetable-daily-cellhead">'));
-		}
-		if (vars.config['scalefixed']=='1') spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
-		for (var i=0;i<24;i++)
-		{
-			var hide='';
-			if (i<parseInt(vars.config['starthour'])) hide='class="hide"';
-			if (i>parseInt(vars.config['endhour'])) hide='class="hide"';
-			head.eq(0).append($('<th colspan="'+vars.config['scale']+'" '+hide+'>').text(i));
-			for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
-			{
-				if (vars.config['scalefixed']=='1') head.eq(1).append($('<th '+hide+'>').append(spacer.clone(false)));
-				else head.eq(1).append($('<th '+hide+'>'));
-				template.append($('<td '+hide+'>'));
-			}
-		}
-		vars.table=$('<table id="timetable" class="customview-table timetable-daily '+((vars.config['scalefixed']=='1')?'cellfixed':'')+'">').mergetable({
-			container:container,
-			head:head,
-			template:template,
-			merge:true,
-			mergeexclude:((vars.config['route']=='1' || vars.config['segment'].length!=0)?[0]:[]),
-			mergeclass:'timetable-daily-merge',
-			mergetrigger:function(caller,cell,rowindex,cellfrom,cellto){
-				var query='';
-				var fromhour=Math.floor((caller.cellindex(cell.parent(),cellfrom)-1)/parseInt(vars.config['scale']));
-				var tohour=Math.floor(caller.cellindex(cell.parent(),cellto)/parseInt(vars.config['scale']));
-				var fromminute=(caller.cellindex(cell.parent(),cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
-				var tominute=caller.cellindex(cell.parent(),cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
-				query+=vars.config['date']+'='+vars.date.format('Y-m-d');
-				query+='&'+vars.config['fromtime']+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
-				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
-				if (vars.config['segment'].length!=0)
-					query+='&'+vars.config['segment']+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(0).find('input#segment').val();
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
-			},
-			unmergetrigger:function(caller,cell,rowindex,cellindex){
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
-			},
-			callback:{
-				guidestart:function(e,caller,table,rowindex,cellindex){
-					if (rowindex==null) {guidefrom.hide();return;}
-					var row=table.find('tbody').find('tr').eq(rowindex);
-					var hour=Math.floor((caller.cellindex(row,cellindex)-1)/parseInt(vars.config['scale']));
-					var minute=(caller.cellindex(row,cellindex)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
-					guidefrom.text(hour.toString().lpad('0',2)+':'+minute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellindex).offset().left-$(window).scrollLeft()).toString()+'px',
-				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
-					});
-				},
-				guide:function(e,caller,table,rowindex,cellfrom,cellto){
-					var row=table.find('tbody').find('tr').eq(rowindex);
-					var fromhour=Math.floor((caller.cellindex(row,cellfrom)-1)/parseInt(vars.config['scale']));
-					var tohour=Math.floor(caller.cellindex(row,cellto)/parseInt(vars.config['scale']));
-					var fromminute=(caller.cellindex(row,cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
-					var tominute=caller.cellindex(row,cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
-					guidefrom.text(fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellfrom).offset().left-$(window).scrollLeft()).toString()+'px',
-				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
-					});
-					guideto.text(tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellto).offset().left-$(window).scrollLeft()+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
-				      'top':(row.offset().top-$(window).scrollTop()+row.outerHeight(true)).toString()+'px'
-					});
-				},
-				guideend:function(e){
-					guidefrom.hide();
-					guideto.hide();
-				}
-			}
+		$.each([toprev,tonext],function(){
+			$(this).on('click',function(){
+				var days=($(this).attr('id')=='next')?1:-1;
+				vars.todate=vars.todate.calc(days+' day');
+				todate.text(vars.todate.format('Y-m-d'));
+				/* reload view */
+				functions.load();
+			});
 		});
-		/* create routemap box */
-		if (vars.config['route']=='1') vars.route=$('body').routemap(vars.config['apikey'],true,true,null,(vars.route!=null));
+		/* setup segments value */
+		vars.segments=vars.config['segment'].split(',');
 		/* get fields of app */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fields=['$id'];
-			$.each(resp.properties,function(key,values){
-				vars.fields.push(values.code);
-			});
-			/* get datas of segment */
-			if (vars.config['segment'].length!=0)
-			{
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp'],query:'order by '+vars.config['segmentappfield']+' asc'},function(resp){
-					vars.segment=resp.records;
-					/* reload view */
-					functions.load();
-				},function(error){});
-			}
-			else functions.load();
+			$.each(resp.properties,function(key,values){vars.fields.push(values.code);});
+			/* reload view */
+			functions.load();
 		},function(error){});
 		return;
-	});
-	kintone.events.on(events.show,function(event){
-		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		if (!vars.config) return false;
-		/* get query strings */
-		var queries=$.queries();
-		if (vars.config['date'] in queries) event.record[vars.config['date']].value=queries[vars.config['date']];
-		if (vars.config['fromtime'] in queries) event.record[vars.config['fromtime']].value=queries[vars.config['fromtime']];
-		if (vars.config['totime'] in queries) event.record[vars.config['totime']].value=queries[vars.config['totime']];
-		if (vars.config['segment'].length!=0)
-			if (vars.config['segment'] in queries)
-			{
-				event.record[vars.config['segment']].value=queries[vars.config['segment']];
-				event.record[vars.config['segment']].lookup=true;
-			}
-		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

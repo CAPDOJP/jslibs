@@ -171,7 +171,7 @@ jQuery.noConflict();
 				code=fields[index];
 				/* check exclude field */
 				if (code in vars.viewfields)
-					if (vars.viewfields[code].required || vars.viewfields[code].type=='RECORD_NUMBER')
+					if (vars.viewfields[code].required || vars.viewfields[code].type=='CALC' || vars.viewfields[code].type=='RECORD_NUMBER')
 						$('select#keyfrom',row).append($('<option>').attr('value',vars.viewfields[code].code).text(vars.viewfields[code].label));
 			});
 			/* create keyfields rows */
@@ -256,7 +256,8 @@ jQuery.noConflict();
 			row=vars.keytemplate;
 			$('select#keyto',row).empty();
 			$.each(properties,function(key,values){
-				if ($.inArray(values.type,vars.keyexcludes)<0) $('select#keyto',row).append($('<option>').attr('value',values.code).text(values.label));
+				if ($.inArray(values.code,vars.mappings)<0 && $.inArray(values.type,vars.keyexcludes)<0)
+					$('select#keyto',row).append($('<option>').attr('value',values.code).text(values.label));
 			});
 			/* create keyfields rows */
 			if (vars.keyrows!=null) vars.keyrows.remove();
@@ -352,6 +353,13 @@ jQuery.noConflict();
 			row=vars.keyrows.eq(i);
 			if ($('select#keyfrom',row).val().length!=0)
 			{
+				/* check field type */
+				if (!$.isvalidtype(vars.viewfields[$('select#keyfrom',row).val()],vars.appfields[$('select#keyto',row).val()]))
+				{
+					swal('Error!','キーに指定したフィールド同士の形式が一致しません。','error');
+					error=true;
+					return false;
+				}
 				/* check key field */
 				if (copyfields[$('select#keyto',row).val()].length==0)
 				{

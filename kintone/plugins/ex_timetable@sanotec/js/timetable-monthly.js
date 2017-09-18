@@ -54,7 +54,7 @@ jQuery.noConflict();
 				for (var i=0;i<filter.length;i++)
 				{
 					/* append cell */
-					var datecalc=functions.datecalc(new Date(filter[i][vars.config['fromtime']].value),new Date(filter[i][vars.config['totime']].value));
+					var datecalc=$.timetabledatecalc(new Date(filter[i][vars.config['fromtime']].value),new Date(filter[i][vars.config['totime']].value));
 					var inner='';
 					inner='';
 					inner+='<p>';
@@ -75,26 +75,6 @@ jQuery.noConflict();
 					);
 				}
 			}
-		},
-		datecalc:function(from,to,starthour){
-			if (starthour) from=new Date(from.format('Y-m-d')+'T'+('0'+starthour).slice(-2)+':00:00+0900');
-			var diff=to.getTime()-from.getTime();
-			var fromtime={
-				hour:from.getHours(),
-				minute:from.getMinutes()
-			};
-			var totime={
-				hour:fromtime.hour+Math.floor((fromtime.minute+diff/(1000*60))/60),
-				minute:(fromtime.minute+diff/(1000*60))%60
-			};
-			var values={
-				diffhours:Math.ceil((fromtime.minute+diff/(1000*60))/60),
-				from:fromtime,
-				to:totime,
-				formatfrom:('0'+fromtime.hour).slice(-2)+':'+('0'+fromtime.minute).slice(-2),
-				formatto:('0'+totime.hour).slice(-2)+':'+('0'+totime.minute).slice(-2)
-			};
-			return values;
 		},
 		/* reload view */
 		load:function(){
@@ -134,7 +114,7 @@ jQuery.noConflict();
 						.append($('<button class="customview-button time-button">').text('タイムテーブルを表示').on('click',function(){
 							var query='';
 							query+='view='+vars.config.datetimetable;
-							query+='&'+vars.config['date']+'='+day.format('Y-m-d');
+							query+='&'+vars.config['fromtime']+'='+day.format('Y-m-d');
 							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
 						}))
 					);
@@ -165,7 +145,7 @@ jQuery.noConflict();
 				});
 				/* check no element rows */
 				$.each(vars.table.contents.find('tr'),function(index,values){
-				    if (!$(this).find('div').size()) $(this).hide();
+					if (!$(this).find('div').size()) $(this).hide();
 				})
 			},function(error){});
 		},
@@ -182,14 +162,12 @@ jQuery.noConflict();
 			query+=vars.config['fromtime']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
 			query+=' and '+vars.config['fromtime']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
 			sort=' order by ';
-			sort+=vars.config['fromtime']+' asc,';
 			for (var i=0;i<vars.segments.length;i++) sort+=vars.segments[i]+' asc,';
-			sort=sort.replace(/,$/g,'');
-			sort+=' limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
+			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
@@ -206,15 +184,17 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.monthtimetable) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container');
+		var feed=$('<div class="timetable-dayfeed">');
 		var month=$('<span id="month" class="customview-span">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
 		/* append elements */
+		feed.append(prev);
+		feed.append(month);
+		feed.append(next);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild(prev[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(month[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(next[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
 		vars.fromdate=vars.fromdate.calc('first-of-month');
 		vars.todate=vars.fromdate.calc('1 month').calc('-1 day');

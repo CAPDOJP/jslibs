@@ -2,6 +2,14 @@
 *.hide{
 	display:none;
 }
+div.timetable-dayfeed{
+	display:inline-block;
+	line-height:30px;
+	padding-top:9px;
+}
+div.timetable-dayfeed *{
+	vertical-align:top;
+}
 div.timetable-graphlegend{
 	padding:6px 3px;
 	text-align:center;
@@ -19,6 +27,24 @@ span.timetable-graphlegend-title{
 	text-align:left;
 }
 /* individual style (daily) */
+div.timetable-daily-balloon{
+	background-color:#3498DB;
+	border-radius:0.25em;
+    box-shadow:0px 0px 3px rgba(0,0,0,0.5);
+    color:#FFFFFF;
+	display:none;
+	font-size:0.75em;
+	line-height:2em;
+	margin:15px 0px 0px 15px;
+	padding:0px 1em;
+	position:fixed;
+	transition:all 0.35s ease-out 0s;
+	width:auto;
+	z-index:999;
+}
+div.timetable-daily-balloon-show{
+	display:block;
+}
 table.timetable-daily{
 	background-color:#FFFFFF;
 	table-layout:fixed;
@@ -108,36 +134,6 @@ table.timetable-daily tbody tr td.timetable-daily-merge10:after{
 }
 table.timetable-daily tbody tr td.timetable-daily-merge11:after{
 	background-color:#B473B4;
-}
-div.guidefrom{
-	background-color:#3498DB;
-	border-radius:0.25em;
-    box-shadow:0px 0px 3px rgba(0,0,0,0.5);
-    color:#FFFFFF;
-	display:none;
-	font-size:0.75em;
-	height:2em;
-	line-height:2em;
-	padding:0px 1em;
-	position:fixed;
-	transition:all 0.35s ease-out 0s;
-	width:auto;
-	z-index:999;
-}
-div.guideto{
-	background-color:#3498DB;
-	border-radius:0.25em;
-    box-shadow:0px 0px 3px rgba(0,0,0,0.5);
-    color:#FFFFFF;
-	display:none;
-	font-size:0.75em;
-	height:2em;
-	line-height:2em;
-	padding:0px 1em;
-	position:fixed;
-	transition:all 0.35s ease-out 0s;
-	width:auto;
-	z-index:999;
 }
 /* individual style (weekly) */
 div.timetable-weekly-balloon{

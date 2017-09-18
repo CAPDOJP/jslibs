@@ -450,3 +450,22 @@
   -moz-transition: background-color 0s linear;
   transition: background-color 0s linear;
 }
+/* Custom */
+table tbody.segments div.kintoneplugin-select-outer{
+  margin:2px 0px;
+}
+table tbody.segments td{
+  line-height:1;
+  padding:3px;
+  white-space:nowrap;
+}
+table tbody.segments td.button{
+  width:28px;
+}
+table tbody.segments td.button img{
+  cursor:pointer;
+  display:block;
+  margin:0px;
+  padding:0px;
+  width:100%;
+}
