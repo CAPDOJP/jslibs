@@ -193,44 +193,48 @@ RouteMap.prototype={
 		balloons=this.balloons;
 		/* initialize renderer */
 		renderer.setMap(null);
-		var addmarker=function(latlng,options,label){
+		var addmarker=function(markeroptions,infowindowoptions){
 			/* append markers */
-			var options=$.extend({
+			var markeroptions=$.extend({
 				color:0,
 				fontsize:11,
 				icon:null,
 				label:'',
+				latlng:new google.maps.LatLng(0,0),
 				size:34
-			},options);
+			},markeroptions);
+			var infowindowoptions=$.extend({
+				label:'',
+			},infowindowoptions);
 			var marker=null;
 			marker=new google.maps.Marker({
 				map:map,
-				position:latlng
+				position:markeroptions.latlng
 			});
-			if (options.icon!=null) marker.setIcon(options.icon);
+			if (markeroptions.icon!=null) marker.setIcon(markeroptions.icon);
 			else
 			{
 				marker.setIcon({
 					anchor:new google.maps.Point(17,34),
-					fillColor:'#'+((options.color in colors)?colors[options.color].back:options.color),
+					fillColor:'#'+((markeroptions.color in colors)?colors[markeroptions.color].back:markeroptions.color),
 					fillOpacity:1,
 					labelOrigin:new google.maps.Point(17,11),
 					path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
-					scale:options.size/34,
+					scale:markeroptions.size/34,
 					strokeColor:"#696969",
 				});
 			}
-			if (options.label.length!=0)
+			if (markeroptions.label.length!=0)
 				marker.setLabel({
-					color:'#'+((options.color in colors)?colors[options.color].fore:'000000'),
-					text:options.label.toString(),
-					fontSize:options.fontsize+'px',
+					color:'#'+((markeroptions.color in colors)?colors[markeroptions.color].fore:'000000'),
+					text:markeroptions.label.toString(),
+					fontSize:markeroptions.fontsize+'px',
 				});
 			markers.push(marker);
 			/* append balloons */
-			if (label.length!=0)
+			if (infowindowoptions.label.length!=0)
 			{
-				var balloon=new google.maps.InfoWindow({content:label,disableAutoPan:true});
+				var balloon=new google.maps.InfoWindow({content:infowindowoptions.label,disableAutoPan:true});
 				if (options.isopeninfowindow) balloon.open(map,marker);
 				google.maps.event.addListener(marker,'click',function(event){
 					if (!balloon.getMap()) balloon.open(map,marker);
@@ -256,15 +260,17 @@ RouteMap.prototype={
 					extensionindex:''
 				},options.markers[0]);
 				if (options.isextensionindex) addmarker(
-					new google.maps.LatLng(values.lat,values.lng),
 					{
 						color:values.colors,
 						fontsize:values.fontsize,
 						icon:values.icon,
 						label:values.extensionindex,
+						latlng:new google.maps.LatLng(values.lat,values.lng),
 						size:values.size
 					},
-					values.label
+					{
+						label:values.label
+					}
 				);
 				else addmarker(
 					new google.maps.LatLng(values.lat,values.lng),
@@ -273,9 +279,12 @@ RouteMap.prototype={
 						fontsize:values.fontsize,
 						icon:values.icon,
 						label:((values.serialnumber)?'1':''),
+						latlng:new google.maps.LatLng(values.lat,values.lng),
 						size:values.size
 					},
-					values.label
+					{
+						label:values.label
+					}
 				);
 				/* setup center position */
 				map.setCenter(latlng);
@@ -340,26 +349,30 @@ RouteMap.prototype={
 								},values);
 								if (values.serialnumber) serialnumber++;
 								if (options.isextensionindex) addmarker(
-									new google.maps.LatLng(values.lat,values.lng),
 									{
 										color:values.colors,
 										fontsize:values.fontsize,
 										icon:values.icon,
 										label:values.extensionindex,
+										latlng:new google.maps.LatLng(values.lat,values.lng),
 										size:values.size
 									},
-									values.label
+									{
+										label:values.label
+									}
 								);
 								else addmarker(
-									new google.maps.LatLng(values.lat,values.lng),
 									{
 										color:values.colors,
 										fontsize:values.fontsize,
 										icon:values.icon,
 										label:((values.serialnumber)?serialnumber.toString():''),
+										latlng:new google.maps.LatLng(values.lat,values.lng),
 										size:values.size
 									},
-									values.label
+									{
+										label:values.label
+									}
 								);
 							});
 							renderer.setDirections(result);
@@ -386,26 +399,30 @@ RouteMap.prototype={
 						},values);
 						if (values.serialnumber) serialnumber++;
 						if (options.isextensionindex) addmarker(
-							new google.maps.LatLng(values.lat,values.lng),
 							{
 								color:values.colors,
 								fontsize:values.fontsize,
 								icon:values.icon,
 								label:values.extensionindex,
+								latlng:new google.maps.LatLng(values.lat,values.lng),
 								size:values.size
 							},
-							values.label
+							{
+								label:values.label
+							}
 						);
 						else addmarker(
-							new google.maps.LatLng(values.lat,values.lng),
 							{
 								color:values.colors,
 								fontsize:values.fontsize,
 								icon:values.icon,
 								label:((values.serialnumber)?serialnumber.toString():''),
+								latlng:new google.maps.LatLng(values.lat,values.lng),
 								size:values.size
 							},
-							values.label
+							{
+								label:values.label
+							}
 						);
 					});
 					/* setup center position */
