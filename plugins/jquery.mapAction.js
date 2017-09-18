@@ -180,16 +180,16 @@ DynamicMap.prototype={
 		renderer.setMap(null);
 		var addmarker=function(latlng,markerindex,colorskey,label,size){
 			/*マーカー配置*/
-			var markersize=(size)?size:50;
+			var markersize=(size)?size:34;
 			var marker=new google.maps.Marker({
 				map:map,
 				icon:{
-					anchor:new google.maps.Point(25,50),
+					anchor:new google.maps.Point(17,34),
 					fillColor:'#'+((colorskey in colors)?colors[colorskey].back:colorskey),
 					fillOpacity:1,
-					labelOrigin:new google.maps.Point(25,17),
-					path:'M39.467,14.466C39.467,26.125,25,29.25,25,50 c0-20.75-14.467-23.875-14.467-35.534C10.533,6.476,17.01,0,25,0C32.988,0,39.467,6.476,39.467,14.466z',
-					scale:markersize/50,
+					labelOrigin:new google.maps.Point(17,10),
+					path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
+					scale:markersize/34,
 					strokeColor:"#696969",
 				},
 				label:{
@@ -219,7 +219,7 @@ DynamicMap.prototype={
 						label:'',
 						lat:0,
 						lng:0,
-						size:50
+						size:34
 					},values);
 					/*マーカー配置*/
 					addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label,values.size);
@@ -238,7 +238,7 @@ DynamicMap.prototype={
 							1,
 							(('colors' in options.markers[0])?options.markers[0].colors:0),
 							(('label' in options.markers[0])?options.markers[0].label:''),
-							(('size' in options.markers[0])?options.markers[0].size:50)
+							(('size' in options.markers[0])?options.markers[0].size:34)
 						);
 						/*中心位置設定*/
 						map.setCenter(latlng);
@@ -297,7 +297,7 @@ DynamicMap.prototype={
 										label:'',
 										lat:0,
 										lng:0,
-										size:50
+										size:34
 									},values);
 									/*マーカー配置*/
 									addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label,values.size);
