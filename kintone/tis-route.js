@@ -195,25 +195,36 @@ RouteMap.prototype={
 		renderer.setMap(null);
 		var addmarker=function(latlng,markerindex,colorskey,label,size,icon){
 			/* append markers */
+			var marker=null;
 			var markersize=(size)?size:34;
-			if (!icon) icon={
-				anchor:new google.maps.Point(17,34),
-				fillColor:'#'+((colorskey in colors)?colors[colorskey].back:colorskey),
-				fillOpacity:1,
-				labelOrigin:new google.maps.Point(17,12),
-				path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
-				scale:markersize/34,
-				strokeColor:"#696969",
-			};
-			var marker=new google.maps.Marker({
-				map:map,
-				icon:icon,
-				label:{
-					color:'#'+((colorskey in colors)?colors[colorskey].fore:'000000'),
-					text:markerindex.toString()
-				},
-				position:latlng
-			});
+			if (!icon)
+			{
+				marker=new google.maps.Marker({
+					map:map,
+					icon:icon
+					position:latlng
+				});
+			}
+			else
+			{
+				marker=new google.maps.Marker({
+					map:map,
+					icon:{
+						anchor:new google.maps.Point(17,34),
+						fillColor:'#'+((colorskey in colors)?colors[colorskey].back:colorskey),
+						fillOpacity:1,
+						labelOrigin:new google.maps.Point(17,12),
+						path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
+						scale:markersize/34,
+						strokeColor:"#696969",
+					},
+					label:{
+						color:'#'+((colorskey in colors)?colors[colorskey].fore:'000000'),
+						text:markerindex.toString()
+					},
+					position:latlng
+				});
+			}
 			markers.push(marker);
 			/* append balloons */
 			if (label.length!=0)
