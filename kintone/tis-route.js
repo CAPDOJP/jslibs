@@ -203,6 +203,7 @@ RouteMap.prototype={
 				size:34
 			},options);
 			var marker=null;
+			console.log(options.label);
 			if (options.icon!=null)
 			{
 				marker=new google.maps.Marker({
