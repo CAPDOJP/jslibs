@@ -245,11 +245,14 @@ jQuery.noConflict();
 					if (addcurrentlocation)
 					{
 						markers.unshift({
-							colors:vars.config['currentcolor'],
-							label:'現在地',
+							icon:{
+								anchor:new google.maps.Point(11,11),
+								origin:new google.maps.Point(0,0),
+								size:new google.maps.Size(22,22),
+								url:'https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/currentpos.png',
+							},
 							lat:latlng.lat(),
 							lng:latlng.lng(),
-							size:vars.config['markersize'],
 							serialnumber:false
 						});
 						/* display map */
