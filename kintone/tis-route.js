@@ -201,7 +201,7 @@ RouteMap.prototype={
 			{
 				marker=new google.maps.Marker({
 					map:map,
-					icon:icon
+					icon:icon,
 					position:latlng
 				});
 			}
