@@ -178,12 +178,25 @@ DynamicMap.prototype={
 		balloons=this.balloons;
 		/*ルート初期化*/
 		renderer.setMap(null);
-		var addmarker=function(latlng,markerindex,colorsindex,label){
+		var addmarker=function(latlng,markerindex,colorskey,label,size){
 			/*マーカー配置*/
+			var markersize=(size)?size:50;
 			var marker=new google.maps.Marker({
 				map:map,
-				position:latlng,
-				icon:'https://chart.apis.google.com/chart?chst=d_map_pin_letter_withshadow&chld='+markerindex.toString()+'|'+colors[colorsindex].back+'|'+colors[colorsindex].fore
+				icon:{
+					anchor:new google.maps.Point(25,50),
+					fillColor:'#'+((colorskey in colors)?colors[colorskey].back:colorskey),
+					fillOpacity:1,
+					labelOrigin:new google.maps.Point(25,17),
+					path:'M39.467,14.466C39.467,26.125,25,29.25,25,50 c0-20.75-14.467-23.875-14.467-35.534C10.533,6.476,17.01,0,25,0C32.988,0,39.467,6.476,39.467,14.466z',
+					scale:markersize/50,
+					strokeColor:"#696969",
+				},
+				label:{
+					color:'#'+((colorskey in colors)?colors[colorskey].fore:'000000'),
+					text:markerindex.toString()
+				},
+				position:latlng
 			});
 			markers.push(marker);
 			/*吹き出し配置*/
@@ -205,10 +218,11 @@ DynamicMap.prototype={
 						colors:0,
 						label:'',
 						lat:0,
-						lng:0
+						lng:0,
+						size:50
 					},values);
 					/*マーカー配置*/
-					addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label);
+					addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label,values.size);
 				});
 				if (options.callback!=null) options.callback();
 				break;
@@ -223,7 +237,8 @@ DynamicMap.prototype={
 						addmarker(latlng,
 							1,
 							(('colors' in options.markers[0])?options.markers[0].colors:0),
-							(('label' in options.markers[0])?options.markers[0].label:'')
+							(('label' in options.markers[0])?options.markers[0].label:''),
+							(('size' in options.markers[0])?options.markers[0].size:50)
 						);
 						/*中心位置設定*/
 						map.setCenter(latlng);
@@ -281,10 +296,11 @@ DynamicMap.prototype={
 										colors:0,
 										label:'',
 										lat:0,
-										lng:0
+										lng:0,
+										size:50
 									},values);
 									/*マーカー配置*/
-									addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label);
+									addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label,values.size);
 								});
 								renderer.setDirections(result);
 								renderer.setMap(map);
