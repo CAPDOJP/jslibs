@@ -203,7 +203,6 @@ RouteMap.prototype={
 				size:34
 			},options);
 			var marker=null;
-			console.log(options.label);
 			if (options.icon!=null)
 			{
 				marker=new google.maps.Marker({
@@ -214,6 +213,11 @@ RouteMap.prototype={
 			}
 			else
 			{
+				var label=(options.label.toString().length!=0)?{
+					color:'#'+((options.color in colors)?colors[options.color].fore:'000000'),
+					text:options.label.toString(),
+					fontSize:options.fontsize+'px',
+				}:null;
 				marker=new google.maps.Marker({
 					map:map,
 					icon:{
@@ -225,11 +229,7 @@ RouteMap.prototype={
 						scale:options.size/34,
 						strokeColor:"#696969",
 					},
-					label:{
-						color:'#'+((options.color in colors)?colors[options.color].fore:'000000'),
-						text:options.label.toString(),
-						fontSize:options.fontsize+'px',
-					},
+					label:label,
 					position:latlng
 				});
 			}
