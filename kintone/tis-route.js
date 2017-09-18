@@ -203,36 +203,29 @@ RouteMap.prototype={
 				size:34
 			},options);
 			var marker=null;
-			if (options.icon!=null)
-			{
-				marker=new google.maps.Marker({
-					map:map,
-					icon:options.icon,
-					position:latlng
-				});
-			}
+			marker=new google.maps.Marker({
+				map:map,
+				position:latlng
+			});
+			if (options.icon!=null) marker.setIcon(options.icon);
 			else
 			{
-				var label=(options.label.toString().length!=0)?{
+				marker.setIcon({
+					anchor:new google.maps.Point(17,34),
+					fillColor:'#'+((options.color in colors)?colors[options.color].back:options.color),
+					fillOpacity:1,
+					labelOrigin:new google.maps.Point(17,11),
+					path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
+					scale:options.size/34,
+					strokeColor:"#696969",
+				});
+			}
+			if (options.label.length!=0)
+				marker.setLabel({
 					color:'#'+((options.color in colors)?colors[options.color].fore:'000000'),
 					text:options.label.toString(),
 					fontSize:options.fontsize+'px',
-				}:null;
-				marker=new google.maps.Marker({
-					map:map,
-					icon:{
-						anchor:new google.maps.Point(17,34),
-						fillColor:'#'+((options.color in colors)?colors[options.color].back:options.color),
-						fillOpacity:1,
-						labelOrigin:new google.maps.Point(17,11),
-						path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
-						scale:options.size/34,
-						strokeColor:"#696969",
-					},
-					label:label,
-					position:latlng
 				});
-			}
 			markers.push(marker);
 			/* append balloons */
 			if (label.length!=0)
