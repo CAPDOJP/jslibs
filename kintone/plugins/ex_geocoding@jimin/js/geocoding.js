@@ -204,6 +204,7 @@ jQuery.noConflict();
 								label+='<br><a href="https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 								vars.markers.push({
 									colors:vars.config['defaultcolor'],
+									fontsize:vars.config['markerfont'],
 									label:label,
 									lat:lat,
 									lng:lng,
