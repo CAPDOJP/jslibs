@@ -197,7 +197,7 @@ RouteMap.prototype={
 			/* append markers */
 			var marker=null;
 			var markersize=(size)?size:34;
-			if (!icon)
+			if (icon!=null)
 			{
 				marker=new google.maps.Marker({
 					map:map,
