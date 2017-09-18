@@ -111,6 +111,7 @@ jQuery.noConflict();
 				$('input#datespanday',row).val(key);
 				$('select#datespancolor',row).val(values);
 			});
+        	$('input#markersize').val(config['markersize']);
         	$('input#chasetimespan').val(config['chasetimespan']);
         	$('input#apikey').val(config['apikey']);
         	if (config['map']=='1') $('input#map').prop('checked',true);
@@ -118,6 +119,7 @@ jQuery.noConflict();
         }
         else
         {
+        	$('input#markersize').val('34');
         	$('input#chasetimespan').val('10');
         	$('select#currentcolor').val($('select#currentcolor').find('option').first().val());
         	$('select#defaultcolor').val($('select#defaultcolor').find('option').first().val());
@@ -192,6 +194,12 @@ jQuery.noConflict();
 					colorfields[$('input#datespanday',row).val().toString()]=$('select#datespancolor',row).val();
 				}
 			}
+		    if ($('input#markersize').val()=='') $('input#markersize').val('34');
+			if (!$.isNumeric($('input#markersize').val()))
+		    {
+		    	swal('Error!','マーカーサイズは数値を入力して下さい。','error');
+		    	return;
+		    }
 		    if ($('input#apikey').val()=='')
 		    {
 		    	swal('Error!','Google Maps APIキーを入力して下さい。','error');
@@ -220,6 +228,7 @@ jQuery.noConflict();
         config['currentcolor']=$('select#currentcolor').val();
         config['defaultcolor']=$('select#defaultcolor').val();
 		config['colorfields']=JSON.stringify(colorfields);
+        config['markersize']=$('input#markersize').val();
         config['chasemode']=($('input#chasemode').prop('checked'))?'1':'0';
         config['chasetimespan']=$('input#chasetimespan').val();
         config['apikey']=$('input#apikey').val();

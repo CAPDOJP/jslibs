@@ -207,6 +207,7 @@ jQuery.noConflict();
 									label:label,
 									lat:lat,
 									lng:lng,
+									size:vars.config['markersize'],
 									extensionindex:datespan
 								});
 							}
@@ -248,12 +249,12 @@ jQuery.noConflict();
 							label:'現在地',
 							lat:latlng.lat(),
 							lng:latlng.lng(),
+							size:vars.config['markersize'],
 							serialnumber:false
 						});
 						/* display map */
 						vars.map.reloadmap({
 							markers:markers,
-							markerfontsize:9,
 							isextensionindex:vars.displaydatespan.find('input[type=checkbox]').prop('checked'),
 							isopeninfowindow:vars.displayinfowindow.find('input[type=checkbox]').prop('checked')
 						});
@@ -271,7 +272,6 @@ jQuery.noConflict();
 				/* display map */
 				vars.map.reloadmap({
 					markers:vars.markers,
-					markerfontsize:9,
 					isextensionindex:vars.displaydatespan.find('input[type=checkbox]').prop('checked'),
 					isopeninfowindow:vars.displayinfowindow.find('input[type=checkbox]').prop('checked'),
 					callback:function(){
