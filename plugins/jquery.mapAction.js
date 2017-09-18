@@ -178,31 +178,47 @@ DynamicMap.prototype={
 		balloons=this.balloons;
 		/*ルート初期化*/
 		renderer.setMap(null);
-		var addmarker=function(latlng,markerindex,colorskey,label,size){
+		var addmarker=function(markeroptions,infowindowoptions){
 			/*マーカー配置*/
-			var markersize=(size)?size:34;
+			var markeroptions=$.extend({
+				color:0,
+				fontsize:11,
+				icon:null,
+				label:'',
+				latlng:new google.maps.LatLng(0,0),
+				size:34
+			},markeroptions);
+			var infowindowoptions=$.extend({
+				label:'',
+			},infowindowoptions);
 			var marker=new google.maps.Marker({
 				map:map,
-				icon:{
+				position:markeroptions.latlng
+			});
+			if (markeroptions.icon!=null) marker.setIcon(markeroptions.icon);
+			else
+			{
+				marker.setIcon({
 					anchor:new google.maps.Point(17,34),
-					fillColor:'#'+((colorskey in colors)?colors[colorskey].back:colorskey),
+					fillColor:'#'+((markeroptions.color in colors)?colors[markeroptions.color].back:markeroptions.color),
 					fillOpacity:1,
 					labelOrigin:new google.maps.Point(17,11),
 					path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
-					scale:markersize/34,
+					scale:markeroptions.size/34,
 					strokeColor:"#696969",
-				},
-				label:{
-					color:'#'+((colorskey in colors)?colors[colorskey].fore:'000000'),
-					text:markerindex.toString()
-				},
-				position:latlng
-			});
+				});
+			}
+			if (markeroptions.label.length!=0)
+				marker.setLabel({
+					color:'#'+((markeroptions.color in colors)?colors[markeroptions.color].fore:'000000'),
+					text:markeroptions.label.toString(),
+					fontSize:markeroptions.fontsize+'px',
+				});
 			markers.push(marker);
 			/*吹き出し配置*/
-			if (label.length!=0)
+			if (infowindowoptions.label.length!=0)
 			{
-				var balloon=new google.maps.InfoWindow({content:label,disableAutoPan:true});
+				var balloon=new google.maps.InfoWindow({content:infowindowoptions.label,disableAutoPan:true});
 				balloon.open(map,marker);
 				google.maps.event.addListener(marker,'click',function(event){
 					if (!balloon.getMap()) balloon.open(map,marker);
@@ -216,13 +232,27 @@ DynamicMap.prototype={
 				$.each(options.markers,function(index,values){
 					var values=$.extend({
 						colors:0,
+						fontsize:11,
+						icon:null,
 						label:'',
 						lat:0,
 						lng:0,
 						size:34
 					},values);
 					/*マーカー配置*/
-					addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label,values.size);
+					addmarker(
+						{
+							color:values.colors,
+							fontsize:values.fontsize,
+							icon:values.icon,
+							label:index+1,
+							latlng:new google.maps.LatLng(values.lat,values.lng),
+							size:values.size
+						},
+						{
+							label:values.label
+						}
+					);
 				});
 				if (options.callback!=null) options.callback();
 				break;
@@ -233,12 +263,27 @@ DynamicMap.prototype={
 						break;
 					case 1:
 						/*マーカー配置*/
-						var latlng=new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng);
-						addmarker(latlng,
-							1,
-							(('colors' in options.markers[0])?options.markers[0].colors:0),
-							(('label' in options.markers[0])?options.markers[0].label:''),
-							(('size' in options.markers[0])?options.markers[0].size:34)
+						var values=$.extend({
+							colors:0,
+							fontsize:11,
+							icon:null,
+							label:'',
+							lat:0,
+							lng:0,
+							size:34
+						},options.markers[0]);
+						addmarker(
+							{
+								color:values.colors,
+								fontsize:values.fontsize,
+								icon:values.icon,
+								label:1,
+								latlng:new google.maps.LatLng(values.lat,values.lng),
+								size:values.size
+							},
+							{
+								label:values.label
+							}
 						);
 						/*中心位置設定*/
 						map.setCenter(latlng);
@@ -294,13 +339,27 @@ DynamicMap.prototype={
 								$.each(options.markers,function(index,values){
 									var values=$.extend({
 										colors:0,
+										fontsize:11,
+										icon:null,
 										label:'',
 										lat:0,
 										lng:0,
 										size:34
 									},values);
 									/*マーカー配置*/
-									addmarker(new google.maps.LatLng(values.lat,values.lng),index+1,values.colors,values.label,values.size);
+									addmarker(
+										{
+											color:values.colors,
+											fontsize:values.fontsize,
+											icon:values.icon,
+											label:index+1,
+											latlng:new google.maps.LatLng(values.lat,values.lng),
+											size:values.size
+										},
+										{
+											label:values.label
+										}
+									);
 								});
 								renderer.setDirections(result);
 								renderer.setMap(map);

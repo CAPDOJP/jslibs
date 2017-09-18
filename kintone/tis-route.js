@@ -206,8 +206,7 @@ RouteMap.prototype={
 			var infowindowoptions=$.extend({
 				label:'',
 			},infowindowoptions);
-			var marker=null;
-			marker=new google.maps.Marker({
+			var marker=new google.maps.Marker({
 				map:map,
 				position:markeroptions.latlng
 			});
