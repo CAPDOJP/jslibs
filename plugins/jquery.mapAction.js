@@ -187,7 +187,7 @@ DynamicMap.prototype={
 					anchor:new google.maps.Point(17,34),
 					fillColor:'#'+((colorskey in colors)?colors[colorskey].back:colorskey),
 					fillOpacity:1,
-					labelOrigin:new google.maps.Point(17,12),
+					labelOrigin:new google.maps.Point(17,11),
 					path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
 					scale:markersize/34,
 					strokeColor:"#696969",
