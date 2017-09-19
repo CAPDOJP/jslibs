@@ -45,11 +45,9 @@ jQuery.noConflict();
 		var row=vars.colortemplate;
 		vars.colors=[];
 		$.each($.markercolors(),function(index,values){vars.colors.push('#'+values.back);});
-		$('select#currentcolor').empty();
 		$('select#defaultcolor').empty();
 		$('select#datespancolor',row).empty();
 		$.each(vars.colors,function(index){
-			$('select#currentcolor').append($('<option>').attr('value',index));
 			$('select#defaultcolor').append($('<option>').attr('value',index));
 			$('select#datespancolor',row).append($('<option>').attr('value',index));
 		});
@@ -100,7 +98,6 @@ jQuery.noConflict();
         	$('select#spacer').val(config['spacer']);
         	$('select#information').val(config['information']);
         	$('select#datespan').val(config['datespan']);
-        	$('select#currentcolor').val(config['currentcolor']);
         	$('select#defaultcolor').val(config['defaultcolor']);
 			var add=false;
 			var colorfields=JSON.parse(config['colorfields']);
@@ -123,11 +120,9 @@ jQuery.noConflict();
         	$('input#markersize').val('34');
         	$('input#markerfont').val('11');
         	$('input#chasetimespan').val('10');
-        	$('select#currentcolor').val($('select#currentcolor').find('option').first().val());
         	$('select#defaultcolor').val($('select#defaultcolor').find('option').first().val());
 			$.each($('select#datespancolor'),function(){$(this).css({'background-color':$(this).find('option').first().val()})});
         }
-		$('select#currentcolor').colorSelector(vars.colors).css({'background-color':vars.colors[$('select#currentcolor').find('option').index($('select#currentcolor').find('option:selected'))]});
 		$('select#defaultcolor').colorSelector(vars.colors).css({'background-color':vars.colors[$('select#defaultcolor').find('option').index($('select#defaultcolor').find('option:selected'))]});
 		$.each($('select#datespancolor'),function(){
 			$(this).colorSelector(vars.colors).css({'background-color':vars.colors[$(this).find('option').index($(this).find('option:selected'))]});
@@ -173,11 +168,6 @@ jQuery.noConflict();
 	    }
 	    if ($('input#map').prop('checked'))
 	    {
-		    if ($('select#currentcolor').val()=='')
-		    {
-		    	swal('Error!','マーカー現在地色を選択して下さい。','error');
-		    	return;
-		    }
 		    if ($('select#defaultcolor').val()=='')
 		    {
 		    	swal('Error!','マーカー規定色を選択して下さい。','error');
@@ -233,7 +223,6 @@ jQuery.noConflict();
         config['map']=($('input#map').prop('checked'))?'1':'0';
         config['information']=$('select#information').val();
         config['datespan']=$('select#datespan').val();
-        config['currentcolor']=$('select#currentcolor').val();
         config['defaultcolor']=$('select#defaultcolor').val();
 		config['colorfields']=JSON.stringify(colorfields);
         config['markersize']=$('input#markersize').val();

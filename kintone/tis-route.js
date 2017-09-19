@@ -272,7 +272,6 @@ RouteMap.prototype={
 					}
 				);
 				else addmarker(
-					new google.maps.LatLng(values.lat,values.lng),
 					{
 						color:values.colors,
 						fontsize:values.fontsize,
