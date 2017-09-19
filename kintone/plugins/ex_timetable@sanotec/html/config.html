@@ -1,130 +1,145 @@
 <div class="block">
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">開始日時フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">開始日時を設定するフィールドを選択して下さい。【日時フィールド】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="fromtime">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">終了日時フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">終了日時を設定するフィールドを選択して下さい。【日時フィールド】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="totime">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">タイムテーブル内のセルに表示するフィールドを選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="display">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">ツールチップフィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">ツールチップに表示するフィールドを選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="tooltip">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">区分フィールド【ルックアップフィールド】<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">区分毎に表示したい場合は、対象となるフィールドを選択して下さい。</div>
-		<table>
-			<tbody class="segments">
-				<tr>
-					<td>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="segment">
-									<option value=""></option>
-								</select>
-							</div>
-						</div>
-					</td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">目盛り間隔<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">タイムテーブルの目盛り線の間隔を選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="scale">
-					<option value="2">30分間隔</option>
-					<option value="3">20分間隔</option>
-					<option value="4">15分間隔</option>
-					<option value="6">10分間隔</option>
-					<option value="12">5分間隔</option>
-					<option value="60">1分間隔</option>
-				</select>
-			</div>
-		</div>
-		<div class="kintoneplugin-alert">間隔を短く設定すると、タイムテーブル表示時間帯によっては目盛幅が均一にならない場合があります。</div>
-		<div class="kintoneplugin-input-checkbox-item">
-			<label><input type="checkbox" id="scalefixed" value="0">目盛幅を固定する</label>
-		</div>
-		<span class="kintoneplugin-unit">目盛幅</span>
-		<div class="kintoneplugin-input-outer">
-			<input type="text" id="scalefixedwidth" class="kintoneplugin-input-text" value="" >
-		</div>
-		<span class="kintoneplugin-unit">px</span>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">タイムテーブル設定開始時刻<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">タイムテーブル表示の開始時刻を選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="starthour">
-					<option value="0" selected="selected">0時</option>
-					<option value="1">1時</option>
-					<option value="2">2時</option>
-					<option value="3">3時</option>
-					<option value="4">4時</option>
-					<option value="5">5時</option>
-					<option value="6">6時</option>
-					<option value="7">7時</option>
-					<option value="8">8時</option>
-					<option value="9">9時</option>
-					<option value="10">10時</option>
-					<option value="11">11時</option>
-					<option value="12">12時</option>
-					<option value="13">13時</option>
-					<option value="14">14時</option>
-					<option value="15">15時</option>
-					<option value="16">16時</option>
-					<option value="17">17時</option>
-					<option value="18">18時</option>
-					<option value="19">19時</option>
-					<option value="20">20時</option>
-					<option value="21">21時</option>
-					<option value="22">22時</option>
-					<option value="23">23時</option>
-				</select>
-			</div>
-		</div>
-	</div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">開始日時フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">開始日時を設定するフィールドを選択して下さい。【日時フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="fromtime">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">終了日時フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">終了日時を設定するフィールドを選択して下さい。【日時フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="totime">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">タイムテーブル内のセルに表示するフィールドを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="display">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">ツールチップフィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">ツールチップに表示するフィールドを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="tooltip">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">区分フィールド【ルックアップフィールド】<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">区分毎に表示したい場合は、対象となるフィールドを選択して下さい。</div>
+    <table class="segments">
+      <tbody>
+        <tr>
+          <td>
+            <div class="kintoneplugin-select-outer">
+              <div class="kintoneplugin-select">
+                <select id="segment">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">区分色指定</div>
+    <table class="segmentcolors">
+      <tbody>
+        <tr>
+          <td>
+            <span id="segmentcolor" class="kintoneplugin-unit color">&nbsp;</span>
+            <input type="hidden" id="segmentcolor" value="">
+          </td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">目盛り間隔<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">タイムテーブルの目盛り線の間隔を選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="scale">
+          <option value="2">30分間隔</option>
+          <option value="3">20分間隔</option>
+          <option value="4">15分間隔</option>
+          <option value="6">10分間隔</option>
+          <option value="12">5分間隔</option>
+          <option value="60">1分間隔</option>
+        </select>
+      </div>
+    </div>
+    <div class="kintoneplugin-alert">間隔を短く設定すると、タイムテーブル表示時間帯によっては目盛幅が均一にならない場合があります。</div>
+    <div class="kintoneplugin-input-checkbox-item">
+      <label><input type="checkbox" id="scalefixed" value="0">目盛幅を固定する</label>
+    </div>
+    <span class="kintoneplugin-unit">目盛幅</span>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="scalefixedwidth" class="kintoneplugin-input-text" value="" >
+    </div>
+    <span class="kintoneplugin-unit">px</span>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">タイムテーブル設定開始時刻<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">タイムテーブル表示の開始時刻を選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="starthour">
+          <option value="0" selected="selected">0時</option>
+          <option value="1">1時</option>
+          <option value="2">2時</option>
+          <option value="3">3時</option>
+          <option value="4">4時</option>
+          <option value="5">5時</option>
+          <option value="6">6時</option>
+          <option value="7">7時</option>
+          <option value="8">8時</option>
+          <option value="9">9時</option>
+          <option value="10">10時</option>
+          <option value="11">11時</option>
+          <option value="12">12時</option>
+          <option value="13">13時</option>
+          <option value="14">14時</option>
+          <option value="15">15時</option>
+          <option value="16">16時</option>
+          <option value="17">17時</option>
+          <option value="18">18時</option>
+          <option value="19">19時</option>
+          <option value="20">20時</option>
+          <option value="21">21時</option>
+          <option value="22">22時</option>
+          <option value="23">23時</option>
+        </select>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="block">
-	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
-	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+  <button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+  <button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
 </div>

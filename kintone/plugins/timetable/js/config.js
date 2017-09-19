@@ -117,10 +117,10 @@ jQuery.noConflict();
 		})
 		var add=false;
 		var row=null;
-		var colors=[];
+		var segmentcolors=[];
         if (Object.keys(config).length!==0)
         {
-			colors=config['segmentcolors'].split(',');
+			segmentcolors=config['segmentcolors'].split(',');
         	$('select#date').val(config['date']);
         	$('select#fromtime').val(config['fromtime']);
         	$('select#totime').val(config['totime']);
@@ -139,12 +139,12 @@ jQuery.noConflict();
         	$.data($('select#segmentdisplay')[0],'initialdata',config['segmentdisplay']);
         	$('select#segment').trigger('change');
         }
-        else colors=vars.colors;
-		$.each(colors,function(index){
+        else segmentcolors=vars.colors;
+		$.each(segmentcolors,function(index){
 			if (add) vars.colortable.addrow();
 			else add=true;
 			row=vars.colortable.rows.last();
-			$('input#segmentcolor',row).val(colors[index].replace('#',''));
+			$('input#segmentcolor',row).val(segmentcolors[index].replace('#',''));
 		});
 		$.each($('span#segmentcolor'),function(index){
 			$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#segmentcolor'));
@@ -155,8 +155,8 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
 		var row=null;
-		var colors=[];
         var config=[];
+		var segmentcolors=[];
 	    /* check values */
 	    if ($('select#date').val()=='')
 	    {
@@ -194,9 +194,9 @@ jQuery.noConflict();
 		for (var i=0;i<vars.colortable.rows.length;i++)
 		{
 			row=vars.colortable.rows.eq(i);
-		    if ($('input#segmentcolor',row).val().length!=0) colors.push($('input#segmentcolor',row).val());
+		    if ($('input#segmentcolor',row).val().length!=0) segmentcolors.push($('input#segmentcolor',row).val());
 		}
-		if (colors.length==0)
+		if (segmentcolors.length==0)
 		{
 			swal('Error!','区分色を1つ以上指定して下さい。','error');
 			return;
@@ -259,7 +259,7 @@ jQuery.noConflict();
         config['display']=$('select#display').val();
         config['segment']=$('select#segment').val();
         config['segmentdisplay']=$('select#segmentdisplay').val();
-        config['segmentcolors']=colors.join(',');
+        config['segmentcolors']=segmentcolors.join(',');
         config['scale']=$('select#scale').val();
         config['starthour']=$('select#starthour').val();
         config['endhour']=$('select#endhour').val();

@@ -73,7 +73,10 @@ table.timetable-daily tbody tr td{
 	cursor:pointer;
 	position:relative;
 }
-table.timetable-daily tbody tr td p.timetable-daily-merge-p{
+table.timetable-daily tbody tr td.timetable-daily-merge{
+	padding-bottom:13px;
+}
+table.timetable-daily tbody tr td.timetable-daily-merge p.timetable-daily-merge-p{
 	background-color:transparent;
 	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
 	background-position:3px 3px;
@@ -86,54 +89,18 @@ table.timetable-daily tbody tr td p.timetable-daily-merge-p{
 	padding:3px 3px 0px 23px;
     vertical-align:top;
 }
-table.timetable-daily tbody tr td.timetable-daily-merge{
-	padding-bottom:13px;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge:after{
+table.timetable-daily tbody tr td.timetable-daily-merge span.timetable-daily-merge-span{
+	background-color:transparent;
 	border-radius:5px;
+	box-sizing:border-box;
 	bottom:3px;
-	content:'';
 	display:block;
-	left:0px;
-	position:absolute;
 	height:10px;
+	left:0px;
+	margin:0px;
+	padding:0px;
+	position:absolute;
 	width:100%;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge0:after{
-	background-color:#FA8273;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge1:after{
-	background-color:#FFF07D;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge2:after{
-	background-color:#7DC87D;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge3:after{
-	background-color:#69B4C8;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge4:after{
-	background-color:#827DB9;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge5:after{
-	background-color:#E16EA5;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge6:after{
-	background-color:#FA7382;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge7:after{
-	background-color:#FFB46E;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge8:after{
-	background-color:#B4DC69;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge9:after{
-	background-color:#64C3AF;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge10:after{
-	background-color:#69A0C8;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge11:after{
-	background-color:#B473B4;
 }
 /* individual style (weekly) */
 div.timetable-weekly-balloon{

@@ -22,22 +22,9 @@ jQuery.noConflict();
 		apps:{},
 		config:{},
 		offset:{},
+		colors:[],
 		fields:[],
-		segments:[],
-		colors:[
-			'#FA8273',
-			'#FFF07D',
-			'#7DC87D',
-			'#69B4C8',
-			'#827DB9',
-			'#E16EA5',
-			'#FA7382',
-			'#FFB46E',
-			'#B4DC69',
-			'#64C3AF',
-			'#69A0C8',
-			'#B473B4'
-		]
+		segments:[]
 	};
 	var events={
 		lists:[
@@ -64,7 +51,7 @@ jQuery.noConflict();
 					inner+='<p>'+datecalc.formatfrom+' ～ '+datecalc.formatto+'</p>';
 					cell.append(
 						$('<div class="timetable-monthly-cell">').css({
-							'background-color':color,
+							'background-color':'#'+color,
 							'cursor':'pointer'
 						})
 						.html(inner)
@@ -92,7 +79,7 @@ jQuery.noConflict();
 					{
 						var color=vars.colors[segments.length%vars.colors.length];
 						vars.graphlegend
-						.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':color}))
+						.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+color}))
 						.append($('<span class="customview-span timetable-graphlegend-title">').text(records[index][segmentcode].value));
 						segments.push(records[index][segmentcode].value);
 					}
@@ -210,6 +197,8 @@ jQuery.noConflict();
 				functions.load();
 			});
 		});
+		/* setup colors value */
+		vars.colors=vars.config['segmentcolors'].split(',');
 		/* setup segments value */
 		vars.segments=vars.config['segment'].split(',');
 		/* create table */

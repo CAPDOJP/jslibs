@@ -13,43 +13,16 @@ jQuery.noConflict();
 	"use strict";
 	var vars={
 		colors:null,
-		colorrows:null,
-		colortemplate:null
-	};
-	var functions={
-		addcolor:function(){
-			var row=null;
-			$('.colors').append(vars.colortemplate.clone(true));
-			/* initialize valiable */
-			vars.colorrows=$('.colors').find('tr');
-			/* events */
-			row=vars.colorrows.last();
-			$('img.add',row).on('click',function(){functions.addcolor()});
-			$('img.del',row).on('click',function(){functions.delcolor($(this).closest('tr'))});
-			$('input#datespancolor',row).val(vars.colors[0].replace('#',''));
-			$('span#datespancolor',row).colorSelector(vars.colors,$('input#datespancolor',row));
-		},
-		delcolor:function(row){
-			row.remove();
-			/* initialize valiable */
-			vars.colorrows=$('.colors').find('tr');
-		},
+		colortable:null
 	};
 	/*---------------------------------------------------------------
 	 initialize fields
 	---------------------------------------------------------------*/
 	kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
         var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		/* initialize valiable */
-		vars.colorrows=$('.colors').find('tr');
-		vars.colortemplate=vars.colorrows.first().clone(true);
 		/* setup colorfields lists */
 		vars.colors=[];
 		$.each($.markercolors(),function(index,values){vars.colors.push('#'+values.back);});
-		/* create colorfields rows */
-		if (vars.colorrows!=null) vars.colorrows.remove();
-		functions.addcolor();
-		$('img.del',vars.colorrows.first()).css({'display':'none'});
 		$.each(resp.properties,function(index,values){
 			/* check field type */
 			switch (values.type)
@@ -84,6 +57,15 @@ jQuery.noConflict();
 					break;
 			}
 		});
+		/* initialize valiable */
+		vars.colortable=$('.colors').adjustabletable({
+			add:'img.add',
+			del:'img.del',
+			addcallback:function(row){
+				$('input#datespancolor',row).val(vars.colors[0].replace('#',''));
+				$('span#datespancolor',row).colorSelector(vars.colors,$('input#datespancolor',row));
+			}
+		});
         if (Object.keys(config).length!==0)
         {
         	$('select#address').val(config['address']);
@@ -95,11 +77,11 @@ jQuery.noConflict();
         	$('select#datespan').val(config['datespan']);
         	$('input#defaultcolor').val(config['defaultcolor']);
 			var add=false;
-			var colors=JSON.parse(config['datespancolors']);
-			$.each(colors,function(key,values){
-				if (add) functions.addcolor();
+			var datespancolors=JSON.parse(config['datespancolors']);
+			$.each(datespancolors,function(key,values){
+				if (add) vars.colortable.addrow();
 				else add=true;
-				var row=vars.colorrows.last();
+				var row=vars.colortable.rows.last();
 				$('input#datespanday',row).val(key);
 				$('input#datespancolor',row).val(values);
 			});
@@ -128,8 +110,8 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
 		var error=false;
-		var colors={};
         var config=[];
+		var datespancolors={};
 	    /* check values */
 	    if ($('select#address').val()=='')
 	    {
@@ -168,9 +150,9 @@ jQuery.noConflict();
 		    	swal('Error!','マーカー規定色を選択して下さい。','error');
 		    	return;
 		    }
-			for (var i=0;i<vars.colorrows.length;i++)
+			for (var i=0;i<vars.colortable.rows.length;i++)
 			{
-				var row=vars.colorrows.eq(i);
+				var row=vars.colortable.rows.eq(i);
 				if ($('input#datespanday',row).val().length!=0)
 				{
 				    if ($('input#datespancolor',row).val()=='')
@@ -178,7 +160,7 @@ jQuery.noConflict();
 				    	swal('Error!','マーカー色を選択して下さい。','error');
 				    	error=true;
 				    }
-					colors[$('input#datespanday',row).val().toString()]=$('input#datespancolor',row).val();
+					datespancolors[$('input#datespanday',row).val().toString()]=$('input#datespancolor',row).val();
 				}
 			}
 		    if ($('input#markersize').val()=='') $('input#markersize').val('34');
@@ -219,7 +201,7 @@ jQuery.noConflict();
         config['information']=$('select#information').val();
         config['datespan']=$('select#datespan').val();
         config['defaultcolor']=$('input#defaultcolor').val();
-		config['datespancolors']=JSON.stringify(colors);
+		config['datespancolors']=JSON.stringify(datespancolors);
         config['markersize']=$('input#markersize').val();
         config['markerfont']=$('input#markerfont').val();
         config['chasemode']=($('input#chasemode').prop('checked'))?'1':'0';

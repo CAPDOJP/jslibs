@@ -12,25 +12,22 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
-		segmentrows:null,
-		segmenttemplate:null
-	};
-	var functions={
-		addsegment:function(){
-			var row=null;
-			$('.segments').append(vars.segmenttemplate.clone(true));
-			/* initialize valiable */
-			vars.segmentrows=$('.segments').find('tr');
-			/* events */
-			row=vars.segmentrows.last();
-			$('img.add',row).on('click',function(){functions.addsegment()});
-			$('img.del',row).on('click',function(){functions.delsegment($(this).closest('tr'))});
-		},
-		delsegment:function(row){
-			row.remove();
-			/* initialize valiable */
-			vars.segmentrows=$('.segments').find('tr');
-		}
+		colortable:null,
+		segmenttable:null,
+		colors:[
+			'#FA8273',
+			'#FFF07D',
+			'#7DC87D',
+			'#69B4C8',
+			'#827DB9',
+			'#E16EA5',
+			'#FA7382',
+			'#FFB46E',
+			'#B4DC69',
+			'#64C3AF',
+			'#69A0C8',
+			'#B473B4'
+		]
 	};
 	var VIEW_NAME=['日次タイムテーブル','週次タイムテーブル','月次予定表'];
 	/*---------------------------------------------------------------
@@ -62,17 +59,26 @@ jQuery.noConflict();
 			}
 		});
 		/* initialize valiable */
-		vars.segmentrows=$('.segments').find('tr');
-		vars.segmenttemplate=vars.segmentrows.first().clone(true);
-		/* create segmentfields rows */
-		if (vars.segmentrows!=null) vars.segmentrows.remove();
-		functions.addsegment();
-		$('img.del',vars.segmentrows.first()).css({'display':'none'});
+		vars.colortable=$('.segmentcolors').adjustabletable({
+			add:'img.add',
+			del:'img.del',
+			addcallback:function(row){
+				$('input#segmentcolor',row).val(vars.colors[0].replace('#',''));
+				$('span#segmentcolor',row).colorSelector(vars.colors,$('input#segmentcolor',row));
+			}
+		});
+		vars.segmenttable=$('.segments').adjustabletable({
+			add:'img.add',
+			del:'img.del'
+		});
+		var add=false;
+		var row=null;
+		var segments=[];
+		var segmentcolors=[];
         if (Object.keys(config).length!==0)
         {
-			var add=false;
-			var row=null;
-			var segments=config['segment'].split(',');
+			segments=config['segment'].split(',');
+			segmentcolors=config['segmentcolors'].split(',');
         	$('select#fromtime').val(config['fromtime']);
         	$('select#totime').val(config['totime']);
         	$('select#display').val(config['display']);
@@ -83,12 +89,23 @@ jQuery.noConflict();
         	$('input#scalefixedwidth').val(config['scalefixedwidth']);
         	if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
 			$.each(segments,function(index){
-				if (add) functions.addsegment();
+				if (add) vars.segmenttable.addrow();
 				else add=true;
-				row=vars.segmentrows.last();
+				row=vars.segmenttable.rows.last();
 				$('select#segment',row).val(segments[index]);
 			});
         }
+        else segmentcolors=vars.colors;
+		add=false;
+		$.each(segmentcolors,function(index){
+			if (add) vars.colortable.addrow();
+			else add=true;
+			row=vars.colortable.rows.last();
+			$('input#segmentcolor',row).val(segmentcolors[index].replace('#',''));
+		});
+		$.each($('span#segmentcolor'),function(index){
+			$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#segmentcolor'));
+		});
 	},function(error){});
 	/*---------------------------------------------------------------
 	 button events
@@ -97,6 +114,7 @@ jQuery.noConflict();
 		var row=null;
         var config=[];
 		var segments=[];
+		var segmentcolors=[];
 	    /* check values */
 	    if ($('select#fromtime').val()=='')
 	    {
@@ -123,14 +141,24 @@ jQuery.noConflict();
 	    	swal('Error!','開始日時フィールドと終了日時フィールドは異なるフィールドを選択して下さい。','error');
 	    	return;
 	    }
-		for (var i=0;i<vars.segmentrows.length;i++)
+		for (var i=0;i<vars.segmenttable.rows.length;i++)
 		{
-			row=vars.segmentrows.eq(i);
+			row=vars.segmenttable.rows.eq(i);
 			if ($('select#segment',row).val().length!=0) segments.push($('select#segment',row).val());
 		}
 		if (segments.length==0)
 		{
 			swal('Error!','区分を指定して下さい。','error');
+			return;
+		}
+		for (var i=0;i<vars.colortable.rows.length;i++)
+		{
+			row=vars.colortable.rows.eq(i);
+		    if ($('input#segmentcolor',row).val().length!=0) segmentcolors.push($('input#segmentcolor',row).val());
+		}
+		if (segmentcolors.length==0)
+		{
+			swal('Error!','区分色を1つ以上指定して下さい。','error');
 			return;
 		}
 	    if ($('select#scale').val()=='')
@@ -162,6 +190,7 @@ jQuery.noConflict();
         config['display']=$('select#display').val();
         config['tooltip']=$('select#tooltip').val();
         config['segment']=segments.join(',');
+        config['segmentcolors']=segmentcolors.join(',');
         config['scale']=$('select#scale').val();
         config['starthour']=$('select#starthour').val();
         config['scalefixedwidth']=$('input#scalefixedwidth').val();

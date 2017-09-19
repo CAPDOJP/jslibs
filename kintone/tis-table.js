@@ -11,6 +11,8 @@
 (function($){
 /*
 *--------------------------------------------------------------------
+* merge table
+*--------------------------------------------------------------------
 * parameters
 * options	@ container			:elements of container
 *			@ table	        	:element of table
@@ -256,5 +258,66 @@ jQuery.fn.mergetable=function(options){
 	},options);
 	options.table=this;
 	return new Table(options);
+};
+/*
+*--------------------------------------------------------------------
+* adjustable table
+*--------------------------------------------------------------------
+* parameters
+* options	@ table	        	:element of table
+*			@ add				:elements of append button
+*			@ del				:elements of delete button
+*			@ addcallback		:append calback function
+* -------------------------------------------------------------------
+*/
+var AdjustTable=function(options){
+	var options=$.extend({
+		table:null,
+		add:'',
+		del:'',
+		addcallback:null
+	},options);
+	/* property */
+	this.container=options.table;
+	this.contents=this.container.find('tbody');
+	this.add=options.add;
+	this.del=options.del;
+	this.addcallback=options.addcallback;
+	/* initialize valiable */
+	this.rows=this.contents.find('tr');
+	this.template=this.rows.first().clone(true);
+	/* create rows */
+	if (this.rows!=null) this.rows.remove();
+	this.addrow();
+	if (this.del.length!=0) $(this.del,this.rows.first()).css({'display':'none'});
+};
+AdjustTable.prototype={
+	addrow:function(){
+		var my=this;
+		var row=null;
+		this.contents.append(this.template.clone(true));
+		/* initialize valiable */
+		this.rows=this.contents.find('tr');
+		/* events */
+		row=this.rows.last();
+		if (this.add.length!=0) $(this.add,row).on('click',function(){my.addrow()});
+		if (this.del.length!=0) $(this.del,row).on('click',function(){my.delrow($(this).closest('tr'))});
+		if (this.addcallback!=null) this.addcallback(row);
+	},
+	delrow:function(row){
+		row.remove();
+		/* initialize valiable */
+		this.rows=this.contents.find('tr');
+	},
+};
+jQuery.fn.adjustabletable=function(options){
+	var options=$.extend({
+		table:null,
+		add:'',
+		del:'',
+		addcallback:null
+	},options);
+	options.table=this;
+	return new AdjustTable(options);
 };
 })(jQuery);
