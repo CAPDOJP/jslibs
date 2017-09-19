@@ -410,7 +410,7 @@ jQuery.fn.colorSelector = function(colors,input){
 			'-ms-transform':'translate(-50%,-50%)',
 			'transform':'translate(-50%,-50%)'
 		}).on('touchstart mousedown',function(e){e.stopPropagation();}).hide();
-		target.css({'background-color':'#'+input.toVal()})
+		target.css({'background-color':'#'+input.val()})
 		.off('touchstart.selector mousedown.selector')
 		.on('touchstart.selector mousedown.selector',function(e){
 			$('div.colorlist').hide();
