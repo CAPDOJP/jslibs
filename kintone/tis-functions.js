@@ -392,11 +392,15 @@ jQuery.fn.colorSelector = function(colors,input){
 		var position={x:0,y:0};
 		colorbuttons=$('<div>').css({
 			'box-sizing':'border-box',
-			'padding-bottom':'3em',
+			'height':'calc(100% - 3em)',
+			'overflow-x':'hidden',
+			'overflow-y':'scroll',
+			'margin-bottom':'3em',
 			'width':'100%',
 			'z-index':'1',
 		});
 		colorinput=$('<div>').css({
+			'background-color':'#F3F3F3',
 			'bottom':'0px',
 			'box-sizing':'border-box',
 			'left':'0px',
@@ -447,9 +451,8 @@ jQuery.fn.colorSelector = function(colors,input){
 			'margin':'0px',
 			'max-height':'calc(100% - 2em)',
 			'max-width':'calc(100% - 2em)',
-			'overflow-x':'hidden',
-			'overflow-y':'scroll',
-			'padding':'2px 2px 3em 2px',
+			'overflow':'hidden',
+			'padding':'2px',
 			'position':'fixed',
 			'text-align':'left',
 			'top':'50%',
