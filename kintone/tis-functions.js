@@ -420,7 +420,7 @@ jQuery.fn.colorSelector = function(colors,input){
 			'height':'2em',
 			'margin':'0px',
 			'outline':'0px',
-			'padding':'0px 5px',
+			'padding':'0px 0.25em',
 			'width':'calc(100% - 5.25em)',
 		}))
 		.append($('<button>').css({
