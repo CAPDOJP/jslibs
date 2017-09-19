@@ -82,8 +82,7 @@ jQuery.noConflict();
 			}
 		});
 		/* initialize valiable */
-		vars.colortable=new AdjustTable({
-			table:$('.colors'),
+		vars.colortable=$('.colors').adjustabletable({
 			add:'img.add',
 			del:'img.del',
 			addcallback:function(row){

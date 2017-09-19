@@ -420,6 +420,16 @@ AdjustTable.prototype={
 		this.rows=this.contents.find('tr');
 	},
 };
+jQuery.fn.adjustabletable=function(options){
+	var options=$.extend({
+		table:null,
+		add:'',
+		del:'',
+		addcallback:null
+	},options);
+	options.table=this;
+	return new AdjustTable(options);
+};
 /*
 *--------------------------------------------------------------------
 * color selector
