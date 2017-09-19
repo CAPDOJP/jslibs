@@ -410,7 +410,7 @@ jQuery.fn.colorSelector = function(colors,input){
 			'width':'100%',
 			'z-index':'2'
 		})
-		.append($('<input type="text" placeholder="16進数カラーコード入力">').css({
+		.append($('<input type="text" placeholder="16進数カラーコードを入力">').css({
 			'border':'1px solid #DCDCDC',
 			'border-radius':'0.25em',
 			'box-sizing':'border-box',
