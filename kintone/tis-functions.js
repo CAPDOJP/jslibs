@@ -386,8 +386,57 @@ jQuery.fn.fields=function(fieldcode){
 jQuery.fn.colorSelector = function(colors,input){
 	return $(this).each(function(){
 		var target=$(this);
+		var colorbuttons=null;
+		var colorinput=null;
 		var colorlist=null;
 		var position={x:0,y:0};
+		colorbuttons=$('<div>').css({
+			'box-sizing':'border-box',
+			'padding-bottom':'3em'
+			'width':'100%',
+			'z-index':'1',
+		});
+		colorinput=$('<div>').css({
+			'bottom':'0px',
+			'box-sizing':'border-box',
+			'left':'0px',
+			'margin':'0px',
+			'padding':'0.5em',
+			'position':'absolute',
+			'width':'100%',
+			'z-index':'2'
+		})
+		.append($('<input type="text" placeholder="16進数カラーコード入力">').css({
+			'border':'1px solid #DCDCDC',
+			'border-radius':'0.25em',
+			'box-sizing':'border-box',
+			'line-height':'2em',
+			'height':'2em',
+			'margin':'0px',
+			'outline':'0px',
+			'padding':'0px 5px',
+			'width':'calc(100% - 5.25em)',
+		}))
+		.append($('<button>').css({
+			'background-color':'transparent',
+			'border':'1px solid #DCDCDC',
+			'border-radius':'0.25em',
+			'box-sizing':'border-box',
+			'cursor':'pointer',
+			'line-height':'2em',
+			'margin':'0px 0px 0px 0.25em',
+			'outline':'none',
+			'text-align':'center',
+			'width':'5em'
+		}).on('click',function(){
+			if (colorinput.find('input').val().length==0) alert('カラーコードを入力して下さい。');
+			else
+			{
+				target.css({'background-color':'#'+colorinput.find('input').val().replace('#','')});
+				input.val(colorinput.find('input').val().replace('#',''));
+				colorlist.hide();
+			}
+		}).text('OK'));
 		colorlist=$('<div class="colorlist">').css({
 			'background-color':'#F3F3F3',
 			'border':'1px solid #DCDCDC',
@@ -400,7 +449,7 @@ jQuery.fn.colorSelector = function(colors,input){
 			'max-width':'calc(100% - 2em)',
 			'overflow-x':'hidden',
 			'overflow-y':'scroll',
-			'padding':'2px',
+			'padding':'2px 2px 3em 2px',
 			'position':'fixed',
 			'text-align':'left',
 			'top':'50%',
@@ -419,7 +468,7 @@ jQuery.fn.colorSelector = function(colors,input){
 		});
 		for (var i=0;i<colors.length;i++)
 		{
-			colorlist.append(
+			colorbuttons.append(
 				$('<div>').css({
 					'background-color':colors[i],
 					'cursor':'pointer',
@@ -430,13 +479,15 @@ jQuery.fn.colorSelector = function(colors,input){
 				})
 				.on('touchstart mousedown',function(e){e.stopPropagation();})
 				.on('click',function(){
-					var index=colorlist.find('div').index($(this));
+					var index=colorbuttons.find('div').index($(this));
 					target.css({'background-color':colors[index]});
 					input.val(colors[index].replace('#',''));
 					colorlist.hide();
 				})
 			);
 		}
+		colorlist.append(colorbuttons);
+		colorlist.append(colorinput);
 		$('body').on('touchstart mousedown',function(){colorlist.hide();}).append(colorlist);
 	});
 }
