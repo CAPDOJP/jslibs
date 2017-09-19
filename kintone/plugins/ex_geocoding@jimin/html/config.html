@@ -1,162 +1,156 @@
 <div class="block">
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">住所入力フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">住所を入力するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="address">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">Plusコード入力フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">Plusコードを入力するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="pluscode">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">緯度表示フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">取得した緯度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="lat">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">経度表示フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">取得した経度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="lng">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">地図表示フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">地図を表示するスペースを選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="spacer">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">一覧地図表示</div>
-		<div class="kintoneplugin-desc">一覧画面に地図を表示したい場合は、チェックを付けて下さい。</div>
-		<div class="kintoneplugin-input-checkbox-item">
-			<label><input type="checkbox" id="map" value="0">一覧画面に地図を表示する</label>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">表示フィールド</div>
-		<div class="kintoneplugin-desc">各マーカーの情報ウインドウに表示するフィールドを選択して下さい。【文字列(1行)フィールド】<br>指定がない場合は住所入力フィールドで指定したフィールドが表示されます。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="information">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">経過日数算出フィールド</div>
-		<div class="kintoneplugin-desc">地図内のマーカーに表示する経過日数の対象となるフィールドを選択して下さい。【日付フィールド】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="datespan">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">マーカー色指定</div>
-		<table>
-			<thead>
-				<tr>
-					<td>
-						<span class="kintoneplugin-unit">規定色</span>
-					</td>
-					<td>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="defaultcolor"></select>
-							</div>
-						</div>
-					</td>
-					<td colspan="2"></td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="colorfields">
-					<td>
-						<div class="kintoneplugin-input-outer">
-							<input type="text" id="datespanday" class="kintoneplugin-input-text" value="" >
-						</div>
-						<span class="kintoneplugin-unit">日以上</span>
-					</td>
-					<td>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="datespancolor"></select>
-							</div>
-						</div>
-					</td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">マーカーサイズ</div>
-		<div class="kintoneplugin-input-outer">
-			<input type="text" id="markersize" class="kintoneplugin-input-text" value="" >
-		</div>
-		<span class="kintoneplugin-unit">px</span>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">マーカーフォントサイズ</div>
-		<div class="kintoneplugin-input-outer">
-			<input type="text" id="markerfont" class="kintoneplugin-input-text" value="" >
-		</div>
-		<span class="kintoneplugin-unit">px</span>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">現在地追跡</div>
-		<div class="kintoneplugin-desc">地図上の現在地表示を一定間隔毎に更新する場合は、チェックを付けて下さい。</div>
-		<div class="kintoneplugin-input-checkbox-item">
-			<label><input type="checkbox" id="chasemode" value="0">現在地を追跡する</label>
-		</div>
-		<span class="kintoneplugin-unit">更新間隔</span>
-		<div class="kintoneplugin-input-outer">
-			<input type="text" id="chasetimespan" class="kintoneplugin-input-text" value="" >
-		</div>
-		<span class="kintoneplugin-unit">秒毎に更新</span>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">Google Maps APIキー</div>
-		<div class="kintoneplugin-desc">一覧地図を表示する場合は、Google Maps APIキーを取得し、取得したキーを入力して下さい。</div>
-		<div class="kintoneplugin-input-outer">
-			<input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
-		</div>
-	</div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">住所入力フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">住所を入力するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="address">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">Plusコード入力フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">Plusコードを入力するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="pluscode">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">緯度表示フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">取得した緯度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="lat">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">経度表示フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">取得した経度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="lng">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">地図表示フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">地図を表示するスペースを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="spacer">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">一覧地図表示</div>
+    <div class="kintoneplugin-desc">一覧画面に地図を表示したい場合は、チェックを付けて下さい。</div>
+    <div class="kintoneplugin-input-checkbox-item">
+      <label><input type="checkbox" id="map" value="0">一覧画面に地図を表示する</label>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">表示フィールド</div>
+    <div class="kintoneplugin-desc">各マーカーの情報ウインドウに表示するフィールドを選択して下さい。【文字列(1行)フィールド】<br>指定がない場合は住所入力フィールドで指定したフィールドが表示されます。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="information">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">経過日数算出フィールド</div>
+    <div class="kintoneplugin-desc">地図内のマーカーに表示する経過日数の対象となるフィールドを選択して下さい。【日付フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="datespan">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">マーカー色指定</div>
+    <table>
+      <thead>
+        <tr>
+          <td>
+            <span class="kintoneplugin-unit">規定色</span>
+          </td>
+          <td>
+            <span id="defaultcolor" class="kintoneplugin-unit color">&nbsp;</span>
+            <input type="hidden" id="defaultcolor" value="">
+          </td>
+          <td colspan="2"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="colorfields">
+          <td>
+            <div class="kintoneplugin-input-outer">
+              <input type="text" id="datespanday" class="kintoneplugin-input-text" value="" >
+            </div>
+            <span class="kintoneplugin-unit">日以上</span>
+          </td>
+          <td>
+            <span id="datespancolor" class="kintoneplugin-unit color">&nbsp;</span>
+            <input type="hidden" id="datespancolor" value="">
+          </td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">マーカーサイズ</div>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="markersize" class="kintoneplugin-input-text" value="" >
+    </div>
+    <span class="kintoneplugin-unit">px</span>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">マーカーフォントサイズ</div>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="markerfont" class="kintoneplugin-input-text" value="" >
+    </div>
+    <span class="kintoneplugin-unit">px</span>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">現在地追跡</div>
+    <div class="kintoneplugin-desc">地図上の現在地表示を一定間隔毎に更新する場合は、チェックを付けて下さい。</div>
+    <div class="kintoneplugin-input-checkbox-item">
+      <label><input type="checkbox" id="chasemode" value="0">現在地を追跡する</label>
+    </div>
+    <span class="kintoneplugin-unit">更新間隔</span>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="chasetimespan" class="kintoneplugin-input-text" value="" >
+    </div>
+    <span class="kintoneplugin-unit">秒毎に更新</span>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">Google Maps APIキー</div>
+    <div class="kintoneplugin-desc">一覧地図を表示する場合は、Google Maps APIキーを取得し、取得したキーを入力して下さい。</div>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
+    </div>
+  </div>
 </div>
 <div class="block">
-	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
-	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+  <button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+  <button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
 </div>

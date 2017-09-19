@@ -383,17 +383,11 @@ jQuery.fn.fields=function(fieldcode){
 * colors:color list
 * -------------------------------------------------------------------
 */
-jQuery.fn.colorSelector = function(colors){
+jQuery.fn.colorSelector = function(colors,input){
 	return $(this).each(function(){
 		var target=$(this);
 		var colorlist=null;
-		var options=target.find('option').hide();
 		var position={x:0,y:0};
-		if (colors.length!=options.length)
-		{
-			alert('色情報と選択リスト要素の数が一致しません。');
-			return;
-		}
 		colorlist=$('<div class="colorlist">').css({
 			'background-color':'#F3F3F3',
 			'border':'1px solid #DCDCDC',
@@ -416,7 +410,7 @@ jQuery.fn.colorSelector = function(colors){
 			'-ms-transform':'translate(-50%,-50%)',
 			'transform':'translate(-50%,-50%)'
 		}).on('touchstart mousedown',function(e){e.stopPropagation();}).hide();
-		target.css({'background-color':colors[target.find('option').index(target.find('option:selected'))]})
+		target.css({'background-color':'#'+input.toVal()})
 		.off('touchstart.selector mousedown.selector')
 		.on('touchstart.selector mousedown.selector',function(e){
 			$('div.colorlist').hide();
@@ -438,7 +432,7 @@ jQuery.fn.colorSelector = function(colors){
 				.on('click',function(){
 					var index=colorlist.find('div').index($(this));
 					target.css({'background-color':colors[index]});
-					target.val(options.eq(index).val());
+					input.val(colors[index].replace('#',''));
 					colorlist.hide();
 				})
 			);

@@ -70,6 +70,9 @@
   padding: 3px 5px;
   position: relative;
 }
+.kintoneplugin-unit.color {
+  width:48px;
+}
 
 /* テキストボックス */
 /*

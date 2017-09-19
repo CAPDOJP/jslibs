@@ -26,7 +26,8 @@ jQuery.noConflict();
 			row=vars.colorrows.last();
 			$('img.add',row).on('click',function(){functions.addcolor()});
 			$('img.del',row).on('click',function(){functions.delcolor($(this).closest('tr'))});
-			$('select#datespancolor',row).colorSelector(vars.colors);
+			$('input#datespancolor',row).val(vars.colors[0].replace('#',''));
+			$('span#datespancolor',row).colorSelector(vars.colors,$('input#datespancolor',row));
 		},
 		delcolor:function(row){
 			row.remove();
@@ -45,12 +46,6 @@ jQuery.noConflict();
 		var row=vars.colortemplate;
 		vars.colors=[];
 		$.each($.markercolors(),function(index,values){vars.colors.push('#'+values.back);});
-		$('select#defaultcolor').empty();
-		$('select#datespancolor',row).empty();
-		$.each(vars.colors,function(index){
-			$('select#defaultcolor').append($('<option>').attr('value',index));
-			$('select#datespancolor',row).append($('<option>').attr('value',index));
-		});
 		/* create colorfields rows */
 		$('.colorfields').remove();
 		functions.addcolor();
@@ -98,7 +93,7 @@ jQuery.noConflict();
         	$('select#spacer').val(config['spacer']);
         	$('select#information').val(config['information']);
         	$('select#datespan').val(config['datespan']);
-        	$('select#defaultcolor').val(config['defaultcolor']);
+        	$('input#defaultcolor').val(config['defaultcolor']);
 			var add=false;
 			var colorfields=JSON.parse(config['colorfields']);
 			$.each(colorfields,function(key,values){
@@ -106,7 +101,7 @@ jQuery.noConflict();
 				else add=true;
 				row=vars.colorrows.last();
 				$('input#datespanday',row).val(key);
-				$('select#datespancolor',row).val(values);
+				$('input#datespancolor',row).val(values);
 			});
         	$('input#markersize').val(config['markersize']);
         	$('input#markerfont').val(config['markerfont']);
@@ -120,12 +115,12 @@ jQuery.noConflict();
         	$('input#markersize').val('34');
         	$('input#markerfont').val('11');
         	$('input#chasetimespan').val('10');
-        	$('select#defaultcolor').val($('select#defaultcolor').find('option').first().val());
-			$.each($('select#datespancolor'),function(){$(this).css({'background-color':$(this).find('option').first().val()})});
+        	$('input#defaultcolor').val(vars.colors[0].replace('#',''));
+			$.each($('input#datespancolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
         }
-		$('select#defaultcolor').colorSelector(vars.colors).css({'background-color':vars.colors[$('select#defaultcolor').find('option').index($('select#defaultcolor').find('option:selected'))]});
-		$.each($('select#datespancolor'),function(){
-			$(this).colorSelector(vars.colors).css({'background-color':vars.colors[$(this).find('option').index($(this).find('option:selected'))]});
+		$('span#defaultcolor').colorSelector(vars.colors,$('input#defaultcolor'));
+		$.each($('span#datespancolor'),function(index){
+			$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#datespancolor'));
 		});
 	},function(error){});
 	/*---------------------------------------------------------------
@@ -168,7 +163,7 @@ jQuery.noConflict();
 	    }
 	    if ($('input#map').prop('checked'))
 	    {
-		    if ($('select#defaultcolor').val()=='')
+		    if ($('input#defaultcolor').val()=='')
 		    {
 		    	swal('Error!','マーカー規定色を選択して下さい。','error');
 		    	return;
@@ -178,12 +173,12 @@ jQuery.noConflict();
 				var row=vars.colorrows.eq(i);
 				if ($('input#datespanday',row).val().length!=0)
 				{
-				    if ($('select#datespancolor',row).val()=='')
+				    if ($('input#datespancolor',row).val()=='')
 				    {
 				    	swal('Error!','マーカー色を選択して下さい。','error');
 				    	error=true;
 				    }
-					colorfields[$('input#datespanday',row).val().toString()]=$('select#datespancolor',row).val();
+					colorfields[$('input#datespanday',row).val().toString()]=$('input#datespancolor',row).val();
 				}
 			}
 		    if ($('input#markersize').val()=='') $('input#markersize').val('34');
@@ -223,7 +218,7 @@ jQuery.noConflict();
         config['map']=($('input#map').prop('checked'))?'1':'0';
         config['information']=$('select#information').val();
         config['datespan']=$('select#datespan').val();
-        config['defaultcolor']=$('select#defaultcolor').val();
+        config['defaultcolor']=$('input#defaultcolor').val();
 		config['colorfields']=JSON.stringify(colorfields);
         config['markersize']=$('input#markersize').val();
         config['markerfont']=$('input#markerfont').val();
