@@ -1276,13 +1276,25 @@ jQuery.fn.colorSelector = function(colors,input){
 			'z-index':'2'
 		})
 		.append($('<input type="text" placeholder="16進数カラーコードを入力">').css({
+			'border':'1px solid #DCDCDC',
+			'border-radius':'0.25em',
+			'box-sizing':'border-box',
+			'line-height':'2em',
+			'height':'2em',
 			'margin':'0px',
+			'outline':'0px',
 			'padding':'0px 0.25em',
-			'width':'calc(100% - 5.25em)'
+			'width':'calc(100% - 5.25em)',
 		}))
 		.append($('<button>').css({
+			'background-color':'transparent',
+			'border':'1px solid #DCDCDC',
+			'border-radius':'0.25em',
+			'box-sizing':'border-box',
 			'cursor':'pointer',
+			'line-height':'2em',
 			'margin':'0px 0px 0px 0.25em',
+			'outline':'none',
 			'padding':'0px 0.25em',
 			'text-align':'center',
 			'width':'5em'
@@ -1294,19 +1306,7 @@ jQuery.fn.colorSelector = function(colors,input){
 				input.val(colorinput.find('input').toVal().replace('#',''));
 				colorlist.hide();
 			}
-		})
-		.text('OK')
-		.find('input,button').css({
-			'display':'inline-block',
-			'background-color':'transparent',
-			'border':'1px solid #DCDCDC',
-			'border-radius':'0.25em',
-			'box-sizing':'border-box',
-			'line-height':'2em',
-			'height':'2em',
-			'outline':'0px',
-			'vertical-align':'top'
-		}));
+		}).text('OK'));
 		colorlist=$('<div class="colorlist">').css({
 			'background-color':'#F3F3F3',
 			'border':'1px solid #DCDCDC',
