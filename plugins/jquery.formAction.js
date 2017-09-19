@@ -1278,7 +1278,7 @@ jQuery.fn.colorSelector = function(colors,input){
 		.append($('<input type="text" placeholder="16進数カラーコードを入力">').css({
 			'margin':'0px',
 			'padding':'0px 0.25em',
-			'width':'calc(100% - 5.25em)',
+			'width':'calc(100% - 5.25em)'
 		}))
 		.append($('<button>').css({
 			'cursor':'pointer',
@@ -1297,6 +1297,7 @@ jQuery.fn.colorSelector = function(colors,input){
 		})
 		.text('OK')
 		.find('input,button').css({
+			'display':'inline-block',
 			'background-color':'transparent',
 			'border':'1px solid #DCDCDC',
 			'border-radius':'0.25em',
@@ -1304,6 +1305,7 @@ jQuery.fn.colorSelector = function(colors,input){
 			'line-height':'2em',
 			'height':'2em',
 			'outline':'0px',
+			'vertical-align':'top'
 		}));
 		colorlist=$('<div class="colorlist">').css({
 			'background-color':'#F3F3F3',
