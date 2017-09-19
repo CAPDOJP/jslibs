@@ -401,6 +401,8 @@ jQuery.fn.colorSelector = function(colors,input){
 		});
 		colorinput=$('<div>').css({
 			'background-color':'#F3F3F3',
+			'border-bottom-left-radius':'0.25em',
+			'border-bottom-right-radius':'0.25em',
 			'bottom':'0px',
 			'box-sizing':'border-box',
 			'left':'0px',
@@ -430,6 +432,7 @@ jQuery.fn.colorSelector = function(colors,input){
 			'line-height':'2em',
 			'margin':'0px 0px 0px 0.25em',
 			'outline':'none',
+			'padding':'0px 0.25em',
 			'text-align':'center',
 			'width':'5em'
 		}).on('click',function(){
