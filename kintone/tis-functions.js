@@ -392,7 +392,7 @@ jQuery.fn.colorSelector = function(colors,input){
 		var position={x:0,y:0};
 		colorbuttons=$('<div>').css({
 			'box-sizing':'border-box',
-			'padding-bottom':'3em'
+			'padding-bottom':'3em',
 			'width':'100%',
 			'z-index':'1',
 		});
