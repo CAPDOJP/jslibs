@@ -116,7 +116,7 @@ String.prototype.rpad=function(pattern,length){
 }
 /*
 *--------------------------------------------------------------------
-* get query strings
+* functions
 * -------------------------------------------------------------------
 */
 var loadgroupsvalues={
@@ -377,10 +377,52 @@ jQuery.fn.fields=function(fieldcode){
 }
 /*
 *--------------------------------------------------------------------
-* color selector
+* adjustable table
 *--------------------------------------------------------------------
-* parameters
-* colors:color list
+*/
+var AdjustTable=function(options){
+	var options=$.extend({
+		table:null,
+		add:'',
+		del:'',
+		addcallback:null
+	},options);
+	/* property */
+	this.container=options.table;
+	this.contents=this.container.find('<tbody>');
+	this.add=options.add;
+	this.del=options.del;
+	this.addcallback=options.addcallback;
+	/* initialize valiable */
+	this.rows=this.contents.find('tr');
+	this.template=this.rows.first().clone(true);
+	/* create rows */
+	if (this.rows!=null) this.rows.remove();
+	this.addrow();
+	if (this.del.length!=0) $(this.del,this.rows.first()).css({'display':'none'});
+};
+AdjustTable.prototype={
+	addrow:function(){
+		var my=this;
+		var row=null;
+		this.contents.append(this.template.clone(true));
+		/* initialize valiable */
+		this.rows=this.contents.find('tr');
+		/* events */
+		row=this.rows.last();
+		if (this.add.length!=0) $(this.add,row).on('click',function(){my.addrow()});
+		if (this.del.length!=0) $(this.del,row).on('click',function(){my.delrow($(this).closest('tr'))});
+		if (this.addcallback!=null) this.addcallback(row);
+	},
+	delrow:function(row){
+		row.remove();
+		/* initialize valiable */
+		this.rows=this.contents.find('tr');
+	},
+};
+/*
+*--------------------------------------------------------------------
+* color selector
 * -------------------------------------------------------------------
 */
 jQuery.fn.colorSelector = function(colors,input){

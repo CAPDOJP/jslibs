@@ -23,6 +23,7 @@ jQuery.noConflict();
 		apps:{},
 		config:{},
 		offset:{},
+		colors:[],
 		fields:[]
 	};
 	var events={
@@ -38,7 +39,7 @@ jQuery.noConflict();
 	var functions={
 		/* rebuild view */
 		build:function(filter,segment,segmentname,colorindex){
-			var color=colorindex%12;
+			var color=vars.colors[colorindex%vars.colors.length];
 			/* insert row */
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
@@ -131,18 +132,14 @@ jQuery.noConflict();
 							        mergerow.find('td').eq(0).html(baserow.find('td').eq(0).html()).hide();
 								}
 								/* setup merge class */
-								$.each(row.find('td'),function(index){
-								    $(this).addClass('timetable-daily-merge'+color);
-								})
+								row.find('.timetable-daily-merge-span').css({'background-color':'#'+color});
 							});
 						}
 						else functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
 					}
 				}
 				/* setup merge class */
-				$.each(row.find('td'),function(index){
-				    $(this).addClass('timetable-daily-merge'+color);
-				})
+				row.find('.timetable-daily-merge-span').css({'background-color':'#'+color});
 			});
 		},
 		/* setup merge cell value */
@@ -153,9 +150,8 @@ jQuery.noConflict();
 				to
 			);
 			/* cell value switching */
-			var inner=$('<p>').addClass('timetable-daily-merge-p');
-			inner.html($.fieldvalue(filter[vars.config['display']]));
-			row.find('td').eq(from).append(inner);
+			row.find('td').eq(from).append($('<p>').addClass('timetable-daily-merge-p').html($.fieldvalue(filter[vars.config['display']])));
+			row.find('td').eq(from).append($('<span>').addClass('timetable-daily-merge-span'));
 			$.each(filter,function(key,values){
 				if (values!=null)
 					if (values.value!=null)
@@ -286,6 +282,8 @@ jQuery.noConflict();
 				functions.load();
 			});
 		});
+		/* setup colors value */
+		vars.colors=vars.config['segmentcolors'].split(',');
 		/* create table */
 		container.empty();
 		var head=$('<tr></tr><tr></tr>');

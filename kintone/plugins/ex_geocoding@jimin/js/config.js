@@ -19,9 +19,9 @@ jQuery.noConflict();
 	var functions={
 		addcolor:function(){
 			var row=null;
-			$('.block table tbody').append(vars.colortemplate.clone(true));
+			$('.colors').append(vars.colortemplate.clone(true));
 			/* initialize valiable */
-			vars.colorrows=$('.colorfields');
+			vars.colorrows=$('.colors').find('tr');
 			/* events */
 			row=vars.colorrows.last();
 			$('img.add',row).on('click',function(){functions.addcolor()});
@@ -32,7 +32,7 @@ jQuery.noConflict();
 		delcolor:function(row){
 			row.remove();
 			/* initialize valiable */
-			vars.colorrows=$('.colorfields');
+			vars.colorrows=$('.colors').find('tr');
 		},
 	};
 	/*---------------------------------------------------------------
@@ -41,13 +41,13 @@ jQuery.noConflict();
 	kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
         var config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		/* initialize valiable */
-		vars.colortemplate=$('.colorfields').first().clone(true);
+		vars.colorrows=$('.colors').find('tr');
+		vars.colortemplate=vars.colorrows.first().clone(true);
 		/* setup colorfields lists */
-		var row=vars.colortemplate;
 		vars.colors=[];
 		$.each($.markercolors(),function(index,values){vars.colors.push('#'+values.back);});
 		/* create colorfields rows */
-		$('.colorfields').remove();
+		if (vars.colorrows!=null) vars.colorrows.remove();
 		functions.addcolor();
 		$('img.del',vars.colorrows.first()).css({'display':'none'});
 		$.each(resp.properties,function(index,values){
@@ -95,11 +95,11 @@ jQuery.noConflict();
         	$('select#datespan').val(config['datespan']);
         	$('input#defaultcolor').val(config['defaultcolor']);
 			var add=false;
-			var colorfields=JSON.parse(config['colorfields']);
-			$.each(colorfields,function(key,values){
+			var colors=JSON.parse(config['datespancolors']);
+			$.each(colors,function(key,values){
 				if (add) functions.addcolor();
 				else add=true;
-				row=vars.colorrows.last();
+				var row=vars.colorrows.last();
 				$('input#datespanday',row).val(key);
 				$('input#datespancolor',row).val(values);
 			});
@@ -128,8 +128,8 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
 		var error=false;
+		var colors={};
         var config=[];
-		var colorfields={};
 	    /* check values */
 	    if ($('select#address').val()=='')
 	    {
@@ -178,7 +178,7 @@ jQuery.noConflict();
 				    	swal('Error!','マーカー色を選択して下さい。','error');
 				    	error=true;
 				    }
-					colorfields[$('input#datespanday',row).val().toString()]=$('input#datespancolor',row).val();
+					colors[$('input#datespanday',row).val().toString()]=$('input#datespancolor',row).val();
 				}
 			}
 		    if ($('input#markersize').val()=='') $('input#markersize').val('34');
@@ -219,7 +219,7 @@ jQuery.noConflict();
         config['information']=$('select#information').val();
         config['datespan']=$('select#datespan').val();
         config['defaultcolor']=$('input#defaultcolor').val();
-		config['colorfields']=JSON.stringify(colorfields);
+		config['datespancolors']=JSON.stringify(colors);
         config['markersize']=$('input#markersize').val();
         config['markerfont']=$('input#markerfont').val();
         config['chasemode']=($('input#chasemode').prop('checked'))?'1':'0';

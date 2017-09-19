@@ -23,21 +23,8 @@ jQuery.noConflict();
 		apps:{},
 		config:{},
 		offset:{},
-		fields:[],
-		colors:[
-			'#FA8273',
-			'#FFF07D',
-			'#7DC87D',
-			'#69B4C8',
-			'#827DB9',
-			'#E16EA5',
-			'#FA7382',
-			'#FFB46E',
-			'#B4DC69',
-			'#64C3AF',
-			'#69A0C8',
-			'#B473B4'
-		]
+		colors:[],
+		fields:[]
 	};
 	var events={
 		lists:[
@@ -60,7 +47,7 @@ jQuery.noConflict();
 					inner+='<p>'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
 					cell.append(
 						$('<div class="timetable-monthly-cell">').css({
-							'background-color':color,
+							'background-color':'#'+color,
 							'cursor':'pointer'
 						})
 						.html(inner)
@@ -199,6 +186,8 @@ jQuery.noConflict();
 				functions.load();
 			});
 		});
+		/* setup colors value */
+		vars.colors=vars.config['segmentcolors'].split(',');
 		/* create table */
 		container.empty().append(vars.graphlegend.empty());
 		var head=$('<tr>');
@@ -231,7 +220,7 @@ jQuery.noConflict();
 					$.each(vars.segment,function(index,values){
 						var color=vars.colors[index%vars.colors.length];
 						vars.graphlegend
-						.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':color}))
+						.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+color}))
 						.append($('<span class="customview-span timetable-graphlegend-title">').text(values[vars.config['segmentdisplay']].value));
 					});
 					/* reload view */

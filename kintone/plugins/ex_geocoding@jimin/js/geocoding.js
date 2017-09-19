@@ -347,19 +347,19 @@ jQuery.noConflict();
 		vars.displaydatespan=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="datespan">')
 			.on('change',function(e){
-				var colors='';
-				var colorfields=JSON.parse(vars.config['colorfields']);
+				var color='';
+				var colors=JSON.parse(vars.config['datespancolors']);
 				for (var i=0;i<vars.markers.length;i++)
 				{
-					colors=vars.config['defaultcolor'];
+					color=vars.config['defaultcolor'];
 					if ($(this).prop('checked'))
 					{
 						var datespan=vars.markers[i].extensionindex;
-						$.each(colorfields,function(key,values){
-							if (parseInt(datespan)>parseInt(key)-1){colors=values;}
+						$.each(colors,function(key,values){
+							if (parseInt(datespan)>parseInt(key)-1){color=values;}
 						});
 					}
-					vars.markers[i].colors=colors;
+					vars.markers[i].colors=color;
 				}
 				functions.reloadmap(true);
 			})
