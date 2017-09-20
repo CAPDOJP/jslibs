@@ -150,10 +150,10 @@ graphManager.prototype={
 					scale.width=scalelength*parseFloat(this.style.fontSize);
 				}
 				else scale.width=this.scale;
-				scale.height=(this.graph.height()-parseFloat(this.style.fontSize)-padding.vertical)/(interval-1);
-                plot.height=this.graph.height()-parseFloat(this.style.fontSize)-padding.vertical;
+				scale.height=(this.graph.height()-parseFloat(this.style.fontSize)*2-padding.vertical)/(interval-1);
+                plot.height=this.graph.height()-parseFloat(this.style.fontSize)*2-padding.vertical;
                 plot.width=this.graph.width()-padding.holizontal-scale.width;
-				caption.height=parseFloat(this.style.fontSize)+padding.caption;
+				caption.height=parseFloat(this.style.fontSize)*2+padding.caption;
 				caption.width=plot.width/this.captions.length;
 				/* 描画設定 */
 				this.context.font=this.style.fontStyle+' '+this.style.fontVariant+' '+this.style.fontWeight+' '+(parseFloat(this.style.fontSize)*0.75)+'px '+this.style.fontFamily;
@@ -177,11 +177,11 @@ graphManager.prototype={
                 this.line('vertical',left+padding.scale,padding.top,plot.height,1,this.style.color,0);
                 /* 見出し描画 */
                 left=scale.width+(caption.width/2)+padding.left+padding.scale;
-                top=plot.height+(caption.height/2)+padding.top;
+                top=plot.height+(caption.height/4)+padding.top;
                 $.each(this.captions,function(index){
                 	var texts=((my.captionformat!=null)?my.captionformat(prev,my.captions[index]):my.captions[index]).split(/\r\n|\r|\n/);
                     my.context.textAlign='center';
-                    for (var i=0;i<texts;i++) my.context.fillText(texts[i],left,top+(my.style.fontSize*i),caption.width);
+                    for (var i=0;i<texts.length;i++) my.context.fillText(texts[i],left,top+(my.style.fontSize*i),caption.width);
                     left+=caption.width;
                     prev=my.captions[index];
                 });
