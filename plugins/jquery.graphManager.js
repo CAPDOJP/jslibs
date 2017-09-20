@@ -181,8 +181,7 @@ graphManager.prototype={
                 $.each(this.captions,function(index){
                 	var texts=((my.captionformat!=null)?my.captionformat(prev,my.captions[index]):my.captions[index]).split(/\r\n|\r|\n/);
                     my.context.textAlign='center';
-                    console.log(texts.length);
-                    for (var i=0;i<texts.length;i++) my.context.fillText(texts[i],left,top+(my.style.fontSize*i),caption.width);
+                    for (var i=0;i<texts.length;i++) my.context.fillText(texts[i],left,top+(parseFloat(my.style.fontSize)*i),caption.width);
                     left+=caption.width;
                     prev=my.captions[index];
                 });
