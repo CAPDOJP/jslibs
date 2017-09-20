@@ -17,6 +17,7 @@
 * options	@ canvas		:グラフ描画キャンバス
 *			@ type			:グラフタイプ【circle:line】
 *			@ captions		:項目名
+*			@ captionformat	:項目名変換関数
 *			@ markers		:マーカースタイル
 *				ex for circle markers:['#FF0000','#00FF00','#0000FF']
 *				ex for line   markers:[
@@ -30,7 +31,6 @@
 *										}
 *									]
 *			@ values		:データ値
-*			@ captionformat	:見出し変換関数
 * -------------------------------------------------------------------
 */
 /* コンストラクタ */
@@ -40,9 +40,9 @@ var graphManager = function(options){
 		type:'line',
 		scale:0,
 		captions:[],
+		captionformat:null,
 		markers:[],
-		values:[],
-		captionformat:null
+		values:[]
 	},options);
 	if (options.canvas==null) {alert('キャンバスを指定して下さい。');return;}
 	if (options.values.length==0) {alert('データ値を設定して下さい。');return;}
