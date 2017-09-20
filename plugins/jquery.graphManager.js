@@ -177,7 +177,7 @@ graphManager.prototype={
                 this.line('vertical',left+padding.scale,padding.top,plot.height,1,this.style.color,0);
                 /* 見出し描画 */
                 left=scale.width+(caption.width/2)+padding.left+padding.scale;
-                top=plot.height+padding.top+padding.caption;
+                top=plot.height+(((caption.height/2)-(parseFloat(this.style.fontSize)*0.75))/2)+padding.top+padding.caption;
                 $.each(this.captions,function(index){
                 	var texts=((my.captionformat!=null)?my.captionformat(prev,my.captions[index]):my.captions[index]).split(/\r\n|\r|\n/);
                     my.context.textAlign='center';
