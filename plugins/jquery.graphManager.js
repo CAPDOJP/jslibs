@@ -14,22 +14,23 @@
 * レイヤー操作コントローラー
 *--------------------------------------------------------------------
 * parameters
-* options @ canvas   :グラフ描画キャンバス
-*		 @ type	 :グラフタイプ【circle:line】
-*		 @ captions :項目名
-*		 @ markers  :マーカースタイル
-*					 ex for circle markers:['#FF0000','#00FF00','#0000FF']
-*					 ex for line   markers:[
-*											{
-*											 color:'#FF0000',
-*											 dot:false
-*											},
-*											{
-*											 color:'#00FF00',
-*											 dot:true
-*											}
-*										   ]
-*		 @ values   :データ値
+* options	@ canvas		:グラフ描画キャンバス
+*			@ type			:グラフタイプ【circle:line】
+*			@ captions		:項目名
+*			@ markers		:マーカースタイル
+*				ex for circle markers:['#FF0000','#00FF00','#0000FF']
+*				ex for line   markers:[
+*										{
+*											color:'#FF0000',
+*											dot:false
+*										},
+*										{
+*											color:'#00FF00',
+*											dot:true
+*										}
+*									]
+*			@ values		:データ値
+*			@ captionformat	:見出し変換関数
 * -------------------------------------------------------------------
 */
 /* コンストラクタ */
@@ -40,7 +41,8 @@ var graphManager = function(options){
 		scale:0,
 		captions:[],
 		markers:[],
-		values:[]
+		values:[],
+		captionformat:null
 	},options);
 	if (options.canvas==null) {alert('キャンバスを指定して下さい。');return;}
 	if (options.values.length==0) {alert('データ値を設定して下さい。');return;}
@@ -50,6 +52,7 @@ var graphManager = function(options){
 	this.type=options.type;
 	this.scale=options.scale;
 	this.captions=options.captions;
+	this.captionformat=options.captionformat;
 	this.markers=options.markers;
 	this.values=options.values;
 	this.context=null;
@@ -126,6 +129,7 @@ graphManager.prototype={
 				});
 				break;
 			case 'line':
+				var prev='';
 				var ratio=0;
 				var caption={height:0,width:0};
                 var plot={height:0,width:0};
@@ -176,8 +180,10 @@ graphManager.prototype={
                 top=plot.height+(caption.height/2)+padding.top;
                 $.each(this.captions,function(index){
                     my.context.textAlign='center';
-                    my.context.fillText(my.captions[index],left,top,caption.width);
+                    if (my.captionformat!=null) my.context.fillText(my.captionformat(prev,my.captions[index]),left,top,caption.width);
+                    else my.context.fillText(my.captions[index],left,top,caption.width);
                     left+=caption.width;
+                    prev=my.captions[index];
                 });
 				/* グラフ描画 */
 				$.each(this.values,function(index){
