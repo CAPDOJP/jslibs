@@ -179,9 +179,9 @@ graphManager.prototype={
                 left=scale.width+(caption.width/2)+padding.left+padding.scale;
                 top=plot.height+(caption.height/2)+padding.top;
                 $.each(this.captions,function(index){
+                	var texts=((my.captionformat!=null)?my.captionformat(prev,my.captions[index]):my.captions[index]).split(/\r\n|\r|\n/);
                     my.context.textAlign='center';
-                    if (my.captionformat!=null) my.context.fillText(my.captionformat(prev,my.captions[index]),left,top,caption.width);
-                    else my.context.fillText(my.captions[index],left,top,caption.width);
+                    for (var i=0;i<texts;i++) my.context.fillText(texts[i],left,top+(my.style.fontSize*i),caption.width);
                     left+=caption.width;
                     prev=my.captions[index];
                 });
