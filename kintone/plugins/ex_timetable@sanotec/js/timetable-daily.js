@@ -161,24 +161,39 @@ jQuery.noConflict();
 				var head=$('<tr></tr><tr></tr>');
 				var template=$('<tr>');
 				var spacer=$('<span>');
+				var colspan={date:new Date(vars.fromdate.format('Y-m-d')),hour:0,index:vars.segments.length,span:0};
 				for (var i=0;i<vars.segments.length;i++)
 				{
 					head.eq(0).append($('<th class="timetable-daily-cellhead">'));
 					head.eq(1).append($('<th class="timetable-daily-cellhead">'));
+					head.eq(2).append($('<th class="timetable-daily-cellhead">'));
 					template.append($('<td class="timetable-daily-cellhead">'));
 				}
 				if (vars.config['scalefixed']=='1') spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
 				/* insert column */
 				for (var i=0;i<columns;i++)
 				{
-					head.eq(0).append($('<th colspan="'+vars.config['scale']+'">').text(i+parseInt(vars.config['starthour'])));
+					colspan.hour=(i+parseInt(vars.config['starthour']))%24;
+					if (i!=0 && colspan.hour==0)
+					{
+						head.eq(0).find('th').eq(colspan.index).attr('colspan',colspan.span);
+						for (var i2=colspan.index+1;i2<i+vars.segments.length;i2++) head.eq(0).find('th').eq(i2).hide();
+						colspan.date=colspan.date.calc('1 day');
+						colspan.index=i+vars.segments.length;
+						colspan.span=0;
+					}
+					colspan.span+=parseInt(vars.config['scale']);
+					head.eq(0).append($('<th colspan="'+vars.config['scale']+'" class="left">').text(colspan.date.format('m-d')));
+					head.eq(1).append($('<th colspan="'+vars.config['scale']+'">').text(colspan.hour));
 					for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
 					{
-						if (vars.config['scalefixed']=='1') head.eq(1).append($('<th>').append(spacer.clone(false)));
-						else head.eq(1).append($('<th>'));
+						if (vars.config['scalefixed']=='1') head.eq(2).append($('<th>').append(spacer.clone(false)));
+						else head.eq(2).append($('<th>'));
 						template.append($('<td>'));
 					}
 				}
+				head.eq(0).find('th').eq(colspan.index).attr('colspan',colspan.span);
+				for (var i=colspan.index+1;i<head.eq(0).find('th').length;i++) head.eq(0).find('th').eq(i).hide();
 				if (records.length!=0)
 				{
 					vars.table=$('<table id="timetable" class="customview-table timetable-daily '+((vars.config['scalefixed']=='1')?'cellfixed':'')+'">').mergetable({
@@ -202,7 +217,7 @@ jQuery.noConflict();
 					}
 					/* merge row */
 					var rowspans=[];
-					for (var i=0;i<vars.segments.length;i++) rowspans.push({cache:'',index:0,rowspan:0});
+					for (var i=0;i<vars.segments.length;i++) rowspans.push({cache:'',index:0,span:0});
 					$.each(vars.table.contents.find('tr'),function(index){
 						var row=vars.table.contents.find('tr').eq(index);
 						for (var i=0;i<vars.segments.length;i++)
@@ -212,14 +227,14 @@ jQuery.noConflict();
 							{
 								if (rowspans[i].index!=0)
 								{
-									vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].rowspan);
+									vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].span);
 									for (var i2=rowspans[i].index+1;i2<index;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
 								}
 								rowspans[i].cache=cell.find('p').text();
 								rowspans[i].index=index;
-								rowspans[i].rowspan=0;
+								rowspans[i].span=0;
 							}
-							rowspans[i].rowspan+=(parseInt('0'+cell.attr('rowspan'))!=0)?parseInt('0'+cell.attr('rowspan'))-1:1;
+							rowspans[i].span+=(parseInt('0'+cell.attr('rowspan'))!=0)?parseInt('0'+cell.attr('rowspan'))-1:1;
 						}
 					});
 					var index=vars.table.contents.find('tr').length-1;
@@ -229,7 +244,7 @@ jQuery.noConflict();
 						var cell=row.find('td').eq(i);
 						if (rowspans[i].cache==cell.find('p').text() && rowspans[i].index!=index)
 						{
-							vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].rowspan);
+							vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].span);
 							for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
 						}
 					}

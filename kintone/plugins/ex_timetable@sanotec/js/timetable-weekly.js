@@ -152,7 +152,7 @@ jQuery.noConflict();
 				{
 					vars.table.insertrow(null,function(row){
 						for (var i2=0;i2<parseInt(vars.config['scale'])-1;i2++) vars.table.insertrow(row,function(row){row.find('td').eq(0).hide();});
-						row.find('td').eq(0).attr('rowspan',parseInt(vars.config['scale'])).text(i+parseInt(vars.config['starthour']));
+						row.find('td').eq(0).attr('rowspan',parseInt(vars.config['scale'])).text((i+parseInt(vars.config['starthour']))%24);
 					});
 				}
 				/* initialize cells */
