@@ -50,7 +50,7 @@ jQuery.noConflict();
 				{
 					/* create cell */
 					var datecalc=$.timetabledatecalc(new Date(filter[i][vars.config['fromtime']].value),new Date(filter[i][vars.config['totime']].value));
-					if (datecalc.to.hour<parseInt(vars.config['starthour'])-1) continue;
+					if (datecalc.to.hour<parseInt(vars.config['starthour'])) continue;
 					var from=(datecalc.from.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.floor(datecalc.from.minute/(60/parseInt(vars.config['scale'])));
 					var to=(datecalc.to.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.ceil(datecalc.to.minute/(60/parseInt(vars.config['scale'])))-1;
 					var row=vars.table.contents.find('tr').eq(from);

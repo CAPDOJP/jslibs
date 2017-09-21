@@ -18,6 +18,7 @@
 *			@ table	        	:element of table
 *			@ header			:elements of head
 *			@ template			:elements of row
+*			@ dragclass			:dragging classname
 *			@ merge				:merge flag
 *			@ mergeexclude		:merge exclude column index (array)
 *			@ mergeclass		:merged classname
@@ -31,6 +32,7 @@ var Table=function(options){
 		table:null,
 		head:null,
 		template:null,
+		dragclass:'drag',
 		merge:false,
 		mergeexclude:[],
 		mergeclass:'merge',
@@ -47,6 +49,7 @@ var Table=function(options){
 	this.head=$('<thead>').append(options.head);
 	this.contents=$('<tbody>');
 	this.template=options.template;
+	this.dragclass=options.dragclass;
 	this.mergeclass=options.mergeclass;
 	/* append elements */
 	this.container.append(this.head);
@@ -87,7 +90,7 @@ var Table=function(options){
 				if (row.find('td').eq(i).hasClass(options.mergeclass)) break;
 				mergelimitto=i;
 			}
-			if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.mergeclass);
+			if (!$(this).hasClass(options.mergeclass)) $(this).addClass(options.dragclass);
 			else merged=true;
 			if (options.callback.guidestart!=null) options.callback.guidestart(e,my,container,mergerow,mergefrom);
 			e.preventDefault();
@@ -146,8 +149,8 @@ var Table=function(options){
 		for (var i=mergelimitfrom;i<mergelimitto+1;i++)
 		{
 			var cell=contents.find('tr').eq(mergerow).find('td').eq(i);
-			if (i>mergefrom-1 && i<mergeto+1) cell.addClass(options.mergeclass);
-			else cell.removeClass(options.mergeclass);
+			if (i>mergefrom-1 && i<mergeto+1) cell.addClass(options.dragclass);
+			else cell.removeClass(options.dragclass);
 		}
 		if (options.callback.guide!=null) options.callback.guide(e,my,container,mergerow,mergefrom,mergeto);
 		e.preventDefault();
@@ -230,6 +233,7 @@ Table.prototype={
         cell.attr('colspan',to-from+1);
         for (var i=from;i<to;i++) cell.parent().find('td').eq(from+1).remove();
 		cell.addClass(this.mergeclass);
+		cell.removeClass(this.dragclass);
 	},
 	/* unmearge cell */
 	unmergecell:function(cell){
@@ -237,6 +241,7 @@ Table.prototype={
         cell.removeAttr('colspan');
         for (var i=0;i<colspan-1;i++) $('<td>').insertAfter(cell);
 		cell.removeClass(this.mergeclass);
+		cell.removeClass(this.dragclass);
 	}
 };
 jQuery.fn.mergetable=function(options){

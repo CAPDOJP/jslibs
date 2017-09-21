@@ -56,6 +56,13 @@ jQuery.noConflict();
 					var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])))-1;
 					var row=vars.table.contents.find('tr').eq(from);
 					var position=positions.min;
+					if (from<parseInt(vars.config['starthour'])*parseInt(vars.config['scale']))
+					{
+						from=parseInt(vars.config['starthour'])*parseInt(vars.config['scale']);
+						row=vars.table.contents.find('tr').eq(from);
+					}
+					if (to<parseInt(vars.config['starthour'])*parseInt(vars.config['scale'])) continue;
+					if (to>(parseInt(vars.config['endhour'])+1)*parseInt(vars.config['scale'])-1) to=(parseInt(vars.config['endhour'])+1)*parseInt(vars.config['scale'])-1;
 					from=vars.table.contents.find('tr').eq(from).position().top;
 					to=vars.table.contents.find('tr').eq(to).position().top+vars.table.contents.find('tr').eq(to).outerHeight(false);
 					/* check cell appended */
@@ -172,8 +179,6 @@ jQuery.noConflict();
 			query+=((query.length!=0)?' and ':'');
 			query+=vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'"';
 			query+=' and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
-			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
-			query+=' and '+vars.config['totime']+'<="'+('0'+vars.config['endhour']).slice(-2)+':59"';
 			sort=' order by ';
 			sort+=vars.config['date']+' asc,';
 			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';

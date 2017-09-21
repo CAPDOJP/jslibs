@@ -99,6 +99,9 @@ jQuery.noConflict();
 						var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])))-1;
 						var fromindex=0;
 						var toindex=0;
+						if (from<parseInt(vars.config['starthour'])*parseInt(vars.config['scale'])) from=parseInt(vars.config['starthour'])*parseInt(vars.config['scale']);
+						if (to<parseInt(vars.config['starthour'])*parseInt(vars.config['scale'])) continue;
+						if (to>(parseInt(vars.config['endhour'])+1)*parseInt(vars.config['scale'])-1) to=(parseInt(vars.config['endhour'])+1)*parseInt(vars.config['scale'])-1;
 						if (vars.config['route']=='1' || vars.config['segment'].length!=0)
 						{
 							from++;
@@ -195,8 +198,6 @@ jQuery.noConflict();
 			};
 			query+=((query.length!=0)?' and ':'');
 			query+=vars.config['date']+'="'+vars.date.format('Y-m-d')+'"';
-			query+=' and '+vars.config['fromtime']+'>="'+('0'+vars.config['starthour']).slice(-2)+':00"';
-			query+=' and '+vars.config['totime']+'<="'+('0'+vars.config['endhour']).slice(-2)+':59"';
 			sort=' order by ';
 			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
 			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
@@ -313,6 +314,7 @@ jQuery.noConflict();
 			container:container,
 			head:head,
 			template:template,
+			dragclass:'timetable-daily-drag',
 			merge:true,
 			mergeexclude:((vars.config['route']=='1' || vars.config['segment'].length!=0)?[0]:[]),
 			mergeclass:'timetable-daily-merge',

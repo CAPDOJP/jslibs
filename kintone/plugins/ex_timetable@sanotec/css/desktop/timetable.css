@@ -62,10 +62,16 @@ table.timetable-daily.cellfixed .timetable-daily-cellhead{
 	white-space:nowrap;
 	width:auto;
 }
-table.timetable-daily thead tr:first-of-type th{
+table.timetable-daily thead tr:nth-of-type(1) th{
+	border-bottom:none;
+	padding:0px 0.5em;
+	text-align:left;
+}
+table.timetable-daily thead tr:nth-of-type(2) th{
+	border-top:none;
 	border-bottom:none;
 }
-table.timetable-daily thead tr:last-of-type th{
+table.timetable-daily thead tr:nth-of-type(3) th{
 	border-top:none;
 	height:10px;
 }

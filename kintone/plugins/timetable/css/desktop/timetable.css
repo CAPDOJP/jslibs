@@ -55,6 +55,23 @@ table.timetable-daily tbody tr td{
 	cursor:pointer;
 	position:relative;
 }
+table.timetable-daily tbody tr td.timetable-daily-drag{
+	padding-bottom:13px;
+}
+table.timetable-daily tbody tr td.timetable-daily-drag:after{
+	background-color:#3498db;
+	border-radius:5px;
+	box-sizing:border-box;
+	bottom:3px;
+	content:'';
+	display:block;
+	height:10px;
+	left:0px;
+	margin:0px;
+	padding:0px;
+	position:absolute;
+	width:100%;
+}
 table.timetable-daily tbody tr td.timetable-daily-merge{
 	padding-bottom:13px;
 }

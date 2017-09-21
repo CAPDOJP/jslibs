@@ -56,7 +56,7 @@ jQuery.noConflict();
 							null,
 							new Date(vars.fromdate.format('Y-m-d')+'T00:00:00+0900')
 						);
-						if (datecalc.to.hour<parseInt(vars.config['starthour'])-1) continue;
+						if (datecalc.to.hour<parseInt(vars.config['starthour'])) continue;
 						var from=(datecalc.from.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.floor(datecalc.from.minute/(60/parseInt(vars.config['scale'])));
 						var to=(datecalc.to.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.ceil(datecalc.to.minute/(60/parseInt(vars.config['scale'])))-1;
 						var fromindex=0;
@@ -158,7 +158,7 @@ jQuery.noConflict();
 				});
 				/* create table */
 				var container=$('div#timetable-container').empty();
-				var head=$('<tr></tr><tr></tr>');
+				var head=$('<tr></tr><tr></tr><tr></tr>');
 				var template=$('<tr>');
 				var spacer=$('<span>');
 				var colspan={date:new Date(vars.fromdate.format('Y-m-d')),hour:0,index:vars.segments.length,span:0};
@@ -183,7 +183,7 @@ jQuery.noConflict();
 						colspan.span=0;
 					}
 					colspan.span+=parseInt(vars.config['scale']);
-					head.eq(0).append($('<th colspan="'+vars.config['scale']+'" class="left">').text(colspan.date.format('m-d')));
+					head.eq(0).append($('<th colspan="'+vars.config['scale']+'">').text(colspan.date.format('m-d')));
 					head.eq(1).append($('<th colspan="'+vars.config['scale']+'">').text(colspan.hour));
 					for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
 					{
