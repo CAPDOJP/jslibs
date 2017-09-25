@@ -85,7 +85,7 @@ jQuery.noConflict();
 				case 'DATETIME':
 					classes='datetimecell';
 					placeholder+=date.format('Y-m-d');
-					placeholder+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'Z';
+					placeholder+=' '+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
 					cell=$('<input type="text" id="'+fieldinfo.code+'" placeholder="ex) '+placeholder+'">');
 					break;
 				case 'DROP_DOWN':
@@ -345,6 +345,30 @@ jQuery.noConflict();
 							if ($(this).attr('value').length!=0) fieldvalue.push($(this).attr('value'));
 						});
 						break;
+					case 'DATE':
+						if (cell.val().match(/^[0-9]{4}(-|\/){1}([1-9]{1}|0[1-9]{1}|1[0-2]{1})(-|\/){1}([1-9]{1}|[0-2]{1}[0-9]{1}|3[0-1]{1})$/g)) fieldvalue=cell.val().replace(/\//g,'-');
+						else
+						{
+							if (cell.val().match(/^[0-9]{8}$/g))
+							{
+								cell.val(cell.val().substr(0,4)+'-'+cell.val().substr(4,2)+'-'+cell.val().substr(6,2));
+								fieldvalue=cell.val();
+							}
+							else cell.val('');
+						}
+						break;
+					case 'DATETIME':
+						if (cell.val().match(/^[0-9]{4}(-|\/){1}([1-9]{1}|0[1-9]{1}|1[0-2]{1})(-|\/){1}([1-9]{1}|[0-2]{1}[0-9]{1}|3[0-1]{1}) [0-9]{1,2}:[0-9]{1,2}$/g)) fieldvalue=cell.val().replace(/\//g,'-').replace(' ','T')+':00+0900';
+						else
+						{
+							if (cell.val().match(/^[0-9]{12}$/g))
+							{
+								cell.val(cell.val().substr(0,4)+'-'+cell.val().substr(4,2)+'-'+cell.val().substr(6,2)+' '+cell.val().substr(8,2)+':'+cell.val().substr(10,2));
+								fieldvalue=cell.val().replace(' ','T')+':00+0900';
+							}
+							else cell.val('');
+						}
+						break;
 					case 'GROUP_SELECT':
 					case 'ORGANIZATION_SELECT':
 					case 'USER_SELECT':
@@ -354,6 +378,19 @@ jQuery.noConflict();
 						break;
 					case 'RADIO_BUTTON':
 						fieldvalue=(cell.val().length!=0)?cell.val():fieldinfo.defaultValue;
+						break;
+					case 'TIME':
+						if (cell.val().match(/^[0-9]{1,2}:[0-9]{1,2}$/g)) fieldvalue=cell.val();
+						else
+						{
+							if (cell.val().match(/^[0-9]{1,4}$/g))
+							{
+								cell.val(cell.val().toString().lpad('0',4));
+								cell.val(cell.val().substr(0,2)+':'+cell.val().substr(2,2));
+								fieldvalue=cell.val();
+							}
+							else cell.val('');
+						}
 						break;
 					default:
 						fieldvalue=cell.val();
@@ -409,9 +446,9 @@ jQuery.noConflict();
 								{
 									fieldvalue='';
 									fieldvalue+=date.format('Y-m-d');
-									fieldvalue+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'Z';
+									fieldvalue+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'+0900';
 								}
-								else fieldvalue='1000-01-01T00:00:00Z';
+								else fieldvalue='1000-01-01T00:00:00+0900';
 								break;
 							case 'GROUP_SELECT':
 							case 'ORGANIZATION_SELECT':
@@ -633,6 +670,10 @@ jQuery.noConflict();
 								$.each(vars.fieldinfos,function(index,values){
 									switch (values.type)
 									{
+										case 'DATETIME':
+											if (record[values.code].value.length!=0) row.find('#'+values.code).val(new Date(record[values.code].value).format('Y-m-d H:i'));
+											else row.find('#'+values.code).val(record[values.code].value);
+											break;
 										case 'GROUP_SELECT':
 										case 'ORGANIZATION_SELECT':
 										case 'USER_SELECT':

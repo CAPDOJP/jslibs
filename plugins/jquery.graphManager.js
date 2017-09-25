@@ -16,6 +16,11 @@
 * parameters
 * options	@ canvas		:グラフ描画キャンバス
 *			@ type			:グラフタイプ【circle:line】
+*			@ scale			:目盛設定
+*							{
+*								position:【left:right】,
+*								width:幅
+*							}
 *			@ captions		:項目名
 *			@ captionformat	:項目名変換関数
 *			@ markers		:マーカースタイル
@@ -38,7 +43,7 @@ var graphManager = function(options){
 	var options=$.extend({
 		canvas:null,
 		type:'line',
-		scale:0,
+		scale:{position:'left',width:0},
 		captions:[],
 		captionformat:null,
 		markers:[],
@@ -59,6 +64,8 @@ var graphManager = function(options){
 	this.style=null;
 	this.maxvalue=Number.MIN_SAFE_INTEGER;
 	this.minvalue=Number.MAX_SAFE_INTEGER;
+	if (!('position' in this.scale)) this.scale['position']='left';
+	if (!('width' in this.scale)) this.scale['width']=0;
 	if (this.graph[0].getContext)
 	{
 		var pow=0;
@@ -138,7 +145,7 @@ graphManager.prototype={
 		        padding.holizontal=padding.left+padding.right+padding.scale;
 		        padding.vertical=padding.top+padding.bottom+padding.caption;
                 scale.amount=(this.maxvalue-this.minvalue)/(interval-1);
-				if (this.scale==0)
+				if (this.scale.width==0)
 				{
 					var scalecheck='';
 					var scalelength=0;
@@ -149,7 +156,7 @@ graphManager.prototype={
 					}
 					scale.width=scalelength*parseFloat(this.style.fontSize);
 				}
-				else scale.width=this.scale;
+				else scale.width=this.scale.width;
 				scale.height=(this.graph.height()-parseFloat(this.style.fontSize)*2-padding.vertical)/(interval-1);
                 plot.height=this.graph.height()-parseFloat(this.style.fontSize)*2-padding.vertical;
                 plot.width=this.graph.width()-padding.holizontal-scale.width;
@@ -161,22 +168,42 @@ graphManager.prototype={
 				this.context.lineJoin='round';
 				this.context.textBaseline='middle';
 				this.context.translate(0.5,0.5);
-				/* 目盛描画 */
-                left=scale.width+padding.left;
-                top=padding.top;
-				for (var i=0;i<interval;i++)
+				if (this.scale.position=='left')
 				{
-                    /* 補助線 */
-                    this.line('holizontal',left+padding.scale,top,plot.width,1,this.style.color,((i==interval-1)?0:2));
-                    /* 目盛 */
-					this.context.textAlign='right';
-					this.context.fillText(this.maxvalue-(scale.amount*i),left,top,scale.width);
-					top+=scale.height;
+					/* 目盛描画 */
+	                left=scale.width+padding.left;
+	                top=padding.top;
+					for (var i=0;i<interval;i++)
+					{
+	                    /* 補助線 */
+	                    this.line('holizontal',left+padding.scale,top,plot.width,1,this.style.color,((i==interval-1)?0:2));
+	                    /* 目盛 */
+						this.context.textAlign='right';
+						this.context.fillText(this.maxvalue-(scale.amount*i),left,top,scale.width);
+						top+=scale.height;
+					}
+	                /* 補助線 */
+	                this.line('vertical',left+padding.scale,padding.top,plot.height,1,this.style.color,0);
 				}
-                /* 補助線 */
-                this.line('vertical',left+padding.scale,padding.top,plot.height,1,this.style.color,0);
+				else
+				{
+					/* 目盛描画 */
+	                left=plot.width+padding.left+padding.scale;
+	                top=padding.top;
+					for (var i=0;i<interval;i++)
+					{
+	                    /* 補助線 */
+	                    this.line('holizontal',padding.left,top,plot.width,1,this.style.color,((i==interval-1)?0:2));
+	                    /* 目盛 */
+						this.context.textAlign='left';
+						this.context.fillText(this.maxvalue-(scale.amount*i),left,top,scale.width);
+						top+=scale.height;
+					}
+	                /* 補助線 */
+	                this.line('vertical',plot.width+padding.left,padding.top,plot.height,1,this.style.color,0);
+				}
                 /* 見出し描画 */
-                left=scale.width+(caption.width/2)+padding.left+padding.scale;
+                left=((this.scale.position=='left')?(scale.width+padding.scale):0)+(caption.width/2)+padding.left;
                 top=plot.height+(((caption.height/2)-(parseFloat(this.style.fontSize)*0.75))/2)+padding.top+padding.caption;
                 $.each(this.captions,function(index){
                 	var texts=((my.captionformat!=null)?my.captionformat(prev,my.captions[index]):my.captions[index]).split(/\r\n|\r|\n/);
@@ -190,7 +217,7 @@ graphManager.prototype={
 					var values=my.values[index];
 					path=new Path2D();
 					ratio=(my.maxvalue/(my.maxvalue-my.minvalue))-(values[0]/(my.maxvalue-my.minvalue));
-					left=scale.width+(caption.width/2)+padding.left+padding.scale;
+					left=((my.scale.position=='left')?(scale.width+padding.scale):0)+(caption.width/2)+padding.left;
 					path.moveTo(left,plot.height*ratio+padding.top);
 					$.each(values,function(index){
 						if (index!=0)
