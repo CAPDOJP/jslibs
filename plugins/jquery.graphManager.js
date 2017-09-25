@@ -68,27 +68,7 @@ var graphManager = function(options){
 	if (!('width' in this.scale)) this.scale['width']=0;
 	if (this.graph[0].getContext)
 	{
-		var pow=0;
 		this.context=this.graph[0].getContext('2d');
-		$.each(this.values,function(index){
-			var values=my.values[index];
-			$.each(values,function(index){
-				if (my.maxvalue<Math.ceil(values[index])) my.maxvalue=Math.ceil(values[index]);
-				if (my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
-			});
-		});
-		if (this.minvalue<0)
-		{
-			this.maxvalue=Math.max(this.maxvalue,this.minvalue*-1);
-			this.minvalue=Math.max(this.maxvalue,this.minvalue*-1)*-1;
-		}
-		else this.minvalue=0;
-		if (this.maxvalue.toString().length>1)
-		{
-			pow=Math.pow(10,this.maxvalue.toString().length-1);
-			this.maxvalue=Math.floor(this.maxvalue/pow)*pow+pow;
-			if (this.minvalue<0) this.minvalue=this.maxvalue*-1;
-		}
 		switch(this.type)
 		{
 			case 'circle':
@@ -111,11 +91,31 @@ graphManager.prototype={
 		var left=0;
 		var top=0;
 		var interval=5;
+		var pow=0;
 		var padding={left:10,right:10,top:10,bottom:10,holizontal:20,vertical:20};
 		var path=new Path2D();
 		/* グラフ初期化 */
 		this.context.clearRect(0,0,this.graph.width(),this.graph.height());
         this.style=getComputedStyle(this.graph[0]);
+		$.each(this.values,function(index){
+			var values=my.values[index];
+			$.each(values,function(index){
+				if (my.maxvalue<Math.ceil(values[index])) my.maxvalue=Math.ceil(values[index]);
+				if (my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
+			});
+		});
+		if (this.minvalue<0)
+		{
+			this.maxvalue=Math.max(this.maxvalue,this.minvalue*-1);
+			this.minvalue=Math.max(this.maxvalue,this.minvalue*-1)*-1;
+		}
+		else this.minvalue=0;
+		if (this.maxvalue.toString().length>1)
+		{
+			pow=Math.pow(10,this.maxvalue.toString().length-1);
+			this.maxvalue=Math.floor(this.maxvalue/pow)*pow+pow;
+			if (this.minvalue<0) this.minvalue=this.maxvalue*-1;
+		}
 		switch(this.type)
 		{
 			case 'circle':
