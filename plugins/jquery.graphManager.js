@@ -231,7 +231,8 @@ graphManager.prototype={
 						}
 						left+=caption.width;
 					});
-					my.context.lineWidth=1;
+					my.context.imageSmoothingEnabled=false;
+					my.context.lineWidth=2;
 					my.context.strokeStyle=my.markers[index].color;
 					if (my.markers[index].dot)
 					{
