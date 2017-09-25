@@ -221,13 +221,13 @@ graphManager.prototype={
 					path=new Path2D();
 					ratio=(my.maxvalue/(my.maxvalue-my.minvalue))-(values[0]/(my.maxvalue-my.minvalue));
 					left=((my.scale.position=='left')?(scale.width+padding.scale):0)+(caption.width/2)+padding.left;
-					top=Math.floor(plot.height*ratio)+padding.top;
+					top=Math.floor(plot.height*ratio)+padding.top+0.5;
 					path.moveTo(left,top);
 					$.each(values,function(index){
 						if (index!=0)
 						{
 							ratio=(my.maxvalue/(my.maxvalue-my.minvalue))-(values[index]/(my.maxvalue-my.minvalue));
-							top=Math.floor(plot.height*ratio)+padding.top;
+							top=Math.floor(plot.height*ratio)+padding.top+0.5;
 							path.lineTo(left,top);
 							path.moveTo(left,top);
 						}
@@ -236,7 +236,7 @@ graphManager.prototype={
 					path.closePath();
 					my.context.lineCap='round';
 					my.context.lineJoin='round';
-					my.context.lineWidth=1;
+					my.context.lineWidth=2;
 					my.context.strokeStyle=my.markers[index].color;
 					if (my.markers[index].dot)
 					{
