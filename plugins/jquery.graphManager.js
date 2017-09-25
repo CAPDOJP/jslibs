@@ -96,6 +96,8 @@ graphManager.prototype={
 		var path=new Path2D();
 		/* グラフ初期化 */
 		this.context.clearRect(0,0,this.graph.width(),this.graph.height());
+		this.maxvalue=Number.MIN_SAFE_INTEGER;
+		this.minvalue=Number.MAX_SAFE_INTEGER;
         this.style=getComputedStyle(this.graph[0]);
 		$.each(this.values,function(index){
 			var values=my.values[index];
