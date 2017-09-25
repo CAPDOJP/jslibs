@@ -232,8 +232,8 @@ graphManager.prototype={
 						left+=caption.width;
 					});
 					my.context.lineWidth=2;
+					my.context.globalCompositeOperation='source-in';
 					my.context.strokeStyle=my.markers[index].color;
-					my.context.translate(0.5,0.5);
 					if (my.markers[index].dot)
 					{
 						my.context.setLineDash([5]);
@@ -241,7 +241,6 @@ graphManager.prototype={
 					}
 					else my.context.setLineDash([]);
 					my.context.stroke(path);
-					my.context.translate(-0.5,-0.5);
 				});
 				break;
 		}
