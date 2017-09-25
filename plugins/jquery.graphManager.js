@@ -239,10 +239,11 @@ graphManager.prototype={
 						my.context.lineDashOffset=3;
 					}
 					else my.context.setLineDash([]);
+					my.context.save();
+					my.context.stroke(path);
 					my.context.translate(0.5,0.5);
 					my.context.stroke(path);
-					my.context.translate(-0.5,-0.5);
-					my.context.stroke(path);
+					my.context.restore();
 				});
 				break;
 		}
