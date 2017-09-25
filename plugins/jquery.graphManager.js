@@ -232,7 +232,6 @@ graphManager.prototype={
 						left+=caption.width;
 					});
 					path.closePath();
-					my.context.globalCompositeOperation='destination-in';
 					my.context.lineCap='round';
 					my.context.lineJoin='round';
 					my.context.lineWidth=2;
