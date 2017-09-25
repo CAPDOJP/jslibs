@@ -236,7 +236,7 @@ graphManager.prototype={
 					path.closePath();
 					my.context.lineCap='round';
 					my.context.lineJoin='round';
-					my.context.lineWidth=2;
+					my.context.lineWidth=1;
 					my.context.strokeStyle=my.markers[index].color;
 					if (my.markers[index].dot)
 					{
