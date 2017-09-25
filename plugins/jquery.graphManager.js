@@ -231,7 +231,9 @@ graphManager.prototype={
 						}
 						left+=caption.width;
 					});
-					my.context.globalCompositeOperation='source-in';
+					path.closePath();
+					my.context.lineCap='round';
+					my.context.lineJoin='round';
 					my.context.lineWidth=2;
 					my.context.strokeStyle=my.markers[index].color;
 					if (my.markers[index].dot)
