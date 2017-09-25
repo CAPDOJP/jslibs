@@ -94,11 +94,9 @@ graphManager.prototype={
 		var pow=0;
 		var padding={left:10,right:10,top:10,bottom:10,holizontal:20,vertical:20};
 		var path=new Path2D();
-		/* グラフ初期化 */
-		this.context.clearRect(0,0,this.graph.width(),this.graph.height());
+		/* 目盛設定初期化 */
 		this.maxvalue=Number.MIN_SAFE_INTEGER;
 		this.minvalue=Number.MAX_SAFE_INTEGER;
-        this.style=getComputedStyle(this.graph[0]);
 		$.each(this.values,function(index){
 			var values=my.values[index];
 			$.each(values,function(index){
@@ -118,6 +116,9 @@ graphManager.prototype={
 			this.maxvalue=Math.floor(this.maxvalue/pow)*pow+pow;
 			if (this.minvalue<0) this.minvalue=this.maxvalue*-1;
 		}
+		/* グラフ初期化 */
+		this.context.clearRect(0,0,this.graph.width(),this.graph.height());
+        this.style=getComputedStyle(this.graph[0]);
 		switch(this.type)
 		{
 			case 'circle':
