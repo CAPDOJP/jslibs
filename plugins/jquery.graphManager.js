@@ -219,13 +219,13 @@ graphManager.prototype={
 				$.each(this.values,function(index){
 					var values=my.values[index];
 					path=new Path2D();
-					ratio=(my.maxvalue/(my.maxvalue-my.minvalue))-(values[0]/(my.maxvalue-my.minvalue));
+					ratio=Math.floor((my.maxvalue/(my.maxvalue-my.minvalue))-(values[0]/(my.maxvalue-my.minvalue)));
 					left=((my.scale.position=='left')?(scale.width+padding.scale):0)+(caption.width/2)+padding.left;
 					path.moveTo(left,plot.height*ratio+padding.top);
 					$.each(values,function(index){
 						if (index!=0)
 						{
-							ratio=(my.maxvalue/(my.maxvalue-my.minvalue))-(values[index]/(my.maxvalue-my.minvalue));
+							ratio=Math.floor((my.maxvalue/(my.maxvalue-my.minvalue))-(values[index]/(my.maxvalue-my.minvalue)));
 							path.lineTo(left,plot.height*ratio+padding.top);
 							path.moveTo(left,plot.height*ratio+padding.top);
 						}
