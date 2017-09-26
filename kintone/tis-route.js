@@ -285,7 +285,7 @@ RouteMap.prototype={
 					}
 				);
 				/* setup center position */
-				map.setCenter(latlng);
+				map.setCenter(new google.maps.LatLng(values.lat,values.lng));
 				if (options.callback!=null) options.callback();
 				break;
 			default:

@@ -286,7 +286,7 @@ DynamicMap.prototype={
 							}
 						);
 						/*中心位置設定*/
-						map.setCenter(latlng);
+						map.setCenter(new google.maps.LatLng(values.lat,values.lng));
 						/*ルート案内非表示*/
 						if (routing!=null)
 						{
