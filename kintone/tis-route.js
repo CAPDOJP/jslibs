@@ -145,6 +145,48 @@ RouteMap.prototype={
 		{
 			var userAgent=window.navigator.userAgent.toLowerCase();
 			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
+			var watchparam={
+				accuracy:Number.MAX_SAFE_INTEGER,
+				counter:0,
+				latlng:new google.maps.LatLng(0,0),
+				limit:5
+			};
+			var watchID=navigator.geolocation.watchPosition(
+				function(pos){
+					if (watchparam.accuracy>pos.coords.accuracy)
+					{
+						watchparam.accuracy=pos.coords.accuracy;
+						watchparam.latlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+					}
+					watchparam.counter++;
+					if (watchparam.counter>watchparam.limit)
+					{
+						navigator.geolocation.clearWatch(watchID);
+						if (options.callback!=null) options.callback(watchparam.latlng);
+					}
+				},
+				function(error){
+					switch (error.code)
+					{
+						case 1:
+							alert('位置情報取得のアクセスが拒否されました。\n'+error.message);
+							navigator.geolocation.clearWatch(watchID);
+							break;
+						case 2:
+							alert('位置情報の取得に失敗しました。\n'+error.message);
+							navigator.geolocation.clearWatch(watchID);
+							break;
+					}
+					watchparam.counter++;
+					if (watchparam.counter>watchparam.limit) navigator.geolocation.clearWatch(watchID);
+				},
+				{
+					enableHighAccuracy:true,
+					maximumAge:0,
+					timeout:10000
+				}
+			);
+			/*
 			navigator.geolocation.getCurrentPosition(
 				function(pos){
 					if (options.callback!=null) options.callback(new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude));
@@ -158,6 +200,7 @@ RouteMap.prototype={
 					timeout:10000
 				}
 			);
+			*/
 		}
 		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
 	},

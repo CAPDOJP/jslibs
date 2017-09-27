@@ -238,14 +238,16 @@ jQuery.noConflict();
 		},
 		/* swtich view of marker */
 		reloadmap:function(addcurrentlocation,callback){
-			if (vars.currentlocation.find('input[type=checkbox]').prop('checked'))
+			var iscurrentlocation=vars.currentlocation.find('input[type=checkbox]').prop('checked');
+			var isextensionindex=vars.displaydatespan.find('input[type=checkbox]').prop('checked');
+			var isopeninfowindow=vars.displayinfowindow.find('input[type=checkbox]').prop('checked');
+			var markers=$.extend(true,[],vars.markers);
+			if (iscurrentlocation)
 			{
 				vars.map.currentlocation({callback:function(latlng){
-					var markers=$.extend(true,[],vars.markers);
-					/* start from current location */
 					if (addcurrentlocation)
 					{
-						markers.unshift({
+						markers.push({
 							icon:{
 								anchor:new google.maps.Point(11,11),
 								origin:new google.maps.Point(0,0),
@@ -259,15 +261,34 @@ jQuery.noConflict();
 						/* display map */
 						vars.map.reloadmap({
 							markers:markers,
-							isextensionindex:vars.displaydatespan.find('input[type=checkbox]').prop('checked'),
-							isopeninfowindow:vars.displayinfowindow.find('input[type=checkbox]').prop('checked')
+							isextensionindex:isextensionindex,
+							isopeninfowindow:isopeninfowindow,
+							callback:function(){
+								if (isextensionindex)
+								{
+									/* setup zindex */
+									markers.sort(function(a,b){
+										if (!a.extensionindex) return 0;
+										if (!b.extensionindex) return 0;
+										if(a.extensionindex<b.extensionindex) return -1;
+										if(a.extensionindex>b.extensionindex) return 1;
+										return 0;
+			    					});
+			    					for (var i=0;i<markers.length-1;i++)
+			    					{
+			    						var merker=$.grep(vars.map.markers,function(item,index){return (item.getPosition()==new google.maps.LatLng(markers[i].lat,markers[i].lng));});
+			    						if (merker.length!=0) vars.map.merker[0].setZIndex(i);
+			    					}
+								}
+								else for (var i=0;i<vars.map.markers.length-1;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
+		    					/* front row current location */
+								vars.map.markers[vars.map.markers.length-1].setZIndex(vars.map.markers.length+2);
+							}
 						});
 					}
-					else
-					{
-						vars.map.markers[0].setPosition(new google.maps.LatLng(latlng.lat(),latlng.lng()));
-						vars.map.map.setCenter(new google.maps.LatLng(latlng.lat(),latlng.lng()));
-					}
+					else vars.map.markers[vars.map.markers.length-1].setPosition(new google.maps.LatLng(latlng.lat(),latlng.lng()));
+					/* start from current location */
+					vars.map.map.setCenter(new google.maps.LatLng(latlng.lat(),latlng.lng()));
 					if (callback!==undefined) callback();
 				}});
 			}
@@ -276,10 +297,10 @@ jQuery.noConflict();
 				/* display map */
 				vars.map.reloadmap({
 					markers:vars.markers,
-					isextensionindex:vars.displaydatespan.find('input[type=checkbox]').prop('checked'),
-					isopeninfowindow:vars.displayinfowindow.find('input[type=checkbox]').prop('checked'),
+					isextensionindex:isextensionindex,
+					isopeninfowindow:isopeninfowindow,
 					callback:function(){
-						if (vars.displaydatespan.find('input[type=checkbox]').prop('checked'))
+						if (isextensionindex)
 						{
 							var latlng=null;
 							var olddate=new Date();
@@ -305,7 +326,21 @@ jQuery.noConflict();
 								}
 							});
 							if (latlng!=null) vars.map.map.setCenter(latlng);
+							/* setup zindex */
+							markers.sort(function(a,b){
+								if (a.extensionindex.length==0) return 0;
+								if (b.extensionindex.length==0) return 0;
+								if(a.extensionindex<b.extensionindex) return -1;
+								if(a.extensionindex>b.extensionindex) return 1;
+								return 0;
+	    					});
+	    					for (var i=0;i<markers.length-1;i++)
+	    					{
+	    						var merker=$.grep(vars.map.markers,function(item,index){return (item.getPosition()==new google.maps.LatLng(markers[i].lat,markers[i].lng));});
+	    						if (merker.length!=0) vars.map.merker[0].setZIndex(i);
+	    					}
 						}
+						else for (var i=0;i<vars.map.markers.length-1;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
 					}
 				});
 				if (callback!==undefined) callback();
