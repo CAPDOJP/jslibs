@@ -90,7 +90,7 @@ var DynamicMap=function(options){
 	};
 	this.displaybox=options.display;
 	this.routingbox=options.route;
-	this.currentlatlng=new google.maps.LatLng(0,0);
+	this.currentlatlng=null;
 	this.watchId=null;
 	this.locations=[];
 	this.markers=[];
@@ -198,7 +198,9 @@ DynamicMap.prototype={
 					this.currentlatlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
 					if (options.callback!=null) options.callback(this.currentlatlng);
 				},
-				function(error){},
+				function(error){
+					if (this.currentlatlng==null) this.currentlatlng=new google.maps.LatLng(0,0);
+				},
 				{
 					enableHighAccuracy:true,
 					maximumAge:0,
