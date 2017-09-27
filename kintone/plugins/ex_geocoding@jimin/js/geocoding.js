@@ -222,8 +222,9 @@ jQuery.noConflict();
 							vars.map.watchlocation({callback:function(latlng){
 								if (!vars.isdisplaymap) return;
 								if (!vars.currentlocation.find('input[type=checkbox]').prop('checked')) return;
+								if (vars.map.markers.length==0) return;
 								/* setup current location */
-								vars.map.markers[vars.map.markers.length-1].setPosition(latlng);
+								vars.map.markers[0].setPosition(latlng);
 								vars.map.map.setCenter(latlng);
 							}});
 						}
@@ -243,10 +244,19 @@ jQuery.noConflict();
 			var isextensionindex=vars.displaydatespan.find('input[type=checkbox]').prop('checked');
 			var isopeninfowindow=vars.displayinfowindow.find('input[type=checkbox]').prop('checked');
 			var markers=$.extend(true,[],vars.markers);
+			if (isextensionindex)
+			{
+				/* setup zindex */
+				markers.sort(function(a,b){
+					if(parseFloat('0'+a.extensionindex)>parseFloat('0'+b.extensionindex)) return -1;
+					if(parseFloat('0'+a.extensionindex)<parseFloat('0'+b.extensionindex)) return 1;
+					return 0;
+				});
+			}
 			if (iscurrentlocation)
 			{
 				vars.map.currentlocation({callback:function(latlng){
-					markers.push({
+					markers.unshift({
 						icon:{
 							anchor:new google.maps.Point(11,11),
 							origin:new google.maps.Point(0,0),
@@ -263,27 +273,7 @@ jQuery.noConflict();
 						isextensionindex:isextensionindex,
 						isopeninfowindow:isopeninfowindow,
 						callback:function(){
-							if (isextensionindex)
-							{
-								/* setup zindex */
-								markers.sort(function(a,b){
-									if (!a.extensionindex) return 0;
-									if (!b.extensionindex) return 0;
-									if(a.extensionindex<b.extensionindex) return -1;
-									if(a.extensionindex>b.extensionindex) return 1;
-									return 0;
-		    					});
-		    					for (var i=0;i<markers.length-1;i++)
-		    					{
-		    						var marker=$.grep(vars.map.markers,function(item,index){return (item.getPosition()==new google.maps.LatLng(markers[i].lat,markers[i].lng));});
-		    						if (marker.length!=0) marker[0].setZIndex(i);
-		    					}
-							}
-							else for (var i=0;i<vars.map.markers.length-1;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
-	    					/* front row current location */
-							vars.map.markers[vars.map.markers.length-1].setZIndex(vars.map.markers.length+1);
-							/* start from current location */
-							vars.map.map.setCenter(latlng);
+							for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
 							if (callback!==undefined) callback();
 						}
 					});
@@ -293,7 +283,7 @@ jQuery.noConflict();
 			{
 				/* display map */
 				vars.map.reloadmap({
-					markers:vars.markers,
+					markers:markers,
 					isextensionindex:isextensionindex,
 					isopeninfowindow:isopeninfowindow,
 					callback:function(){
@@ -323,21 +313,8 @@ jQuery.noConflict();
 								}
 							});
 							if (latlng!=null) vars.map.map.setCenter(latlng);
-							/* setup zindex */
-							markers.sort(function(a,b){
-								if (a.extensionindex.length==0) return 0;
-								if (b.extensionindex.length==0) return 0;
-								if(a.extensionindex<b.extensionindex) return -1;
-								if(a.extensionindex>b.extensionindex) return 1;
-								return 0;
-	    					});
-	    					for (var i=0;i<markers.length-1;i++)
-	    					{
-	    						var marker=$.grep(vars.map.markers,function(item,index){return (item.getPosition()==new google.maps.LatLng(markers[i].lat,markers[i].lng));});
-	    						if (marker.length!=0) marker[0].setZIndex(i);
-	    					}
 						}
-						else for (var i=0;i<vars.map.markers.length-1;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
+						for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
 						if (callback!==undefined) callback();
 					}
 				});

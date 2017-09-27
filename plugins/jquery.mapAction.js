@@ -190,8 +190,8 @@ DynamicMap.prototype={
 			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
 			navigator.geolocation.watchPosition(
 				function(pos){
-					if (pos.coords.accuracy<10 && callback!=null)
-						callback(new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude));
+					if (pos.coords.accuracy<10 && options.callback!=null)
+						options.callback(new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude));
 				},
 				function(error){},
 				{
