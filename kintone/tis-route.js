@@ -51,10 +51,10 @@ var RouteMap=function(options){
 	{
 		this.container.css({
 			'bottom':'-100%',
-			'height':'100vh',
 			'left':'0px',
+			'max-height':'100vh',
+			'max-width':'100vw',
 			'position':'fixed',
-			'width':'100vw',
 			'z-index':'999999'
 		});
 	}
