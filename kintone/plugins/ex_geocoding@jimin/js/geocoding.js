@@ -217,14 +217,15 @@ jQuery.noConflict();
 						kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 						kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
 						/* chase mode */
-						if (vars.config['chasemode']=='1' && $.isNumeric(vars.config['chasetimespan']))
+						if (vars.config['chasemode']=='1')
 						{
-							var timespan=parseFloat(vars.config['chasetimespan'])*1000;
-							setInterval(function(){
-								/* swtich view of marker */
-								if (vars.isdisplaymap)
-									if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) functions.reloadmap();
-							},timespan);
+							vars.map.watchlocation({callback:function(latlng){
+								if (!vars.isdisplaymap) return;
+								if (!vars.currentlocation.find('input[type=checkbox]').prop('checked')) return;
+								/* setup current location */
+								vars.map.markers[vars.map.markers.length-1].setPosition(latlng);
+								vars.map.map.setCenter(latlng);
+							}});
 						}
 					},isreload);
 					vars.map.buttonblock
@@ -237,7 +238,7 @@ jQuery.noConflict();
 			},function(error){});
 		},
 		/* swtich view of marker */
-		reloadmap:function(addcurrentlocation,callback){
+		reloadmap:function(callback){
 			var iscurrentlocation=vars.currentlocation.find('input[type=checkbox]').prop('checked');
 			var isextensionindex=vars.displaydatespan.find('input[type=checkbox]').prop('checked');
 			var isopeninfowindow=vars.displayinfowindow.find('input[type=checkbox]').prop('checked');
@@ -245,51 +246,47 @@ jQuery.noConflict();
 			if (iscurrentlocation)
 			{
 				vars.map.currentlocation({callback:function(latlng){
-					if (addcurrentlocation)
-					{
-						markers.push({
-							icon:{
-								anchor:new google.maps.Point(11,11),
-								origin:new google.maps.Point(0,0),
-								size:new google.maps.Size(22,22),
-								url:'https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/currentpos.png',
-							},
-							lat:latlng.lat(),
-							lng:latlng.lng(),
-							serialnumber:false
-						});
-						/* display map */
-						vars.map.reloadmap({
-							markers:markers,
-							isextensionindex:isextensionindex,
-							isopeninfowindow:isopeninfowindow,
-							callback:function(){
-								if (isextensionindex)
-								{
-									/* setup zindex */
-									markers.sort(function(a,b){
-										if (!a.extensionindex) return 0;
-										if (!b.extensionindex) return 0;
-										if(a.extensionindex<b.extensionindex) return -1;
-										if(a.extensionindex>b.extensionindex) return 1;
-										return 0;
-			    					});
-			    					for (var i=0;i<markers.length-1;i++)
-			    					{
-			    						var merker=$.grep(vars.map.markers,function(item,index){return (item.getPosition()==new google.maps.LatLng(markers[i].lat,markers[i].lng));});
-			    						if (merker.length!=0) vars.map.merker[0].setZIndex(i);
-			    					}
-								}
-								else for (var i=0;i<vars.map.markers.length-1;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
-		    					/* front row current location */
-								vars.map.markers[vars.map.markers.length-1].setZIndex(vars.map.markers.length+2);
+					markers.push({
+						icon:{
+							anchor:new google.maps.Point(11,11),
+							origin:new google.maps.Point(0,0),
+							size:new google.maps.Size(22,22),
+							url:'https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/currentpos.png',
+						},
+						lat:latlng.lat(),
+						lng:latlng.lng(),
+						serialnumber:false
+					});
+					/* display map */
+					vars.map.reloadmap({
+						markers:markers,
+						isextensionindex:isextensionindex,
+						isopeninfowindow:isopeninfowindow,
+						callback:function(){
+							if (isextensionindex)
+							{
+								/* setup zindex */
+								markers.sort(function(a,b){
+									if (!a.extensionindex) return 0;
+									if (!b.extensionindex) return 0;
+									if(a.extensionindex<b.extensionindex) return -1;
+									if(a.extensionindex>b.extensionindex) return 1;
+									return 0;
+		    					});
+		    					for (var i=0;i<markers.length-1;i++)
+		    					{
+		    						var marker=$.grep(vars.map.markers,function(item,index){return (item.getPosition()==new google.maps.LatLng(markers[i].lat,markers[i].lng));});
+		    						if (marker.length!=0) marker[0].setZIndex(i);
+		    					}
 							}
-						});
-					}
-					else vars.map.markers[vars.map.markers.length-1].setPosition(new google.maps.LatLng(latlng.lat(),latlng.lng()));
-					/* start from current location */
-					vars.map.map.setCenter(new google.maps.LatLng(latlng.lat(),latlng.lng()));
-					if (callback!==undefined) callback();
+							else for (var i=0;i<vars.map.markers.length-1;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
+	    					/* front row current location */
+							vars.map.markers[vars.map.markers.length-1].setZIndex(vars.map.markers.length+1);
+							/* start from current location */
+							vars.map.map.setCenter(latlng);
+							if (callback!==undefined) callback();
+						}
+					});
 				}});
 			}
 			else
@@ -336,14 +333,14 @@ jQuery.noConflict();
 	    					});
 	    					for (var i=0;i<markers.length-1;i++)
 	    					{
-	    						var merker=$.grep(vars.map.markers,function(item,index){return (item.getPosition()==new google.maps.LatLng(markers[i].lat,markers[i].lng));});
-	    						if (merker.length!=0) vars.map.merker[0].setZIndex(i);
+	    						var marker=$.grep(vars.map.markers,function(item,index){return (item.getPosition()==new google.maps.LatLng(markers[i].lat,markers[i].lng));});
+	    						if (marker.length!=0) marker[0].setZIndex(i);
 	    					}
 						}
 						else for (var i=0;i<vars.map.markers.length-1;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
+						if (callback!==undefined) callback();
 					}
 				});
-				if (callback!==undefined) callback();
 			}
 		}
 	};
@@ -365,7 +362,7 @@ jQuery.noConflict();
 		.append($('<input type="checkbox" id="currentlocation">')
 			.on('change',function(e){
 				/* swtich view of marker */
-				functions.reloadmap($(this).prop('checked'));
+				functions.reloadmap();
 			})
 		)
 		.append($('<span>現在地を表示</span>'));
@@ -396,7 +393,7 @@ jQuery.noConflict();
 					}
 					vars.markers[i].colors=color;
 				}
-				functions.reloadmap(true);
+				functions.reloadmap();
 			})
 		)
 		.append($('<span>経過日数を表示</span>'));
@@ -415,7 +412,7 @@ jQuery.noConflict();
 		vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
 		.text('地図を表示')
 		.on('click',function(e){
-			functions.reloadmap(vars.currentlocation.find('input[type=checkbox]').prop('checked'),function(){vars.isdisplaymap=true;});
+			functions.reloadmap(function(){vars.isdisplaymap=true;});
 		});
 		/* load datas */
 		vars.apps[kintone.app.getId()]=null;

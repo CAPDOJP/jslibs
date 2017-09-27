@@ -180,6 +180,29 @@ DynamicMap.prototype={
 		}
 		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
 	},
+	watchlocation:function(options){
+		var options=$.extend({
+			callback:null
+		},options);
+		if (navigator.geolocation)
+		{
+			var userAgent=window.navigator.userAgent.toLowerCase();
+			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
+			navigator.geolocation.watchPosition(
+				function(pos){
+					if (pos.coords.accuracy<10 && callback!=null)
+						callback(new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude));
+				},
+				function(error){},
+				{
+					enableHighAccuracy:true,
+					maximumAge:0,
+					timeout:10000
+				}
+			);
+		}
+		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
+	},
 	/*地図再読込*/
 	reloadmap:function(options){
 		var options=$.extend({

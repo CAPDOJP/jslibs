@@ -87,7 +87,6 @@ jQuery.noConflict();
 			});
         	$('input#markersize').val(config['markersize']);
         	$('input#markerfont').val(config['markerfont']);
-        	$('input#chasetimespan').val(config['chasetimespan']);
         	$('input#apikey').val(config['apikey']);
         	if (config['map']=='1') $('input#map').prop('checked',true);
         	if (config['chasemode']=='1') $('input#chasemode').prop('checked',true);
@@ -96,7 +95,6 @@ jQuery.noConflict();
         {
         	$('input#markersize').val('34');
         	$('input#markerfont').val('11');
-        	$('input#chasetimespan').val('10');
         	$('input#defaultcolor').val(vars.colors[0].replace('#',''));
 			$.each($('input#datespancolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
         }
@@ -182,15 +180,6 @@ jQuery.noConflict();
 		    }
 	    }
 	    if (error) return;
-	    if ($('input#chasemode').prop('checked'))
-	    {
-		    if ($('input#chasetimespan').val()=='') $('input#chasetimespan').val('10');
-			if (!$.isNumeric($('input#chasetimespan').val()))
-		    {
-		    	swal('Error!','更新間隔は数値を入力して下さい。','error');
-		    	return;
-		    }
-	    }
 		/* setup config */
         config['address']=$('select#address').val();
         config['pluscode']=$('select#pluscode').val();
@@ -205,7 +194,6 @@ jQuery.noConflict();
         config['markersize']=$('input#markersize').val();
         config['markerfont']=$('input#markerfont').val();
         config['chasemode']=($('input#chasemode').prop('checked'))?'1':'0';
-        config['chasetimespan']=$('input#chasetimespan').val();
         config['apikey']=$('input#apikey').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);
