@@ -190,17 +190,18 @@ DynamicMap.prototype={
 		var options=$.extend({
 			callback:null
 		},options);
+		var my=this;
 		if (navigator.geolocation)
 		{
 			var userAgent=window.navigator.userAgent.toLowerCase();
 			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
 			this.watchID=navigator.geolocation.watchPosition(
 				function(pos){
-					this.currentlatlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
-					if (options.callback!=null) options.callback(this.currentlatlng);
+					my.currentlatlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+					if (options.callback!=null) options.callback(my.currentlatlng);
 				},
 				function(error){
-					if (this.currentlatlng==null) this.currentlatlng=new google.maps.LatLng(0,0);
+					if (my.currentlatlng==null) my.currentlatlng=new google.maps.LatLng(0,0);
 				},
 				{
 					enableHighAccuracy:true,
