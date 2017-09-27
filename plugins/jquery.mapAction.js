@@ -139,6 +139,7 @@ DynamicMap.prototype={
 			var userAgent=window.navigator.userAgent.toLowerCase();
 			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
 			if (this.watchID!=null) options.callback(this.currentlatlng);
+			else
 			{
 				var watchparam={
 					accuracy:Number.MAX_SAFE_INTEGER,
