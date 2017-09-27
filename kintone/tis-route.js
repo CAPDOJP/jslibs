@@ -197,7 +197,7 @@ RouteMap.prototype={
 		{
 			var userAgent=window.navigator.userAgent.toLowerCase();
 			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
-			navigator.geolocation.watchPosition(
+			var watchID=navigator.geolocation.watchPosition(
 				function(pos){
 					console.log(pos.coords.accuracy);
 					if (pos.coords.accuracy<10 && options.callback!=null)
