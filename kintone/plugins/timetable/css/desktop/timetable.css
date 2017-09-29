@@ -1,205 +1,217 @@
 /* individual style (common) */
 *.hide{
-	display:none;
+  display:none;
 }
 div.timetable-dayfeed{
-	display:inline-block;
-	line-height:30px;
-	padding-top:9px;
+  display:inline-block;
+  line-height:30px;
+  padding-top:9px;
 }
 div.timetable-dayfeed *{
-	vertical-align:top;
+  vertical-align:top;
 }
 div.timetable-graphlegend{
-	padding:6px 3px;
-	text-align:center;
+  padding:6px 3px;
+  text-align:center;
+}
+p.timetable-tooltip{
+  font-size:13px;
+  line-height:18px;
+  margin:0px;
+  padding:3px;
+}
+p.timetable-tooltip span{
+  background-color:#FFFFFF;
+  border:1px solid #C9C9C9;
+  border-radius:5px;
+  font-size:11px;
+  line-height:16px;
+  margin:1px 5px 1px 0px;
+  padding:0px 5px;
+}
+p.timetable-tooltip span:last-of-type{
+  margin-right:0px;
 }
 span.timetable-graphlegend-color{
-	border-radius:5px;
-	display:inline-block;
-	margin:10px 0px;
-	height:10px;
-	width:30px;
+  border-radius:5px;
+  display:inline-block;
+  margin:10px 0px;
+  height:10px;
+  width:30px;
 }
 span.timetable-graphlegend-title{
-	display:inline-block;
-	margin-right:12px;
-	text-align:left;
+  display:inline-block;
+  margin-right:12px;
+  text-align:left;
 }
 /* individual style (daily) */
 table.timetable-daily{
-	background-color:#FFFFFF;
-	table-layout:fixed;
-	width:100%;
+  background-color:#FFFFFF;
+  table-layout:fixed;
+  width:100%;
 }
 table.timetable-daily .timetable-daily-cellhead{
-	width:10em;
+  width:10em;
 }
 table.timetable-daily.cellfixed{
-	table-layout:auto;
+  table-layout:auto;
 }
 table.timetable-daily.cellfixed .timetable-daily-cellhead{
-	padding-left:0.5em;
-	padding-right:0.5em;
-	white-space:nowrap;
-	width:auto;
+  padding-left:0.5em;
+  padding-right:0.5em;
+  white-space:nowrap;
+  width:auto;
 }
 table.timetable-daily thead tr:first-of-type th{
-	border-bottom:none;
+  border-bottom:none;
 }
 table.timetable-daily thead tr:last-of-type th{
-	border-top:none;
-	height:10px;
+  border-top:none;
+  height:10px;
 }
 table.timetable-daily tbody tr td{
-	cursor:pointer;
-	position:relative;
+  cursor:pointer;
+  position:relative;
 }
 table.timetable-daily tbody tr td.timetable-daily-drag{
-	padding-bottom:13px;
+  padding-bottom:13px;
 }
 table.timetable-daily tbody tr td.timetable-daily-drag:after{
-	background-color:#3498db;
-	border-radius:5px;
-	box-sizing:border-box;
-	bottom:3px;
-	content:'';
-	display:block;
-	height:10px;
-	left:0px;
-	margin:0px;
-	padding:0px;
-	position:absolute;
-	width:100%;
+  background-color:#3498db;
+  border-radius:5px;
+  box-sizing:border-box;
+  bottom:3px;
+  content:'';
+  display:block;
+  height:10px;
+  left:0px;
+  margin:0px;
+  padding:0px;
+  position:absolute;
+  width:100%;
 }
 table.timetable-daily tbody tr td.timetable-daily-merge{
-	padding-bottom:13px;
+  padding-bottom:13px;
 }
 table.timetable-daily tbody tr td.timetable-daily-merge p.timetable-daily-merge-p{
-	background-color:transparent;
-	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
-	background-position:3px 3px;
-	background-repeat:no-repeat;
-	background-size:20px 20px;
-	box-sizing:border-box;
-	font-size:13px;
-	line-height:24px;
-	margin:0px;
-	padding:3px 3px 0px 23px;
+  background-color:transparent;
+  background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
+  background-position:3px 3px;
+  background-repeat:no-repeat;
+  background-size:20px 20px;
+  box-sizing:border-box;
+  font-size:13px;
+  line-height:24px;
+  margin:0px;
+  padding:3px 3px 0px 23px;
     vertical-align:top;
 }
 table.timetable-daily tbody tr td.timetable-daily-merge span.timetable-daily-merge-span{
-	background-color:transparent;
-	border-radius:5px;
-	box-sizing:border-box;
-	bottom:3px;
-	display:block;
-	height:10px;
-	left:0px;
-	margin:0px;
-	padding:0px;
-	position:absolute;
-	width:100%;
+  background-color:transparent;
+  border-radius:5px;
+  box-sizing:border-box;
+  bottom:3px;
+  display:block;
+  height:10px;
+  left:0px;
+  margin:0px;
+  padding:0px;
+  position:absolute;
+  width:100%;
 }
 div.guidefrom{
-	background-color:#3498DB;
-	border-radius:0.25em;
+  background-color:#3498DB;
+  border-radius:0.25em;
     box-shadow:0px 0px 3px rgba(0,0,0,0.5);
     color:#FFFFFF;
-	display:none;
-	font-size:0.75em;
-	height:2em;
-	line-height:2em;
-	padding:0px 1em;
-	position:fixed;
-	transition:all 0.35s ease-out 0s;
-	width:auto;
-	z-index:999;
+  display:none;
+  font-size:0.75em;
+  height:2em;
+  line-height:2em;
+  padding:0px 1em;
+  position:fixed;
+  transition:all 0.35s ease-out 0s;
+  width:auto;
+  z-index:999;
 }
 div.guideto{
-	background-color:#3498DB;
-	border-radius:0.25em;
+  background-color:#3498DB;
+  border-radius:0.25em;
     box-shadow:0px 0px 3px rgba(0,0,0,0.5);
     color:#FFFFFF;
-	display:none;
-	font-size:0.75em;
-	height:2em;
-	line-height:2em;
-	padding:0px 1em;
-	position:fixed;
-	transition:all 0.35s ease-out 0s;
-	width:auto;
-	z-index:999;
+  display:none;
+  font-size:0.75em;
+  height:2em;
+  line-height:2em;
+  padding:0px 1em;
+  position:fixed;
+  transition:all 0.35s ease-out 0s;
+  width:auto;
+  z-index:999;
 }
 /* individual style (weekly) */
 div.timetable-weekly-balloon{
-	background-color:#F3F3F3;
-	border:1px solid #C9C9C9;
-	border-radius:5px;
-	box-shadow:0px 0px 3px rgba(0,0,0,0.25);
-	display:none;
-	font-size:13px;
-	margin:15px 0px 0px 15px;
-	padding:5px;
-	position:fixed;
+  background-color:#F3F3F3;
+  border:1px solid #C9C9C9;
+  border-radius:5px;
+  box-shadow:0px 0px 3px rgba(0,0,0,0.25);
+  display:none;
+  font-size:13px;
+  margin:15px 0px 0px 15px;
+  padding:5px;
+  position:fixed;
 }
 div.timetable-weekly-balloon-show{
-	display:block;
+  display:block;
 }
 div.timetable-weekly-cell{
-	border-radius:5px;
-	cursor:pointer;
-	margin-left:3px;
-	position:absolute;
-	top:0px;
-	width:10px;
-	z-index:1;
+  border-radius:5px;
+  cursor:pointer;
+  margin-left:3px;
+  position:absolute;
+  top:0px;
+  width:10px;
+  z-index:1;
 }
 table.timetable-weekly thead tr th:nth-of-type(n+2){
-	width:12.5%;
+  width:12.5%;
 }
 table.timetable-weekly tbody tr td{
-	padding:1px;
-	position:relative;
+  padding:1px;
+  position:relative;
 }
 table.timetable-weekly tbody tr td:first-of-type{
-	padding:0px 3px;
-	text-align:right;
+  padding:0px 3px;
+  text-align:right;
 }
 /* individual style (monthly) */
 div.timetable-monthly-days{
-	padding:3px 0px;
+  padding:3px 0px;
 }
 div.timetable-monthly-days:after{
-	clear:both;
-	content:'';
-	display:table;
+  clear:both;
+  content:'';
+  display:table;
 }
 div.timetable-monthly-days span{
-	display:inline-block;
-	font-size:18px;
-	float:left;
-	line-height:30px;
-	text-align:center;
-	width:30px;
+  display:inline-block;
+  font-size:18px;
+  float:left;
+  line-height:30px;
+  text-align:center;
+  width:30px;
 }
 div.timetable-monthly-days button{
-	float:right;
+  float:right;
 }
 div.timetable-monthly-cell{
-	border-radius:5px;
-	box-sizing:border-box;
-	margin:0px 0px 6px 0px;
-	padding:3px;
-	width:100%;
-}
-div.timetable-monthly-cell p{
-	font-size:13px;
-	line-height:18px;
-	margin:0px;
-	padding:3px;
+  border-radius:5px;
+  box-sizing:border-box;
+  margin:0px 0px 6px 0px;
+  padding:3px;
+  width:100%;
 }
 table.timetable-monthly tbody tr td{
-	padding:3px 6px;
-	vertical-align:top;
+  padding:3px 6px;
+  vertical-align:top;
 }

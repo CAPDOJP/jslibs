@@ -94,10 +94,10 @@ jQuery.noConflict();
 					var balloon=$('<div class="timetable-weekly-balloon">');
 					var inner='';
 					inner='';
-					inner+='<p class="customview-p">';
-					for (var i2=1;i2<vars.segments.length;i2++) inner+='>&nbsp;'+$.fieldvalue(filter[i][vars.segments[i2]])+'&nbsp;&nbsp;';
+					inner+='<p class="timetable-tooltip">';
+					for (var i2=1;i2<vars.segments.length;i2++) inner+='<span>'+$.fieldvalue(filter[i][vars.segments[i2]])+'</span>';
 					inner+='</p>';
-					inner+='<p class="customview-p">'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
+					inner+='<p class="timetable-tooltip">'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
 					inner+='<p>'+datecalc.formatfrom+' ～ '+datecalc.formatto+'</p>';
 					$('body').append(
 						balloon.css({

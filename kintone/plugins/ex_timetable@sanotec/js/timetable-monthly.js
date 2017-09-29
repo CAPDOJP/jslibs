@@ -44,11 +44,11 @@ jQuery.noConflict();
 					var datecalc=$.timetabledatecalc(new Date(filter[i][vars.config['fromtime']].value),new Date(filter[i][vars.config['totime']].value));
 					var inner='';
 					inner='';
-					inner+='<p>';
-					for (var i2=1;i2<vars.segments.length;i2++) inner+='>&nbsp;'+$.fieldvalue(filter[i][vars.segments[i2]])+'&nbsp;&nbsp;';
+					inner+='<p class="timetable-tooltip">';
+					for (var i2=1;i2<vars.segments.length;i2++) inner+='<span>'+$.fieldvalue(filter[i][vars.segments[i2]])+'</span>';
 					inner+='</p>';
-					inner+='<p>'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
-					inner+='<p>'+datecalc.formatfrom+' ～ '+datecalc.formatto+'</p>';
+					inner+='<p class="timetable-tooltip">'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
+					inner+='<p class="timetable-tooltip">'+datecalc.formatfrom+' ～ '+datecalc.formatto+'</p>';
 					cell.append(
 						$('<div class="timetable-monthly-cell">').css({
 							'background-color':'#'+color,

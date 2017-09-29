@@ -18,13 +18,14 @@ jQuery.noConflict();
 		date:new Date(),
 		calendar:null,
 		route:null,
-		segment:null,
 		table:null,
 		apps:{},
 		config:{},
 		offset:{},
+		segments:{},
 		colors:[],
-		fields:[]
+		fields:[],
+		segmentkeys:[]
 	};
 	var events={
 		lists:[
@@ -38,25 +39,27 @@ jQuery.noConflict();
 	var limit=500;
 	var functions={
 		/* rebuild view */
-		build:function(filter,segment,segmentname,colorindex){
+		build:function(filter,heads,colorindex){
 			var color=vars.colors[colorindex%vars.colors.length];
 			/* insert row */
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
+				var index=0;
 				var inner='';
-				if (vars.config['segment'].length!=0)
-				{
-					inner+='<p class="customview-p">'+segmentname+'</p>';
-					inner+='<input type="hidden" id="segment" value="'+segment+'" />';
-					baserow.find('td').eq(0).html(inner);
-				}
+				$.each(heads,function(key,values){
+					inner='';
+					inner+='<p class="customview-p">'+values.display+'</p>';
+					inner+='<input type="hidden" id="segment" value="'+values.field+'" />';
+					baserow.find('td').eq(index).html(inner);
+					index++;
+				});
 				if (vars.config['route']=='1')
 				{
 					baserow.find('td').eq(0).append($('<button class="customview-button compass-button">').text('地図を表示').on('click',function(){
 						/* display routemap */
 						var markers=[];
 						var rowindex=vars.table.contents.find('tr').index($(this).closest('tr'));
-						var rowspan=(parseInt('0'+baserow.find('td').eq(0).attr('rowspan'))!=0)?parseInt('0'+baserow.find('td').eq(0).attr('rowspan')):1;
+						var rowspan=(parseInt('0'+$(this).closest('tr').find('td').eq(0).attr('rowspan'))!=0)?parseInt('0'+$(this).closest('tr').find('td').eq(0).attr('rowspan')):1;
 						for (var i=rowindex;i<rowindex+rowspan;i++)
 						{
 							var row=vars.table.contents.find('tr').eq(i);
@@ -77,14 +80,14 @@ jQuery.noConflict();
 						}
 						if (markers.length==0)
 						{
-					    	swal('Error!','位置情報が設定されたセルがありません。','error');
+							swal('Error!','位置情報が設定されたセルがありません。','error');
 							return;
 						}
 						markers.sort(function(a,b){
 							if(a.from<b.from) return -1;
 							if(a.from>b.from) return 1;
 							return 0;
-    					});
+						});
 						vars.route.reloadmap({markers:markers});
 					}));
 				}
@@ -102,17 +105,12 @@ jQuery.noConflict();
 						if (from<parseInt(vars.config['starthour'])*parseInt(vars.config['scale'])) from=parseInt(vars.config['starthour'])*parseInt(vars.config['scale']);
 						if (to<parseInt(vars.config['starthour'])*parseInt(vars.config['scale'])) continue;
 						if (to>(parseInt(vars.config['endhour'])+1)*parseInt(vars.config['scale'])-1) to=(parseInt(vars.config['endhour'])+1)*parseInt(vars.config['scale'])-1;
-						if (vars.config['route']=='1' || vars.config['segment'].length!=0)
-						{
-							from++;
-							to++;
-						}
+						from+=vars.segmentkeys.length;
+						to+=vars.segmentkeys.length;
 						/* check cell merged */
 						var isinsertrow=true;
 						var mergerow=baserow;
-						var rowindex=vars.table.contents.find('tr').index(baserow);
-						var rowspan=(parseInt('0'+baserow.find('td').eq(0).attr('rowspan'))!=0)?parseInt('0'+baserow.find('td').eq(0).attr('rowspan')):1;
-						for (var i2=rowindex;i2<rowindex+rowspan;i2++)
+						for (var i2=vars.table.contents.find('tr').index(baserow);i2<vars.table.contents.find('tr').length;i2++)
 						{
 							mergerow=vars.table.contents.find('tr').eq(i2);
 							fromindex=vars.table.mergecellindex(mergerow,from);
@@ -122,31 +120,21 @@ jQuery.noConflict();
 						/* merge cell */
 						if (isinsertrow)
 						{
-							vars.table.insertrow(vars.table.contents.find('tr').eq(rowindex+rowspan-1),function(row){
-								mergerow=row;
-								fromindex=vars.table.mergecellindex(mergerow,from);
-								toindex=vars.table.mergecellindex(mergerow,to);
-								functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
-								rowspan++;
-								/* check row merged */
-								if (vars.config['route']=='1' || vars.config['segment'].length!=0)
-								{
-									baserow.find('td').eq(0).attr('rowspan',rowspan);
-							        mergerow.find('td').eq(0).html(baserow.find('td').eq(0).html()).hide();
-								}
-								/* setup merge class */
-								row.find('.timetable-daily-merge-span').css({'background-color':'#'+color});
+							vars.table.insertrow(null,function(row){
+								fromindex=vars.table.mergecellindex(row,from);
+								toindex=vars.table.mergecellindex(row,to);
+								functions.mergeaftervalue(row,fromindex,toindex,filter[i],color);
+								/* check row heads */
+								for (var i2=0;i2<vars.segmentkeys.length;i2++) row.find('td').eq(i2).html(baserow.find('td').eq(i2).html());
 							});
 						}
-						else functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
+						else functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i],color);
 					}
 				}
-				/* setup merge class */
-				row.find('.timetable-daily-merge-span').css({'background-color':'#'+color});
 			});
 		},
 		/* setup merge cell value */
-		mergeaftervalue:function(row,from,to,filter){
+		mergeaftervalue:function(row,from,to,filter,color){
 			vars.table.mergecell(
 				row.find('td').eq(from),
 				from,
@@ -154,7 +142,7 @@ jQuery.noConflict();
 			);
 			/* cell value switching */
 			row.find('td').eq(from).append($('<p>').addClass('timetable-daily-merge-p').html($.fieldvalue(filter[vars.config['display']])));
-			row.find('td').eq(from).append($('<span>').addClass('timetable-daily-merge-span'));
+			row.find('td').eq(from).append($('<span>').addClass('timetable-daily-merge-span').css({'background-color':'#'+color}));
 			$.each(filter,function(key,values){
 				if (values!=null)
 					if (values.value!=null)
@@ -168,22 +156,80 @@ jQuery.noConflict();
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
+				var heads={
+					index:0,
+					prev:1,
+					total:1,
+					values:[]
+				};
+				/* create rowheads */
+				$.each(vars.segments,function(key,values){heads.total*=values.records.length;});
+				for (var i=0;i<heads.total;i++) heads.values.push({});
+				$.each(vars.segments,function(key,values){
+					heads.index=0;
+					for (var i=0;i<heads.prev;i++)
+						for (var i2=0;i2<values.records.length;i2++)
+							for (var i3=0;i3<heads.total/heads.prev/values.records.length;i3++)
+							{
+								heads.values[heads.index][key]=values.records[i2];
+								heads.index++;
+							}
+					heads.prev*=values.records.length;
+				});
 				/* initialize table */
 				vars.table.clearrows();
-				if (vars.config['segment'].length!=0)
+				if (heads.values.length!=0)
 				{
 					/* place the segment data */
-					$.each(vars.segment,function(index,values){
-						var filter=$.grep(records,function(item,index){return item[vars.config['segment']].value==values[vars.config['segmentappfield']].value;});
+					for (var i=0;i<heads.values.length;i++)
+					{
+						var filter=$.grep(records,function(item,index){
+							var exists=0;
+							$.each(heads.values[i],function(key,values){if (item[key].value==values.field) exists++;});
+							return exists==Object.keys(heads.values[i]).length;
+						});
 						/* rebuild view */
-						functions.build(filter,values[vars.config['segmentappfield']].value,values[vars.config['segmentdisplay']].value,index);
-					});
+						functions.build(filter,heads.values[i],i);
+					}
 				}
 				else
 				{
 					var filter=$.grep(records,function(item,index){return true;});
 					/* rebuild view */
-					functions.build(filter,'','',0);
+					functions.build(filter,0);
+				}
+				/* merge row */
+				var rowspans=[];
+				for (var i=0;i<vars.segmentkeys.length;i++) rowspans.push({cache:'',index:-1,span:0});
+				$.each(vars.table.contents.find('tr'),function(index){
+					var row=vars.table.contents.find('tr').eq(index);
+					for (var i=0;i<vars.segmentkeys.length;i++)
+					{
+						var cell=row.find('td').eq(i);
+						if (rowspans[i].cache!=cell.find('p').text())
+						{
+							if (rowspans[i].index!=-1)
+							{
+								vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].span);
+								for (var i2=rowspans[i].index+1;i2<index;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
+							}
+							rowspans[i].cache=cell.find('p').text();
+							rowspans[i].index=index;
+							rowspans[i].span=0;
+						}
+						rowspans[i].span++;
+					}
+				});
+				var index=vars.table.contents.find('tr').length-1;
+				var row=vars.table.contents.find('tr').last();
+				for (var i=0;i<vars.segmentkeys.length;i++)
+				{
+					var cell=row.find('td').eq(i);
+					if (rowspans[i].cache==cell.find('p').text() && rowspans[i].index!=index)
+					{
+						vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].span);
+						for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
+					}
 				}
 			});
 		},
@@ -199,16 +245,41 @@ jQuery.noConflict();
 			query+=((query.length!=0)?' and ':'');
 			query+=vars.config['date']+'="'+vars.date.format('Y-m-d')+'"';
 			sort=' order by ';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			$.each(vars.segments,function(key,values){sort+=key+' asc,';});
 			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
 			},function(error){});
+		},
+		/* reload datas of segment */
+		loadsegments:function(param,callback){
+			var body={
+				app:param.app,
+				query:'order by '+param.field+' limit '+limit.toString()+' offset '+param.offset.toString()
+			};
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+				var records=[]
+				$.each(resp.records,function(index,values){
+					records.push({display:values[param.display].value,field:values[param.field].value});
+				});
+				Array.prototype.push.apply(param.records,records);
+				param.offset+=limit;
+				if (resp.records.length==limit) functions.loadsegments(param,callback);
+				else {param.loaded=1;callback(param);}
+			},function(error){});
+		},
+		/* check for completion of load */
+		checkloaded:function(){
+			var loaded=0;
+			var total=0;
+			$.each(vars.segments,function(key,values){loaded+=values.loaded;total++;});
+			/* reload view */
+			if (loaded==total) functions.load();
 		}
 	};
 	/*---------------------------------------------------------------
@@ -271,7 +342,7 @@ jQuery.noConflict();
 			}
 		});
 		button.on('click',function(){
-		    vars.calendar.show({activedate:vars.date});
+			vars.calendar.show({activedate:vars.date});
 		});
 		/* day feed button */
 		$.each([prev,next],function(){
@@ -285,16 +356,21 @@ jQuery.noConflict();
 		});
 		/* setup colors value */
 		vars.colors=vars.config['segmentcolors'].split(',');
+		/* setup segments value */
+		vars.segments=JSON.parse(vars.config['segment']);
+		vars.segmentkeys=Object.keys(vars.segments);
 		/* create table */
 		container.empty();
 		var head=$('<tr></tr><tr></tr>');
 		var template=$('<tr>');
 		var spacer=$('<span>');
-		if (vars.config['route']=='1' || vars.config['segment'].length!=0)
+		var mergeexclude=[];
+		for (var i=0;i<vars.segmentkeys.length;i++)
 		{
 			head.eq(0).append($('<th class="timetable-daily-cellhead">'));
 			head.eq(1).append($('<th class="timetable-daily-cellhead">'));
 			template.append($('<td class="timetable-daily-cellhead">'));
+			mergeexclude.push(i);
 		}
 		if (vars.config['scalefixed']=='1') spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
 		for (var i=0;i<24;i++)
@@ -316,13 +392,13 @@ jQuery.noConflict();
 			template:template,
 			dragclass:'timetable-daily-drag',
 			merge:true,
-			mergeexclude:((vars.config['route']=='1' || vars.config['segment'].length!=0)?[0]:[]),
+			mergeexclude:mergeexclude,
 			mergeclass:'timetable-daily-merge',
 			mergetrigger:function(caller,cell,rowindex,cellfrom,cellto){
 				var query='';
-				var fromhour=Math.floor((caller.cellindex(cell.parent(),cellfrom)-1)/parseInt(vars.config['scale']));
+				var fromhour=Math.floor((caller.cellindex(cell.parent(),cellfrom)-vars.segmentkeys.length)/parseInt(vars.config['scale']));
 				var tohour=Math.floor(caller.cellindex(cell.parent(),cellto)/parseInt(vars.config['scale']));
-				var fromminute=(caller.cellindex(cell.parent(),cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
+				var fromminute=(caller.cellindex(cell.parent(),cellfrom)-vars.segmentkeys.length)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 				var tominute=caller.cellindex(cell.parent(),cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 				if (tohour=='24' && tominute=='00')
 				{
@@ -332,8 +408,7 @@ jQuery.noConflict();
 				query+=vars.config['date']+'='+vars.date.format('Y-m-d');
 				query+='&'+vars.config['fromtime']+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
 				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
-				if (vars.config['segment'].length!=0)
-					query+='&'+vars.config['segment']+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(0).find('input#segment').val();
+				for (var i=0;i<vars.segmentkeys.length;i++) query+='&'+vars.segmentkeys[i]+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(i).find('input#segment').val();
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
@@ -343,26 +418,26 @@ jQuery.noConflict();
 				guidestart:function(e,caller,table,rowindex,cellindex){
 					if (rowindex==null) {guidefrom.hide();return;}
 					var row=table.find('tbody').find('tr').eq(rowindex);
-					var hour=Math.floor((caller.cellindex(row,cellindex)-1)/parseInt(vars.config['scale']));
-					var minute=(caller.cellindex(row,cellindex)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
+					var hour=Math.floor((caller.cellindex(row,cellindex)-vars.segmentkeys.length)/parseInt(vars.config['scale']));
+					var minute=(caller.cellindex(row,cellindex)-vars.segmentkeys.length)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.text(hour.toString().lpad('0',2)+':'+minute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellindex).offset().left-$(window).scrollLeft()).toString()+'px',
-				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
+					  'left':(row.find('td').eq(cellindex).offset().left-$(window).scrollLeft()).toString()+'px',
+					  'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
 					});
 				},
 				guide:function(e,caller,table,rowindex,cellfrom,cellto){
 					var row=table.find('tbody').find('tr').eq(rowindex);
-					var fromhour=Math.floor((caller.cellindex(row,cellfrom)-1)/parseInt(vars.config['scale']));
+					var fromhour=Math.floor((caller.cellindex(row,cellfrom)-vars.segmentkeys.length)/parseInt(vars.config['scale']));
 					var tohour=Math.floor(caller.cellindex(row,cellto)/parseInt(vars.config['scale']));
-					var fromminute=(caller.cellindex(row,cellfrom)-1)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
+					var fromminute=(caller.cellindex(row,cellfrom)-vars.segmentkeys.length)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					var tominute=caller.cellindex(row,cellto)%parseInt(vars.config['scale'])*(60/parseInt(vars.config['scale']));
 					guidefrom.text(fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellfrom).offset().left-$(window).scrollLeft()).toString()+'px',
-				      'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
+					  'left':(row.find('td').eq(cellfrom).offset().left-$(window).scrollLeft()).toString()+'px',
+					  'top':(row.offset().top-$(window).scrollTop()-guidefrom.outerHeight(true)).toString()+'px'
 					});
 					guideto.text(tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2)).show().css({
-				      'left':(row.find('td').eq(cellto).offset().left-$(window).scrollLeft()+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
-				      'top':(row.offset().top-$(window).scrollTop()+row.outerHeight(true)).toString()+'px'
+					  'left':(row.find('td').eq(cellto).offset().left-$(window).scrollLeft()+row.find('td').eq(cellto).outerWidth(true)).toString()+'px',
+					  'top':(row.offset().top-$(window).scrollTop()+row.outerHeight(true)).toString()+'px'
 					});
 				},
 				guideend:function(e){
@@ -380,15 +455,21 @@ jQuery.noConflict();
 				vars.fields.push(values.code);
 			});
 			/* get datas of segment */
-			if (vars.config['segment'].length!=0)
-			{
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp'],query:'order by '+vars.config['segmentappfield']+' asc'},function(resp){
-					vars.segment=resp.records;
-					/* reload view */
-					functions.load();
-				},function(error){});
-			}
-			else functions.load();
+			$.each(vars.segments,function(key,values){
+				var param=values;
+				param.loaded=0;
+				param.offset=0;
+				param.records=[];
+				if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
+				else
+				{
+					$.each(resp.properties[key].options,function(key,values){
+						param.records.push({display:values.label,field:values.label});
+					});
+					param.loaded=1;
+				}
+			});
+			functions.checkloaded();
 		},function(error){});
 		return;
 	});
@@ -400,12 +481,14 @@ jQuery.noConflict();
 		if (vars.config['date'] in queries) event.record[vars.config['date']].value=queries[vars.config['date']];
 		if (vars.config['fromtime'] in queries) event.record[vars.config['fromtime']].value=queries[vars.config['fromtime']];
 		if (vars.config['totime'] in queries) event.record[vars.config['totime']].value=queries[vars.config['totime']];
-		if (vars.config['segment'].length!=0)
-			if (vars.config['segment'] in queries)
+		vars.segments=JSON.parse(vars.config['segment']);
+		$.each(vars.segments,function(key,values){
+			if (key in queries)
 			{
-				event.record[vars.config['segment']].value=queries[vars.config['segment']];
-				event.record[vars.config['segment']].lookup=true;
+				event.record[key].value=queries[key];
+				event.record[key].lookup=true;
 			}
+		});
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

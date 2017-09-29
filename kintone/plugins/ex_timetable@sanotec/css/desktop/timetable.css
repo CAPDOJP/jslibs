@@ -14,6 +14,24 @@ div.timetable-graphlegend{
 	padding:6px 3px;
 	text-align:center;
 }
+p.timetable-tooltip{
+	font-size:13px;
+	line-height:18px;
+	margin:0px;
+	padding:3px;
+}
+p.timetable-tooltip span{
+	background-color:#FFFFFF;
+	border:1px solid #C9C9C9;
+	border-radius:5px;
+	font-size:11px;
+	line-height:16px;
+	margin:1px 5px 1px 0px;
+	padding:0px 5px;
+}
+p.timetable-tooltip span:last-of-type{
+	margin-right:0px;
+}
 span.timetable-graphlegend-color{
 	border-radius:5px;
 	display:inline-block;
@@ -30,8 +48,8 @@ span.timetable-graphlegend-title{
 div.timetable-daily-balloon{
 	background-color:#3498DB;
 	border-radius:0.25em;
-    box-shadow:0px 0px 3px rgba(0,0,0,0.5);
-    color:#FFFFFF;
+		box-shadow:0px 0px 3px rgba(0,0,0,0.5);
+		color:#FFFFFF;
 	display:none;
 	font-size:0.75em;
 	line-height:2em;
@@ -93,7 +111,7 @@ table.timetable-daily tbody tr td.timetable-daily-merge p.timetable-daily-merge-
 	line-height:24px;
 	margin:0px;
 	padding:3px 3px 0px 23px;
-    vertical-align:top;
+		vertical-align:top;
 }
 table.timetable-daily tbody tr td.timetable-daily-merge span.timetable-daily-merge-span{
 	background-color:transparent;
@@ -169,12 +187,6 @@ div.timetable-monthly-cell{
 	margin:0px 0px 6px 0px;
 	padding:3px;
 	width:100%;
-}
-div.timetable-monthly-cell p{
-	font-size:13px;
-	line-height:18px;
-	margin:0px;
-	padding:3px;
 }
 table.timetable-monthly tbody tr td{
 	padding:3px 6px;

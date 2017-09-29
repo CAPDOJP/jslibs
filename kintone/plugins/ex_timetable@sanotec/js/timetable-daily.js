@@ -67,9 +67,7 @@ jQuery.noConflict();
 						/* check cell merged */
 						var isinsertrow=true;
 						var mergerow=baserow;
-						var rowindex=vars.table.contents.find('tr').index(baserow);
-						var rowspan=(parseInt('0'+baserow.find('td').eq(0).attr('rowspan'))!=0)?parseInt('0'+baserow.find('td').eq(0).attr('rowspan')):1;
-						for (var i2=rowindex;i2<rowindex+rowspan;i2++)
+						for (var i2=vars.table.contents.find('tr').index(baserow);i2<vars.table.contents.find('tr').length;i2++)
 						{
 							mergerow=vars.table.contents.find('tr').eq(i2);
 							fromindex=vars.table.mergecellindex(mergerow,from);
@@ -79,31 +77,21 @@ jQuery.noConflict();
 						/* merge cell */
 						if (isinsertrow)
 						{
-							vars.table.insertrow(vars.table.contents.find('tr').eq(rowindex+rowspan-1),function(row){
-								mergerow=row;
-								fromindex=vars.table.mergecellindex(mergerow,from);
-								toindex=vars.table.mergecellindex(mergerow,to);
-								functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
-								rowspan++;
-								/* check row merged */
-								for (var i2=0;i2<segments.length;i2++)
-								{
-									baserow.find('td').eq(i2).attr('rowspan',rowspan);
-									mergerow.find('td').eq(i2).html(baserow.find('td').eq(i2).html()).hide();
-								}
-								/* setup merge class */
-								row.find('.timetable-daily-merge-span').css({'background-color':'#'+color});
+							vars.table.insertrow(null,function(row){
+								fromindex=vars.table.mergecellindex(row,from);
+								toindex=vars.table.mergecellindex(row,to);
+								functions.mergeaftervalue(row,fromindex,toindex,filter[i],color);
+								/* check row heads */
+								for (var i2=0;i2<vars.segments.length;i2++) row.find('td').eq(i2).html(baserow.find('td').eq(i2).html());
 							});
 						}
-						else functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
+						else functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i],color);
 					}
 				}
-				/* setup merge class */
-				row.find('.timetable-daily-merge-span').css({'background-color':'#'+color});
 			});
 		},
 		/* setup merge cell value */
-		mergeaftervalue:function(row,from,to,filter){
+		mergeaftervalue:function(row,from,to,filter,color){
 			var cell=row.find('td').eq(from);
 			vars.table.mergecell(
 				cell,
@@ -112,7 +100,7 @@ jQuery.noConflict();
 			);
 			/* cell value switching */
 			cell.append($('<p>').addClass('timetable-daily-merge-p').html($.fieldvalue(filter[vars.config['display']])));
-			cell.append($('<span>').addClass('timetable-daily-merge-span'));
+			cell.append($('<span>').addClass('timetable-daily-merge-span').css({'background-color':'#'+color}));
 			$.each(filter,function(key,values){
 				if (values!=null)
 					if (values.value!=null)
@@ -217,7 +205,7 @@ jQuery.noConflict();
 					}
 					/* merge row */
 					var rowspans=[];
-					for (var i=0;i<vars.segments.length;i++) rowspans.push({cache:'',index:0,span:0});
+					for (var i=0;i<vars.segments.length;i++) rowspans.push({cache:'',index:-1,span:0});
 					$.each(vars.table.contents.find('tr'),function(index){
 						var row=vars.table.contents.find('tr').eq(index);
 						for (var i=0;i<vars.segments.length;i++)
@@ -225,7 +213,7 @@ jQuery.noConflict();
 							var cell=row.find('td').eq(i);
 							if (rowspans[i].cache!=cell.find('p').text())
 							{
-								if (rowspans[i].index!=0)
+								if (rowspans[i].index!=-1)
 								{
 									vars.table.contents.find('tr').eq(rowspans[i].index).find('td').eq(i).attr('rowspan',rowspans[i].span);
 									for (var i2=rowspans[i].index+1;i2<index;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
@@ -234,7 +222,7 @@ jQuery.noConflict();
 								rowspans[i].index=index;
 								rowspans[i].span=0;
 							}
-							rowspans[i].span+=(parseInt('0'+cell.attr('rowspan'))!=0)?parseInt('0'+cell.attr('rowspan'))-1:1;
+							rowspans[i].span++;
 						}
 					});
 					var index=vars.table.contents.find('tr').length-1;

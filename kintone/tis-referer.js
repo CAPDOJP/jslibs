@@ -180,15 +180,13 @@ var Referer=function(options){
 		var buttonvalue=$.extend({
 			id:'',
 			class:'',
-			text:'',
-			callback:null
+			text:''
 		},my.parambuttons[index]);
 		my.buttons.push(
 			button.clone(true)
 			.attr('id',buttonvalue.id)
 			.addClass(buttonvalue.class)
 			.text(buttonvalue.text)
-			.on('click',function(){if (buttonvalue.callback!=null) buttonvalue.callback();})
 		);
 		my.buttonblock.append(my.buttons[index]);
 	});
@@ -290,9 +288,7 @@ var Referer=function(options){
 Referer.prototype={
 	/* reload referer */
 	search:function(){
-		var callback=this.callback;
-		var displaytext=this.displaytext;
-		var listblock=this.listblock;
+		var my=this;
 		var lists=this.listblock.find('tbody').find('tr').find('td');
 		var searches=this.searchblock.find('input,select');
 		var filtersearch=$.grep(this.datasource,function(item,index){
@@ -326,7 +322,7 @@ Referer.prototype={
 			$(this).off('click');
 		});
 		/* create lists */
-		listblock.find('tbody').empty();
+		this.listblock.find('tbody').empty();
 		for (var i=0;i<filtersearch.length;i++)
 		{
 			var filter=filtersearch[i];
@@ -336,16 +332,16 @@ Referer.prototype={
 			$.each(filter,function(key,values){
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
-			$.each(displaytext,function(index){
+			$.each(my.displaytext,function(index){
 				list.append($('<td>').css({
 					'border':'1px solid #C9C9C9',
 					'cursor':'pointer',
 					'padding':'5px'
 				})
-				.text(filter[displaytext[index]].value))
-				.on('click',function(){if (callback!=null) callback(list);});
+				.text(filter[my.displaytext[index]].value))
+				.on('click',function(){if (my.callback!=null) my.callback(list);});
 			});
-			listblock.find('tbody').append(list);
+			my.listblock.find('tbody').append(list);
 		}
 	},
 	/* display referer */
@@ -361,11 +357,8 @@ Referer.prototype={
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
 			$.each(my.buttons,function(index){
-				if ($(this).attr('id')==key)
-				{
-					$(this).off('click');
-					$(this).on('click',function(){if (values!=null) values();});
-				}
+				$(this).off('click');
+				if ($(this).attr('id')==key) $(this).on('click',function(){if (values!=null) values();});
 			});
 		});
 		/* lists callback */

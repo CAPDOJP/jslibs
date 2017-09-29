@@ -456,13 +456,25 @@
   transition: background-color 0s linear;
 }
 /* Custom */
-div.kintoneplugin-row table td{
-  border-bottom:1px dotted #d6d1cc;
+div.kintoneplugin-row table tr{
+  border-bottom:1px solid #d6d1cc;
+}
+div.kintoneplugin-row table tr td,
+div.kintoneplugin-row table tr th{
+  font-weight:normal;
   padding:3px;
   white-space:nowrap;
 }
+div.kintoneplugin-row table tr th{
+  text-align:center;
+}
 div.kintoneplugin-row table tbody tr:nth-of-type(even){
   background-color:#fffcf2;
+}
+div.kintoneplugin-row table tbody tr td{
+  line-height:1;
+  padding:3px;
+  white-space:nowrap;
 }
 div.kintoneplugin-row table tbody tr td.button{
   width:28px;
@@ -473,4 +485,7 @@ div.kintoneplugin-row table tbody tr td.button img{
   margin:0px;
   padding:0px;
   width:100%;
+}
+div.kintoneplugin-row table tbody tr td div.kintoneplugin-select-outer{
+  margin:2px 0px;
 }

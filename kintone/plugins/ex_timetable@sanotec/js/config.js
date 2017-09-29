@@ -83,7 +83,6 @@ jQuery.noConflict();
         	$('select#totime').val(config['totime']);
         	$('select#display').val(config['display']);
         	$('select#tooltip').val(config['tooltip']);
-        	$('select#segment').val(config['segment']);
         	$('select#scale').val(config['scale']);
         	$('select#starthour').val(config['starthour']);
         	$('input#scalefixedwidth').val(config['scalefixedwidth']);

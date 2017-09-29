@@ -44,31 +44,46 @@
     </div>
   </div>
   <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">区分フィールド【ルックアップフィールド】</div>
-    <div class="kintoneplugin-desc">区分毎に表示したい場合は、対象となるフィールドを選択して下さい。</div>
-    <div class="kintoneplugin-select-outer">
-      <div class="kintoneplugin-select">
-        <select id="segment">
-          <option value=""></option>
-        </select>
-      </div>
-    </div>
+    <div class="kintoneplugin-label">区分フィールド【ルックアップ・ラジオボタン・ドロップダウン】<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">区分毎に表示するフィールドを選択して下さい。</div>
+    <table class="segments">
+      <thead>
+        <tr>
+          <th>区分フィールド</th>
+          <th>区分名フィールド</th>
+          <th colspan="2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="kintoneplugin-select-outer">
+              <div class="kintoneplugin-select">
+                <select id="segment">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </td>
+          <td>
+        <div class="kintoneplugin-select-outer">
+          <div class="kintoneplugin-select">
+            <select id="segmentdisplay">
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+          </td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">区分名フィールド</div>
-    <div class="kintoneplugin-desc">区分毎に表示したい場合は、区分名となるルックアップ先のフィールドを選択して下さい。</div>
-    <div class="kintoneplugin-select-outer">
-      <div class="kintoneplugin-select">
-        <select id="segmentdisplay">
-          <option value=""></option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">区分色指定</div>
-    <div class="kintoneplugin-desc">区分毎に表示する場合の色分けを指定して下さい。 (最低1色は必須指定)</div>
-    <table class="colors">
+    <div class="kintoneplugin-label">区分色指定<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">区分毎に表示する色分けを指定して下さい。 (最低1色は必須指定)</div>
+    <table class="segmentcolors">
       <tbody>
         <tr>
           <td>

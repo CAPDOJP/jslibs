@@ -21,13 +21,14 @@ jQuery.noConflict();
 		todate:new Date(),
 		calendar:null,
 		graphlegend:null,
-		segment:null,
 		table:null,
 		apps:{},
 		config:{},
 		offset:{},
+		segments:{},
 		colors:[],
-		fields:[]
+		fields:[],
+		segmentkeys:[]
 	};
 	var events={
 		lists:[
@@ -69,12 +70,12 @@ jQuery.noConflict();
 					var appended=[];
 					$.each(cells,function(index){
 						var cell=$(this);
-			    		var exists=false;
-			    		if ($.data(cell[0],'from')<from && $.data(cell[0],'to')>to) exists=true;
-			    		if ($.data(cell[0],'from')>from && $.data(cell[0],'from')<to) exists=true;
-			    		if ($.data(cell[0],'to')>from && $.data(cell[0],'to')<to) exists=true;
-			    		if (exists)
-			    			if ($.inArray($.data(cell[0],'position'),appended)<0) appended.push($.data(cell[0],'position'));
+						var exists=false;
+						if ($.data(cell[0],'from')<from && $.data(cell[0],'to')>to) exists=true;
+						if ($.data(cell[0],'from')>from && $.data(cell[0],'from')<to) exists=true;
+						if ($.data(cell[0],'to')>from && $.data(cell[0],'to')<to) exists=true;
+						if (exists)
+							if ($.inArray($.data(cell[0],'position'),appended)<0) appended.push($.data(cell[0],'position'));
 					});
 					/* adds 1 to the maximum value for the new position */
 					for (var i2=positions.min;i2<positions.max+2;i2++) if ($.inArray(i2,appended)<0) {position=i2;break;}
@@ -97,8 +98,14 @@ jQuery.noConflict();
 					var balloon=$('<div class="timetable-weekly-balloon">');
 					var inner='';
 					inner='';
-					inner+='<p class="customview-p">'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
-					inner+='<p class="customview-p">'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
+					inner+='<p class="timetable-tooltip">';
+					$.each(vars.segments,function(key,values){
+						if (key!=vars.segmentkeys[0])
+							for (var i2=0;i2<values.records.length;i2++)
+								if (filter[i][key].value==values.records[i2].field) inner+='<span>'+values.records[i2].display+'</span>';
+					});
+					inner+='<p class="timetable-tooltip">'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
+					inner+='<p class="timetable-tooltip">'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
 					$('body').append(
 						balloon.css({
 							'z-index':(i+filter.length).toString()
@@ -129,8 +136,8 @@ jQuery.noConflict();
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
 				/* initialize cells */
-			    $('div.timetable-weekly-cell').remove();
-			    $('div.timetable-weekly-balloon').remove();
+				$('div.timetable-weekly-cell').remove();
+				$('div.timetable-weekly-balloon').remove();
 				$.each(vars.table.head.find('th'),function(index){
 					$(this).css({'width':'auto'}).empty();
 				})
@@ -144,25 +151,17 @@ jQuery.noConflict();
 						query+='&'+vars.config['date']+'='+$(this).closest('th').find('p').text();
 						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
 					}));
-					if (vars.config['segment'].length!=0)
+					var key=vars.segmentkeys[0];
+					for (var i2=0;i2<vars.segments[key].records.length;i2++)
 					{
-						/* place the segment data */
-						$.each(vars.segment,function(index,values){
-							var filter=$.grep(records,function(item,index){
-								var exists=0;
-								if (item[vars.config['date']].value==vars.fromdate.calc(i+' day').format('Y-m-d')) exists++;
-								if (item[vars.config['segment']].value==values[vars.config['segmentappfield']].value) exists++;
-								return exists==2;
-							});
-							/* rebuild view */
-							functions.build(filter,i+1,index);
+						var filter=$.grep(records,function(item,index){
+							var exists=0;
+							if (item[vars.config['date']].value==vars.fromdate.calc(i+' day').format('Y-m-d')) exists++;
+							if (item[key].value==vars.segments[key].records[i2].field) exists++;
+							return exists==2;
 						});
-					}
-					else
-					{
-						var filter=$.grep(records,function(item,index){return item[vars.config['date']].value==vars.fromdate.calc(i+' day').format('Y-m-d');});
 						/* rebuild view */
-						functions.build(filter,i+1,0);
+						functions.build(filter,i+1,i2);
 					}
 				}
 			},function(error){});
@@ -181,16 +180,53 @@ jQuery.noConflict();
 			query+=' and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
 			sort=' order by ';
 			sort+=vars.config['date']+' asc,';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			$.each(vars.segments,function(key,values){sort+=key+' asc,';});
 			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
 			},function(error){});
+		},
+		/* reload datas of segment */
+		loadsegments:function(param,callback){
+			var body={
+				app:param.app,
+				query:'order by '+param.field+' limit '+limit.toString()+' offset '+param.offset.toString()
+			};
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+				var records=[]
+				$.each(resp.records,function(index,values){
+					records.push({display:values[param.display].value,field:values[param.field].value});
+				});
+				Array.prototype.push.apply(param.records,records);
+				param.offset+=limit;
+				if (resp.records.length==limit) functions.loadsegments(param,callback);
+				else {param.loaded=1;callback(param);}
+			},function(error){});
+		},
+		/* check for completion of load */
+		checkloaded:function(){
+			var loaded=0;
+			var total=0;
+			$.each(vars.segments,function(key,values){loaded+=values.loaded;total++;});
+			if (loaded==total)
+			{
+				/* append graph legend */
+				var key=vars.segmentkeys[0];
+				for (var i=0;i<vars.segments[key].records.length;i++)
+				{
+					var color=vars.colors[i%vars.colors.length];
+					vars.graphlegend
+					.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+color}))
+					.append($('<span class="customview-span timetable-graphlegend-title">').text(vars.segments[key].records[i].display));
+				}
+				/* reload view */
+				functions.load();
+			}
 		}
 	};
 	/*---------------------------------------------------------------
@@ -198,10 +234,10 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	$(window).on('mousemove',function(e){
 		/* move balloon */
-	    $('div.timetable-weekly-balloon').css({
-	      'left':e.clientX,
-	      'top':e.clientY
-	    });
+		$('div.timetable-weekly-balloon').css({
+		  'left':e.clientX,
+		  'top':e.clientY
+		});
 	});
 	/*---------------------------------------------------------------
 	 kintone events
@@ -242,7 +278,7 @@ jQuery.noConflict();
 			}
 		});
 		button.on('click',function(){
-		    vars.calendar.show({activedate:vars.fromdate});
+			vars.calendar.show({activedate:vars.fromdate});
 		});
 		/* day feed button */
 		$.each([prev,next],function(){
@@ -257,6 +293,9 @@ jQuery.noConflict();
 		});
 		/* setup colors value */
 		vars.colors=vars.config['segmentcolors'].split(',');
+		/* setup segments value */
+		vars.segments=JSON.parse(vars.config['segment']);
+		vars.segmentkeys=Object.keys(vars.segments);
 		/* create table */
 		container.empty().append(vars.graphlegend.empty());
 		var head=$('<tr>').append($('<th>'));
@@ -281,7 +320,7 @@ jQuery.noConflict();
 				for (var i2=0;i2<parseInt(vars.config['scale'])-1;i2++)
 				{
 					vars.table.insertrow(row,function(row){
-				        row.find('td').eq(0).hide();
+						row.find('td').eq(0).hide();
 						if (hide) row.addClass('hide');
 					});
 				}
@@ -296,22 +335,21 @@ jQuery.noConflict();
 				vars.fields.push(values.code);
 			});
 			/* get datas of segment */
-			if (vars.config['segment'].length!=0)
-			{
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp'],query:'order by '+vars.config['segmentappfield']+' asc'},function(resp){
-					vars.segment=resp.records;
-					/* append graph legend */
-					$.each(vars.segment,function(index,values){
-						var color=vars.colors[index%vars.colors.length];
-						vars.graphlegend
-						.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+color}))
-						.append($('<span class="customview-span timetable-graphlegend-title">').text(values[vars.config['segmentdisplay']].value));
+			$.each(vars.segments,function(key,values){
+				var param=values;
+				param.loaded=0;
+				param.offset=0;
+				param.records=[];
+				if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
+				else
+				{
+					$.each(resp.properties[key].options,function(key,values){
+						param.records.push({display:values.label,field:values.label});
 					});
-					/* reload view */
-					functions.load();
-				},function(error){});
-			}
-			else functions.load();
+					param.loaded=1;
+				}
+			});
+			functions.checkloaded();
 		},function(error){});
 		return;
 	});

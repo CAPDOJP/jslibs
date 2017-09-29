@@ -18,13 +18,14 @@ jQuery.noConflict();
 		fromdate:new Date(),
 		todate:new Date(),
 		graphlegend:null,
-		segment:null,
 		table:null,
 		apps:{},
 		config:{},
 		offset:{},
+		segments:{},
 		colors:[],
-		fields:[]
+		fields:[],
+		segmentkeys:[]
 	};
 	var events={
 		lists:[
@@ -43,8 +44,15 @@ jQuery.noConflict();
 					/* append cell */
 					var inner='';
 					inner='';
-					inner+='<p>'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
-					inner+='<p>'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
+					inner+='<p class="timetable-tooltip">';
+					$.each(vars.segments,function(key,values){
+						if (key!=vars.segmentkeys[0])
+							for (var i2=0;i2<values.records.length;i2++)
+								if (filter[i][key].value==values.records[i2].field) inner+='<span>'+values.records[i2].display+'</span>';
+					});
+					inner+='</p>';
+					inner+='<p class="timetable-tooltip">'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
+					inner+='<p class="timetable-tooltip">'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
 					cell.append(
 						$('<div class="timetable-monthly-cell">').css({
 							'background-color':'#'+color,
@@ -98,30 +106,22 @@ jQuery.noConflict();
 							cell.find('span').css({'color':'#FA8273'});
 							break;
 					}
-					if (vars.config['segment'].length!=0)
+					var key=vars.segmentkeys[0];
+					for (var i=0;i<vars.segments[key].records.length;i++)
 					{
-						/* place the segment data */
-						$.each(vars.segment,function(index,values){
-							var filter=$.grep(records,function(item,index){
-								var exists=0;
-								if (item[vars.config['date']].value==day.format('Y-m-d')) exists++;
-								if (item[vars.config['segment']].value==values[vars.config['segmentappfield']].value) exists++;
-								return exists==2;
-							});
-							/* rebuild view */
-							functions.build(filter,cell,index);
+						var filter=$.grep(records,function(item,index){
+							var exists=0;
+							if (item[vars.config['date']].value==day.format('Y-m-d')) exists++;
+							if (item[key].value==vars.segments[key].records[i].field) exists++;
+							return exists==2;
 						});
-					}
-					else
-					{
-						var filter=$.grep(records,function(item,index){return item[vars.config['date']].value==day.format('Y-m-d');});
 						/* rebuild view */
-						functions.build(filter,cell,0);
+						functions.build(filter,cell,i);
 					}
 				});
 				/* check no element rows */
 				$.each(vars.table.contents.find('tr'),function(index,values){
-				    if (!$(this).find('div').size()) $(this).hide();
+					if (!$(this).find('div').size()) $(this).hide();
 				})
 			},function(error){});
 		},
@@ -135,19 +135,57 @@ jQuery.noConflict();
 				fields:vars.fields
 			};
 			query+=((query.length!=0)?' and ':'');
-			query+=vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
+			query+=vars.config['date']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'"';
+			query+=' and '+vars.config['date']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
 			sort=' order by ';
 			sort+=vars.config['date']+' asc,';
-			sort+=(vars.config['segment'].length!=0)?vars.config['segment']+' asc,':'';
+			$.each(vars.segments,function(key,values){sort+=key+' asc,';});
 			sort+=vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
+				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
 			},function(error){});
+		},
+		/* reload datas of segment */
+		loadsegments:function(param,callback){
+			var body={
+				app:param.app,
+				query:'order by '+param.field+' limit '+limit.toString()+' offset '+param.offset.toString()
+			};
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+				var records=[]
+				$.each(resp.records,function(index,values){
+					records.push({display:values[param.display].value,field:values[param.field].value});
+				});
+				Array.prototype.push.apply(param.records,records);
+				param.offset+=limit;
+				if (resp.records.length==limit) functions.loadsegments(param,callback);
+				else {param.loaded=1;callback(param);}
+			},function(error){});
+		},
+		/* check for completion of load */
+		checkloaded:function(){
+			var loaded=0;
+			var total=0;
+			$.each(vars.segments,function(key,values){loaded+=values.loaded;total++;});
+			if (loaded==total)
+			{
+				/* append graph legend */
+				var key=vars.segmentkeys[0];
+				for (var i=0;i<vars.segments[key].records.length;i++)
+				{
+					var color=vars.colors[i%vars.colors.length];
+					vars.graphlegend
+					.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+color}))
+					.append($('<span class="customview-span timetable-graphlegend-title">').text(vars.segments[key].records[i].display));
+				}
+				/* reload view */
+				functions.load();
+			}
 		}
 	};
 	/*---------------------------------------------------------------
@@ -188,6 +226,9 @@ jQuery.noConflict();
 		});
 		/* setup colors value */
 		vars.colors=vars.config['segmentcolors'].split(',');
+		/* setup segments value */
+		vars.segments=JSON.parse(vars.config['segment']);
+		vars.segmentkeys=Object.keys(vars.segments);
 		/* create table */
 		container.empty().append(vars.graphlegend.empty());
 		var head=$('<tr>');
@@ -212,22 +253,21 @@ jQuery.noConflict();
 				vars.fields.push(values.code);
 			});
 			/* get datas of segment */
-			if (vars.config['segment'].length!=0)
-			{
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['segmentapp'],query:'order by '+vars.config['segmentappfield']+' asc'},function(resp){
-					vars.segment=resp.records;
-					/* append graph legend */
-					$.each(vars.segment,function(index,values){
-						var color=vars.colors[index%vars.colors.length];
-						vars.graphlegend
-						.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+color}))
-						.append($('<span class="customview-span timetable-graphlegend-title">').text(values[vars.config['segmentdisplay']].value));
+			$.each(vars.segments,function(key,values){
+				var param=values;
+				param.loaded=0;
+				param.offset=0;
+				param.records=[];
+				if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
+				else
+				{
+					$.each(resp.properties[key].options,function(key,values){
+						param.records.push({display:values.label,field:values.label});
 					});
-					/* reload view */
-					functions.load();
-				},function(error){});
-			}
-			else functions.load();
+					param.loaded=1;
+				}
+			});
+			functions.checkloaded();
 		},function(error){});
 		return;
 	});
