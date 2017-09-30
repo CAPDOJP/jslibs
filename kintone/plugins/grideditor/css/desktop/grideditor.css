@@ -9,6 +9,22 @@ table#grideditor tbody td.buttoncell{
 table#grideditor tbody td.datecell{
     width:125px;
 }
+table#grideditor tbody td.multiselectcell{
+    width:125px;
+}
+table#grideditor tbody td.multiselectcell button{
+	margin:0px;
+    margin-left:-30px;
+    right:0px;
+    top:0px;
+    z-index:999;
+}
+table#grideditor tbody td.multiselectcell span{
+    padding-right:30px;
+    text-overflow:ellipsis;
+    width:100%;
+    z-index:888;
+}
 table#grideditor tbody td.lookupcell{
     width:125px;
 }
@@ -40,6 +56,9 @@ button.referer-button-search{
     z-index:999;
 }
 button.referer-button-cancel{
+    color:#FFFFFF;
+}
+button.referer-button-ok{
     color:#FFFFFF;
 }
 input.referer-input-multi{

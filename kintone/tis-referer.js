@@ -20,20 +20,17 @@
 *								.id is elements id
 *								.class is elements class
 *								.text is display text
-*								.callback is callback of button clicked
 *								-example-
 *								buttons[
 *									{
 *										id:'ok',
 *										class:'okbuttonclasss',
-*										text:'ok',
-*										callback:function(){alert('ok clicked');}
+*										text:'ok'
 *									},
 *									{
 *										id:'cancel',
 *										class:'cancelbuttonclasss',
-*										text:'cancel',
-*										callback:function(){alert('cancel clicked');}
+*										text:'cancel'
 *									}
 *								]
 *			@ searches			:search condition elements
@@ -84,7 +81,6 @@ var Referer=function(options){
 	this.displaytext=options.displaytext;
 	this.parambuttons=options.buttons;
 	this.paramsearches=options.searches;
-	this.buttons=[];
 	this.callback=null;
 	/* valiable */
 	var my=this;
@@ -182,13 +178,12 @@ var Referer=function(options){
 			class:'',
 			text:''
 		},my.parambuttons[index]);
-		my.buttons.push(
+		my.buttonblock.append(
 			button.clone(true)
 			.attr('id',buttonvalue.id)
 			.addClass(buttonvalue.class)
 			.text(buttonvalue.text)
 		);
-		my.buttonblock.append(my.buttons[index]);
 	});
 	$.each(this.paramsearches,function(index){
 		var searchvalue=$.extend({
@@ -225,9 +220,8 @@ var Referer=function(options){
 		}
 		if (searchvalue.callback!=null) searchfield.on('change',function(){searchvalue.callback(searchfield);});
 		my.searchblock.append(
-			label.clone(true).css({
-				'display':'inline-block'
-			})
+			label.clone(true)
+			.css({'display':'inline-block'})
 			.append(span.clone(true).text(searchvalue.label))
 			.append(searchfield)
 		);
@@ -290,7 +284,7 @@ Referer.prototype={
 	search:function(){
 		var my=this;
 		var lists=this.listblock.find('tbody').find('tr').find('td');
-		var searches=this.searchblock.find('input,select');
+		var searches=this.searchblock.find('input[type=text],select');
 		var filtersearch=$.grep(this.datasource,function(item,index){
 			var exists=0;
 			$.each(searches,function(index){
@@ -333,13 +327,15 @@ Referer.prototype={
 				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
 			});
 			$.each(my.displaytext,function(index){
-				list.append($('<td>').css({
-					'border':'1px solid #C9C9C9',
-					'cursor':'pointer',
-					'padding':'5px'
-				})
-				.text(filter[my.displaytext[index]].value))
-				.on('click',function(){if (my.callback!=null) my.callback(list);});
+				list.append(
+					$('<td>').css({
+						'border':'1px solid #C9C9C9',
+						'cursor':'pointer',
+						'padding':'5px'
+					})
+					.text(filter[my.displaytext[index]].value)
+				)
+				.on('click',function(){if (my.callback!=null) my.callback($(this));});
 			});
 			my.listblock.find('tbody').append(list);
 		}
@@ -356,7 +352,7 @@ Referer.prototype={
 		var lists=this.listblock.find('tbody').find('tr').find('td');
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
-			$.each(my.buttons,function(index){
+			$.each(my.buttonblock.find('button'),function(index){
 				$(this).off('click');
 				if ($(this).attr('id')==key) $(this).on('click',function(){if (values!=null) values();});
 			});
@@ -378,8 +374,8 @@ Referer.prototype={
 			'margin-top':margin.toString()+'px'
 		});
 		/* focus in search field */
-		var searchfields=this.searchblock.find('input[type=text],select');
-		if (searchfields.length!=0) searchfields.eq(0).focus();
+		var searches=this.searchblock.find('input[type=text],select');
+		if (searches.length!=0) searches.eq(0).focus();
 	},
 	/* hide referer */
 	hide:function(){
@@ -398,5 +394,187 @@ jQuery.fn.referer=function(options){
 	},options);
 	options.container=this;
 	return new Referer(options);
+};
+/*
+*--------------------------------------------------------------------
+* parameters
+* options	@ buttons			:button elements
+*								{
+*									ok:{
+*										class:'',
+*										text:''
+*									},
+*									cancel:{
+*										class:'',
+*										text:''
+*									}
+*								}
+* -------------------------------------------------------------------
+*/
+var MultiSelect=function(options){
+	var options=$.extend({
+		container:null,
+		buttons:{
+			ok:{
+				class:'',
+				text:''
+			},
+			cancel:{
+				class:'',
+				text:''
+			}
+		}
+	},options);
+	/* property */
+	this.buttons=options.buttons;
+	this.selection={};
+	/* valiable */
+	var my=this;
+	var div=$('<div>').css({
+		'box-sizing':'border-box'
+	});
+	var button=$('<button>');
+	var table=$('<table>');
+	/* append elements */
+	this.cover=div.clone(true).css({
+		'background-color':'rgba(0,0,0,0.5)',
+		'display':'none',
+		'height':'100%',
+		'left':'0px',
+		'position':'fixed',
+		'top':'0px',
+		'width':'100%',
+		'z-index':'999999'
+	});
+	this.container=div.clone(true).css({
+		'background-color':'#FFFFFF',
+		'bottom':'0',
+		'border-radius':'5px',
+		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+		'height':'600px',
+		'left':'0',
+		'margin':'auto',
+		'max-height':'90%',
+		'max-width':'90%',
+		'padding':'5px',
+		'position':'absolute',
+		'right':'0',
+		'top':'0',
+		'width':'500px'
+	});
+	this.contents=div.clone(true).css({
+		'height':'100%',
+		'overflow-x':'hidden',
+		'overflow-y':'auto',
+		'padding':'5px',
+		'position':'relative',
+		'width':'100%',
+		'z-index':'777'
+	});
+	this.buttonblock=div.clone(true).css({
+		'background-color':'#3498db',
+		'border-bottom-left-radius':'5px',
+		'border-bottom-right-radius':'5px',
+		'bottom':'0px',
+		'left':'0px',
+		'padding':'5px',
+		'position':'absolute',
+		'text-align':'center',
+		'width':'100%',
+		'z-index':'999'
+	});
+	this.listblock=table.clone(true).css({
+		'box-sizing':'border-box',
+		'width':'100%'
+	}).append('<tbody>');
+	/* append elements */
+	$.each(this.buttons,function(key,values){
+		my.buttonblock.append(
+			button.clone(true)
+			.attr('id',key)
+			.addClass(values.class)
+			.text(values.text)
+		);
+	});
+	this.contents.append(this.listblock);
+	this.container.append(this.contents);
+	this.container.append(this.buttonblock);
+	this.cover.append(this.container);
+	options.container.append(this.cover);
+	/* adjust container height */
+	$(window).on('load resize',function(){
+		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+	});
+};
+MultiSelect.prototype={
+	/* display referer */
+	show:function(options){
+		var options=$.extend({
+			datasource:[],
+			buttons:{},
+			selected:[]
+		},options);
+		var my=this;
+		/* buttons callback */
+		$.each(options.buttons,function(key,values){
+			$.each(my.buttons,function(index){
+				$(this).off('click');
+				if ($(this).attr('id')==key) $(this).on('click',function(){if (values!=null) values(my.selection);});
+			});
+		});
+		/* create lists */
+		this.listblock.find('tbody').empty();
+		this.selection={};
+		$.each(options.datasource,function(index){
+			var listtext=options.datasource[index].text;
+			var listvalue=options.datasource[index].value;
+			var list=$('<tr>')
+			.append(
+				$('<td>').css({
+					'border':'1px solid #C9C9C9',
+					'cursor':'pointer',
+					'padding':'5px'
+				})
+				.append($('<span>').text(listtext))
+				.append('<input type="hidden" value="'+listvalue+'">')
+				.on('click',function(){
+					if ($(this).find('input').val() in my.selection)
+					{
+						$(this).css({'background-color':'transparent'});
+						delete my.selection[$(this).find('input').val()];
+					}
+					else
+					{
+						$(this).css({'background-color':'#a0d8ef'});
+						my.selection[$(this).find('input').val()]=$(this).find('span').text();
+					}
+				})
+			)
+			.on('mouseover',function(e){$(this).css({'background-color':'#f5b2b2'});})
+			.on('mouseout',function(e){$(this).css({'background-color':'transparent'});});
+			if ($.inArray(listvalue,options.selected)>-1)
+			{
+				list.find('td').css({'background-color':'#a0d8ef'});;
+				my.selection[listvalue]=listtext;
+			}
+			else $(this).css({'background-color':'transparent'});
+			my.listblock.find('tbody').append(list);
+		});
+		this.cover.show();
+		/* adjust container height */
+		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
+	},
+	/* hide referer */
+	hide:function(){
+		this.cover.hide();
+	}
+};
+jQuery.fn.multiselect=function(options){
+	var options=$.extend({
+		container:null,
+		buttons:{}
+	},options);
+	options.container=this;
+	return new MultiSelect(options);
 };
 })(jQuery);
