@@ -90,15 +90,15 @@ jQuery.noConflict();
 								datasource:datasource,
 								buttons:{
 									ok:function(selection){
-										target.find('span').val(Object.keys(selection).join(','));
-										target.find('input').val(Object.values(selection).join(','));
+										target.closest('td').find('span').val(Object.keys(selection).join(','));
+										target.closest('td').find('input').val(Object.values(selection).join(','));
 									},
 									cancel:function(){
 										/* close the selectbox */
 										vars.selectbox.hide();
 									}
 								},
-								selected:target.find('input').val().split(',');
+								selected:target.closest('td').find('input').val().split(',')
 							});
 						})
 					);
@@ -141,15 +141,15 @@ jQuery.noConflict();
 								datasource:vars.exports.groups,
 								buttons:{
 									ok:function(selection){
-										target.find('span').val(Object.keys(selection).join(','));
-										target.find('input').val(Object.values(selection).join(','));
+										target.closest('td').find('span').val(Object.keys(selection).join(','));
+										target.closest('td').find('input').val(Object.values(selection).join(','));
 									},
 									cancel:function(){
 										/* close the selectbox */
 										vars.selectbox.hide();
 									}
 								},
-								selected:target.find('input').val().split(',');
+								selected:target.closest('td').find('input').val().split(',')
 							});
 						})
 					);
@@ -203,15 +203,15 @@ jQuery.noConflict();
 								datasource:vars.exports.organizations,
 								buttons:{
 									ok:function(selection){
-										target.find('span').val(Object.keys(selection).join(','));
-										target.find('input').val(Object.values(selection).join(','));
+										target.closest('td').find('span').val(Object.keys(selection).join(','));
+										target.closest('td').find('input').val(Object.values(selection).join(','));
 									},
 									cancel:function(){
 										/* close the selectbox */
 										vars.selectbox.hide();
 									}
 								},
-								selected:target.find('input').val().split(',');
+								selected:target.closest('td').find('input').val().split(',')
 							});
 						})
 					);
@@ -240,15 +240,15 @@ jQuery.noConflict();
 								datasource:vars.exports.users,
 								buttons:{
 									ok:function(selection){
-										target.find('span').val(Object.keys(selection).join(','));
-										target.find('input').val(Object.values(selection).join(','));
+										target.closest('td').find('span').val(Object.keys(selection).join(','));
+										target.closest('td').find('input').val(Object.values(selection).join(','));
 									},
 									cancel:function(){
 										/* close the selectbox */
 										vars.selectbox.hide();
 									}
 								},
-								selected:target.find('input').val().split(',');
+								selected:target.closest('td').find('input').val().split(',')
 							});
 						})
 					);

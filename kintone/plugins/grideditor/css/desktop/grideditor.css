@@ -19,6 +19,9 @@ table#grideditor tbody td.multiselectcell button{
     top:0px;
     z-index:999;
 }
+table#grideditor tbody td.multiselectcell label{
+    width:100%;
+}
 table#grideditor tbody td.multiselectcell span{
     padding-right:30px;
     text-overflow:ellipsis;

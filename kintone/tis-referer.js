@@ -517,7 +517,7 @@ MultiSelect.prototype={
 		var my=this;
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
-			$.each(my.buttons,function(index){
+			$.each(my.buttonblock.find('button'),function(index){
 				$(this).off('click');
 				if ($(this).attr('id')==key) $(this).on('click',function(){if (values!=null) values(my.selection);});
 			});
