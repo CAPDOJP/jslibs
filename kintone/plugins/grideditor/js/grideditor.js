@@ -74,9 +74,9 @@ jQuery.noConflict();
 			{
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
-					var datasource=[];
+					var datasource=[fieldinfo.options.length];
 					$.each(fieldinfo.options,function(key,values){
-						datasource.push({value:values.label,text:values.label});
+						datasource[values.index]={value:values.label,text:values.label};
 					});
 					classes='multiselectcell';
 					cell=$('<label>');
@@ -92,6 +92,8 @@ jQuery.noConflict();
 									ok:function(selection){
 										target.closest('td').find('span').val(Object.keys(selection).join(','));
 										target.closest('td').find('input').val(Object.values(selection).join(','));
+										/* close the selectbox */
+										vars.selectbox.hide();
 									},
 									cancel:function(){
 										/* close the selectbox */
@@ -125,6 +127,11 @@ jQuery.noConflict();
 				case 'GROUP_SELECT':
 					/* load group datas */
 					$.loadgroups(function(records){
+						records.sort(function(a,b){
+							if(a.id<b.id) return -1;
+							if(a.id>b.id) return 1;
+							return 0;
+						});
 						$.each(records,function(index,values){
 							vars.exports.groups.push({value:values.code,text:values.name});
 						});
@@ -143,6 +150,8 @@ jQuery.noConflict();
 									ok:function(selection){
 										target.closest('td').find('span').val(Object.keys(selection).join(','));
 										target.closest('td').find('input').val(Object.values(selection).join(','));
+										/* close the selectbox */
+										vars.selectbox.hide();
 									},
 									cancel:function(){
 										/* close the selectbox */
@@ -187,6 +196,11 @@ jQuery.noConflict();
 				case 'ORGANIZATION_SELECT':
 					/* load organization datas */
 					$.loadorganizations(function(records){
+						records.sort(function(a,b){
+							if(a.id<b.id) return -1;
+							if(a.id>b.id) return 1;
+							return 0;
+						});
 						$.each(records,function(index,values){
 							vars.exports.organizations.push({value:values.code,text:values.name});
 						});
@@ -205,6 +219,8 @@ jQuery.noConflict();
 									ok:function(selection){
 										target.closest('td').find('span').val(Object.keys(selection).join(','));
 										target.closest('td').find('input').val(Object.values(selection).join(','));
+										/* close the selectbox */
+										vars.selectbox.hide();
 									},
 									cancel:function(){
 										/* close the selectbox */
@@ -224,6 +240,11 @@ jQuery.noConflict();
 				case 'USER_SELECT':
 					/* load user datas */
 					$.loadusers(function(records){
+						records.sort(function(a,b){
+							if(a.id<b.id) return -1;
+							if(a.id>b.id) return 1;
+							return 0;
+						});
 						$.each(records,function(index,values){
 							vars.exports.users.push({value:values.code,text:values.name});
 						});
@@ -242,6 +263,8 @@ jQuery.noConflict();
 									ok:function(selection){
 										target.closest('td').find('span').val(Object.keys(selection).join(','));
 										target.closest('td').find('input').val(Object.values(selection).join(','));
+										/* close the selectbox */
+										vars.selectbox.hide();
 									},
 									cancel:function(){
 										/* close the selectbox */
@@ -679,18 +702,16 @@ jQuery.noConflict();
 		});
 		/* create selectbox */
 		vars.selectbox=$('body').multiselect({
-			buttons:[
-				{
-					id:'ok',
+			buttons:{
+				ok:{
 					class:'customview-button referer-button-ok',
 					text:'OK'
 				},
-				{
-					id:'cancel',
+				cancel:{
 					class:'customview-button referer-button-cancel',
 					text:'キャンセル'
 				}
-			]
+			}
 		});
 		/* get layout */
 		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){

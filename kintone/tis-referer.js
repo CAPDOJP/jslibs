@@ -352,10 +352,8 @@ Referer.prototype={
 		var lists=this.listblock.find('tbody').find('tr').find('td');
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
-			$.each(my.buttonblock.find('button'),function(index){
-				$(this).off('click');
-				if ($(this).attr('id')==key) $(this).on('click',function(){if (values!=null) values();});
-			});
+			if (my.buttonblock.find('button#'+key).size())
+				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values();});
 		});
 		/* lists callback */
 		$.each(lists,function(index){
@@ -517,10 +515,8 @@ MultiSelect.prototype={
 		var my=this;
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
-			$.each(my.buttonblock.find('button'),function(index){
-				$(this).off('click');
-				if ($(this).attr('id')==key) $(this).on('click',function(){if (values!=null) values(my.selection);});
-			});
+			if (my.buttonblock.find('button#'+key).size())
+				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values(my.selection);});
 		});
 		/* create lists */
 		this.listblock.find('tbody').empty();

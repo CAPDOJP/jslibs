@@ -60,9 +60,11 @@ button.referer-button-search{
 }
 button.referer-button-cancel{
     color:#FFFFFF;
+    padding:0px 1em;
 }
 button.referer-button-ok{
     color:#FFFFFF;
+    padding:0px 1em;
 }
 input.referer-input-multi{
 	box-sizing:border-box;
