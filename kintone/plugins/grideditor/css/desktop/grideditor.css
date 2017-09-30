@@ -20,12 +20,14 @@ table#grideditor tbody td.multiselectcell button{
     z-index:999;
 }
 table#grideditor tbody td.multiselectcell label{
-    width:100%;
+    width:125px;
 }
 table#grideditor tbody td.multiselectcell span{
+    overflow:hidden;
     padding-right:30px;
-    text-overflow:ellipsis;
-    width:100%;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+    width:125px;
     z-index:888;
 }
 table#grideditor tbody td.lookupcell{

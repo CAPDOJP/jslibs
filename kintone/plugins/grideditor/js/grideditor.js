@@ -90,8 +90,10 @@ jQuery.noConflict();
 								datasource:datasource,
 								buttons:{
 									ok:function(selection){
-										target.closest('td').find('span').val(Object.keys(selection).join(','));
-										target.closest('td').find('input').val(Object.values(selection).join(','));
+										target.closest('td').find('input').val(Object.keys(selection).join(','));
+										target.closest('td').find('span').text(Object.values(selection).join(','));
+										target.closest('td').find('input').trigger('change');
+										//functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
 										/* close the selectbox */
 										vars.selectbox.hide();
 									},
@@ -148,8 +150,10 @@ jQuery.noConflict();
 								datasource:vars.exports.groups,
 								buttons:{
 									ok:function(selection){
-										target.closest('td').find('span').val(Object.keys(selection).join(','));
-										target.closest('td').find('input').val(Object.values(selection).join(','));
+										target.closest('td').find('input').val(Object.keys(selection).join(','));
+										target.closest('td').find('span').text(Object.values(selection).join(','));
+										target.closest('td').find('input').trigger('change');
+										//functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
 										/* close the selectbox */
 										vars.selectbox.hide();
 									},
@@ -217,8 +221,10 @@ jQuery.noConflict();
 								datasource:vars.exports.organizations,
 								buttons:{
 									ok:function(selection){
-										target.closest('td').find('span').val(Object.keys(selection).join(','));
-										target.closest('td').find('input').val(Object.values(selection).join(','));
+										target.closest('td').find('input').val(Object.keys(selection).join(','));
+										target.closest('td').find('span').text(Object.values(selection).join(','));
+										target.closest('td').find('input').trigger('change');
+										//functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
 										/* close the selectbox */
 										vars.selectbox.hide();
 									},
@@ -261,8 +267,10 @@ jQuery.noConflict();
 								datasource:vars.exports.users,
 								buttons:{
 									ok:function(selection){
-										target.closest('td').find('span').val(Object.keys(selection).join(','));
-										target.closest('td').find('input').val(Object.values(selection).join(','));
+										target.closest('td').find('input').val(Object.keys(selection).join(','));
+										target.closest('td').find('span').text(Object.values(selection).join(','));
+										target.closest('td').find('input').trigger('change');
+										//functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
 										/* close the selectbox */
 										vars.selectbox.hide();
 									},
@@ -410,6 +418,7 @@ jQuery.noConflict();
 		},
 		/* register fields */
 		fieldregist:function(target,record,fieldinfo){
+			console.log(target);
 			var row=target.closest('tr');
 			var id=row.find('td').first().find('label').text();
 			var method='';
@@ -436,7 +445,7 @@ jQuery.noConflict();
 				$.each(vars.fieldinfos,function(index,values){
 					/* check mappings */
 					if ($.inArray(values.code,vars.mappings)<0)
-						record[values.code]={value:functions.fieldvalue(row.find('#'+values.code),values)};
+						record[values.code]={value:functions.fieldvalue(row.find('#'+values.code).not('span'),values)};
 				});
 			}
 			body.record=record;
@@ -465,8 +474,7 @@ jQuery.noConflict();
 				{
 					case 'CHECK_BOX':
 					case 'MULTI_SELECT':
-						var values=cell.find('input').val().split(',');
-						for (var i=0;i<values.length;i++) fieldvalue.push({code:values[i]});
+						fieldvalue=cell.val().split(',');
 						break;
 					case 'DATE':
 						if (cell.val().match(/^[0-9]{4}(-|\/){1}([1-9]{1}|0[1-9]{1}|1[0-2]{1})(-|\/){1}([1-9]{1}|[0-2]{1}[0-9]{1}|3[0-1]{1})$/g)) fieldvalue=cell.val().replace(/\//g,'-');
@@ -495,7 +503,7 @@ jQuery.noConflict();
 					case 'GROUP_SELECT':
 					case 'ORGANIZATION_SELECT':
 					case 'USER_SELECT':
-						var values=cell.find('input').val().split(',');
+						var values=cell.val().split(',');
 						for (var i=0;i<values.length;i++) fieldvalue.push({code:values[i]});
 						break;
 					case 'RADIO_BUTTON':
@@ -804,10 +812,8 @@ jQuery.noConflict();
 						{
 							case 'CHECK_BOX':
 							case 'MULTI_SELECT':
-								var value=[];
-								for (var i=0;i<record[values.code].value.length;i++) value.push(record[values.code].value[index]);
-								row.find('span#'+values.code).val(value.join(','));
-								row.find('input#'+values.code).val(value.join(','));
+								row.find('input#'+values.code).val(record[values.code].value.join(','));
+								row.find('span#'+values.code).text(record[values.code].value.join(','));
 								break;
 							case 'DATETIME':
 								if (record[values.code].value.length!=0) row.find('#'+values.code).val(new Date(record[values.code].value).format('Y-m-d H:i'));
@@ -822,8 +828,8 @@ jQuery.noConflict();
 									text.push(record[values.code].value[index].name);
 									value.push(record[values.code].value[index].code);
 								});
-								row.find('span#'+values.code).val(text.join(','));
 								row.find('input#'+values.code).val(value.join(','));
+								row.find('span#'+values.code).text(text.join(','));
 								break;
 							default:
 								row.find('#'+values.code).val(record[values.code].value);

@@ -103,6 +103,9 @@ table.customview-table tbody td{
 	margin:0px;
 	padding:0px;
 }
+table.customview-table tbody tr:nth-of-type(odd){
+	background-color:#FFFFFF;
+}
 table.customview-table tbody tr:nth-of-type(even){
 	background-color:#FAF9F9;
 }

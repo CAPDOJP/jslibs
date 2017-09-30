@@ -357,8 +357,7 @@ Referer.prototype={
 		});
 		/* lists callback */
 		$.each(lists,function(index){
-			$(this).off('click');
-			$(this).on('click',function(){if (options.callback!=null) options.callback($(this).closest('tr'));});
+			$(this).off('click').on('click',function(){if (options.callback!=null) options.callback($(this).closest('tr'));});
 		});
 		this.callback=options.callback;
 		this.cover.show();
