@@ -349,7 +349,7 @@ Referer.prototype={
 		var my=this;
 		var height=0;
 		var margin=0;
-		var lists=this.listblock.find('tbody').find('tr').find('td');
+		var lists=this.listblock.find('tbody').find('tr');
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
 			if (my.buttonblock.find('button#'+key).size())
@@ -357,7 +357,8 @@ Referer.prototype={
 		});
 		/* lists callback */
 		$.each(lists,function(index){
-			$(this).off('click').on('click',function(){if (options.callback!=null) options.callback($(this).closest('tr'));});
+			var list=$(this);
+			$(this).off('click').on('click',function(){if (options.callback!=null) options.callback(list);});
 		});
 		this.callback=options.callback;
 		this.cover.show();

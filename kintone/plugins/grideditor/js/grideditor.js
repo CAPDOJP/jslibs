@@ -92,8 +92,7 @@ jQuery.noConflict();
 									ok:function(selection){
 										target.closest('td').find('input').val(Object.keys(selection).join(','));
 										target.closest('td').find('span').text(Object.values(selection).join(','));
-										target.closest('td').find('input').trigger('change');
-										//functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
+										functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
 										/* close the selectbox */
 										vars.selectbox.hide();
 									},
@@ -152,8 +151,7 @@ jQuery.noConflict();
 									ok:function(selection){
 										target.closest('td').find('input').val(Object.keys(selection).join(','));
 										target.closest('td').find('span').text(Object.values(selection).join(','));
-										target.closest('td').find('input').trigger('change');
-										//functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
+										functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
 										/* close the selectbox */
 										vars.selectbox.hide();
 									},
@@ -223,8 +221,7 @@ jQuery.noConflict();
 									ok:function(selection){
 										target.closest('td').find('input').val(Object.keys(selection).join(','));
 										target.closest('td').find('span').text(Object.values(selection).join(','));
-										target.closest('td').find('input').trigger('change');
-										//functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
+										functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
 										/* close the selectbox */
 										vars.selectbox.hide();
 									},
@@ -269,8 +266,7 @@ jQuery.noConflict();
 									ok:function(selection){
 										target.closest('td').find('input').val(Object.keys(selection).join(','));
 										target.closest('td').find('span').text(Object.values(selection).join(','));
-										target.closest('td').find('input').trigger('change');
-										//functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
+										functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
 										/* close the selectbox */
 										vars.selectbox.hide();
 									},
@@ -418,7 +414,6 @@ jQuery.noConflict();
 		},
 		/* register fields */
 		fieldregist:function(target,record,fieldinfo){
-			console.log(target);
 			var row=target.closest('tr');
 			var id=row.find('td').first().find('label').text();
 			var method='';
