@@ -283,8 +283,8 @@ Date.prototype.DateCalc = function(pattern){
 	{
 		month+=parseInt(pattern.match(/^-?[0-9]+/g));
 		//年末チェック
-		if (month<1) {year--;month=12-month;}
-		if (month>12) {year++;month-=12;}
+		while (month<1) {year--;month+=12;}
+		while (month>12) {year++;month-=12;}
 		//月末チェック
 		var check=new Date(year.toString()+'/'+month.toString()+'/'+day.toString());
 		if (check.getMonth()+1!=month)
