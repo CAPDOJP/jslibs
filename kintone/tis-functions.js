@@ -28,13 +28,13 @@ Date.prototype.calc=function(pattern){
 	{
 		month+=parseInt(pattern.match(/^-?[0-9]+/g));
 		//check of next year
-		if (month<1) {year--;month=12;}
-		if (month>12) {year++;month=1;}
+		while (month<1) {year--;month=12-month;}
+		while (month>12) {year++;month-=12;}
 		//check of next month
-		var check=new Date(year+'/'+month+'/'+day);
+		var check=new Date(year.toString()+'/'+month.toString()+'/'+day.toString());
 		if (check.getMonth()+1!=month)
 		{
-			check=new Date(year+'/'+(month+1)+'/1');
+			check=new Date(year.toString()+'/'+(month+1).toString()+'/1');
 			check.setDate(0);
 			day=check.getDate();
 		}

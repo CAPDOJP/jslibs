@@ -1,0 +1,103 @@
+<div class="block">
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">開始日付フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">開始日付を設定するフィールドを選択して下さい。【日付フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="fromdate">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">終了日付フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">終了日付を設定するフィールドを選択して下さい。【日付フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="todate">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">ガントチャート内のセルに表示するフィールドを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="display">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">区分フィールド【ルックアップ・ラジオボタン・ドロップダウン】<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">区分毎に表示するフィールドを選択して下さい。</div>
+    <table class="segments">
+      <thead>
+        <tr>
+          <th>区分フィールド</th>
+          <th>区分名フィールド</th>
+          <th colspan="2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="kintoneplugin-select-outer">
+              <div class="kintoneplugin-select">
+                <select id="segment">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </td>
+          <td>
+        <div class="kintoneplugin-select-outer">
+          <div class="kintoneplugin-select">
+            <select id="segmentdisplay">
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+          </td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">区分色指定<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">区分毎に表示する色分けを指定して下さい。 (最低1色は必須指定)</div>
+    <table class="segmentcolors">
+      <tbody>
+        <tr>
+          <td>
+            <span id="segmentcolor" class="kintoneplugin-unit color">&nbsp;</span>
+            <input type="hidden" id="segmentcolor" value="">
+          </td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">目盛り</div>
+    <div class="kintoneplugin-input-checkbox-item">
+      <label><input type="checkbox" id="scalefixed" value="0">目盛幅を固定する</label>
+    </div>
+    <span class="kintoneplugin-unit">目盛幅</span>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="scalefixedwidth" class="kintoneplugin-input-text" value="" >
+    </div>
+    <span class="kintoneplugin-unit">px</span>
+  </div>
+</div>
+<div class="block">
+  <button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+  <button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

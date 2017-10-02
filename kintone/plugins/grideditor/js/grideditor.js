@@ -288,7 +288,7 @@ jQuery.noConflict();
 			.on('keyup',function(){
 				var empty=true;
 				$.each(vars.rows.find('tr').last().find('td'),function(index,values){
-					var cell=$(this).find('input,select,texarea');
+					var cell=$(this).find('input[type=text],select,textarea');
 					if (cell.val())
 						if (cell.val().toString().length!=0) empty=false;
 				})
@@ -837,7 +837,7 @@ jQuery.noConflict();
 				/* append new row */
 				vars.rows.append(vars.template.clone(true));
 				/* focus */
-				vars.rows.find('input,select,texarea').first().focus();
+				vars.rows.find('input[type=text],select,textarea').first().focus();
 				/* load complete */
 				vars.loaded=true;
 			},function(error){});
