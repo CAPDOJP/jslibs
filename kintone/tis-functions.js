@@ -28,7 +28,7 @@ Date.prototype.calc=function(pattern){
 	{
 		month+=parseInt(pattern.match(/^-?[0-9]+/g));
 		//check of next year
-		while (month<1) {year--;month=12-month;}
+		while (month<1) {year--;month+=12;}
 		while (month>12) {year++;month-=12;}
 		//check of next month
 		var check=new Date(year.toString()+'/'+month.toString()+'/'+day.toString());
