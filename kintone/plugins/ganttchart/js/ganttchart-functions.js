@@ -6,11 +6,11 @@ jQuery.extend({
 		var fromdiff=from.getTime()-base.getTime();
 		var todiff=to.getTime()-base.getTime();
 		var fromvalue={
-			day:Math.floor(fromdiff.day/(1000*60*60*24)),
+			day:Math.floor(fromdiff/(1000*60*60*24)),
 			month:$.monthdiff(base,from)
 		};
 		var tovalue={
-			day:Math.floor(todiff.day/(1000*60*60*24)),
+			day:Math.floor(todiff/(1000*60*60*24)),
 			month:$.monthdiff(base,to)
 		};
 		var values={

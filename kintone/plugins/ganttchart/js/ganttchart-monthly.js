@@ -161,7 +161,7 @@ jQuery.noConflict();
 				if (vars.config['scalefixed']=='1') spacer.css({'min-width':vars.config['scalefixedwidth']+'px'});
 				for (var i=0;i<vars.datecalc.diffdays;i++)
 				{
-					if (i!=0 && columns.cache.format('Y-m')!=columns.cache.calc('-1 day').format('Y-m'))
+					if (i!=0 && columns.cache.getDate()==1)
 					{
 						head.eq(0).find('th').eq(columns.index).attr('colspan',columns.span);
 						for (var i2=columns.index+1;i2<i+vars.segmentkeys.length;i2++) head.eq(0).find('th').eq(i2).hide();

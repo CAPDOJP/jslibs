@@ -23,7 +23,7 @@ div.guidefrom{
   position:fixed;
   transition:all 0.35s ease-out 0s;
   width:auto;
-  z-index:999;
+  z-index:1000;
 }
 div.guideto{
   background-color:#3498DB;
@@ -97,7 +97,10 @@ table.ganttchart tbody tr td.ganttchart-drag:after{
   width:100%;
 }
 table.ganttchart tbody tr td.ganttchart-merge{
+  overflow:hidden;
   padding-bottom:13px;
+  text-overflow:ellipsis;
+  width:100%;
 }
 table.ganttchart tbody tr td.ganttchart-merge p.ganttchart-merge-p{
   background-color:transparent;
@@ -110,7 +113,7 @@ table.ganttchart tbody tr td.ganttchart-merge p.ganttchart-merge-p{
   line-height:24px;
   margin:0px;
   padding:3px 3px 0px 23px;
-    vertical-align:top;
+  vertical-align:top;
 }
 table.ganttchart tbody tr td.ganttchart-merge span.ganttchart-merge-span{
   background-color:transparent;
