@@ -343,8 +343,9 @@ jQuery.noConflict();
 				if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
 				else
 				{
+					param.records=[resp.properties[key].options.length];
 					$.each(resp.properties[key].options,function(key,values){
-						param.records.push({display:values.label,field:values.label});
+						param.records[values.index]={display:values.label,field:values.label};
 					});
 					param.loaded=1;
 				}

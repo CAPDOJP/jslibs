@@ -39,12 +39,12 @@ jQuery.noConflict();
 	var limit=500;
 	var functions={
 		/* rebuild view */
-		build:function(filter,segments,colorindex){
+		build:function(filter,heads,colorindex){
 			var color=vars.colors[colorindex%vars.colors.length];
 			/* insert row */
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
-				for (var i=0;i<segments.length;i++) baserow.find('td').eq(i).html('<p class="customview-p">'+segments[i]+'</p>');
+				for (var i=0;i<heads.length;i++) baserow.find('td').eq(i).html('<p class="customview-p">'+heads[i]+'</p>');
 				if (filter.length!=0)
 				{
 					for (var i=0;i<filter.length;i++)
@@ -130,17 +130,17 @@ jQuery.noConflict();
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
-				var segments=[];
+				var heads=[];
 				var datecalc={};
 				var columns=0;
 				/* clear balloon */
 				$('div.timetable-daily-balloon').remove();
-				/* create segments */
+				/* create rowheads */
 				$.each(records,function(index){
-					var segment='';
-					for (var i=0;i<vars.segments.length;i++) segment+=records[index][vars.segments[i]].value+',';
-					segment=segment.replace(/,$/g,'');
-					if (segments.indexOf(segment)<0) segments.push(segment);
+					var head='';
+					for (var i=0;i<vars.segments.length;i++) head+=records[index][vars.segments[i]].value+',';
+					head=head.replace(/,$/g,'');
+					if (heads.indexOf(head)<0) heads.push(head);
 					datecalc=$.timetabledatecalc(vars.fromdate,new Date(records[index][vars.config['totime']].value),vars.config['starthour']);
 					if (columns<datecalc.diffhours) columns=datecalc.diffhours;
 				});
@@ -192,16 +192,16 @@ jQuery.noConflict();
 						mergeclass:'timetable-daily-merge'
 					});
 					/* place the segment data */
-					for (var i=0;i<segments.length;i++)
+					for (var i=0;i<heads.length;i++)
 					{
-						var segment=segments[i].split(',');
+						var head=heads[i].split(',');
 						var filter=$.grep(records,function(item,index){
 							var exists=0;
-							for (var i2=0;i2<vars.segments.length;i2++) if (item[vars.segments[i2]].value==segment[i2]) exists++;
+							for (var i2=0;i2<vars.segments.length;i2++) if (item[vars.segments[i2]].value==head[i2]) exists++;
 							return exists==vars.segments.length;
 						});
 						/* rebuild view */
-						functions.build(filter,segment,i);
+						functions.build(filter,head,i);
 					}
 					/* merge row */
 					var rowspans=[];

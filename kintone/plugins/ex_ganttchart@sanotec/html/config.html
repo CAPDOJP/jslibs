@@ -1,0 +1,123 @@
+<div class="block">
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">開始日付フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">開始日付を設定するフィールドを選択して下さい。【日付フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="fromdate">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">終了日付フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">終了日付を設定するフィールドを選択して下さい。【計算フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="todate">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">期間フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">稼働期間を設定するフィールドを選択して下さい。【数値フィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="months">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">ガントチャート内のセルに表示するフィールドを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="display">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">集計フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">集計単位となるフィールドを選択して下さい。</div>
+    <table class="groups">
+      <tbody>
+        <tr>
+          <td>
+            <div class="kintoneplugin-select-outer">
+              <div class="kintoneplugin-select">
+                <select id="group">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">区分色指定フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">区分色を決定するフィールドを指定して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="color">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <table class="colors">
+      <thead>
+        <tr>
+          <th>値</th>
+          <th>色</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+	        <td>
+	          <span class="colorkey"></span>
+	          <input type="hidden" id="colorkey">
+	        </td>
+          <td>
+            <span id="color" class="kintoneplugin-unit color">&nbsp;</span>
+            <input type="hidden" id="color" value="">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">目盛り</div>
+    <div class="kintoneplugin-input-checkbox-item">
+      <label><input type="checkbox" id="scalefixed" value="0">目盛幅を固定する</label>
+    </div>
+    <span class="kintoneplugin-unit">目盛幅</span>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="scalefixedwidth" class="kintoneplugin-input-text" value="" >
+    </div>
+    <span class="kintoneplugin-unit">px</span>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">初期表示期間</div>
+    <div class="kintoneplugin-desc">一覧表示時の表示期間(年数)を入力して下さい。</div>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="defaultyears" class="kintoneplugin-input-text" value="" >
+    </div>
+    <span class="kintoneplugin-unit">年</span>
+  </div>
+</div>
+<div class="block">
+  <button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+  <button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

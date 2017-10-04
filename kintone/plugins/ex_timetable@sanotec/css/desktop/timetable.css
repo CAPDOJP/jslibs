@@ -48,8 +48,8 @@ span.timetable-graphlegend-title{
 div.timetable-daily-balloon{
 	background-color:#3498DB;
 	border-radius:0.25em;
-		box-shadow:0px 0px 3px rgba(0,0,0,0.5);
-		color:#FFFFFF;
+	box-shadow:0px 0px 3px rgba(0,0,0,0.5);
+	color:#FFFFFF;
 	display:none;
 	font-size:0.75em;
 	line-height:2em;
@@ -57,6 +57,7 @@ div.timetable-daily-balloon{
 	padding:0px 1em;
 	position:fixed;
 	transition:all 0.35s ease-out 0s;
+	white-space:nowrap;
 	width:auto;
 	z-index:999;
 }
@@ -110,8 +111,12 @@ table.timetable-daily tbody tr td.timetable-daily-merge p.timetable-daily-merge-
 	font-size:13px;
 	line-height:24px;
 	margin:0px;
+	overflow:hidden;
 	padding:3px 3px 0px 23px;
-		vertical-align:top;
+	text-overflow:ellipsis;
+	vertical-align:top;
+	white-space:nowrap;
+	width:100%;
 }
 table.timetable-daily tbody tr td.timetable-daily-merge span.timetable-daily-merge-span{
 	background-color:transparent;

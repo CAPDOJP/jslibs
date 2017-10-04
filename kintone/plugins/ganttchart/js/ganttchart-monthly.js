@@ -72,7 +72,7 @@ jQuery.noConflict();
 						var fromindex=0;
 						var toindex=0;
 						if (from<0) from=0;
-						if (to>vars.datecalc.diffdays) to=vars.datecalc.diffdays;
+						if (to>vars.datecalc.diffdays-1) to=vars.datecalc.diffdays-1;
 						from+=vars.segmentkeys.length;
 						to+=vars.segmentkeys.length;
 						/* check cell merged */
@@ -148,9 +148,10 @@ jQuery.noConflict();
 				var container=$('div#ganttchart-container').empty();
 				var head=$('<tr></tr><tr></tr>');
 				var template=$('<tr>');
-				var spacer=$('<span>');
+				var spacer=$('<span class="spacer">');
 				var mergeexclude=[];
 				var columns={cache:vars.fromdate,index:vars.segmentkeys.length,span:0};
+				var weeks=vars.fromdate.getDay();
 				for (var i=0;i<vars.segmentkeys.length;i++)
 				{
 					head.eq(0).append($('<th class="ganttchart-cellhead">'));
@@ -158,7 +159,7 @@ jQuery.noConflict();
 					template.append($('<td class="ganttchart-cellhead">'));
 					mergeexclude.push(i);
 				}
-				if (vars.config['scalefixed']=='1') spacer.css({'min-width':vars.config['scalefixedwidth']+'px'});
+				if (vars.config['scalefixed']=='1') spacer.css({'width':vars.config['scalefixedwidth']+'px'});
 				for (var i=0;i<vars.datecalc.diffdays;i++)
 				{
 					if (i!=0 && columns.cache.getDate()==1)
@@ -169,8 +170,19 @@ jQuery.noConflict();
 						columns.span=0;
 					}
 					head.eq(0).append($('<th>').text(columns.cache.format('Y-m')));
-					head.eq(1).append($('<th>').append(spacer.clone(false).text(columns.cache.getDate())));
-					template.append($('<td>'));
+					head.eq(1).append($('<th>').append($('<span>').text(columns.cache.getDate())).append(spacer.clone(false)));
+					switch ((i-weeks)%7)
+					{
+						case 0:
+							template.append($('<td>').addClass("ganttchart-sunday"));
+							break;
+						case 6:
+							template.append($('<td>').addClass("ganttchart-saturday"));
+							break;
+						default:
+							template.append($('<td>'));
+							break;
+					}
 					columns.cache=columns.cache.calc('1 day');
 					columns.span++;
 				}
@@ -453,8 +465,9 @@ jQuery.noConflict();
 				if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
 				else
 				{
+					param.records=[resp.properties[key].options.length];
 					$.each(resp.properties[key].options,function(key,values){
-						param.records.push({display:values.label,field:values.label});
+						param.records[values.index]={display:values.label,field:values.label};
 					});
 					param.loaded=1;
 				}

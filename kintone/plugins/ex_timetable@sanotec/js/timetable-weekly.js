@@ -128,20 +128,20 @@ jQuery.noConflict();
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
-				var segmentcode=vars.segments[0];
-				var segments=[];
+				var legendcode=vars.segments[0];
+				var legends=[];
 				var datecalc={};
 				var rows=0;
 				/* create graph legend */
 				vars.graphlegend.empty();
 				$.each(records,function(index){
-					if (segments.indexOf(records[index][segmentcode].value)<0)
+					if (legends.indexOf(records[index][legendcode].value)<0)
 					{
-						var color=vars.colors[segments.length%vars.colors.length];
+						var color=vars.colors[legends.length%vars.colors.length];
 						vars.graphlegend
 						.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+color}))
-						.append($('<span class="customview-span timetable-graphlegend-title">').text(records[index][segmentcode].value));
-						segments.push(records[index][segmentcode].value);
+						.append($('<span class="customview-span timetable-graphlegend-title">').text(records[index][legendcode].value));
+						legends.push(records[index][legendcode].value);
 					}
 					datecalc=$.timetabledatecalc(new Date(records[index][vars.config['fromtime']].value),new Date(records[index][vars.config['totime']].value),vars.config['starthour']);
 					if (rows<datecalc.diffhours) rows=datecalc.diffhours;
@@ -170,13 +170,13 @@ jQuery.noConflict();
 						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
 					}));
 					/* place the segment data */
-					for (var i2=0;i2<segments.length;i2++)
+					for (var i2=0;i2<legends.length;i2++)
 					{
 						var filter=$.grep(records,function(item,index){
 							var exists=0;
 							var date=new Date(item[vars.config['fromtime']].value);
 							if (date.format('Y-m-d')==vars.fromdate.calc(i+' day').format('Y-m-d')) exists++;
-							if (item[segmentcode].value==segments[i2]) exists++;
+							if (item[legendcode].value==legends[i2]) exists++;
 							return exists==2;
 						});
 						/* rebuild view */

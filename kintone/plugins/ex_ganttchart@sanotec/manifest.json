@@ -1,0 +1,51 @@
+{
+    "manifest_version":1,
+    "version":3,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 稼働表作成プラグイン@サノテック",
+        "en":"kintone GanttChart plug-in",
+        "zh":"kintone 稼働表作成プラグイン@サノテック"
+    },
+    "description":{
+        "ja":"日付フィールドを元にガントチャートを表示するプラグインです。ガントチャートをドラッグすれば、日付を設定した状態で新規入力画面に移動します。",
+        "en":"This plug-in will display the gantt chart based on the date field",
+        "zh":"日付フィールドを元にガントチャートを表示するプラグインです。ガントチャートをドラッグすれば、日付を設定した状態で新規入力画面に移動します。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/ganttchart-functions.js",
+            "js/ganttchart.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/desktop/common.css",
+            "css/desktop/ganttchart.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}
