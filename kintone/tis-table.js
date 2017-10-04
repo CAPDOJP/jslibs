@@ -47,14 +47,14 @@ var Table=function(options){
 	},options);
 	/* property */
 	this.container=options.table;
-	this.column=$('<colgroup>').append(options.column);
+	this.column=options.column;
 	this.head=$('<thead>').append(options.head);
 	this.contents=$('<tbody>');
 	this.template=options.template;
 	this.dragclass=options.dragclass;
 	this.mergeclass=options.mergeclass;
 	/* append elements */
-	this.container.append(this.column);
+	if (this.column!=null) this.container.append(this.column);
 	this.container.append(this.head);
 	this.container.append(this.contents);
 	if (options.container!=null) options.container.append(this.container);
