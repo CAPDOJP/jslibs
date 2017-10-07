@@ -133,7 +133,6 @@ jQuery.noConflict();
 				});
 				/* create table */
 				var container=$('div#ganttchart-container').empty();
-				var column=$('<colgroup>');
 				var head=$('<tr></tr><tr></tr>');
 				var template=$('<tr>');
 				var spacer=$('<span class="spacer">');
@@ -141,16 +140,14 @@ jQuery.noConflict();
 				var columns={cache:vars.fromdate,index:vars.groups.length,span:0};
 				for (var i=0;i<vars.groups.length;i++)
 				{
-					column.append($('<col>'));
 					head.eq(0).append($('<th class="ganttchart-cellhead">').text(vars.fieldinfos[vars.groups[i]].label));
 					head.eq(1).append($('<th class="ganttchart-cellhead">'));
 					template.append($('<td class="ganttchart-cellhead">'));
 					mergeexclude.push(i);
 				}
+				if (vars.config['scalefixed']=='1') spacer.css({'width':vars.config['scalefixedwidth']+'px'});
 				for (var i=0;i<vars.datecalc.diffmonths;i++)
 				{
-					if (vars.config['scalefixed']=='1') column.append($('<col>').css({'width':vars.config['scalefixedwidth']+'px'}));
-					else column.append($('<col>'));
 					if (i!=0 && columns.cache.getMonth()==0)
 					{
 						head.eq(0).find('th').eq(columns.index).attr('colspan',columns.span);
@@ -168,7 +165,6 @@ jQuery.noConflict();
 				for (var i=columns.index+1;i<head.eq(0).find('th').length;i++) head.eq(0).find('th').eq(i).hide();
 				vars.table=$('<table id="ganttchart" class="customview-table ganttchart '+((vars.config['scalefixed']=='1')?'cellfixed':'')+'">').mergetable({
 					container:container,
-					column:column,
 					head:head,
 					template:template,
 					dragclass:'ganttchart-drag',
@@ -228,6 +224,9 @@ jQuery.noConflict();
 					/* rebuild view */
 					functions.build(filter);
 				}
+				$.each($('.ganttchart-merge'),function(){
+					$(this).css({'padding-top':$(this).find('.ganttchart-merge-p').outerHeight(true).toString()+'px'});
+				});
 			});
 		},
 		/* reload datas */

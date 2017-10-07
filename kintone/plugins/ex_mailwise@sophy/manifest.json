@@ -1,0 +1,50 @@
+{
+	"manifest_version":1,
+	"version":1,
+	"type":"APP",
+	"name":{
+		"ja":"メールワイズ連携プラグイン@ソフィー",
+		"en":"mailwise plug-in",
+		"zh":"メールワイズ連携プラグイン@ソフィー"
+	},
+	"description":{
+		"ja":"ソフィー・ジ・アカデミー専用のメールワイズ連携プラグインです。",
+		"en":"This plug-in for cooperating with mailwise",
+		"zh":"ソフィー・ジ・アカデミー専用のメールワイズ連携プラグインです。"
+	},
+	"icon": "image/icon.png",
+	"homepage_url":{
+		"ja":"https://www.sophy-ac.com/",
+		"en":"https://www.sophy-ac.com/",
+		"zh":"https://www.sophy-ac.com/"
+	},
+	"desktop":{
+		"js":[
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+			"js/jsrender.min.js",
+			"js/spin.min.js",
+			"js/sweetalert.min.js",
+			"js/mailwise.js"
+		],
+		"css":[
+			"css/sweetalert.css",
+			"css/desktop/mailwise.css"
+		]
+	},
+	"config":{
+		"html":"html/config.html",
+		"js":[
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+			"js/sweetalert.min.js",
+			"js/config.js"
+		],
+		"css":[
+			"css/51-jp-default.css",
+			"css/sweetalert.css"
+		]
+	}
+}

@@ -109,11 +109,14 @@ table.timetable-daily tbody tr td.timetable-daily-merge p.timetable-daily-merge-
 	background-size:20px 20px;
 	box-sizing:border-box;
 	font-size:13px;
+	left:0px;
 	line-height:24px;
 	margin:0px;
 	overflow:hidden;
 	padding:3px 3px 0px 23px;
+	position:absolute;
 	text-overflow:ellipsis;
+	top:0px;
 	vertical-align:top;
 	white-space:nowrap;
 	width:100%;

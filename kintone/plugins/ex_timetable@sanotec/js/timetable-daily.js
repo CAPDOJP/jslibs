@@ -236,6 +236,9 @@ jQuery.noConflict();
 							for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
 						}
 					}
+					$.each($('.timetable-daily-merge'),function(){
+						$(this).css({'padding-top':$(this).find('.timetable-daily-merge-p').outerHeight(true).toString()+'px'});
+					});
 				}
 				else swal('Error!','条件に該当するレコードが見つかりませんでした。','error');
 			});

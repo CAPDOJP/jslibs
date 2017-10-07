@@ -276,6 +276,9 @@ jQuery.noConflict();
 						for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
 					}
 				}
+				$.each($('.ganttchart-merge'),function(){
+					$(this).css({'padding-top':$(this).find('.ganttchart-merge-p').outerHeight(true).toString()+'px'});
+				});
 			});
 		},
 		/* reload datas */
