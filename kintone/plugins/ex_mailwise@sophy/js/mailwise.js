@@ -225,11 +225,11 @@ jQuery.noConflict();
 		}
 		var templatevalues;
 		var appendformparts=function(space){
-			var button=$('<button id="mailwisePlugin-creating-mail-button" class="button-simple-cybozu mailwisePlugin-create-mail" type="button"></button>');
+			var button=$('<button id="mailwisePlugin-creating-mail-button" class="mailwise-button" type="button"></button>');
 			var list;
 			if(config.templateapp.length!=0){
 				button.hide();
-				list=$('<select id="mailwisePlugin-template-dropdown" class="mailwisePlugin-template-app-id" id="mailwisePlugin-template-app-id"><option value="">--</option></select>');
+				list=$('<select id="mailwisePlugin-template-dropdown" class="mailwise-select"><option value="">--</option></select>');
 				var appid=config.templateapp;
 				kintone.api(kintone.api.url("/k/v1/records",true),"GET",{app:appid},function(resp){
 					templatevalues=[];
@@ -274,8 +274,8 @@ jQuery.noConflict();
 		var mailformtemplate='<form method="POST" target="_blank" action="/m/mw.cgi">  <input type="hidden" name="Page" value="MailSend">  <input type="hidden" name="MailTo" value="1">  <input type="hidden" name="To" value="{{>mailto}}">  <input type="hidden" name="CC" value="{{>mailcc}}">  <input type="hidden" name="BCC" value="{{>mailbcc}}">  <input type="hidden" name="Subject">  <input type="hidden" name="Data">  <input type="hidden" name="HtmlData"></form>';
 		var createmailform=function(event){
 			var headspace=$(kintone.app.record.getHeaderMenuSpaceElement());
-			var mailspace=$('<div class="mailwisePlugin-headerMenu"></div>');
-			headspace.append(mailspace);
+			var mailspace=$('<div class="mailwise-container"></div>');
+			headspace.append(mailspace).css({'padding':'16px'})
 			var renderparam={
 				mailto:event.record[config.mailto]?event.record[config.mailto].value:"",
 				mailcc:event.record[config.mailcc]?event.record[config.mailcc].value:"",
@@ -323,7 +323,7 @@ jQuery.noConflict();
 		var mailspinner;
 		var createbulkmailform=function(event){
 			var headspace=$(kintone.app.getHeaderMenuSpaceElement());
-			var mailspace=$('<div class="mailwisePlugin-headerMenu"></div>');
+			var mailspace=$('<div class="mailwise-container"></div>');
 			headspace.append(mailspace);
 			var mailform=$(bulkmailformtemplate);
 			mailspace.append(mailform);
