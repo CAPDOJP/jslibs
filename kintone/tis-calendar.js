@@ -165,8 +165,8 @@ Calendar.prototype={
 			var targetvalue=options.activedate.format('Y-m-d');
 			if (targetvalue.match(/^[0-9]{4}(-|\/){1}[0-1]?[0-9]{1}(-|\/){1}[0-3]?[0-9]{1}$/g)!=null)
 			{
-				this.activedate=new Date(targetvalue.dateformat());
-				this.displaymonth=new Date(targetvalue.dateformat()).calc('first-of-month');
+				this.activedate=new Date(targetvalue.replace(/-/g,'\/'));
+				this.displaymonth=new Date(targetvalue.replace(/-/g,'\/')).calc('first-of-month');
 			}
 		}
 		/* initialize header title */

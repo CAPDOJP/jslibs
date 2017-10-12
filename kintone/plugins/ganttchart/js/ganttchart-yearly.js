@@ -15,8 +15,8 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		fromdate:new Date(new Date().getFullYear().toString()+'/1/1'),
-		todate:new Date(new Date().getFullYear().toString()+'/12/31'),
+		fromdate:new Date((new Date().getFullYear().toString()+'-1-1').dateformat()),
+		todate:new Date((new Date().getFullYear().toString()+'-12-31').dateformat()),
 		guidefrom:$('<div class="guidefrom">'),
 		guideto:$('<div class="guideto">'),
 		datecalc:null,
