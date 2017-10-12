@@ -89,7 +89,7 @@ Date.prototype.format=function(pattern){
 	return '';
 }
 String.prototype.dateformat=function(){
-	return this.replace(/-/g,'\/').replace(/T/g,' ').replace(/(Z|\+0900)$/g,'');
+	return this.replace(/-/g,'\/').replace(/T/g,' ').replace(/(Z|\+0900|\+09:00)$/g,'');
 }
 /*
 *--------------------------------------------------------------------
