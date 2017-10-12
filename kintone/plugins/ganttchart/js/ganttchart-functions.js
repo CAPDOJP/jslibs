@@ -22,8 +22,8 @@ jQuery.extend({
 		return values;
 	},
 	monthdiff:function(from,to){
-		from=new Date(from.format('Y-m')+'-01');
-		to=new Date(to.format('Y-m')+'-01');
+		from=new Date(from.format('Y-m').dateformat()+'/01');
+		to=new Date(to.format('Y-m').dateformat()+'/01');
 		diff=0;
 		while (from.format('Y-m')!=to.format('Y-m'))
 		{

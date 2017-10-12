@@ -49,7 +49,7 @@ jQuery.noConflict();
 				for (var i=0;i<filter.length;i++)
 				{
 					/* create cell */
-					var datecalc=$.timetabledatecalc(new Date(filter[i][vars.config['fromtime']].value),new Date(filter[i][vars.config['totime']].value));
+					var datecalc=$.timetabledatecalc(new Date(filter[i][vars.config['fromtime']].value.dateformat()),new Date(filter[i][vars.config['totime']].value.dateformat()));
 					if (datecalc.to.hour<parseInt(vars.config['starthour'])) continue;
 					var from=(datecalc.from.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.floor(datecalc.from.minute/(60/parseInt(vars.config['scale'])));
 					var to=(datecalc.to.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.ceil(datecalc.to.minute/(60/parseInt(vars.config['scale'])))-1;
@@ -143,7 +143,7 @@ jQuery.noConflict();
 						.append($('<span class="customview-span timetable-graphlegend-title">').text(records[index][legendcode].value));
 						legends.push(records[index][legendcode].value);
 					}
-					datecalc=$.timetabledatecalc(new Date(records[index][vars.config['fromtime']].value),new Date(records[index][vars.config['totime']].value),vars.config['starthour']);
+					datecalc=$.timetabledatecalc(new Date(records[index][vars.config['fromtime']].value.dateformat()),new Date(records[index][vars.config['totime']].value.dateformat()),vars.config['starthour']);
 					if (rows<datecalc.diffhours) rows=datecalc.diffhours;
 				});
 				/* insert row */
@@ -174,7 +174,7 @@ jQuery.noConflict();
 					{
 						var filter=$.grep(records,function(item,index){
 							var exists=0;
-							var date=new Date(item[vars.config['fromtime']].value);
+							var date=new Date(item[vars.config['fromtime']].value.dateformat());
 							if (date.format('Y-m-d')==vars.fromdate.calc(i+' day').format('Y-m-d')) exists++;
 							if (item[legendcode].value==legends[i2]) exists++;
 							return exists==2;
@@ -250,7 +250,7 @@ jQuery.noConflict();
 		/* day pickup button */
 		vars.calendar=$('body').calendar({
 			selected:function(target,value){
-				vars.fromdate=new Date(value);
+				vars.fromdate=new Date(value.dateformat());
 				vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);
 				vars.todate=vars.fromdate.calc('6 day');
 				week.text(vars.fromdate.format('Y-m-d')+' ～ '+vars.todate.format('Y-m-d'));

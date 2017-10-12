@@ -47,12 +47,12 @@ jQuery.noConflict();
 			};
 			if (filter.length!=0)
 			{
-				var date=new Date(filter[0][vars.config['date']].value);
+				var date=new Date(filter[0][vars.config['date']].value.dateformat());
 				for (var i=0;i<filter.length;i++)
 				{
 					/* create cell */
-					var fromtime=new Date(date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00');
-					var totime=new Date(date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
+					var fromtime=new Date((date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00').dateformat());
+					var totime=new Date((date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00').dateformat());
 					var from=(fromtime.getHours())*parseInt(vars.config['scale'])+Math.floor(fromtime.getMinutes()/(60/parseInt(vars.config['scale'])));
 					var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])))-1;
 					var row=vars.table.contents.find('tr').eq(from);
@@ -269,7 +269,7 @@ jQuery.noConflict();
 		/* day pickup button */
 		vars.calendar=$('body').calendar({
 			selected:function(target,value){
-				vars.fromdate=new Date(value);
+				vars.fromdate=new Date(value.dateformat());
 				vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);
 				vars.todate=vars.fromdate.calc('6 day');
 				week.text(vars.fromdate.format('Y-m-d')+' ～ '+vars.todate.format('Y-m-d'));

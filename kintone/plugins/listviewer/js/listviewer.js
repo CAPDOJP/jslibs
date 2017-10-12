@@ -117,15 +117,15 @@ jQuery.noConflict();
 									value=parseFloat(values).format();
 									break;
 								case 'DATETIME':
-									value=new Date(values);
+									value=new Date(values.dateformat());
 									value=value.format('Y-m-d H:i');
 									break;
 								case 'DATE':
-									value=new Date(values+'T00:00:00+09:00');
+									value=new Date((values+'T00:00:00+09:00').dateformat());
 									value=value.format('Y-m-d');
 									break;
 								case 'TIME':
-									value=new Date('1900-01-01T'+values+':00+09:00');
+									value=new Date(('1900-01-01T'+values+':00+09:00').dateformat());
 									value=value.format('H:i');
 									break;
 								case 'HOUR_MINUTE':
@@ -158,14 +158,14 @@ jQuery.noConflict();
 					case 'UPDATED_TIME':
 						if (values.length!=0)
 						{
-							value=new Date(values);
+							value=new Date(values.dateformat());
 							cell.text(value.format('Y-m-d H:i'));
 						}
 						break;
 					case 'DATE':
 						if (values.length!=0)
 						{
-							value=new Date(values+'T00:00:00+09:00');
+							value=new Date((values+'T00:00:00+09:00').dateformat());
 							cell.text(value.format('Y-m-d'));
 						}
 						break;
@@ -270,7 +270,7 @@ jQuery.noConflict();
 					case 'TIME':
 						if (values.length!=0)
 						{
-							value=new Date('1900-01-01T'+values+':00+09:00');
+							value=new Date(('1900-01-01T'+values+':00+09:00').dateformat());
 							cell.text(value.format('H:i'));
 						}
 						break;

@@ -63,8 +63,8 @@ jQuery.noConflict();
 					{
 						/* create cell */
 						var datecalc=$.ganttchartdatecalc(
-							new Date(filter[i][vars.config['fromdate']].value),
-							new Date(filter[i][vars.config['todate']].value),
+							new Date(filter[i][vars.config['fromdate']].value.dateformat()),
+							new Date(filter[i][vars.config['todate']].value.dateformat()),
 							vars.fromdate
 						);
 						var from=datecalc.from.day;
@@ -409,7 +409,7 @@ jQuery.noConflict();
 		/* month pickup button */
 		vars.fromcalendar=$('body').calendar({
 			selected:function(target,value){
-				vars.fromdate=new Date(value).calc('first-of-month');
+				vars.fromdate=new Date(value.dateformat()).calc('first-of-month');
 				vars.datecalc=$.ganttchartdatecalc(vars.fromdate,vars.todate);
 				fromdate.text(vars.fromdate.format('Y-m-d'));
 				/* reload view */
@@ -419,7 +419,7 @@ jQuery.noConflict();
 		frombutton.on('click',function(){vars.fromcalendar.show({activedate:vars.fromdate});});
 		vars.tocalendar=$('body').calendar({
 			selected:function(target,value){
-				vars.todate=new Date(value).calc('first-of-month').calc('1 month').calc('-1 day');
+				vars.todate=new Date(value.dateformat()).calc('first-of-month').calc('1 month').calc('-1 day');
 				vars.datecalc=$.ganttchartdatecalc(vars.fromdate,vars.todate);
 				todate.text(vars.todate.format('Y-m-d'));
 				/* reload view */

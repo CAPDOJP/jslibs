@@ -194,7 +194,7 @@ jQuery.noConflict();
 								if (vars.config["datespan"].length!=0)
 									if (record[vars.config['datespan']].value!=null)
 									{
-										var datefrom=new Date(record[vars.config['datespan']].value);
+										var datefrom=new Date(record[vars.config['datespan']].value.dateformat());
 										var dateto=new Date();
 										var datediff=dateto.getTime()-datefrom.getTime();
 										datespan=Math.floor(datediff/(1000*60*60*24)).toString();
@@ -296,7 +296,7 @@ jQuery.noConflict();
 								var record=values
 								if (record[vars.config['datespan']].value!=null)
 								{
-									var checkdate=new Date(record[vars.config['datespan']].value);
+									var checkdate=new Date(record[vars.config['datespan']].value.dateformat());
 									if (checkdate<olddate)
 									{
 										olddate=checkdate;

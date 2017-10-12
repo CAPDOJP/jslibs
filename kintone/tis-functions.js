@@ -88,6 +88,9 @@ Date.prototype.format=function(pattern){
 	if (pattern.match(/^H:i:s$/g)!=null) return hour+':'+minute+':'+second;
 	return '';
 }
+String.prototype.dateformat=function(){
+	return this.replace(/-/g,'\/').replace(/T/g,' ').replace(/(Z|\+0900)$/g,'');
+}
 /*
 *--------------------------------------------------------------------
 * number format

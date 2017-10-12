@@ -15,8 +15,8 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		fromdate:new Date(new Date().getFullYear().toString()+'-1-1'),
-		todate:new Date(new Date().getFullYear().toString()+'-12-31'),
+		fromdate:new Date(new Date().getFullYear().toString()+'/1/1'),
+		todate:new Date(new Date().getFullYear().toString()+'/12/31'),
 		guidefrom:$('<div class="guidefrom">'),
 		guideto:$('<div class="guideto">'),
 		datecalc:null,
@@ -61,8 +61,8 @@ jQuery.noConflict();
 					{
 						/* create cell */
 						var datecalc=$.ganttchartdatecalc(
-							new Date(filter[i][vars.config['fromdate']].value),
-							new Date(filter[i][vars.config['todate']].value),
+							new Date(filter[i][vars.config['fromdate']].value.dateformat()),
+							new Date(filter[i][vars.config['todate']].value.dateformat()),
 							vars.fromdate
 						);
 						var from=datecalc.from.month;

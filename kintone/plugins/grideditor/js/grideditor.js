@@ -811,7 +811,7 @@ jQuery.noConflict();
 								row.find('span#'+values.code).text(record[values.code].value.join(','));
 								break;
 							case 'DATETIME':
-								if (record[values.code].value.length!=0) row.find('#'+values.code).val(new Date(record[values.code].value).format('Y-m-d H:i'));
+								if (record[values.code].value.length!=0) row.find('#'+values.code).val(new Date(record[values.code].value.dateformat()).format('Y-m-d H:i'));
 								else row.find('#'+values.code).val(record[values.code].value);
 								break;
 							case 'GROUP_SELECT':

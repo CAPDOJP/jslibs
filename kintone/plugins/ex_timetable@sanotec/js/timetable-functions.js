@@ -2,7 +2,7 @@
 jQuery.extend({
 	/* calculate date values */
 	timetabledatecalc:function(from,to,starthour,base){
-		if (starthour) from=new Date(from.format('Y-m-d')+'T'+('0'+starthour).slice(-2)+':00:00+0900');
+		if (starthour) from=new Date((from.format('Y-m-d')+'T'+('0'+starthour).slice(-2)+':00:00+0900').dateformat());
 		if (!base) base=from;
 		var fromdiff=from.getTime()-base.getTime();
 		var todiff=to.getTime()-base.getTime();

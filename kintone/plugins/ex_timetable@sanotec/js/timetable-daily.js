@@ -51,10 +51,10 @@ jQuery.noConflict();
 					{
 						/* create cell */
 						var datecalc=$.timetabledatecalc(
-							new Date(filter[i][vars.config['fromtime']].value),
-							new Date(filter[i][vars.config['totime']].value),
+							new Date(filter[i][vars.config['fromtime']].value.dateformat()),
+							new Date(filter[i][vars.config['totime']].value.dateformat()),
 							null,
-							new Date(vars.fromdate.format('Y-m-d')+'T00:00:00+0900')
+							new Date((vars.fromdate.format('Y-m-d')+'T00:00:00+0900').dateformat())
 						);
 						if (datecalc.to.hour<parseInt(vars.config['starthour'])) continue;
 						var from=(datecalc.from.hour-parseInt(vars.config['starthour']))*parseInt(vars.config['scale'])+Math.floor(datecalc.from.minute/(60/parseInt(vars.config['scale'])));
@@ -141,7 +141,7 @@ jQuery.noConflict();
 					for (var i=0;i<vars.segments.length;i++) head+=records[index][vars.segments[i]].value+',';
 					head=head.replace(/,$/g,'');
 					if (heads.indexOf(head)<0) heads.push(head);
-					datecalc=$.timetabledatecalc(vars.fromdate,new Date(records[index][vars.config['totime']].value),vars.config['starthour']);
+					datecalc=$.timetabledatecalc(vars.fromdate,new Date(records[index][vars.config['totime']].value.dateformat()),vars.config['starthour']);
 					if (columns<datecalc.diffhours) columns=datecalc.diffhours;
 				});
 				/* create table */
@@ -149,7 +149,7 @@ jQuery.noConflict();
 				var head=$('<tr></tr><tr></tr><tr></tr>');
 				var template=$('<tr>');
 				var spacer=$('<span>');
-				var colspan={date:new Date(vars.fromdate.format('Y-m-d')),hour:0,index:vars.segments.length,span:0};
+				var colspan={date:new Date(vars.fromdate.format('Y-m-d').dateformat()),hour:0,index:vars.segments.length,span:0};
 				for (var i=0;i<vars.segments.length;i++)
 				{
 					head.eq(0).append($('<th class="timetable-daily-cellhead">'));
@@ -290,8 +290,8 @@ jQuery.noConflict();
 		var queries=$.queries();
 		if (vars.config['fromtime'] in queries)
 		{
-			vars.fromdate=new Date(queries[vars.config['fromtime']]);
-			vars.todate=new Date(queries[vars.config['fromtime']]);
+			vars.fromdate=new Date(queries[vars.config['fromtime']].dateformat());
+			vars.todate=new Date(queries[vars.config['fromtime']].dateformat());
 		}
 		/* initialize valiable */
 		var container=$('div#timetable-container');
@@ -342,7 +342,7 @@ jQuery.noConflict();
 		/* day pickup button */
 		vars.fromcalendar=$('body').calendar({
 			selected:function(target,value){
-				vars.fromdate=new Date(value);
+				vars.fromdate=new Date(value.dateformat());
 				fromdate.text(value);
 				/* reload view */
 				functions.load();
@@ -351,7 +351,7 @@ jQuery.noConflict();
 		frombutton.on('click',function(){vars.fromcalendar.show({activedate:vars.fromdate});});
 		vars.tocalendar=$('body').calendar({
 			selected:function(target,value){
-				vars.todate=new Date(value);
+				vars.todate=new Date(value.dateformat());
 				todate.text(value);
 				/* reload view */
 				functions.load();

@@ -96,8 +96,8 @@ jQuery.noConflict();
 					for (var i=0;i<filter.length;i++)
 					{
 						/* create cell */
-						var fromtime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00');
-						var totime=new Date(vars.date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00');
+						var fromtime=new Date((vars.date.format('Y-m-d')+'T'+filter[i][vars.config['fromtime']].value+':00+09:00').dateformat());
+						var totime=new Date((vars.date.format('Y-m-d')+'T'+filter[i][vars.config['totime']].value+':00+09:00').dateformat());
 						var from=(fromtime.getHours())*parseInt(vars.config['scale'])+Math.floor(fromtime.getMinutes()/(60/parseInt(vars.config['scale'])));
 						var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])))-1;
 						var fromindex=0;
@@ -295,7 +295,7 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.datetimetable) return;
 		/* get query strings */
 		var queries=$.queries();
-		if (vars.config['date'] in queries) vars.date=new Date(queries[vars.config['date']]);
+		if (vars.config['date'] in queries) vars.date=new Date(queries[vars.config['date']].dateformat());
 		/* initialize valiable */
 		var container=$('div#timetable-container');
 		var feed=$('<div class="timetable-dayfeed">');
@@ -338,7 +338,7 @@ jQuery.noConflict();
 		/* day pickup button */
 		vars.calendar=$('body').calendar({
 			selected:function(target,value){
-				vars.date=new Date(value);
+				vars.date=new Date(value.dateformat());
 				date.text(value);
 				/* reload view */
 				functions.load();

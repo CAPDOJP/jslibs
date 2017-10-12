@@ -41,7 +41,7 @@ jQuery.noConflict();
 				for (var i=0;i<filter.length;i++)
 				{
 					/* append cell */
-					var datecalc=$.timetabledatecalc(new Date(filter[i][vars.config['fromtime']].value),new Date(filter[i][vars.config['totime']].value));
+					var datecalc=$.timetabledatecalc(new Date(filter[i][vars.config['fromtime']].value.dateformat()),new Date(filter[i][vars.config['totime']].value.dateformat()));
 					var inner='';
 					inner='';
 					inner+='<p class="timetable-tooltip">';
@@ -121,7 +121,7 @@ jQuery.noConflict();
 					{
 						var filter=$.grep(records,function(item,index){
 							var exists=0;
-							var date=new Date(item[vars.config['fromtime']].value);
+							var date=new Date(item[vars.config['fromtime']].value.dateformat());
 							if (date.format('Y-m-d')==day.format('Y-m-d')) exists++;
 							if (item[legendcode].value==legends[i]) exists++;
 							return exists==2;
