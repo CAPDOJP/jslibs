@@ -89,7 +89,19 @@ Date.prototype.format=function(pattern){
 	return '';
 }
 String.prototype.dateformat=function(){
-	return this.replace(/-/g,'\/').replace(/T/g,' ').replace(/(Z|\+0900|\+09:00)$/g,'');
+	if(this.match(/^Z$/))
+	{
+		var date=new Date(this.replace(/-/g,'\/').replace(/T/g,' ').replace(/Z$/g,''));
+		date.setHours(date.getHours() + 9);
+		var year=date.getFullYear();
+		var month=('0'+(date.getMonth()+1)).slice(-2);
+		var day=('0'+date.getDate()).slice(-2);
+		var hour=('0'+date.getHours()).slice(-2);
+		var minute=('0'+date.getMinutes()).slice(-2);
+		var second=('0'+date.getSeconds()).slice(-2);
+		return year+'/'+month+'/'+day+' '+hour+':'+minute+':'+second;
+	}
+	else return this.replace(/-/g,'\/').replace(/T/g,' ').replace(/(\+0900|\+09:00)$/g,'');
 }
 /*
 *--------------------------------------------------------------------
