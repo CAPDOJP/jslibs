@@ -672,7 +672,7 @@ var FileSelect=function(options){
 				xmlHttp.setRequestHeader('X-Requested-With','XMLHttpRequest');
 				xmlHttp.responseType='multipart/form-data';
 				xmlHttp.send(filedata);
-				addrow(JSON.parse(xmlHttp.responseText));
+				my.addrow(JSON.parse(xmlHttp.responseText));
 			}
 		})
 	)
@@ -792,7 +792,7 @@ FileSelect.prototype={
 		});
 		/* create lists */
 		this.listblock.find('tbody').empty();
-		$.each(options.datasource,function(index){addrow(options.datasource[index]);});
+		$.each(options.datasource,function(index){my.addrow(options.datasource[index]);});
 		this.cover.show();
 		/* adjust container height */
 		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
