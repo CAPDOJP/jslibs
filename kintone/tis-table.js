@@ -73,8 +73,10 @@ var Table=function(options){
 		var row=$(this).parent();
 		var rowindex=contents.find('tr').index(row);
 		var cellindex=row.find('td').index($(this));
-		scrollPos.x=e.pageX;
-		scrollPos.y=e.pageY;
+		var posX=(e.type=='touchmove')?e.originalEvent.touches[0].pageX:e.pageX;
+		var posY=(e.type=='touchmove')?e.originalEvent.touches[0].pageY:e.pageY;
+		scrollPos.x=posX;
+		scrollPos.y=posY;
 		if (options.mergeexclude.indexOf(my.cellindex(row,cellindex))==-1)
 		{
 			/* merge start */
@@ -176,11 +178,13 @@ var Table=function(options){
 		}
 		else
 		{
+			var posX=(e.type=='touchmove')?e.originalEvent.touches[0].pageX:e.pageX;
+			var posY=(e.type=='touchmove')?e.originalEvent.touches[0].pageY:e.pageY;
 			if (
-				scrollPos.x>e.pageX-5 &&
-				scrollPos.x<e.pageX+5 &&
-				scrollPos.y>e.pageY-5 &&
-				scrollPos.y<e.pageY+5 &&
+				scrollPos.x>posX-5 &&
+				scrollPos.x<posX+5 &&
+				scrollPos.y>posY-5 &&
+				scrollPos.y<posY+5 &&
 				options.unmergetrigger!=null
 			)
 				options.unmergetrigger(
