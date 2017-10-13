@@ -73,6 +73,7 @@ var Table=function(options){
 		var row=$(this).parent();
 		var rowindex=contents.find('tr').index(row);
 		var cellindex=row.find('td').index($(this));
+		console.log(my.container.offset().left);
 		scrollPos.x=my.container.offset().left;
 		scrollPos.y=my.container.offset().top;
 		if (options.mergeexclude.indexOf(my.cellindex(row,cellindex))==-1)
@@ -176,6 +177,7 @@ var Table=function(options){
 		}
 		else
 		{
+			console.log(my.container.offset().left);
 			if (
 				scrollPos.x>my.container.offset().left-5 &&
 				scrollPos.x<my.container.offset().left+5 &&
