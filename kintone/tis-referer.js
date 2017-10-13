@@ -760,12 +760,12 @@ var FileSelect=function(options){
 	});
 };
 FileSelect.prototype={
-	addrow:function(){
+	addrow:function(values){
 		var list=this.template.clone(true);
-		list.find('input#contentType').val(options.datasource[index].contentType);
-		list.find('input#fileKey').val(options.datasource[index].fileKey);
-		list.find('input#name').val(options.datasource[index].name);
-		list.find('a#link').text(options.datasource[index].name);
+		list.find('input#contentType').val(values.contentType);
+		list.find('input#fileKey').val(values.fileKey);
+		list.find('input#name').val(values.name);
+		list.find('a#link').text(values.name);
 		this.listblock.find('tbody').append(list);
 	},
 	/* display referer */
