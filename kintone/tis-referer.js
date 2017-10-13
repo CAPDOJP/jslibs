@@ -324,7 +324,7 @@ Referer.prototype={
 			.on('mouseover',function(e){$(this).css({'background-color':'#f5b2b2'});})
 			.on('mouseout',function(e){$(this).css({'background-color':'transparent'});});
 			$.each(filter,function(key,values){
-				list.append('<input type="hidden" id="'+key+'" value="'+values.value+'">');
+				list.append($('<input type="hidden" id="'+key+'" value="'+values.value+'">'));
 			});
 			$.each(my.displaytext,function(index){
 				list.append(
@@ -532,7 +532,7 @@ MultiSelect.prototype={
 					'padding':'5px'
 				})
 				.append($('<span>').text(listtext))
-				.append('<input type="hidden" value="'+listvalue+'">')
+				.append($('<input type="hidden" value="'+listvalue+'">'))
 				.on('click',function(){
 					if ($(this).find('input').val() in my.selection)
 					{
@@ -572,5 +572,242 @@ jQuery.fn.multiselect=function(options){
 	},options);
 	options.container=this;
 	return new MultiSelect(options);
+};
+/*
+*--------------------------------------------------------------------
+* parameters
+* options	@ buttons			:button elements
+*								{
+*									ok:{
+*										class:'',
+*										text:''
+*									},
+*									cancel:{
+*										class:'',
+*										text:''
+*									}
+*								}
+* -------------------------------------------------------------------
+*/
+var FileSelect=function(options){
+	var options=$.extend({
+		container:null,
+		buttons:{
+			ok:{
+				class:'',
+				text:''
+			},
+			cancel:{
+				class:'',
+				text:''
+			}
+		}
+	},options);
+	/* property */
+	this.buttons=options.buttons;
+	/* valiable */
+	var my=this;
+	var div=$('<div>').css({
+		'box-sizing':'border-box'
+	});
+	var button=$('<button>');
+	var table=$('<table>');
+	var row=$('<tr>');
+	/* append elements */
+	this.cover=div.clone(true).css({
+		'background-color':'rgba(0,0,0,0.5)',
+		'display':'none',
+		'height':'100%',
+		'left':'0px',
+		'position':'fixed',
+		'top':'0px',
+		'width':'100%',
+		'z-index':'999999'
+	});
+	this.container=div.clone(true).css({
+		'background-color':'#FFFFFF',
+		'bottom':'0',
+		'border-radius':'5px',
+		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+		'height':'600px',
+		'left':'0',
+		'margin':'auto',
+		'max-height':'90%',
+		'max-width':'90%',
+		'padding':'5px',
+		'position':'absolute',
+		'right':'0',
+		'top':'0',
+		'width':'500px'
+	});
+	this.contents=div.clone(true).css({
+		'height':'100%',
+		'overflow-x':'hidden',
+		'overflow-y':'auto',
+		'padding':'5px',
+		'position':'relative',
+		'width':'100%',
+		'z-index':'666'
+	});
+	this.fileblock=div.clone(true).css({
+		'padding':'5px',
+		'position':'relative',
+		'width':'100%',
+		'z-index':'777'
+	})
+	.append(
+		$('<input type="file">').css({'display':'none'}).on('change',function(){
+			var target=$(this);
+			if (target[0].files.length!=0)
+			{
+				var file=target[0].files[0];
+				var blob=new Blob([file],{type:file.type});
+				var filedata=new FormData();
+				var xmlHttp=new XMLHttpRequest();
+				/* create formdata */
+				filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
+				filedata.append('file',blob,file.name);
+				/* upload */
+				xmlHttp.open('POST',encodeURI('/k/v1/file.json'),false);
+				xmlHttp.setRequestHeader('X-Requested-With','XMLHttpRequest');
+				xmlHttp.responseType='multipart/form-data';
+				xmlHttp.send(filedata);
+				addrow(JSON.parse(xmlHttp.responseText));
+			}
+		})
+	)
+	.append(
+		button.clone(true).addClass('kintoneplugin-button-normal').css({'width':'100%'})
+		.text('ファイルを追加')
+		.on('click',function(){
+			$(this).closest('div').find('input').click();
+		})
+	);
+	this.buttonblock=div.clone(true).css({
+		'background-color':'#3498db',
+		'border-bottom-left-radius':'5px',
+		'border-bottom-right-radius':'5px',
+		'bottom':'0px',
+		'left':'0px',
+		'padding':'5px',
+		'position':'absolute',
+		'text-align':'center',
+		'width':'100%',
+		'z-index':'999'
+	});
+	this.listblock=table.clone(true).css({
+		'box-sizing':'border-box',
+		'width':'100%'
+	}).append('<tbody>');
+	/* append elements */
+	$.each(this.buttons,function(key,values){
+		my.buttonblock.append(
+			button.clone(true)
+			.attr('id',key)
+			.addClass(values.class)
+			.text(values.text)
+		);
+	});
+	this.contents.append(this.listblock);
+	this.container.append(this.contents);
+	this.container.append(this.buttonblock);
+	this.cover.append(this.container);
+	options.container.append(this.cover);
+	/* create template */
+	this.template=row.clone(true);
+	this.template.append(
+		$('<td>')
+		.append('<img src="">')
+		.append('<input type="hidden" id="contentType">')
+		.append('<input type="hidden" id="fileKey">')
+		.append('<input type="hidden" id="name">')
+	);
+	this.template.append(
+		$('<td>').append('<a href="" id="link">').on('click',function(e){
+			var list=$(this).closest('tr');
+			var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+list.find('input#fileKey').val();
+			var xhr=new XMLHttpRequest();
+			xhr.open('GET',url);
+			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+			xhr.responseType='blob';
+			xhr.onload=function(){
+				if (xhr.status===200)
+				{
+					/* download */
+					var a=document.createElement('a');
+					url=window.URL || window.webkitURL;
+					a.href=url.createObjectURL(xhr.response);
+					a.download=list.find('input#name').val();
+					a.click();
+				}
+			};
+			xhr.onerror=function(){};
+			xhr.send();
+			e.preventDefault();
+			e.stopPropagation();
+			return false;
+		})
+	);
+	this.template.append(
+		$('<td>')
+		.append('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">').on('click',function(){
+			$(this).closest('tr').remove();
+		})
+	);
+	/* adjust container height */
+	$(window).on('load resize',function(){
+		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+	});
+};
+FileSelect.prototype={
+	addrow:function(){
+		var list=this.template.clone(true);
+		list.find('input#contentType').val(options.datasource[index].contentType);
+		list.find('input#fileKey').val(options.datasource[index].fileKey);
+		list.find('input#name').val(options.datasource[index].name);
+		list.find('a#link').text(options.datasource[index].name);
+		this.listblock.find('tbody').append(list);
+	},
+	/* display referer */
+	show:function(options){
+		var options=$.extend({
+			datasource:[],
+			buttons:{}
+		},options);
+		var my=this;
+		/* buttons callback */
+		$.each(options.buttons,function(key,values){
+			if (my.buttonblock.find('button#'+key).size())
+			{
+				var res=[];
+				$.each(this.listblock.find('tbody').find('tr'),function(){
+					res.push({
+						contentType:$(this).find('input#contentType').val(),
+						fileKey:$(this).find('input#fileKey').val(),
+						name:$(this).find('input#name').val()
+					});
+				});
+				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values(res);});
+			}
+		});
+		/* create lists */
+		this.listblock.find('tbody').empty();
+		$.each(options.datasource,function(index){addrow(options.datasource[index]);});
+		this.cover.show();
+		/* adjust container height */
+		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
+	},
+	/* hide referer */
+	hide:function(){
+		this.cover.hide();
+	}
+};
+jQuery.fn.fileselect=function(options){
+	var options=$.extend({
+		container:null,
+		buttons:{}
+	},options);
+	options.container=this;
+	return new FileSelect(options);
 };
 })(jQuery);
