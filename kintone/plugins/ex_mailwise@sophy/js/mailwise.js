@@ -96,6 +96,7 @@ jQuery.noConflict();
 					});
 				}
 			}
+			else target.append(button);
 		},
 		assign:function(target,record){
 			for (var key in record) target=target.replace(new RegExp('%'+key+'%','g'),record[key].value);
@@ -284,64 +285,68 @@ jQuery.noConflict();
 			mailform.append($('<input type="hidden" name="HtmlData">').val(''));
 			mailform.append($('<input type="hidden" name="Targets">').val(''));
 			headspace.append($('<div>').addClass('mailwise-container').append(mailform));
+			headspace.children('div').css({'display':'inline-block'});
 			functions.appendformelements(mailform,function(){
-				var filter=$.grep(vars.apps[vars.config.templateapp],function(item,index){
-					return item['$id'].value==mailform.find('select#templatelist').val();
-				});
-				if (filter.length!=0)
-				{
-					var subject=functions.field(vars.config.templatesubject,filter[0]);
-					var body=functions.field(vars.config.templatebody,filter[0]);
-					if (subject.value.length) $('[name=Subject]',mailform).val(subject.value);
-					if (body.value.length)
+				/* load app datas */
+				vars.apps[kintone.app.getId()]=null;
+				vars.offset[kintone.app.getId()]=0;
+				functions.loaddatas(kintone.app.getId(),kintone.app.getQueryCondition(),function(){
+					var keys=[];
+					var targets=[];
+					if (vars.config.templateapp.length!=0)
 					{
-						if (body.type=='RICH_TEXT')
-						{
-							$('[name=HtmlData]',mailform).val(body.value);
-							$('[name=Data]',mailform).val(functions.htmltotext($('<div>').html(body.value).get(0)));
-						}
-						else $('[name=Data]',mailform).val(body.value);
-					}
-					/* load app datas */
-					vars.apps[kintone.app.getId()]=null;
-					vars.offset[kintone.app.getId()]=0;
-					functions.loaddatas(kintone.app.getId(),kintone.app.getQueryCondition(),function(){
-						var keys=[];
-						var targets=[];
-						$.each(vars.fields,function(key,values){
-							switch (values.type)
-							{
-								case 'DROP_DOWN':
-								case 'LINK':
-								case 'NUMBER':
-								case 'RADIO_BUTTON':
-								case 'SINGLE_LINE_TEXT':
-									if((subject.value+body.value).indexOf('%'+values.code+'%')!==-1) keys.push(values.code);
-									break;
-							}
+						var filter=$.grep(vars.apps[vars.config.templateapp],function(item,index){
+							return item['$id'].value==mailform.find('select#templatelist').val();
 						});
-						for(var i=0;i<vars.apps[kintone.app.getId()].length;i++)
+						if (filter.length!=0)
 						{
-							var record=vars.apps[kintone.app.getId()][i];
-							targets.push({});
-							if (vars.config.mailto in record) targets[targets.length-1].Address=record[vars.config.mailto].value;
-							$.each(keys,function(index){
-								if (keys[index] in record) targets[targets.length-1][keys[index]]=record[keys[index]].value;
+							var subject=functions.field(vars.config.templatesubject,filter[0]);
+							var body=functions.field(vars.config.templatebody,filter[0]);
+							if (subject.value.length) $('[name=Subject]',mailform).val(subject.value);
+							if (body.value.length)
+							{
+								if (body.type=='RICH_TEXT')
+								{
+									$('[name=HtmlData]',mailform).val(body.value);
+									$('[name=Data]',mailform).val(functions.htmltotext($('<div>').html(body.value).get(0)));
+								}
+								else $('[name=Data]',mailform).val(body.value);
+							}
+							$.each(vars.fields,function(key,values){
+								switch (values.type)
+								{
+									case 'DROP_DOWN':
+									case 'LINK':
+									case 'NUMBER':
+									case 'RADIO_BUTTON':
+									case 'SINGLE_LINE_TEXT':
+										if((subject.value+body.value).indexOf('%'+values.code+'%')!==-1) keys.push(values.code);
+										break;
+								}
 							});
 						}
-						$('[name=Targets]',mailform).val(JSON.stringify(targets));
-						swal({
-							title:'確認',
-							text:'メールワイズの画面を開きます。',
-							type:'info',
-							showCancelButton:true,
-							cancelButtonText:'Cancel'
-						},
-						function(){
-							mailform.submit();
+					}
+					for(var i=0;i<vars.apps[kintone.app.getId()].length;i++)
+					{
+						var record=vars.apps[kintone.app.getId()][i];
+						targets.push({});
+						if (vars.config.mailto in record) targets[targets.length-1].Address=record[vars.config.mailto].value;
+						$.each(keys,function(index){
+							if (keys[index] in record) targets[targets.length-1][keys[index]]=record[keys[index]].value;
 						});
+					}
+					$('[name=Targets]',mailform).val(JSON.stringify(targets));
+					swal({
+						title:'確認',
+						text:'メールワイズの画面を開きます。',
+						type:'info',
+						showCancelButton:true,
+						cancelButtonText:'Cancel'
+					},
+					function(){
+						mailform.submit();
 					});
-				}
+				});
 			});
 		});
 		vars.loaded=true;
@@ -369,35 +374,34 @@ jQuery.noConflict();
 			mailform.append($('<input type="hidden" name="Subject">').val(''));
 			mailform.append($('<input type="hidden" name="Data">').val(''));
 			mailform.append($('<input type="hidden" name="HtmlData">').val(''));
-			headspace.append($('<div>').addClass('mailwise-container').append(mailform)).css({
-				'bottom':'0px',
-				'left':'0px',
-				'padding':'16px',
-				'position':'absolute',
-				'z-index':(headspace.parent().children()+1).length.toString()
-			});
+			headspace.append($('<div>').addClass('mailwise-container').append(mailform).css({'margin':'8px 16px 0px 16px'}));
+			headspace.children('div').css({'display':'inline-block'});
 			functions.appendformelements(mailform,function(){
-				var filter=$.grep(vars.apps[vars.config.templateapp],function(item,index){
-					return item['$id'].value==$('#templatelist',mailform).val();
-				});
-				if (filter.length!=0)
+				if (vars.config.templateapp.length!=0)
 				{
-					var subject=functions.field(vars.config.templatesubject,filter[0]);
-					var body=functions.field(vars.config.templatebody,filter[0]);
-					if (subject.value.length) $('[name=Subject]',mailform).val(functions.assign(subject.value,event.record));
-					if (body.value.length)
+					var filter=$.grep(vars.apps[vars.config.templateapp],function(item,index){
+						return item['$id'].value==$('#templatelist',mailform).val();
+					});
+					if (filter.length!=0)
 					{
-						if (body.type=='RICH_TEXT')
+						var subject=functions.field(vars.config.templatesubject,filter[0]);
+						var body=functions.field(vars.config.templatebody,filter[0]);
+						if (subject.value.length) $('[name=Subject]',mailform).val(functions.assign(subject.value,event.record));
+						if (body.value.length)
 						{
-							body=$('<div>').html(body.value);
-							functions.assignhtml(body.get(0),event.record);
-							$('[name=HtmlData]',mailform).val(body.html());
-							$('[name=Data]',mailform).val(functions.htmltotext(body.get(0)));
+							if (body.type=='RICH_TEXT')
+							{
+								body=$('<div>').html(body.value);
+								functions.assignhtml(body.get(0),event.record);
+								$('[name=HtmlData]',mailform).val(body.html());
+								$('[name=Data]',mailform).val(functions.htmltotext(body.get(0)));
+							}
+							else $('[name=Data]',mailform).val(functions.assign(body.value,event.record));
 						}
-						else $('[name=Data]',mailform).val(functions.assign(body.value,event.record));
+						mailform.submit();
 					}
-					mailform.submit();
 				}
+				else mailform.submit();
 			});
 			/* create history */
 			if(vars.config.historyspace)
@@ -445,7 +449,8 @@ jQuery.noConflict();
 					historymail.append($('<option>').text(vars.fields[vars.config.mailto].label).val(event.record[vars.config.mailto].value));
 				for (var i=0;i<mails.length;i++)
 					if (mails[i] in event.record)
-						historymail.append($('<option>').text(vars.fields[mails[i]].label).val(event.record[mails[i]].value));
+						if (event.record[mails[i]].value.length!=0)
+							historymail.append($('<option>').text(vars.fields[mails[i]].label).val(event.record[mails[i]].value));
 				/* get mailwise space */
 				kintone.api(kintone.api.url('/m/mw.cgi/v1/base/space/list').replace(/\.json$/,""),'POST',{},function(resp){
 					if(resp.success)
@@ -460,7 +465,11 @@ jQuery.noConflict();
 									vars.history.table.container.hide();
 									historyerror.show();
 								}
-								else historyerror.hide();
+								else
+								{
+									vars.history.table.container.show();
+									historyerror.hide();
+								}
 							});
 						}).trigger('change');
 					}

@@ -404,14 +404,14 @@ jQuery.noConflict();
 		});
 		/* setup date value */
 		vars.datecalc=$.ganttchartdatecalc(vars.fromdate,vars.todate);
-		fromdate.text(vars.fromdate.format('Y-m-d'));
-		todate.text(vars.todate.format('Y-m-d'));
+		fromdate.text(vars.fromdate.format('Y-m'));
+		todate.text(vars.todate.format('Y-m'));
 		/* month pickup button */
 		vars.fromcalendar=$('body').calendar({
 			selected:function(target,value){
 				vars.fromdate=new Date(value.dateformat()).calc('first-of-month');
 				vars.datecalc=$.ganttchartdatecalc(vars.fromdate,vars.todate);
-				fromdate.text(vars.fromdate.format('Y-m-d'));
+				fromdate.text(vars.fromdate.format('Y-m'));
 				/* reload view */
 				functions.load();
 			}
@@ -421,7 +421,7 @@ jQuery.noConflict();
 			selected:function(target,value){
 				vars.todate=new Date(value.dateformat()).calc('first-of-month').calc('1 month').calc('-1 day');
 				vars.datecalc=$.ganttchartdatecalc(vars.fromdate,vars.todate);
-				todate.text(vars.todate.format('Y-m-d'));
+				todate.text(vars.todate.format('Y-m'));
 				/* reload view */
 				functions.load();
 			}
@@ -433,7 +433,7 @@ jQuery.noConflict();
 				var months=($(this).attr('id')=='next')?1:-1;
 				vars.fromdate=vars.fromdate.calc(months+' month');
 				vars.datecalc=$.ganttchartdatecalc(vars.fromdate,vars.todate);
-				fromdate.text(vars.fromdate.format('Y-m-d'));
+				fromdate.text(vars.fromdate.format('Y-m'));
 				/* reload view */
 				functions.load();
 			});
@@ -443,7 +443,7 @@ jQuery.noConflict();
 				var months=($(this).attr('id')=='next')?1:-1;
 				vars.todate=vars.todate.calc('first-of-month').calc(months+' month').calc('1 month').calc('-1 day');
 				vars.datecalc=$.ganttchartdatecalc(vars.fromdate,vars.todate);
-				todate.text(vars.todate.format('Y-m-d'));
+				todate.text(vars.todate.format('Y-m'));
 				/* reload view */
 				functions.load();
 			});

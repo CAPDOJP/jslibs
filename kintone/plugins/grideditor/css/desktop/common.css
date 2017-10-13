@@ -21,6 +21,10 @@ button.calendar-button{
 	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png');
 	padding-left:30px;
 }
+button.clip-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/clip.png');
+	padding-left:30px;
+}
 button.close-button{
 	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png');
 	padding-left:30px;
