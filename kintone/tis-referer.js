@@ -780,7 +780,7 @@ FileSelect.prototype={
 			if (my.buttonblock.find('button#'+key).size())
 			{
 				var res=[];
-				$.each(this.listblock.find('tbody').find('tr'),function(){
+				$.each(my.listblock.find('tbody').find('tr'),function(){
 					res.push({
 						contentType:$(this).find('input#contentType').val(),
 						fileKey:$(this).find('input#fileKey').val(),
