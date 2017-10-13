@@ -75,7 +75,6 @@ var Table=function(options){
 		var cellindex=row.find('td').index($(this));
 		var posX=(e.type=='touchstart')?e.originalEvent.touches[0].pageX:e.pageX;
 		var posY=(e.type=='touchstart')?e.originalEvent.touches[0].pageY:e.pageY;
-		console.log(posX);
 		scrollPos.x=posX;
 		scrollPos.y=posY;
 		if (options.mergeexclude.indexOf(my.cellindex(row,cellindex))==-1)
