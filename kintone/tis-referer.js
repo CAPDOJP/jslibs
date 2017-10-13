@@ -708,6 +708,7 @@ var FileSelect=function(options){
 			.text(values.text)
 		);
 	});
+	this.contents.append(this.fileblock);
 	this.contents.append(this.listblock);
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
@@ -716,8 +717,8 @@ var FileSelect=function(options){
 	/* create template */
 	this.template=row.clone(true);
 	this.template.append(
-		$('<td>')
-		.append('<img src="">')
+		$('<td>').css({'width':'30px'})
+		.append('<img src="">').css({'width':'100%'})
 		.append('<input type="hidden" id="contentType">')
 		.append('<input type="hidden" id="fileKey">')
 		.append('<input type="hidden" id="name">')
@@ -749,10 +750,14 @@ var FileSelect=function(options){
 		})
 	);
 	this.template.append(
-		$('<td>')
-		.append('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">').on('click',function(){
-			$(this).closest('tr').remove();
-		})
+		$('<td>').css({'width':'30px'})
+		.append(
+			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">')
+			.css({'width':'100%'})
+			.on('click',function(){
+				$(this).closest('tr').remove();
+			})
+		)
 	);
 	/* adjust container height */
 	$(window).on('load resize',function(){
