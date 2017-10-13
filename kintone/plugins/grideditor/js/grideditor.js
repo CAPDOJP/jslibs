@@ -20,6 +20,7 @@ jQuery.noConflict();
 		grid:null,
 		header:null,
 		rows:null,
+		filebox:null,
 		selectbox:null,
 		template:null,
 		exports:{
@@ -33,7 +34,6 @@ jQuery.noConflict();
 		referer:{},
 		requiredvalue:{},
 		disabled:{
-			'FILE':'添付ファイル',
 			'RICH_TEXT':'リッチエディター',
 			'SUBTABLE':'テーブル'
 		},
@@ -44,7 +44,6 @@ jQuery.noConflict();
 			'CATEGORY',
 			'CREATED_TIME',
 			'CREATOR',
-			'FILE',
 			'GROUP',
 			'MODIFIER',
 			'RECORD_NUMBER',
@@ -124,6 +123,35 @@ jQuery.noConflict();
 					$.each(fieldinfo.options,function(key,values){
 						cell.append($('<option>').attr('value',values.label).text(values.label));
 					});
+					break;
+				case 'FILE':
+					classes='multiselectcell';
+					cell=$('<label>');
+					cell.append($('<span id="'+fieldinfo.code+'" class="customview-span">'));
+					cell.append($('<input type="hidden" id="'+fieldinfo.code+'">'));
+					cell.append(
+						$('<button type="button" class="customview-button clip-button">')
+						.on('click',function(){
+							var target=$(this);
+							vars.filebox.show({
+								datasource:JSON.parse(target.closest('td').find('input').val()),
+								buttons:{
+									ok:function(resp){
+										var files=functions.filevalue(resp);
+										target.closest('td').find('input').val(files.values);
+										target.closest('td').find('span').text(files.names);
+										functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
+										/* close the filebox */
+										vars.filebox.hide();
+									},
+									cancel:function(){
+										/* close the filebox */
+										vars.filebox.hide();
+									}
+								}
+							});
+						})
+					);
 					break;
 				case 'GROUP_SELECT':
 					/* load group datas */
@@ -457,6 +485,7 @@ jQuery.noConflict();
 			switch (fieldinfo.type)
 			{
 				case 'CHECK_BOX':
+				case 'FILE':
 				case 'GROUP_SELECT':
 				case 'MULTI_SELECT':
 				case 'ORGANIZATION_SELECT':
@@ -493,6 +522,17 @@ jQuery.noConflict();
 								fieldvalue=cell.val().replace(' ','T')+':00+0900';
 							}
 							else cell.val('');
+						}
+						break;
+					case 'FILE':
+						if (cell.val().length!=0)
+						{
+							var files=JSON.parse(cell.val());
+							$.each(files,function(index){
+								fieldvalue.push({
+									fileKey:files[index].fileKey
+								});
+							});
 						}
 						break;
 					case 'GROUP_SELECT':
@@ -604,6 +644,20 @@ jQuery.noConflict();
 			}
 			return fieldvalue;
 		},
+		filevalue:function(files){
+			var names='';
+			var values=[];
+			$.each(files,function(index){
+				names+=files[index].name+',';
+				values.push({
+					contentType:files[index].contentType,
+					fileKey:files[index].fileKey,
+					name:files[index].name
+				});
+			});
+			names=names.replace(/,$/g,'');
+			return {names:names,values:JSON.stringify(values)};
+		},
 		loaddatas:function(appkey,fieldinfo){
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString()},function(resp){
 				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
@@ -702,6 +756,19 @@ jQuery.noConflict();
 				'width':$(window).width().toString()+'px'
 			});
 			vars.container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
+		});
+		/* create filebox */
+		vars.filebox=$('body').fileselect({
+			buttons:{
+				ok:{
+					class:'customview-button referer-button-ok',
+					text:'OK'
+				},
+				cancel:{
+					class:'customview-button referer-button-cancel',
+					text:'キャンセル'
+				}
+			}
 		});
 		/* create selectbox */
 		vars.selectbox=$('body').multiselect({
@@ -813,6 +880,11 @@ jQuery.noConflict();
 							case 'DATETIME':
 								if (record[values.code].value.length!=0) row.find('#'+values.code).val(new Date(record[values.code].value.dateformat()).format('Y-m-d H:i'));
 								else row.find('#'+values.code).val(record[values.code].value);
+								break;
+							case 'FILE':
+								var files=functions.filevalue(record[values.code].value);
+								row.find('input#'+values.code).val(files.values);
+								row.find('span#'+values.code).text(files.names);
 								break;
 							case 'GROUP_SELECT':
 							case 'ORGANIZATION_SELECT':
