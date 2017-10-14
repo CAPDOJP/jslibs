@@ -158,7 +158,7 @@ var Referer=function(options){
 	this.listblock=table.clone(true).css({
 		'box-sizing':'border-box',
 		'width':'100%'
-	}).append('<tbody>');
+	}).append($('<tbody>'));
 	this.searchblock=div.clone(true).css({
 		'background-color':'#3498db',
 		'border-top-left-radius':'5px',
@@ -484,7 +484,7 @@ var MultiSelect=function(options){
 	this.listblock=table.clone(true).css({
 		'box-sizing':'border-box',
 		'width':'100%'
-	}).append('<tbody>');
+	}).append($('<tbody>'));
 	/* append elements */
 	$.each(this.buttons,function(key,values){
 		my.buttonblock.append(
@@ -698,7 +698,7 @@ var FileSelect=function(options){
 	this.listblock=table.clone(true).css({
 		'box-sizing':'border-box',
 		'width':'100%'
-	}).append('<tbody>');
+	}).append($('<tbody>'));
 	/* append elements */
 	$.each(this.buttons,function(key,values){
 		my.buttonblock.append(
@@ -718,36 +718,38 @@ var FileSelect=function(options){
 	this.template=row.clone(true);
 	this.template.append(
 		$('<td>').css({'width':'30px'})
-		.append('<img src="">').css({'width':'100%'})
-		.append('<input type="hidden" id="contentType">')
-		.append('<input type="hidden" id="fileKey">')
-		.append('<input type="hidden" id="name">')
+		.append($('<img src="">').css({'width':'100%'}))
+		.append($('<input type="hidden" id="contentType">'))
+		.append($('<input type="hidden" id="fileKey">'))
+		.append($('<input type="hidden" id="name">'))
 	);
 	this.template.append(
-		$('<td>').append('<a href="" id="link">').on('click',function(e){
-			var list=$(this).closest('tr');
-			var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+list.find('input#fileKey').val();
-			var xhr=new XMLHttpRequest();
-			xhr.open('GET',url);
-			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
-			xhr.responseType='blob';
-			xhr.onload=function(){
-				if (xhr.status===200)
-				{
-					/* download */
-					var a=document.createElement('a');
-					url=window.URL || window.webkitURL;
-					a.href=url.createObjectURL(xhr.response);
-					a.download=list.find('input#name').val();
-					a.click();
-				}
-			};
-			xhr.onerror=function(){};
-			xhr.send();
-			e.preventDefault();
-			e.stopPropagation();
-			return false;
-		})
+		$('<td>').append(
+			$('<a href="" id="link">').on('click',function(e){
+				var list=$(this).closest('tr');
+				var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+list.find('input#fileKey').val();
+				var xhr=new XMLHttpRequest();
+				xhr.open('GET',url);
+				xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+				xhr.responseType='blob';
+				xhr.onload=function(){
+					if (xhr.status===200)
+					{
+						/* download */
+						var a=document.createElement('a');
+						url=window.URL || window.webkitURL;
+						a.href=url.createObjectURL(xhr.response);
+						a.download=list.find('input#name').val();
+						a.click();
+					}
+				};
+				xhr.onerror=function(){};
+				xhr.send();
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			})
+		)
 	);
 	this.template.append(
 		$('<td>').css({'width':'30px'})

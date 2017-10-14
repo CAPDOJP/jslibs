@@ -27,7 +27,7 @@
             "js/grideditor.js"
         ],
         "css":[
-            "css/51-jp-default.css",
+            "css/51-modern-default.css",
             "css/sweetalert.css",
             "css/desktop/common.css",
             "css/desktop/grideditor.css"
