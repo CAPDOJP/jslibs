@@ -824,6 +824,7 @@ FileSelect.prototype={
 						name:$(this).find('input#name').val()
 					});
 				});
+				console.log(res);
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values(res);});
 			}
 		});
