@@ -760,6 +760,7 @@ FileSelect.prototype={
 			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
 			xhr.responseType='blob';
 			xhr.onload=function(){
+				console.log(xhr.response);
 				if (xhr.status===200) resolve(xhr.response);
 				else reject(Error('File download error:' + xhr.statusText));
 			};
@@ -782,6 +783,7 @@ FileSelect.prototype={
 			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
 			xhr.responseType='multipart/form-data';
 			xhr.onload=function(){
+				console.log(xhr.response);
 				if (xhr.status===200) resolve(xhr.responseText);
 				else reject(Error('File download error:' + xhr.statusText));
 			};
