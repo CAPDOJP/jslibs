@@ -717,14 +717,11 @@ var FileSelect=function(options){
 	/* create template */
 	this.template=row.clone(true);
 	this.template.append(
-		$('<td>').css({'width':'30px'})
-		.append($('<img src="">').css({'width':'100%'}))
-		.append($('<input type="hidden" id="contentType">'))
-		.append($('<input type="hidden" id="fileKey">'))
-		.append($('<input type="hidden" id="name">'))
-	);
-	this.template.append(
-		$('<td>').append(
+		$('<td>').css({
+			'border-bottom':'1px solid #C9C9C9',
+			'cursor':'pointer',
+		})
+		.append(
 			$('<a href="" id="link">').on('click',function(e){
 				var list=$(this).closest('tr');
 				var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+list.find('input#fileKey').val();
@@ -750,9 +747,16 @@ var FileSelect=function(options){
 				return false;
 			})
 		)
+		.append($('<input type="hidden" id="contentType">'))
+		.append($('<input type="hidden" id="fileKey">'))
+		.append($('<input type="hidden" id="name">'))
 	);
 	this.template.append(
-		$('<td>').css({'width':'30px'})
+		$('<td>').css({
+			'border-bottom':'1px solid #C9C9C9',
+			'cursor':'pointer',
+			'width':'30px'
+		})
 		.append(
 			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">')
 			.css({'width':'100%'})
