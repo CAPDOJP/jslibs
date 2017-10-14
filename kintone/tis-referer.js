@@ -659,21 +659,9 @@ var FileSelect=function(options){
 		$('<input type="file">').css({'display':'none'}).on('change',function(){
 			var target=$(this);
 			if (target[0].files.length!=0)
-			{
-				var file=target[0].files[0];
-				var blob=new Blob([file.getAsBinary],{type:file.type});
-				var filedata=new FormData();
-				var xmlHttp=new XMLHttpRequest();
-				/* create formdata */
-				filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
-				filedata.append('file',blob,file.name);
-				/* upload */
-				xmlHttp.open('POST',encodeURI('/k/v1/file.json'),false);
-				xmlHttp.setRequestHeader('X-Requested-With','XMLHttpRequest');
-				xmlHttp.responseType='multipart/form-data';
-				xmlHttp.send(filedata);
-				my.addrow(JSON.parse(xmlHttp.responseText));
-			}
+				my.upload(target[0].files[0]).then(function(res){
+					my.addrow(JSON.parse(res));
+				});
 		})
 	)
 	.append(
@@ -725,24 +713,13 @@ var FileSelect=function(options){
 		.append(
 			$('<a href="" id="link">').on('click',function(e){
 				var list=$(this).closest('tr');
-				var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+list.find('input#fileKey').val();
-				var xhr=new XMLHttpRequest();
-				xhr.open('GET',url);
-				xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
-				xhr.responseType='blob';
-				xhr.onload=function(){
-					if (xhr.status===200)
-					{
-						/* download */
-						var a=document.createElement('a');
-						url=window.URL || window.webkitURL;
-						a.href=url.createObjectURL(xhr.response);
-						a.download=list.find('input#name').val();
-						a.click();
-					}
-				};
-				xhr.onerror=function(){};
-				xhr.send();
+				my.download(list.find('input#fileKey').val()).then(function(blob){
+					var url=window.URL || window.webkitURL;
+					var a=document.createElement('a');
+					a.href=url.createObjectURL(blob);
+					a.download=list.find('input#name').val();
+					a.click();
+				});
 				e.preventDefault();
 				e.stopPropagation();
 				return false;
@@ -772,6 +749,49 @@ var FileSelect=function(options){
 	});
 };
 FileSelect.prototype={
+	/* download */
+	download:function(fileKey)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+fileKey;
+			var xhr=new XMLHttpRequest();
+			xhr.open('GET',url);
+			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+			xhr.responseType='blob';
+			xhr.onload=function(){
+				if (xhr.status===200) resolve(xhr.response);
+				else reject(Error('File download error:' + xhr.statusText));
+			};
+			xhr.onerror=function(){
+				reject(Error('There was a network error.'));
+			};
+			xhr.send();
+		});
+	},
+	/* upload */
+	upload:function(file){
+		return new Promise(function(resolve,reject)
+		{
+			var blob=new Blob([file.getAsBinary],{type:file.type});
+			var filedata=new FormData();
+			var xhr=new XMLHttpRequest();
+			filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
+			filedata.append('file',blob,file.name);
+			xhr.open('POST',encodeURI('/k/v1/file.json'),false);
+			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+			xhr.responseType='multipart/form-data';
+			xhr.onload=function(){
+				if (xhr.status===200) resolve(xhr.responseText);
+				else reject(Error('File download error:' + xhr.statusText));
+			};
+			xhr.onerror=function(){
+				reject(Error('There was a network error.'));
+			};
+			xhr.send(filedata);
+		});
+	},
+	/* add row */
 	addrow:function(values){
 		var list=this.template.clone(true);
 		list.find('input#contentType').val(values.contentType);
