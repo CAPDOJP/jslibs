@@ -660,7 +660,12 @@ var FileSelect=function(options){
 			var target=$(this);
 			if (target[0].files.length!=0)
 				my.upload(target[0].files[0]).then(function(res){
-					my.addrow(JSON.parse(res));
+					var values={
+						contentType:target[0].files[0].type,
+						fileKey:JSON.parse(res).fileKey,
+						name:target[0].files[0].name
+					};
+					my.addrow(values);
 				});
 		})
 	)
@@ -760,7 +765,6 @@ FileSelect.prototype={
 			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
 			xhr.responseType='blob';
 			xhr.onload=function(){
-				console.log(xhr.response);
 				if (xhr.status===200) resolve(xhr.response);
 				else reject(Error('File download error:' + xhr.statusText));
 			};
@@ -783,7 +787,6 @@ FileSelect.prototype={
 			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
 			xhr.responseType='multipart/form-data';
 			xhr.onload=function(){
-				console.log(xhr.response);
 				if (xhr.status===200) resolve(xhr.responseText);
 				else reject(Error('File download error:' + xhr.statusText));
 			};
