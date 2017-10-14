@@ -39,6 +39,7 @@ jQuery.noConflict();
 		},
 		fieldinfos:[],
 		mappings:[],
+		visible:[],
 		excludes:[
 			'CALC',
 			'CATEGORY',
@@ -134,7 +135,7 @@ jQuery.noConflict();
 						.on('click',function(){
 							var target=$(this);
 							vars.filebox.show({
-								datasource:JSON.parse(target.closest('td').find('input').val()),
+								datasource:((target.closest('td').find('input').val().length!=0)?JSON.parse(target.closest('td').find('input').val()):[]),
 								buttons:{
 									ok:function(resp){
 										var files=functions.filevalue(resp);
@@ -733,6 +734,8 @@ jQuery.noConflict();
 		vars.template=$('<tr>');
 		vars.fieldinfos=[];
 		vars.mappings=[];
+		/* setup hidden field */
+		if (vars.config['fieldselect']=='1') vars.visible=vars.config['field'].split(',');
 		/* append elements */
 		vars.grid.append($('<thead>').append(vars.header));
 		vars.grid.append(vars.rows);
@@ -789,6 +792,8 @@ jQuery.noConflict();
 			/* get fieldinfo */
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 				var displayfields=['$id'];
+				var message='';
+				var showed=false;
 				/* create header and template */
 				vars.header.append($('<th>').text('No'));
 				vars.template.append($('<td>').append($('<label>')));
@@ -799,7 +804,7 @@ jQuery.noConflict();
 						/* check disabled type */
 						if (fieldinfo.type in vars.disabled)
 						{
-							var message='';
+							message='';
 							message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
 							$.each(vars.disabled,function(key,value){
 								message+=value+'\n';
@@ -808,6 +813,15 @@ jQuery.noConflict();
 							vars.grid.hide();
 							return;
 						}
+						/* check required files */
+						if (fieldinfo.type=='FILE' && fieldinfo.required && !showed)
+						{
+							message='';
+							message+='このアプリには、必須設定がなされた添付ファイルフィールドがあります。\n';
+							message+='新規にレコードを登録する場合は、まず最初に添付ファイルをアップロードするようにして下さい。\n';
+							swal('添付ファイルについて',message,'info');
+							showed=true;
+						}
 						/* check exclude type */
 						if ($.inArray(fieldinfo.type,vars.excludes)<0)
 						{
@@ -815,6 +829,12 @@ jQuery.noConflict();
 							vars.header.append($('<th>').text(fieldinfo.label));
 							/* append template field */
 							vars.template.append(functions.fieldcreate(fieldinfo));
+							/* check hidden field */
+							if (vars.config['fieldselect']=='1' && $.inArray(fieldinfo.code,vars.visible)<0)
+							{
+								vars.header.find('th').last().hide();
+								vars.template.find('td').last().hide();
+							}
 							/* append display fields */
 							displayfields.push(fieldinfo.code);
 							/* append fieldinfo */

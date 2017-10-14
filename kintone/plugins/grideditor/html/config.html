@@ -32,6 +32,30 @@
 			</div>
 		</div>
 	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">編集フィールド</div>
+		<div class="kintoneplugin-desc">表示するフィールドを絞り込んで編集を行いたい場合は、そのフィールドを選択して下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="fieldselect" value="0">編集フィールドを絞り込む</label>
+		</div>
+		<table class="fields">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="field">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>
 <div class="block">
 	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
