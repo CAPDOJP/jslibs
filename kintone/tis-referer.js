@@ -661,7 +661,7 @@ var FileSelect=function(options){
 			if (target[0].files.length!=0)
 			{
 				var file=target[0].files[0];
-				var blob=new Blob([file],{type:file.type});
+				var blob=new Blob([file.getAsBinary],{type:file.type});
 				var filedata=new FormData();
 				var xmlHttp=new XMLHttpRequest();
 				/* create formdata */
