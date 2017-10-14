@@ -778,7 +778,7 @@ FileSelect.prototype={
 	upload:function(file){
 		return new Promise(function(resolve,reject)
 		{
-			var blob=new Blob([file.getAsBinary],{type:file.type});
+			var blob=new Blob([file],{type:file.type});
 			var filedata=new FormData();
 			var xhr=new XMLHttpRequest();
 			filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
