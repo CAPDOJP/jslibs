@@ -815,18 +815,20 @@ FileSelect.prototype={
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
 			if (my.buttonblock.find('button#'+key).size())
-			{
-				var res=[];
-				$.each(my.listblock.find('tbody').find('tr'),function(){
-					res.push({
-						contentType:$(this).find('input#contentType').val(),
-						fileKey:$(this).find('input#fileKey').val(),
-						name:$(this).find('input#name').val()
-					});
+				my.buttonblock.find('button#'+key).off('click').on('click',function(){
+					if (values!=null)
+					{
+						var res=[];
+						$.each(my.listblock.find('tbody').find('tr'),function(){
+							res.push({
+								contentType:$(this).find('input#contentType').val(),
+								fileKey:$(this).find('input#fileKey').val(),
+								name:$(this).find('input#name').val()
+							});
+						});
+						values(res);
+					}
 				});
-				console.log(res);
-				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values(res);});
-			}
 		});
 		/* create lists */
 		this.listblock.find('tbody').empty();
