@@ -51,6 +51,7 @@ var Table=function(options){
 	this.template=options.template;
 	this.dragclass=options.dragclass;
 	this.mergeclass=options.mergeclass;
+	this.dragenabled=true;
 	/* append elements */
 	this.container.append(this.head);
 	this.container.append(this.contents);
@@ -69,6 +70,7 @@ var Table=function(options){
 	/* events of merge */
 	container.off('mousedown.merge touchstart.merge').on('mousedown.merge touchstart.merge','td',function(e){
 		if (!options.merge) return;
+		if (!my.dragenabled) return;
 		var row=$(this).parent();
 		var rowindex=contents.find('tr').index(row);
 		var cellindex=row.find('td').index($(this));
@@ -98,6 +100,7 @@ var Table=function(options){
 	});
 	$(window).off('mousemove.merge touchmove.merge').on('mousemove.merge touchmove.merge',function(e){
 		if (!options.merge) return;
+		if (!my.dragenabled) return;
 		/* return except during merge */
 		if (mergerow==-1)
 		{
@@ -157,6 +160,7 @@ var Table=function(options){
 	});
 	$(window).off('mouseup.merge touchend.merge').on('mouseup.merge touchend.merge',function(e){
 		if (!options.merge) return;
+		if (!my.dragenabled) return;
 		/* return except during merge */
 		if (mergerow==-1) return;
 		var cell=contents.find('tr').eq(mergerow).find('td').eq(mergefrom);

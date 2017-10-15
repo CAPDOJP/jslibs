@@ -276,6 +276,13 @@ jQuery.noConflict();
 		var todate=$('<span id="date" class="customview-span">');
 		var toprev=$('<button id="prev" class="customview-button prev-button">');
 		var tonext=$('<button id="next" class="customview-button next-button">');
+		var dragenabled=$('<label class="customview-checkbox">')
+		.append($('<input type="checkbox" id="currentlocation">')
+			.on('change',function(e){
+				vars.table.dragenabled=!$(this).prop('checked');
+			})
+		)
+		.append($('<span>ドラッグ操作を無効にする</span>'));
 		/* append elements */
 		feed.append(fromprev);
 		feed.append(fromdate);
@@ -286,6 +293,7 @@ jQuery.noConflict();
 		feed.append(tonext);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(dragenabled[0]);
 		$('body').append(vars.guidefrom).append(vars.guideto);
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
