@@ -150,6 +150,7 @@ var Calendar=function(options){
 			calendar.find('tr').last()
 			.append($('<td>').css({
 				'border':'1px solid #C9C9C9',
+				'box-sizing':'border-box',
 				'color':options.normal.fore,
 				'font-size':'13px',
 				'height':'30px',
