@@ -212,6 +212,7 @@ jQuery.noConflict();
 						}
 					}
 				});
+				vars.table.dragenabled=!$('input#dragenabled').prop('checked');
 				/* place the group data */
 				for (var i=0;i<heads.length;i++)
 				{
@@ -266,7 +267,9 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
 		/* check viewid */
-		if (event.viewId!=vars.config.ganttchart) return;
+		if (!event.viewName.match(/稼働表/g)) return;
+		/* check view type */
+		if (event.viewType.toUpperCase()!='CUSTOM') return event;
 		/* initialize valiable */
 		var container=$('div#ganttchart-container');
 		var feed=$('<div class="ganttchart-dayfeed">');
@@ -277,7 +280,7 @@ jQuery.noConflict();
 		var toprev=$('<button id="prev" class="customview-button prev-button">');
 		var tonext=$('<button id="next" class="customview-button next-button">');
 		var dragenabled=$('<label class="customview-checkbox">')
-		.append($('<input type="checkbox" id="currentlocation">')
+		.append($('<input type="checkbox" id="dragenabled">')
 			.on('change',function(e){
 				vars.table.dragenabled=!$(this).prop('checked');
 			})

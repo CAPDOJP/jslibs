@@ -1,0 +1,50 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone グリッドエディタープラグイン",
+        "en":"kintone Grid Editor plug-in",
+        "zh":"kintone グリッドエディタープラグイン"
+    },
+    "description":{
+        "ja":"レコードを一覧画面で編集するプラグインです。住所/緯度/経度フィールドを指定すれば、住所入力時に自動的に緯度/経度を登録します。",
+        "en":"This plug-in to edit the list screen records",
+        "zh":"レコードを一覧画面で編集するプラグインです。住所/緯度/経度フィールドを指定すれば、住所入力時に自動的に緯度/経度を登録します。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "js/sweetalert.min.js",
+            "js/grideditor.js"
+        ],
+        "css":[
+            "css/51-modern-default.css",
+            "css/sweetalert.css",
+            "css/desktop/common.css",
+            "css/desktop/grideditor.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

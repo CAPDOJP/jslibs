@@ -238,7 +238,7 @@ jQuery.noConflict();
 			var row=null;
 			var properties={};
 			$.each(sorted,function(index){
-				properties[sorted[index]]=resp.properties[sorted[index]];
+				if (sorted[index] in resp.properties) properties[sorted[index]]=resp.properties[sorted[index]];
 			});
 			/* initialize valiable */
 			vars.copytemplate=$('.copyfields').find('tr').first().clone(true);
