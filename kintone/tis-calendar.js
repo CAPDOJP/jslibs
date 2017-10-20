@@ -12,27 +12,27 @@
 /*
 *--------------------------------------------------------------------
 * parameters
-* options	@ active		:active date color {back,fore}
+* options	@ multi			:multi dates select
+*			@ selected		:cell click event
+*			@ span			:display month count
+*			@ active		:active date color {back,fore}
 *			@ normal		:normal date color {back,fore}
 *			@ saturday		:saturday color {back,fore}
 *			@ sunday		:subday color {back,fore}
 *			@ today			:today color {back,fore}
-*			@ multi			:multi dates select
-*			@ selected		:cell click event
-*			@ span			:display month count
 * -------------------------------------------------------------------
 */
 var Calendar=function(options){
 	var options=$.extend({
 		container:null,
+		multi:false,
+		selected:null,
+		span:1,
 		active:{back:'#FFB46E',fore:'#2B2B2B'},
 		normal:{back:'#FFFFFF',fore:'#2B2B2B'},
 		saturday:{back:'#FFFFFF',fore:'#69B4C8'},
 		sunday:{back:'#FFFFFF',fore:'#FA8273'},
-		today:{back:'#69B4C8',fore:'#2B2B2B'},
-		multi:false,
-		selected:null,
-		span:1
+		today:{back:'#69B4C8',fore:'#2B2B2B'}
 	},options);
 	/* property */
 	this.activedate=new Date('1000/01/01');
@@ -41,6 +41,8 @@ var Calendar=function(options){
 	this.params=options;
 	/* valiable */
 	var my=this;
+	var cellsize=30;
+	var rows=8;
 	var div=$('<div>').css({
 		'box-sizing':'border-box',
 		'position':'relative'
@@ -49,16 +51,16 @@ var Calendar=function(options){
 		'background-color':'transparent',
 		'background-position':'left top',
 		'background-repeat':'no-repeat',
-		'background-size':'30px 30px',
+		'background-size':cellsize.toString()+'px '+cellsize.toString()+'px',
 		'border':'none',
 		'box-sizing':'border-box',
 		'cursor':'pointer',
 		'font-size':'13px',
-		'height':'30px',
+		'height':cellsize.toString()+'px',
 		'margin':'0px',
 	    'outline':'none',
 	    'padding':'0px',
-		'width':'30px'
+		'width':cellsize.toString()+'px'
 	});
 	var table=$('<table>');
 	/* append elements */
@@ -77,12 +79,12 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':(258*Math.ceil(options.span/3)+65).toString()+'px',
+		'height':((250+(rows-1))*Math.ceil(options.span/3)+((cellsize*2)+5)).toString()+'px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
 		'max-width':'100%',
-		'padding':'30px 5px 5px 5px',
+		'padding':cellsize.toString()+'px 5px 5px 5px',
 		'position':'absolute',
 		'right':'0',
 		'text-align':'center',
@@ -101,39 +103,41 @@ var Calendar=function(options){
 	);
 	this.contents=[];
 	this.feedblock=div.clone(true).css({
-		'height':'30px',
+		'height':cellsize.toString()+'px',
 		'width':'100%'
 	})
-	.append(button.clone(true).css({
-		'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/prev.png")',
-		'position':'absolute',
-		'left':'0px',
-		'top':'0px'
-	})
-	.on('click',function(){
-		/* calc months */
-		my.displaymonth=my.displaymonth.calc('-'+options.span.toString()+' month').calc('first-of-month');
-		/* display calendar */
-		my.show();
-	}))
-	.append(button.clone(true).css({
-		'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/next.png")',
-		'position':'absolute',
-		'right':'0px',
-		'top':'0px'
-	})
-	.on('click',function(){
-		/* calc months */
-		my.displaymonth=my.displaymonth.calc(options.span.toString()+' month').calc('first-of-month');
-		/* display calendar */
-		my.show();
-	}));
+	.append(
+		button.clone(true).css({
+			'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/prev.png")',
+			'position':'absolute',
+			'left':'0px',
+			'top':'0px'
+		})
+		.on('click',function(){
+			/* calc months */
+			my.displaymonth=my.displaymonth.calc('-'+options.span.toString()+' month').calc('first-of-month');
+			/* display calendar */
+			my.show();
+		})
+	)
+	.append(
+		button.clone(true).css({
+			'background-image':'url("https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/next.png")',
+			'position':'absolute',
+			'right':'0px',
+			'top':'0px'
+		})
+		.on('click',function(){
+			/* calc months */
+			my.displaymonth=my.displaymonth.calc(options.span.toString()+' month').calc('first-of-month');
+			/* display calendar */
+			my.show();
+		})
+	);
+	/* create calendar */
 	for (var i=0;i<options.span;i++)
 	{
-		var calendar=table.clone(true).css({
-			'box-sizing':'border-box',
-			'margin':'0px auto'
-		});
+		var calendar=table.clone(true).css({'box-sizing':'border-box'});
 		this.contents.push(
 			div.clone(true).css({
 				'display':'inline-block',
@@ -144,30 +148,32 @@ var Calendar=function(options){
 			.append(calendar)
 		);
 		/* create cells */
-		for (var i2=0;i2<7*8;i2++)
+		for (var i2=0;i2<7*rows;i2++)
 		{
 			if (i2%7==0) calendar.append($('<tr>'));
 			calendar.find('tr').last()
-			.append($('<td>').css({
-				'border':'1px solid #C9C9C9',
-				'box-sizing':'border-box',
-				'color':options.normal.fore,
-				'font-size':'13px',
-				'height':'30px',
-				'line-height':'30px',
-				'margin':'0px',
-				'padding':'0px',
-				'text-align':'center',
-				'width':'30px'
-			})
-			.on('click',function(){
-				if ($.isNumeric($(this).text()))
-				{
-					var value=my.displaymonth.calc((parseInt($(this).text())-1).toString()+' day');
-					if (options.selected!=null) options.selected($(this).closest('td'),value.format('Y-m-d'));
-					my.cover.hide();
-				}
-			}));
+			.append(
+				$('<td>').css({
+					'border':'1px solid #C9C9C9',
+					'box-sizing':'border-box',
+					'color':options.normal.fore,
+					'font-size':'13px',
+					'height':cellsize.toString()+'px',
+					'line-height':cellsize.toString()+'px',
+					'margin':'0px',
+					'padding':'0px',
+					'text-align':'center',
+					'width':cellsize.toString()+'px'
+				})
+				.on('click',function(){
+					if ($.isNumeric($(this).text()))
+					{
+						var value=my.displaymonth.calc((parseInt($(this).text())-1).toString()+' day');
+						if (options.selected!=null) options.selected($(this).closest('td'),value.format('Y-m-d'));
+						my.cover.hide();
+					}
+				})
+			);
 		}
 		/* create header */
 		var week=['日','月','火','水','木','金','土'];
