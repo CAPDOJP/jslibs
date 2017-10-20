@@ -77,7 +77,7 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':(250*Math.ceil(options.span/3)+65).toString()+'px',
+		'height':(258*Math.ceil(options.span/3)+65).toString()+'px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
@@ -138,7 +138,7 @@ var Calendar=function(options){
 			div.clone(true).css({
 				'display':'inline-block',
 				'height':'240px',
-				'margin':'5px',
+				'margin':'0px 5px 10px 5px',
 				'width':'210px'
 			})
 			.append(calendar)
