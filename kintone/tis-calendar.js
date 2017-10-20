@@ -41,7 +41,7 @@ var Calendar=function(options){
 	this.params=options;
 	/* valiable */
 	var my=this;
-	var cellsize=30;
+	var cells=30;
 	var rows=8;
 	var div=$('<div>').css({
 		'box-sizing':'border-box',
@@ -51,16 +51,16 @@ var Calendar=function(options){
 		'background-color':'transparent',
 		'background-position':'left top',
 		'background-repeat':'no-repeat',
-		'background-size':cellsize.toString()+'px '+cellsize.toString()+'px',
+		'background-size':cells.toString()+'px '+cells.toString()+'px',
 		'border':'none',
 		'box-sizing':'border-box',
 		'cursor':'pointer',
 		'font-size':'13px',
-		'height':cellsize.toString()+'px',
+		'height':cells.toString()+'px',
 		'margin':'0px',
 	    'outline':'none',
 	    'padding':'0px',
-		'width':cellsize.toString()+'px'
+		'width':cells.toString()+'px'
 	});
 	var table=$('<table>');
 	/* append elements */
@@ -79,12 +79,12 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':((250+(rows-1))*Math.ceil(options.span/3)+((cellsize*2)+5)).toString()+'px',
+		'height':((250+(rows-1))*Math.ceil(options.span/3)+((cells*2)+5)).toString()+'px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
 		'max-width':'100%',
-		'padding':cellsize.toString()+'px 5px 5px 5px',
+		'padding':cells.toString()+'px 5px 5px 5px',
 		'position':'absolute',
 		'right':'0',
 		'text-align':'center',
@@ -103,7 +103,7 @@ var Calendar=function(options){
 	);
 	this.contents=[];
 	this.feedblock=div.clone(true).css({
-		'height':cellsize.toString()+'px',
+		'height':cells.toString()+'px',
 		'width':'100%'
 	})
 	.append(
@@ -158,12 +158,12 @@ var Calendar=function(options){
 					'box-sizing':'border-box',
 					'color':options.normal.fore,
 					'font-size':'13px',
-					'height':cellsize.toString()+'px',
-					'line-height':cellsize.toString()+'px',
+					'height':cells.toString()+'px',
+					'line-height':cells.toString()+'px',
 					'margin':'0px',
 					'padding':'0px',
 					'text-align':'center',
-					'width':cellsize.toString()+'px'
+					'width':cells.toString()+'px'
 				})
 				.on('click',function(){
 					if ($.isNumeric($(this).text()))
