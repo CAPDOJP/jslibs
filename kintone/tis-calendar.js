@@ -42,7 +42,8 @@ var Calendar=function(options){
 	/* valiable */
 	var my=this;
 	var div=$('<div>').css({
-		'box-sizing':'border-box'
+		'box-sizing':'border-box',
+		'position':'relative'
 	});
 	var button=$('<button>').css({
 		'background-color':'transparent',
@@ -170,7 +171,7 @@ var Calendar=function(options){
 		var week=['日','月','火','水','木','金','土'];
 		calendar.find('tr').eq(0).find('td').css({'border':'none','cursor':'pointer'});
 		calendar.find('tr').eq(0).find('td').each(function(index){if (index>0) $(this).remove();});
-		calendar.find('tr').eq(0).find('td').eq(1).attr('colspan',7).css('cursor','default');
+		calendar.find('tr').eq(0).find('td').eq(0).attr('colspan',7).css('cursor','default');
 		calendar.find('tr').eq(1).find('td').each(function(index){$(this).text(week[index]);});
 		calendar.find('tr:gt(0)').find('td').eq(0).css({'background-color':options.sunday.back,'color':options.sunday.fore});
 		calendar.find('tr:gt(0)').find('td').eq(6).css({'background-color':options.saturday.back,'color':options.saturday.fore});
