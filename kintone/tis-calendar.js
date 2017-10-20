@@ -153,8 +153,9 @@ var Calendar=function(options){
 				'color':options.normal.fore,
 				'font-size':'13px',
 				'height':'30px',
+				'line-height':'30px',
 				'margin':'0px',
-				'padding':'3px',
+				'padding':'0px',
 				'text-align':'center',
 				'width':'30px'
 			})
