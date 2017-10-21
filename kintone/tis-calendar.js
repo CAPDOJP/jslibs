@@ -196,7 +196,7 @@ var Calendar=function(options){
 		'bottom':'0px',
 		'height':(calendarparams.cells.height*1.5).toString()+'px',
 		'left':'0px',
-		'line-height':(calendarparams.cells.height+1.5).toString()+'px',
+		'line-height':(calendarparams.cells.height*1.5).toString()+'px',
 		'padding':'0px',
 		'position':'absolute',
 		'text-align':'center',
