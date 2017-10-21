@@ -83,8 +83,8 @@ var Calendar=function(options){
 	};
 	var columns=0;
 	var week=['日','月','火','水','木','金','土'];
-	calendarparams.height=calendarparams.cells.height*calendarparams.rows+(calendarparams.margin.top+calendarparams.margin.bottom);
-	calendarparams.width=calendarparams.cells.width*week.length+(calendarparams.margin.left+calendarparams.margin.right);
+	calendarparams.height=calendarparams.cells.height*calendarparams.rows+(calendarparams.rows)+(calendarparams.margin.top+calendarparams.margin.bottom);
+	calendarparams.width=calendarparams.cells.width*week.length+(week.length+1)+(calendarparams.margin.left+calendarparams.margin.right);
 	switch (options.span)
 	{
 		case 1:
@@ -142,7 +142,7 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':(calendarparams.height*Math.ceil(options.span/columns)+(calendarparams.rows-1)+(calendarparams.cells.height*((options.multi)?3:2))).toString()+'px',
+		'height':(calendarparams.height*Math.ceil(options.span/columns)+(calendarparams.cells.height*((options.multi)?3:2))).toString()+'px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
@@ -152,7 +152,7 @@ var Calendar=function(options){
 		'right':'0',
 		'text-align':'center',
 		'top':'0',
-		'width':(calendarparams.width*columns+(week.length-1)+10).toString()+'px'
+		'width':(calendarparams.width*columns+10).toString()+'px'
 	})
 	.append(
 		button.clone(true).css({
