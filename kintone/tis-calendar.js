@@ -236,7 +236,8 @@ var Calendar=function(options){
 				.on('click',function(){
 					if ($.isNumeric($(this).text()))
 					{
-						var value=my.displaymonth.calc((parseInt($(this).text())-1).toString()+' day');
+						var month=new Date($(this).closest('table').find('tr').first().find('td').eq(0).text()+'-01');
+						var value=month.calc((parseInt($(this).text())-1).toString()+' day');
 						if (options.selected!=null) options.selected($(this).closest('td'),value.format('Y-m-d'));
 						my.cover.hide();
 					}
