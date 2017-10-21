@@ -120,12 +120,7 @@ var Calendar=function(options){
 	    'padding':'0px',
 		'width':calendarparams.cells.width.toString()+'px'
 	});
-	var table=$('<table>').css({
-		'margin-left':calendarparams.margin.left.toString()+'px',
-		'margin-right':calendarparams.margin.right.toString()+'px',
-		'margin-top':calendarparams.margin.top.toString()+'px',
-		'margin-bottom':calendarparams.margin.bottom.toString()+'px'
-	});
+	var table=$('<table>');
 	/* append elements */
 	this.cover=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
@@ -234,6 +229,10 @@ var Calendar=function(options){
 			div.clone(true).css({
 				'display':'inline-block',
 				'height':calendarparams.height.toString()+'px',
+				'padding-left':calendarparams.margin.left.toString()+'px',
+				'padding-right':calendarparams.margin.right.toString()+'px',
+				'padding-top':calendarparams.margin.top.toString()+'px',
+				'padding-bottom':calendarparams.margin.bottom.toString()+'px',
 				'width':calendarparams.width.toString()+'px'
 			})
 			.append(table.clone(true).css({'box-sizing':'border-box'}))
