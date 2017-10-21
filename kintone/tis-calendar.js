@@ -324,8 +324,7 @@ Calendar.prototype={
 		var params=this.params;
 		if (options.activedate!=null || options.activedates!=null)
 		{
-			var activedates=(options.activedate!=null)?options.activedate.format('Y-m-d'):((options.activedates!=null)?options.activedates:'');
-			var selections=activedates.split(',');
+			var selections=(options.activedate!=null)?[options.activedate.format('Y-m-d')]:((options.activedates!=null)?options.activedates:[]);
 			/* setup active day and display month */
 			this.activedates=[];
 			for (var i=0;i<selections.length;i++)

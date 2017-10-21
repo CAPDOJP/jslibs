@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone グリッドエディタープラグイン",
-        "en":"kintone Grid Editor plug-in",
-        "zh":"kintone グリッドエディタープラグイン"
+        "ja":"kintone 複数日付選択カレンダープラグイン",
+        "en":"kintone Multi Calendar plug-in",
+        "zh":"kintone 複数日付選択カレンダープラグイン"
     },
     "description":{
-        "ja":"レコードを一覧画面で編集するプラグインです。住所/緯度/経度フィールドを指定すれば、住所入力時に自動的に緯度/経度を登録します。",
-        "en":"This plug-in to edit the list screen records",
-        "zh":"レコードを一覧画面で編集するプラグインです。住所/緯度/経度フィールドを指定すれば、住所入力時に自動的に緯度/経度を登録します。"
+        "ja":"複数の日付を一度に選択するプラグインです。",
+        "en":"This plug-in to selects multiple dates at once",
+        "zh":"複数の日付を一度に選択するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -22,15 +22,13 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
             "js/sweetalert.min.js",
-            "js/grideditor.js"
+            "js/multicalendar.js"
         ],
         "css":[
-            "css/51-modern-default.css",
             "css/sweetalert.css",
-            "css/desktop/common.css",
-            "css/desktop/grideditor.css"
+            "css/desktop/multicalendar.css"
         ]
     },
     "config":{

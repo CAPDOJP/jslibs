@@ -1,43 +1,7 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">住所入力フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">住所を入力するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="address">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">緯度表示フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">取得した緯度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="lat">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">経度表示フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">取得した経度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="lng">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">編集フィールド</div>
-		<div class="kintoneplugin-desc">表示するフィールドを絞り込んで編集を行いたい場合は、そのフィールドを選択して下さい。</div>
-		<div class="kintoneplugin-input-checkbox-item">
-			<label><input type="checkbox" id="fieldselect" value="0">編集フィールドを絞り込む</label>
-		</div>
+		<div class="kintoneplugin-label">日付データ格納フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">カレンダーで設定した日付を格納するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
 		<table class="fields">
 			<tbody>
 				<tr>
@@ -55,6 +19,14 @@
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">表示期間<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">カレンダーに表示する月数を入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="span" class="kintoneplugin-input-text" value="" >
+		</div>
+		<span class="kintoneplugin-unit">ヶ月</span>
 	</div>
 </div>
 <div class="block">

@@ -1,79 +1,26 @@
 /* individual style */
-table#grideditor td,
-table#grideditor th{
-    white-space:nowrap;
-}
-table#grideditor tbody td.buttoncell{
-    width:75px;
-}
-table#grideditor tbody td.datecell{
-    width:125px;
-}
-table#grideditor tbody td.multiselectcell{
-    width:125px;
-}
-table#grideditor tbody td.multiselectcell button{
-	margin:0px;
-    margin-left:-30px;
-    right:0px;
-    top:0px;
-    z-index:999;
-}
-table#grideditor tbody td.multiselectcell label{
-    width:125px;
-}
-table#grideditor tbody td.multiselectcell span{
-    overflow:hidden;
-    padding-right:30px;
-	text-overflow:ellipsis;
-	white-space:nowrap;
-    width:125px;
-    z-index:888;
-}
-table#grideditor tbody td.lookupcell{
-    width:125px;
-}
-table#grideditor tbody td.lookupcell input{
-    padding-right:30px;
-    z-index:888;
-}
-table#grideditor tbody td.lookupcell button{
-	margin:0px;
-    margin-left:-30px;
-    right:0px;
-    top:0px;
-    z-index:999;
-}
-table#grideditor tbody td.timecell{
-    width:75px;
-}
-table#grideditor tbody td.datetimecell{
-    width:175px;
-}
-table#grideditor tbody td textarea{
-    height:30px;
-}
-button.referer-button-search{
-	margin:0px;
+button.customoperation-button{
+    background-color:transparent;
+    background-position:center center;
+    background-repeat:no-repeat;
+    background-size:30px 30px;
+    border:none;
+    box-sizing:border-box;
+    cursor:pointer;
+    font-size:13px;
+    height:auto;
+    margin:5px;
+    outline:none;
+    padding:0px;
     position:absolute;
-    right:5px;
-    top:5px;
-    z-index:999;
+    right:0px;
+    top:0px;
+    vertical-align:top;
+    width:auto;
 }
-button.referer-button-cancel{
-    color:#FFFFFF;
-    padding:0px 1em;
+button.customoperation-button.calendar{
+    background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png');
 }
-button.referer-button-ok{
-    color:#FFFFFF;
-    padding:0px 1em;
-}
-input.referer-input-multi{
-	box-sizing:border-box;
-    padding-right:30px;
-    position:relative;
-    max-width:auto;
-    min-width:auto;
-    width:100%;
-    z-index:888;
+button.customoperation-button.clear{
+    background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png');
 }
