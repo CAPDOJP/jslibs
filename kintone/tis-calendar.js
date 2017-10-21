@@ -270,20 +270,20 @@ var Calendar=function(options){
 								{
 									case 0:
 										//sunday's style
-										$(this).css(params.sundaystyle);
+										$(this).css(my.params.sundaystyle);
 										break;
 									case 6:
 										//saturday's style
-										$(this).css(params.saturdaystyle);
+										$(this).css(my.params.saturdaystyle);
 										break;
 								}
 								//today's style
-								if(value.format('Y-m-d')==new Date().format('Y-m-d')) $(this).css(params.todaystyle);
+								if(value.format('Y-m-d')==new Date().format('Y-m-d')) $(this).css(my.params.todaystyle);
 							}
 							else
 							{
 								my.activedates.push(value);
-								$(this).css(params.activestyle);
+								$(this).css(my.params.activestyle);
 							}
 						}
 						else
