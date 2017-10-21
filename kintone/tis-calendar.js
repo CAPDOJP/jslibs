@@ -126,12 +126,12 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':(calendarparams.height*Math.ceil(options.span/columns)+(calendarparams.cells.height*((options.multi)?3:2))).toString()+'px',
+		'height':(calendarparams.height*Math.ceil(options.span/columns)+(calendarparams.cells.height*((options.multi)?3.5:2))).toString()+'px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
 		'max-width':'100%',
-		'padding':(calendarparams.cells.height*2).toString()+'px 0px '+((options.multi)?calendarparams.cells.height:0).toString()+'px 0px',
+		'padding':(calendarparams.cells.height*2).toString()+'px 0px '+((options.multi)?calendarparams.cells.height*1.5:0).toString()+'px 0px',
 		'position':'absolute',
 		'right':'0',
 		'text-align':'center',
@@ -194,7 +194,9 @@ var Calendar=function(options){
 	});
 	this.buttonblock=div.clone(true).css({
 		'bottom':'0px',
+		'height':(calendarparams.cells.height*1.5).toString()+'px',
 		'left':'0px',
+		'line-height':(calendarparams.cells.height+1.5).toString()+'px',
 		'padding':'0px',
 		'position':'absolute',
 		'text-align':'center',
@@ -202,12 +204,22 @@ var Calendar=function(options){
 		'z-index':options.span+3
 	})
 	.append(
-		button.clone(true).css({'width':'6em'})
+		button.clone(true).css({
+			'border':'1px solid #C9C9C9',
+			'border-radius':'3px',
+			'margin':'0px 5px',
+			'width':'6em'
+		})
 		.attr('id','ok')
 		.text('OK')
 	)
 	.append(
-		button.clone(true).css({'width':'6em'})
+		button.clone(true).css({
+			'border':'1px solid #C9C9C9',
+			'border-radius':'3px',
+			'margin':'0px 5px',
+			'width':'6em'
+		})
 		.attr('id','cancel')
 		.text('キャンセル')
 	);
