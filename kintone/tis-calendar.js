@@ -35,10 +35,9 @@ var Calendar=function(options){
 		today:{back:'#69B4C8',fore:'#2B2B2B'}
 	},options);
 	/* property */
-	this.activedate=new Date('1000/01/01');
 	this.activedates=[];
 	this.calendars=[];
-	this.displaymonth=new Date().calc('first-of-month');
+	this.frommonth=new Date().calc('first-of-month');
 	this.params=options;
 	/* valiable */
 	var my=this;
@@ -158,7 +157,7 @@ var Calendar=function(options){
 			})
 			.on('click',function(){
 				/* calc months */
-				my.displaymonth=my.displaymonth.calc('-'+options.span.toString()+' month').calc('first-of-month');
+				my.frommonth=my.frommonth.calc('-'+options.span.toString()+' month').calc('first-of-month');
 				/* display calendar */
 				my.show();
 			})
@@ -172,7 +171,7 @@ var Calendar=function(options){
 			})
 			.on('click',function(){
 				/* calc months */
-				my.displaymonth=my.displaymonth.calc(options.span.toString()+' month').calc('first-of-month');
+				my.frommonth=my.frommonth.calc(options.span.toString()+' month').calc('first-of-month');
 				/* display calendar */
 				my.show();
 			})
@@ -194,12 +193,12 @@ var Calendar=function(options){
 		'z-index':options.span+3
 	})
 	.append(
-		button.clone(true)
+		button.clone(true).css({'width':'6em'})
 		.attr('id','ok')
 		.text('OK')
 	)
 	.append(
-		button.clone(true)
+		button.clone(true).css({'width':'6em'})
 		.attr('id','cancel')
 		.text('キャンセル')
 	);
@@ -236,10 +235,24 @@ var Calendar=function(options){
 				.on('click',function(){
 					if ($.isNumeric($(this).text()))
 					{
-						var month=new Date($(this).closest('table').find('tr').first().find('td').eq(0).text()+'-01');
+						var month=new Date(($(this).closest('table').find('tr').first().find('td').eq(0).text()+'-01').dateformat());
 						var value=month.calc((parseInt($(this).text())-1).toString()+' day');
-						if (options.selected!=null) options.selected($(this).closest('td'),value.format('Y-m-d'));
-						my.cover.hide();
+						if (options.multi)
+						{
+							if ($.inArray(value,this.activedates)>-1)
+							{
+								this.activedates.splice($.inArray(value,this.activedates),1);
+							}
+							else
+							{
+								this.activedates.push(value);
+							}
+						}
+						else
+						{
+							if (options.selected!=null) options.selected($(this).closest('td'),value.format('Y-m-d'));
+							my.cover.hide();
+						}
 					}
 				})
 			);
@@ -255,6 +268,7 @@ var Calendar=function(options){
 	/* append elements */
 	$.each(this.calendars,function(index){my.contents.append(my.calendars[index]);});
 	this.container.append(this.contents);
+	if (options.multi) this.container.append(this.buttonblock);
 	this.cover.append(this.container);
 	options.container.append(this.cover);
 };
@@ -262,33 +276,49 @@ Calendar.prototype={
 	/* display calendar */
 	show:function(options){
 		var options=$.extend({
-			activedate:null
+			activedate:null,
+			activedates:null,
+			buttons:{}
 		},options);
-		var activedate=null;
+		var my=this;
+		var activedates=(options.activedate!=null)?options.activedate.format('Y-m-d'):((options.activedates!=null)?options.activedates:'');
 		var calendar=null;
-		var displaymonth=null;
+		var month=null;
 		var params=this.params;
-		if (options.activedate!=null)
+		var selections=activedates.split(',');
+		/* buttons callback */
+		$.each(options.buttons,function(key,values){
+			if (my.buttonblock.find('button#'+key).size())
+				my.buttonblock.find('button#'+key).off('click').on('click',function(){
+					if (values!=null)
+					{
+						var selection='';
+						for (var i=0;i<this.activedates.length;i++) selection+=this.activedates[i].format('Y-m-d')+',';
+						selection=selection.replace(/,$/g,'');
+						values(selection);
+					}
+				});
+		});
+		/* setup active day and display month */
+		this.activedates=[];
+		for (var i=0;i<selections.length;i++)
 		{
-			/* setup active day and display month */
-			var targetvalue=options.activedate.format('Y-m-d');
-			if (targetvalue.match(/^[0-9]{4}(-|\/){1}[0-1]?[0-9]{1}(-|\/){1}[0-3]?[0-9]{1}$/g)!=null)
+			if (selections[i].match(/^[0-9]{4}(-|\/){1}[0-1]?[0-9]{1}(-|\/){1}[0-3]?[0-9]{1}$/g)!=null)
 			{
-				this.activedate=new Date(targetvalue.replace(/-/g,'\/'));
-				this.displaymonth=new Date(targetvalue.replace(/-/g,'\/')).calc('first-of-month');
+				this.activedates.push(new Date(selections[i].replace(/-/g,'\/')));
+				if (i==0) this.frommonth=new Date(selections[i].replace(/-/g,'\/')).calc('first-of-month');
 			}
 		}
 		for (var i=0;i<params.span;i++)
 		{
-			activedate=this.activedate;
 			calendar=this.calendars[i].find('table');
-			displaymonth=this.displaymonth.calc(i.toString()+' month');
+			month=this.frommonth.calc(i.toString()+' month');
 			/* initialize header title */
-			calendar.find('tr').first().find('td').eq(0).text(displaymonth.format('Y-m'));
+			calendar.find('tr').first().find('td').eq(0).text(month.format('Y-m'));
 			/* setup cells */
 			calendar.find('tr:gt(1)').find('td').each(function(index){
-				var display=index-displaymonth.getDay();
-				var day=displaymonth.calc(display.toString()+' day');
+				var display=index-month.getDay();
+				var day=month.calc(display.toString()+' day');
 				var style={
 					'background-color':params.normal.back,
 					'color':params.normal.fore,
@@ -302,7 +332,7 @@ Calendar.prototype={
 				/* not process less than one day this month */
 				if (display<0) {$(this).css(style).html('&nbsp;');return;}
 				/* not processing beyond the next month 1 day */
-				if (day.format('Y-m')!=displaymonth.format('Y-m')) {$(this).css(style).html('&nbsp;');return;}
+				if (day.format('Y-m')!=month.format('Y-m')) {$(this).css(style).html('&nbsp;');return;}
 				switch ((index+1)%7)
 				{
 					case 0:
@@ -323,7 +353,7 @@ Calendar.prototype={
 					style['color']=params.today.fore;
 				}
 				//activedate's style
-				if(day.format('Y-m-d')==activedate.format('Y-m-d')) style=active;
+				for (var i2=0;i2<this.activedates.length;i2++) if (day.format('Y-m-d')==this.activedates[i2].format('Y-m-d')) style=active;
 				style['cursor']='pointer';
 				$(this).css(style).text((display+1).toString());
 			});
