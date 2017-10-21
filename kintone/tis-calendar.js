@@ -84,7 +84,7 @@ var Calendar=function(options){
 	var columns=0;
 	var week=['日','月','火','水','木','金','土'];
 	calendarparams.height=calendarparams.cells.height*calendarparams.rows+(calendarparams.rows)+(calendarparams.margin.top+calendarparams.margin.bottom);
-	calendarparams.width=calendarparams.cells.width*week.length+(week.length+1)+(calendarparams.margin.left+calendarparams.margin.right);
+	calendarparams.width=calendarparams.cells.width*week.length+(calendarparams.margin.left+calendarparams.margin.right);
 	switch (options.span)
 	{
 		case 1:
