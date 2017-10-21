@@ -205,18 +205,18 @@ var Calendar=function(options){
 	/* create calendar */
 	for (var i=0;i<options.span;i++)
 	{
-		var calendar=table.clone(true).css({'box-sizing':'border-box'});
 		this.calendars.push(
 			div.clone(true).css({
 				'display':'inline-block',
 				'height':calendarparams.height.toString()+'px',
 				'width':calendarparams.width.toString()+'px'
 			})
-			.append(calendar)
+			.append(table.clone(true).css({'box-sizing':'border-box'}))
 		);
 		/* create cells */
 		for (var i2=0;i2<week.length*calendarparams.rows;i2++)
 		{
+			var calendar=this.calendars[i].find('table');
 			if (i2%week.length==0) calendar.append($('<tr>'));
 			calendar.find('tr').last()
 			.append(
