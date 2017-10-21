@@ -293,7 +293,7 @@ Calendar.prototype={
 					if (values!=null)
 					{
 						var selection='';
-						for (var i=0;i<this.activedates.length;i++) selection+=this.activedates[i].format('Y-m-d')+',';
+						for (var i=0;i<my.activedates.length;i++) selection+=my.activedates[i].format('Y-m-d')+',';
 						selection=selection.replace(/,$/g,'');
 						values(selection);
 					}
@@ -353,7 +353,7 @@ Calendar.prototype={
 					style['color']=params.today.fore;
 				}
 				//activedate's style
-				for (var i2=0;i2<this.activedates.length;i2++) if (day.format('Y-m-d')==this.activedates[i2].format('Y-m-d')) style=active;
+				for (var i2=0;i2<my.activedates.length;i2++) if (day.format('Y-m-d')==my.activedates[i2].format('Y-m-d')) style=active;
 				style['cursor']='pointer';
 				$(this).css(style).text((display+1).toString());
 			});
