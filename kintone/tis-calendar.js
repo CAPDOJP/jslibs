@@ -39,6 +39,31 @@ var Calendar=function(options){
 	this.calendars=[];
 	this.frommonth=new Date().calc('first-of-month');
 	this.params=options;
+	this.params['activestyle']={
+		'background-color':this.params.active.back,
+		'color':this.params.active.fore,
+		'cursor':'pointer'
+	};
+	this.params['normalstyle']={
+		'background-color':this.params.normal.back,
+		'color':this.params.normal.fore,
+		'cursor':'default'
+	};
+	this.params['saturdaystyle']={
+		'background-color':this.params.saturday.back,
+		'color':this.params.saturday.fore,
+		'cursor':'default'
+	};
+	this.params['sundaystyle']={
+		'background-color':this.params.sunday.back,
+		'color':this.params.sunday.fore,
+		'cursor':'default'
+	};
+	this.params['todaystyle']={
+		'background-color':this.params.today.back,
+		'color':this.params.today.fore,
+		'cursor':'default'
+	};
 	/* valiable */
 	var my=this;
 	var calendarparams={
@@ -319,16 +344,7 @@ Calendar.prototype={
 			calendar.find('tr:gt(1)').find('td').each(function(index){
 				var display=index-month.getDay();
 				var day=month.calc(display.toString()+' day');
-				var style={
-					'background-color':params.normal.back,
-					'color':params.normal.fore,
-					'cursor':'default'
-				};
-				var active={
-					'background-color':params.active.back,
-					'color':params.active.fore,
-					'cursor':'pointer'
-				};
+				var style=params.normalstyle
 				/* not process less than one day this month */
 				if (display<0) {$(this).css(style).html('&nbsp;');return;}
 				/* not processing beyond the next month 1 day */
@@ -337,23 +353,17 @@ Calendar.prototype={
 				{
 					case 0:
 						//saturday's style
-						style['background-color']=params.saturday.back;
-						style['color']=params.saturday.fore;
+						style=params.saturdaystyle;
 						break;
 					case 1:
 						//sunday's style
-						style['background-color']=params.sunday.back;
-						style['color']=params.sunday.fore;
+						style=params.sundaystyle;
 						break;
 				}
 				//today's style
-				if(day.format('Y-m-d')==new Date().format('Y-m-d'))
-				{
-					style['background-color']=params.today.back;
-					style['color']=params.today.fore;
-				}
+				if(day.format('Y-m-d')==new Date().format('Y-m-d')) style=params.todaystyle
 				//activedate's style
-				for (var i2=0;i2<my.activedates.length;i2++) if (day.format('Y-m-d')==my.activedates[i2].format('Y-m-d')) style=active;
+				for (var i2=0;i2<my.activedates.length;i2++) if (day.format('Y-m-d')==my.activedates[i2].format('Y-m-d')) style=params.activestyle;
 				style['cursor']='pointer';
 				$(this).css(style).text((display+1).toString());
 			});
