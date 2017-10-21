@@ -37,48 +37,72 @@ var Calendar=function(options){
 	/* property */
 	this.activedate=new Date('1000/01/01');
 	this.activedates=[];
+	this.calendars=[];
 	this.displaymonth=new Date().calc('first-of-month');
 	this.params=options;
 	/* valiable */
 	var my=this;
-	var calendars={
+	var calendarparams={
 		height:0,
 		width:0,
+		rows:8,
+		cells:{
+			height:30,
+			width:30
+		}
 		margin:{
-			x:5,
-			y:10
+			left:5,
+			right:5,
+			top:0,
+			bottom:10
 		}
 	};
-	var cells=30;
-	var rows=8;
+	var columns=0;
+	var week=['日','月','火','水','木','金','土'];
+	calendarparams.height=calendarparams.cells.height*calendarparams.rows+(calendarparams.rows-1)+(calendarparams.margin.top+calendarparams.margin.bottom);
+	calendarparams.width=calendarparams.cells.width*week.length+(week.length-1)+(calendarparams.margin.left+calendarparams.margin.right);
+	switch (options.span)
+	{
+		case 1:
+		case 2:
+		case 3:
+			columns=options.span;
+			break;
+		default:
+			columns=4;
+			break;
+	}
+	/* create elements */
 	var div=$('<div>').css({
 		'box-sizing':'border-box',
 		'margin':'0px',
 		'padding':'0px',
-		'position':'relative'
+		'position':'relative',
+		'vertical-align':'top'
 	});
 	var button=$('<button>').css({
 		'background-color':'transparent',
 		'background-position':'left top',
 		'background-repeat':'no-repeat',
-		'background-size':cells.toString()+'px '+cells.toString()+'px',
+		'background-size':calendarparams.cells.width.toString()+'px '+calendarparams.cells.height.toString()+'px',
 		'border':'none',
 		'box-sizing':'border-box',
 		'cursor':'pointer',
 		'font-size':'13px',
-		'height':cells.toString()+'px',
-		'line-height':cells.toString()+'px',
+		'height':calendarparams.cells.height.toString()+'px',
+		'line-height':calendarparams.cells.height.toString()+'px',
 		'margin':'0px',
 	    'outline':'none',
 	    'padding':'0px',
-		'width':cells.toString()+'px'
+		'width':calendarparams.cells.width.toString()+'px'
 	});
-	var table=$('<table>');
-	var week=['日','月','火','水','木','金','土'];
-	calendars.height=cells*rows+calendars.margin.y;
-	calendars.width=cells*week.length+(calendars.margin.x*2);
+	var table=$('<table>').css({
+		'margin-left':calendarparams.margin.left.toString()+'px',
+		'margin-right':calendarparams.margin.right.toString()+'px',
+		'margin-top':calendarparams.margin.top.toString()+'px',
+		'margin-bottom':calendarparams.margin.bottom.toString()+'px'
+	});
 	/* append elements */
-	this.calendars=[];
 	this.cover=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
 		'display':'none',
@@ -94,17 +118,17 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':((calendars.height+(rows-1))*Math.ceil(options.span/3)+(cells*((options.multi)?3:2))).toString()+'px',
+		'height':(calendarparams.height*Math.ceil(options.span/columns)+(calendarparams.cells.height*((options.multi)?3:2))).toString()+'px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
 		'max-width':'100%',
-		'padding':(cells*2).toString()+'px 0px 0px '+((options.multi)?cells:0).toString()+'px',
+		'padding':(calendarparams.cells.height*2).toString()+'px 0px '+((options.multi)?calendarparams.cells.height:0).toString()+'px 0px',
 		'position':'absolute',
 		'right':'0',
 		'text-align':'center',
 		'top':'0',
-		'width':(calendars.width*((options.span>3)?3:options.span)+10).toString()+'px'
+		'width':(calendarparams.width*columns+10).toString()+'px'
 	})
 	.append(
 		button.clone(true).css({
@@ -118,10 +142,10 @@ var Calendar=function(options){
 	)
 	.append(
 		div.clone(true).css({
-			'height':cells.toString()+'px',
+			'height':calendarparams.cells.height.toString()+'px',
 			'left':'0px',
 			'position':'absolute',
-			'top':cells.toString()+'px',
+			'top':calendarparams.cells.height.toString()+'px',
 			'z-index':options.span+2,
 			'width':'100%'
 		})
@@ -186,14 +210,13 @@ var Calendar=function(options){
 		this.calendars.push(
 			div.clone(true).css({
 				'display':'inline-block',
-				'height':(cells*rows).toString()+'px',
-				'margin':'0px '+calendars.margin.x+'px '+calendars.margin.y+'px '+calendars.margin.x+'px',
-				'width':(cells*week.length).toString()+'px'
+				'height':calendarparams.height.toString()+'px',
+				'width':calendarparams.width.toString()+'px'
 			})
 			.append(calendar)
 		);
 		/* create cells */
-		for (var i2=0;i2<week.length*rows;i2++)
+		for (var i2=0;i2<week.length*calendarparams.rows;i2++)
 		{
 			if (i2%week.length==0) calendar.append($('<tr>'));
 			calendar.find('tr').last()
@@ -203,12 +226,12 @@ var Calendar=function(options){
 					'box-sizing':'border-box',
 					'color':options.normal.fore,
 					'font-size':'13px',
-					'height':cells.toString()+'px',
-					'line-height':cells.toString()+'px',
+					'height':calendarparams.cells.height.toString()+'px',
+					'line-height':calendarparams.cells.height.toString()+'px',
 					'margin':'0px',
 					'padding':'0px',
 					'text-align':'center',
-					'width':cells.toString()+'px'
+					'width':calendarparams.cells.width.toString()+'px'
 				})
 				.on('click',function(){
 					if ($.isNumeric($(this).text()))
@@ -314,12 +337,14 @@ Calendar.prototype={
 jQuery.fn.calendar=function(options){
 	var options=$.extend({
 		container:null,
+		multi:false,
+		selected:null,
+		span:1,
 		active:{back:'#FFB46E',fore:'#2B2B2B'},
 		normal:{back:'#FFFFFF',fore:'#2B2B2B'},
 		saturday:{back:'#FFFFFF',fore:'#69B4C8'},
 		sunday:{back:'#FFFFFF',fore:'#FA8273'},
-		today:{back:'#69B4C8',fore:'#2B2B2B'},
-		selected:null
+		today:{back:'#69B4C8',fore:'#2B2B2B'}
 	},options);
 	options.container=this;
 	return new Calendar(options);
