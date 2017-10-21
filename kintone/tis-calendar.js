@@ -253,7 +253,13 @@ var Calendar=function(options){
 						if (options.multi)
 						{
 							var index=-1;
-							for (var i3=0;i3<my.activedates.length;i3++) if (value.format('Y-m-d')==my.activedates[i3].format('Y-m-d')) index=i3;
+							console.log(value.format('Y-m-d'));
+							for (var i3=0;i3<my.activedates.length;i3++)
+							{
+								console.log(my.activedates[i3].format('Y-m-d'));
+								if (value.format('Y-m-d')==my.activedates[i3].format('Y-m-d')) index=i3;
+							}
+							console.log(index);
 							if (index>-1)
 							{
 								my.activedates.splice(index,1);
