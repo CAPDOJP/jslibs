@@ -49,7 +49,7 @@ var Calendar=function(options){
 		cells:{
 			height:30,
 			width:30
-		}
+		},
 		margin:{
 			left:5,
 			right:5,
