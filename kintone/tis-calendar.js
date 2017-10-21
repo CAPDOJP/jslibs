@@ -177,7 +177,7 @@ var Calendar=function(options){
 			})
 		)
 	);
-	this.contents=table.clone(true).css({
+	this.contents=div.clone(true).css({
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
 		'padding':'0px 5px',
