@@ -331,10 +331,9 @@ Calendar.prototype={
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){
 					if (values!=null)
 					{
-						var selection='';
-						for (var i=0;i<my.activedates.length;i++) selection+=my.activedates[i].format('Y-m-d')+',';
-						selection=selection.replace(/,$/g,'');
-						values(selection);
+						var selections=[];
+						for (var i=0;i<my.activedates.length;i++) selections.push(my.activedates[i].format('Y-m-d'));
+						values(selections);
 					}
 				});
 		});
