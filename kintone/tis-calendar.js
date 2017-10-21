@@ -330,6 +330,7 @@ Calendar.prototype={
 					if (i==0) this.frommonth=new Date(selections[i].replace(/-/g,'\/')).calc('first-of-month');
 				}
 			}
+			if (selections.length==0) this.frommonth=new Date().calc('first-of-month');
 		}
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){

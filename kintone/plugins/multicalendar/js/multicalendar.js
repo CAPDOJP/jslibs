@@ -77,54 +77,61 @@ jQuery.noConflict();
 					if ($.inArray(sorted[index],vars.fields)>-1 && (sorted[index] in vars.fieldinfos))
 					{
 						var fieldinfo=vars.fieldinfos[sorted[index]];
-						var buttons={
-							calendar:$('<button class="customoperation-button calendar">').on('click',function(){
-								var target=$(this);
-								vars.calendar.show({
-									activedates:$(this).closest('div').find('.multicalendar').val().split(','),
-									buttons:{
-										ok:function(selection){
-											target.closest('div').find('.multicalendar').val(selection.join(','));
-											/* close calendar */
-											vars.calendar.hide();
-										},
-										cancel:function(){
-											/* close calendar */
-											vars.calendar.hide();
-										}
+						/* append buttons */
+						setInterval(function(){
+							$.each($('body').fields(fieldinfo.code),function(){
+								var target=$(this).addClass('multicalendar');
+								if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
+								if ($.data(target[0],'added')) return true;
+								var buttons={
+									calendar:$('<button class="customoperation-button calendar">').on('click',function(){
+										var target=$(this);
+										vars.calendar.show({
+											activedates:target.closest('div').find('.multicalendar').val().split(','),
+											buttons:{
+												ok:function(selection){
+													target.closest('div').find('.multicalendar').val(selection.join(','));
+													/* close calendar */
+													vars.calendar.hide();
+												},
+												cancel:function(){
+													/* close calendar */
+													vars.calendar.hide();
+												}
+											}
+										});
+									}),
+									clear:$('<button class="customoperation-button clear">').on('click',function(){
+										$(this).closest('div').find('.multicalendar').val('');
+									})
+								}
+								/* adjust button size */
+								var height=target.outerHeight(false);
+								$.each(buttons,function(key,values){
+									if (height-30>0)
+									{
+										values.css({
+											'margin':((height-30)/2).toString()+'px',
+											'min-height':'30px',
+											'min-width':'30px'
+										});
 									}
-								});
-							}),
-							clear:$('<button class="customoperation-button clear">').on('click',function(){
-								$(this).closest('div').find('.multicalendar').val('');
-							})
-						}
-						var input=$('body').fields(fieldinfo.code)[0].addClass('multicalendar');
-						/* adjust button size */
-						var height=input.outerHeight(false);
-						$.each(buttons,function(key,values){
-							if (height-30>0)
-							{
-								values.css({
-									'margin':((height-30)/2).toString()+'px',
-									'min-height':'30px',
-									'min-width':'30px'
-								});
-							}
-							else
-							{
-								values.css({
-									'background-size':height.toString()+'px '+height.toString()+'px',
-									'margin':'0px',
-									'min-height':height.toString()+'px',
-									'min-width':height.toString()+'px'
-								});
-							}
-						})
-						/* append button */
-						input.closest('div').append(buttons.calendar).append(buttons.clear);
-						input.css({'padding-right':(buttons.calendar.outerWidth(true)+buttons.clear.outerWidth(true)).toString()+'px'});
-						buttons.calendar.css({'right':buttons.clear.outerWidth(true).toString()+'px'});
+									else
+									{
+										values.css({
+											'background-size':height.toString()+'px '+height.toString()+'px',
+											'margin':'0px',
+											'min-height':height.toString()+'px',
+											'min-width':height.toString()+'px'
+										});
+									}
+								})
+								target.closest('div').append(buttons.calendar).append(buttons.clear);
+								target.css({'padding-right':(buttons.calendar.outerWidth(true)+buttons.clear.outerWidth(true)).toString()+'px'});
+								buttons.calendar.css({'right':buttons.clear.outerWidth(true).toString()+'px'});
+								$.data(target[0],'added',true);
+							});
+						},500);
 					}
 				});
 			},function(error){});
