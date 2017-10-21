@@ -265,7 +265,7 @@ var Calendar=function(options){
 										//saturday's style
 										$(this).css(my.params.saturdaystyle);
 										break;
-									case default:
+									default:
 										//normal style
 										$(this).css(my.params.normalstyle);
 										break;
