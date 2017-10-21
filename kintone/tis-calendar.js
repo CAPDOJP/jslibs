@@ -319,7 +319,7 @@ Calendar.prototype={
 		var params=this.params;
 		if (options.activedate!=null || options.activedates!=null)
 		{
-			console.log(options.activedates);
+			var monthchanged=false;
 			var selections=(options.activedate!=null)?[options.activedate.format('Y-m-d')]:((options.activedates!=null)?options.activedates:[]);
 			/* setup active day and display month */
 			this.activedates=[];
@@ -328,11 +328,10 @@ Calendar.prototype={
 				if (selections[i].match(/^[0-9]{4}(-|\/){1}[0-1]?[0-9]{1}(-|\/){1}[0-3]?[0-9]{1}$/g)!=null)
 				{
 					this.activedates.push(new Date(selections[i].replace(/-/g,'\/')));
-					if (i==0) this.frommonth=new Date(selections[i].replace(/-/g,'\/')).calc('first-of-month');
+					if (!monthchanged) {this.frommonth=new Date(selections[i].replace(/-/g,'\/')).calc('first-of-month');monthchanged=true;}
 				}
 			}
-			console.log(selections.length);
-			if (selections.length==0) this.frommonth=new Date().calc('first-of-month');
+			if (!monthchanged) this.frommonth=new Date().calc('first-of-month');
 		}
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
