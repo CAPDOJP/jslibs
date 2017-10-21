@@ -81,21 +81,10 @@ var Calendar=function(options){
 			bottom:10
 		}
 	};
-	var columns=0;
+	var columns=(options.span<4)?options.span:4;
 	var week=['日','月','火','水','木','金','土'];
 	calendarparams.height=calendarparams.cells.height*calendarparams.rows+(calendarparams.rows)+(calendarparams.margin.top+calendarparams.margin.bottom);
 	calendarparams.width=calendarparams.cells.width*week.length+(calendarparams.margin.left+calendarparams.margin.right);
-	switch (options.span)
-	{
-		case 1:
-		case 2:
-		case 3:
-			columns=options.span;
-			break;
-		default:
-			columns=4;
-			break;
-	}
 	/* create elements */
 	var div=$('<div>').css({
 		'box-sizing':'border-box',
@@ -132,9 +121,6 @@ var Calendar=function(options){
 		'width':'100%',
 		'z-index':'999999'
 	});
-	console.log(calendarparams.width);
-	console.log(columns);
-	console.log(calendarparams.width*columns);
 	this.container=div.clone(true).css({
 		'background-color':'#FFFFFF',
 		'bottom':'0',
