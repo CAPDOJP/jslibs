@@ -266,10 +266,24 @@ var Calendar=function(options){
 							if ($.inArray(value,this.activedates)>-1)
 							{
 								this.activedates.splice($.inArray(value,this.activedates),1);
+								switch (value.getDay())
+								{
+									case 0:
+										//sunday's style
+										$(this).css(params.sundaystyle);
+										break;
+									case 6:
+										//saturday's style
+										$(this).css(params.saturdaystyle);
+										break;
+								}
+								//today's style
+								if(value.format('Y-m-d')==new Date().format('Y-m-d')) $(this).css(params.todaystyle);
 							}
 							else
 							{
 								this.activedates.push(value);
+								$(this).css(params.activestyle);
 							}
 						}
 						else
