@@ -263,9 +263,9 @@ var Calendar=function(options){
 						var value=month.calc((parseInt($(this).text())-1).toString()+' day');
 						if (options.multi)
 						{
-							if ($.inArray(value,this.activedates)>-1)
+							if ($.inArray(value,my.activedates)>-1)
 							{
-								this.activedates.splice($.inArray(value,this.activedates),1);
+								my.activedates.splice($.inArray(value,my.activedates),1);
 								switch (value.getDay())
 								{
 									case 0:
@@ -282,7 +282,7 @@ var Calendar=function(options){
 							}
 							else
 							{
-								this.activedates.push(value);
+								my.activedates.push(value);
 								$(this).css(params.activestyle);
 							}
 						}
