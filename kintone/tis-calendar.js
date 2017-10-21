@@ -83,8 +83,8 @@ var Calendar=function(options){
 	};
 	var columns=0;
 	var week=['日','月','火','水','木','金','土'];
-	calendarparams.height=calendarparams.cells.height*calendarparams.rows+(calendarparams.rows-1)+(calendarparams.margin.top+calendarparams.margin.bottom);
-	calendarparams.width=calendarparams.cells.width*week.length+(week.length-1)+(calendarparams.margin.left+calendarparams.margin.right);
+	calendarparams.height=calendarparams.cells.height*calendarparams.rows+(calendarparams.margin.top+calendarparams.margin.bottom);
+	calendarparams.width=calendarparams.cells.width*week.length+(calendarparams.margin.left+calendarparams.margin.right);
 	switch (options.span)
 	{
 		case 1:
@@ -142,7 +142,7 @@ var Calendar=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':(calendarparams.height*Math.ceil(options.span/columns)+(calendarparams.cells.height*((options.multi)?3:2))).toString()+'px',
+		'height':(calendarparams.height*Math.ceil(options.span/columns)+(calendarparams.rows-1)+(calendarparams.cells.height*((options.multi)?3:2))).toString()+'px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'100%',
@@ -152,7 +152,7 @@ var Calendar=function(options){
 		'right':'0',
 		'text-align':'center',
 		'top':'0',
-		'width':(calendarparams.width*columns+10).toString()+'px'
+		'width':(calendarparams.width*columns+(week.length-1)+10).toString()+'px'
 	})
 	.append(
 		button.clone(true).css({
@@ -306,11 +306,24 @@ Calendar.prototype={
 			buttons:{}
 		},options);
 		var my=this;
-		var activedates=(options.activedate!=null)?options.activedate.format('Y-m-d'):((options.activedates!=null)?options.activedates:'');
 		var calendar=null;
 		var month=null;
 		var params=this.params;
-		var selections=activedates.split(',');
+		if (options.activedate!=null || options.activedates!=null)
+		{
+			var activedates=(options.activedate!=null)?options.activedate.format('Y-m-d'):((options.activedates!=null)?options.activedates:'');
+			var selections=activedates.split(',');
+			/* setup active day and display month */
+			this.activedates=[];
+			for (var i=0;i<selections.length;i++)
+			{
+				if (selections[i].match(/^[0-9]{4}(-|\/){1}[0-1]?[0-9]{1}(-|\/){1}[0-3]?[0-9]{1}$/g)!=null)
+				{
+					this.activedates.push(new Date(selections[i].replace(/-/g,'\/')));
+					if (i==0) this.frommonth=new Date(selections[i].replace(/-/g,'\/')).calc('first-of-month');
+				}
+			}
+		}
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
 			if (my.buttonblock.find('button#'+key).size())
@@ -324,16 +337,6 @@ Calendar.prototype={
 					}
 				});
 		});
-		/* setup active day and display month */
-		this.activedates=[];
-		for (var i=0;i<selections.length;i++)
-		{
-			if (selections[i].match(/^[0-9]{4}(-|\/){1}[0-1]?[0-9]{1}(-|\/){1}[0-3]?[0-9]{1}$/g)!=null)
-			{
-				this.activedates.push(new Date(selections[i].replace(/-/g,'\/')));
-				if (i==0) this.frommonth=new Date(selections[i].replace(/-/g,'\/')).calc('first-of-month');
-			}
-		}
 		for (var i=0;i<params.span;i++)
 		{
 			calendar=this.calendars[i].find('table');
