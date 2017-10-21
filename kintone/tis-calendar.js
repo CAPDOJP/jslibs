@@ -252,17 +252,9 @@ var Calendar=function(options){
 						var value=month.calc((parseInt($(this).text())-1).toString()+' day');
 						if (options.multi)
 						{
-							var index=-1;
-							console.log(value.format('Y-m-d'));
-							for (var i3=0;i3<my.activedates.length;i3++)
+							if ($.inArray(value,my.activedates)>-1)
 							{
-								console.log(my.activedates[i3].format('Y-m-d'));
-								if (value.format('Y-m-d')==my.activedates[i3].format('Y-m-d')) index=i3;
-							}
-							console.log(index);
-							if (index>-1)
-							{
-								my.activedates.splice(index,1);
+								my.activedates.splice($.inArray(value,my.activedates),1);
 								switch (value.getDay())
 								{
 									case 0:
@@ -272,6 +264,10 @@ var Calendar=function(options){
 									case 6:
 										//saturday's style
 										$(this).css(my.params.saturdaystyle);
+										break;
+									case default:
+										//normal style
+										$(this).css(my.params.normalstyle);
 										break;
 								}
 								//today's style
