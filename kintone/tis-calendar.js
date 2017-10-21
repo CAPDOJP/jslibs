@@ -132,6 +132,9 @@ var Calendar=function(options){
 		'width':'100%',
 		'z-index':'999999'
 	});
+	console.log(calendarparams.width);
+	console.log(columns);
+	console.log(calendarparams.width*columns);
 	this.container=div.clone(true).css({
 		'background-color':'#FFFFFF',
 		'bottom':'0',
