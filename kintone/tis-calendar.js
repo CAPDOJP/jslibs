@@ -14,6 +14,7 @@
 * parameters
 * options	@ multi			:multi dates select
 *			@ selected		:cell click event
+*			@ closed		:close button click event
 *			@ span			:display month count
 *			@ active		:active date color {back,fore}
 *			@ normal		:normal date color {back,fore}
@@ -27,6 +28,7 @@ var Calendar=function(options){
 		container:null,
 		multi:false,
 		selected:null,
+		closed:null,
 		span:1,
 		active:{back:'#FFB46E',fore:'#2B2B2B'},
 		normal:{back:'#FFFFFF',fore:'#2B2B2B'},
@@ -146,7 +148,10 @@ var Calendar=function(options){
 			'top':'0px',
 			'z-index':options.span+1
 		})
-		.on('click',function(){my.cover.hide();})
+		.on('click',function(){
+			if (options.closed!=null) options.closed();
+			my.cover.hide();
+		})
 	)
 	.append(
 		div.clone(true).css({
@@ -403,6 +408,7 @@ jQuery.fn.calendar=function(options){
 		container:null,
 		multi:false,
 		selected:null,
+		closed:null,
 		span:1,
 		active:{back:'#FFB46E',fore:'#2B2B2B'},
 		normal:{back:'#FFFFFF',fore:'#2B2B2B'},

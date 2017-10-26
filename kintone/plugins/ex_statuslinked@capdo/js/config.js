@@ -88,9 +88,9 @@ jQuery.noConflict();
 		for (var i=0;i<vars.statustable.rows.length;i++)
 		{
 			fields=[];
-			for (var i=0;i<vars.fieldtable[i].rows.length;i++)
+			for (var i2=0;i2<vars.fieldtable[i].rows.length;i2++)
 			{
-				row=vars.fieldtable[i].rows.eq(i);
+				row=vars.fieldtable[i].rows.eq(i2);
 				if ($('select#field',row).val()!='') fields.push($('select#field',row).val());
 			}
 			statuses[vars.statustable.rows.eq(i).find('input#status').val()]=fields.join(',');
