@@ -288,7 +288,7 @@ var AdjustTable=function(options){
 	},options);
 	/* property */
 	this.container=options.table;
-	this.contents=this.container.find('tbody');
+	this.contents=this.container.children('tbody');
 	this.add=options.add;
 	this.del=options.del;
 	this.addcallback=options.addcallback;

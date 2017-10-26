@@ -53,6 +53,7 @@ jQuery.noConflict();
 				if (i!=0) vars.statustable.addrow();
 				row=vars.statustable.rows.last();
 				$('span.statusname',row).text(statuskeys[i]);
+				$('input#status',row).val(statuskeys[i]);
 				vars.fieldtable.push(
 					$('.fields',row).adjustabletable({
 						add:'img.add',
