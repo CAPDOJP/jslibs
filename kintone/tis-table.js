@@ -293,7 +293,7 @@ var AdjustTable=function(options){
 	this.del=options.del;
 	this.addcallback=options.addcallback;
 	/* initialize valiable */
-	this.rows=this.contents.find('tr');
+	this.rows=this.contents.children('tr');
 	this.template=this.rows.first().clone(true);
 	/* create rows */
 	if (this.rows!=null) this.rows.remove();
@@ -306,7 +306,7 @@ AdjustTable.prototype={
 		var row=null;
 		this.contents.append(this.template.clone(true));
 		/* initialize valiable */
-		this.rows=this.contents.find('tr');
+		this.rows=this.contents.children('tr');
 		/* events */
 		row=this.rows.last();
 		if (this.add.length!=0) $(this.add,row).on('click',function(){my.addrow()});
@@ -316,7 +316,7 @@ AdjustTable.prototype={
 	delrow:function(row){
 		row.remove();
 		/* initialize valiable */
-		this.rows=this.contents.find('tr');
+		this.rows=this.contents.children('tr');
 	},
 };
 jQuery.fn.adjustabletable=function(options){

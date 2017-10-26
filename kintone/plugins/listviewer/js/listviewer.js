@@ -31,6 +31,7 @@ jQuery.noConflict();
 		template:null,
 		thumbnail:null,
 		containers:[],
+		excludefields:[],
 		config:{},
 		fieldcodes:{},
 		tablecodes:{}
@@ -54,12 +55,15 @@ jQuery.noConflict();
 					}
 					break;
 				default:
-					vars.header.append($('<th>').append($('<div>').text(fieldinfo.label)));
-					vars.template.append($('<td>').append($('<div>')));
-					vars.fieldcodes[fieldinfo.code]={
-						isTable:istable,
-						fieldinfo:fieldinfo
-					};
+					if ($.inArray(fieldinfo.code,vars.excludefields)<0)
+					{
+						vars.header.append($('<th>').append($('<div>').text(fieldinfo.label)));
+						vars.template.append($('<td>').append($('<div>')));
+						vars.fieldcodes[fieldinfo.code]={
+							isTable:istable,
+							fieldinfo:fieldinfo
+						};
+					}
 					break;
 			}
 		},
@@ -88,12 +92,12 @@ jQuery.noConflict();
 			$.each(layout,function(index,values){
 				if (values.type=='SUBTABLE')
 				{
-					vars.tablecodes[values.code]=[];
-					codes=vars.tablecodes[values.code];
+					codes=[];
 					$.each(values.fields,function(index,values){
 						/* exclude spacer */
-						if (!values.elementId) codes.push(values.code);
+						if ($.inArray(values.code,vars.excludefields)<0 && !values.elementId) codes.push(values.code);
 					});
+					if (codes.length!=0) vars.tablecodes[values.code]=codes;
 				}
 			});
 		},
@@ -287,9 +291,9 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
 		/* check viewid */
-		if ('excludeviews' in vars.config)
+		if ('excludeview' in vars.config)
 		{
-			var excludeviews=vars.config.excludeviews.split(',');
+			var excludeviews=vars.config.excludeview.split(',');
 			if (excludeviews.length!=0)
 				if ($.inArray(event.viewId.toString(),excludeviews)>-1) return;
 		}
@@ -338,6 +342,7 @@ jQuery.noConflict();
 		}))
 		.on('click',function(){vars.thumbnail.hide();});
 		vars.containers=[];
+		if ('excludefield' in vars.config) vars.excludefields=vars.config.excludefield.split(',');
 		/* get table layout */
 		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
 			functions.tablesort(resp.layout);
@@ -406,19 +411,20 @@ jQuery.noConflict();
 									switch (values.type)
 									{
 										case 'SUBTABLE':
-											$.each(values.value,function(index,values){
-												if (rowindex>rows.length-1)
-												{
-													/* append row */
-													rows.push(vars.template.clone(true));
-													rows[rowindex].find('td').first().find('button').hide();
-													rows[rowindex].find('td').last().find('button').hide();
-												}
-												$.each(values.value,function(key,values){
-													if (keys.indexOf(key)>-1) functions.setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1).find('div'),vars.fieldcodes[key].fieldinfo,values.value);
+											if (key in vars.tablecodes)
+												$.each(values.value,function(index,values){
+													if (rowindex>rows.length-1)
+													{
+														/* append row */
+														rows.push(vars.template.clone(true));
+														rows[rowindex].find('td').first().find('button').hide();
+														rows[rowindex].find('td').last().find('button').hide();
+													}
+													$.each(values.value,function(key,values){
+														if (keys.indexOf(key)>-1) functions.setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1).find('div'),vars.fieldcodes[key].fieldinfo,values.value);
+													});
+													rowindex++;
 												});
-												rowindex++;
-											});
 											break;
 										default:
 											if (keys.indexOf(key)>-1) functions.setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1).find('div'),vars.fieldcodes[key].fieldinfo,values.value);

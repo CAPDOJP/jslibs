@@ -3,32 +3,29 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone テーブルデータ一括表示プラグイン",
-        "en":"kintone List Viewer plug-in",
-        "zh":"kintone テーブルデータ一括表示プラグイン"
+        "ja":"kintone ステータス連動プラグイン",
+        "en":"kintone Status-linked plug-in",
+        "zh":"kintone ステータス連動プラグイン"
     },
     "description":{
-        "ja":"テーブルを含むすべてのフィールドを一覧表示するプラグインです。",
-        "en":"This plug-in to list all the fields including the table",
-        "zh":"テーブルを含むすべてのフィールドを一覧表示するプラグインです。"
+        "ja":"ステータスの変更に基づき、必須入力項目をダイアログ表示するプラグインです。",
+        "en":"This plug-in will display the time table based on the date and time field",
+        "zh":"ステータスの変更に基づき、必須入力項目をダイアログ表示するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
-        "ja":"http://www.tis2010.jp/",
-        "en":"http://www.tis2010.jp/",
-        "zh":"http://www.tis2010.jp/"
+        "ja":"http://www.capdo-jp.com/",
+        "en":"http://www.capdo-jp.com/",
+        "zh":"http://www.capdo-jp.com/"
     },
     "desktop":{
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "js/sweetalert.min.js",
-            "js/listviewer.js"
+            "js/statuslinked.js"
         ],
         "css":[
-            "css/sweetalert.css",
-            "css/desktop/common.css",
-            "css/desktop/listviewer.css"
+            "css/sweetalert.css"
         ]
     },
     "config":{
