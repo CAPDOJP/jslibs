@@ -1,0 +1,46 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 日付連動ステータス変更プラグイン@キャップドゥ",
+        "en":"kintone Date synchronized drop down change plugin",
+        "zh":"kintone 日付連動ステータス変更プラグイン@キャップドゥ"
+    },
+    "description":{
+        "ja":"指定日付フィールドの値を元に別フィールドの値を変更するプラグインです。",
+        "en":"This plug-in changes the value of another field based on the value of the specified date field.",
+        "zh":"指定日付フィールドの値を元に別フィールドの値を変更するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.capdo-jp.com/",
+        "en":"http://www.capdo-jp.com/",
+        "zh":"http://www.capdo-jp.com/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/datesynclist.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 一覧列固定プラグイン@キャップドゥ",
+        "en":"kintone Column Fixed plugin",
+        "zh":"kintone 一覧列固定プラグイン@キャップドゥ"
+    },
+    "description":{
+        "ja":"一覧の指定列までを固定表示するプラグインです。",
+        "en":"This plug-in fixedly displays up to the designated column of the list.",
+        "zh":"一覧の指定列までを固定表示するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.capdo-jp.com/",
+        "en":"http://www.capdo-jp.com/",
+        "zh":"http://www.capdo-jp.com/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "js/sweetalert.min.js",
+            "js/columnfixed.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+			"css/desktop/columnfixed.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

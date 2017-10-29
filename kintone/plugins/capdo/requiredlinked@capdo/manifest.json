@@ -1,0 +1,45 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 必須フィールド選択プラグイン@キャップドゥ",
+        "en":"kintone Require-linked plug-in",
+        "zh":"kintone 必須フィールド選択プラグイン@キャップドゥ"
+    },
+    "description":{
+        "ja":"指定したフィールドの入力状態に基づき、必須入力項目を指定するプラグインです。",
+        "en":"This plug-in will specifies required input items based on the input state of the specified field.",
+        "zh":"指定したフィールドの入力状態に基づき、必須入力項目を指定するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.capdo-jp.com/",
+        "en":"http://www.capdo-jp.com/",
+        "zh":"http://www.capdo-jp.com/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "js/sweetalert.min.js",
+            "js/requiredlinked.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

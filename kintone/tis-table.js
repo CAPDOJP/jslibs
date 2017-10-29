@@ -318,6 +318,11 @@ AdjustTable.prototype={
 		/* initialize valiable */
 		this.rows=this.contents.children('tr');
 	},
+	clearrows:function(){
+		this.rows.remove();
+		/* initialize valiable */
+		this.rows=this.contents.children('tr');
+	}
 };
 jQuery.fn.adjustabletable=function(options){
 	var options=$.extend({
