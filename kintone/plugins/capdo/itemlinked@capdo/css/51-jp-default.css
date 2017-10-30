@@ -475,6 +475,7 @@ div.kintoneplugin-row table tbody tr td{
   line-height:1;
   padding:3px;
   white-space:nowrap;
+  vertical-align:top;
 }
 div.kintoneplugin-row table tbody tr td.button{
   width:28px;
@@ -485,6 +486,9 @@ div.kintoneplugin-row table tbody tr td.button img{
   margin:0px;
   padding:0px;
   width:100%;
+}
+div.kintoneplugin-row table tbody tr td.segment span{
+  line-height:34px;
 }
 div.kintoneplugin-row table tbody tr td div.kintoneplugin-select-outer{
   margin:2px 0px;

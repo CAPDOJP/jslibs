@@ -104,8 +104,11 @@ jQuery.noConflict();
 			del:'img.del',
 			addcallback:function(row){
 				var list=$('select#segmentdisplay',row);
+				var sort=$('select#segmentsort',row);
 				var listcontainer=list.closest('.kintoneplugin-select-outer');
+				var sortcontainer=sort.closest('.kintoneplugin-select-outer');
 				listcontainer.hide();
+				sortcontainer.hide();
 				$('select#segment',row).on('change',function(){
 					/* initialize field lists */
 					list.html('<option value=""></option>');
@@ -129,9 +132,14 @@ jQuery.noConflict();
 										$.data(list[0],'initialdata','');
 									}
 								listcontainer.show();
+								sortcontainer.show();
 							},function(error){});
 						}
-						else listcontainer.hide();
+						else
+						{
+							listcontainer.hide();
+							sortcontainer.hide();
+						}
 					}
 				})
 			}
@@ -162,6 +170,7 @@ jQuery.noConflict();
 				else add=true;
 				row=vars.segmenttable.rows.last();
 				$('select#segment',row).val(key);
+				$('select#segmentsort',row).val(values.sort);
 				/* trigger events */
 				$.data($('select#segmentdisplay',row)[0],'initialdata',values.display);
 				$('select#segment',row).trigger('change');
@@ -220,7 +229,7 @@ jQuery.noConflict();
 			key=$('select#segment',row).val();
 			if (key.length!=0)
 			{
-				segments[key]={display:'',app:'',field:''};
+				segments[key]={display:'',app:'',field:'',sort:''};
 				if (key in vars.appIds)
 				{
 					if ($('select#segmentdisplay',row).val()=='')
@@ -233,6 +242,7 @@ jQuery.noConflict();
 						segments[key].display=$('select#segmentdisplay',row).val();
 						segments[key].app=vars.appIds[key];
 						segments[key].field=vars.appFields[key];
+						segments[key].sort=$('select#segmentsort',row).val();
 					}
 				}
 			}

@@ -51,6 +51,7 @@
         <tr>
           <th>区分フィールド</th>
           <th>区分名フィールド</th>
+          <th>並び順</th>
           <th colspan="2"></th>
         </tr>
       </thead>
@@ -66,13 +67,23 @@
             </div>
           </td>
           <td>
-        <div class="kintoneplugin-select-outer">
-          <div class="kintoneplugin-select">
-            <select id="segmentdisplay">
-              <option value=""></option>
-            </select>
-          </div>
-        </div>
+            <div class="kintoneplugin-select-outer">
+              <div class="kintoneplugin-select">
+                <select id="segmentdisplay">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="kintoneplugin-select-outer">
+              <div class="kintoneplugin-select">
+                <select id="segmentsort">
+                  <option value="asc">昇順</option>
+                  <option value="desc">降順</option>
+                </select>
+              </div>
+            </div>
           </td>
           <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
           <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>

@@ -284,7 +284,8 @@ var AdjustTable=function(options){
 		table:null,
 		add:'',
 		del:'',
-		addcallback:null
+		addcallback:null,
+		delcallback:null
 	},options);
 	/* property */
 	this.container=options.table;
@@ -292,6 +293,7 @@ var AdjustTable=function(options){
 	this.add=options.add;
 	this.del=options.del;
 	this.addcallback=options.addcallback;
+	this.delcallback=options.delcallback;
 	/* initialize valiable */
 	this.rows=this.contents.children('tr');
 	this.template=this.rows.first().clone(true);
@@ -314,9 +316,11 @@ AdjustTable.prototype={
 		if (this.addcallback!=null) this.addcallback(row);
 	},
 	delrow:function(row){
+		var index=this.rows.index(row);
 		row.remove();
 		/* initialize valiable */
 		this.rows=this.contents.children('tr');
+		if (this.delcallback!=null) this.delcallback(index);
 	},
 	clearrows:function(){
 		this.rows.remove();

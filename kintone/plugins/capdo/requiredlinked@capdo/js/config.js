@@ -12,8 +12,7 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
-		relationtable:null,
-		fieldtable:[]
+		relationtable:null
 	};
 	/*---------------------------------------------------------------
 	 initialize fields
@@ -38,45 +37,28 @@ jQuery.noConflict();
 				case 'UPDATED_TIME':
 					break;
 				default:
-					$('select#field').append($('<option>').attr('value',values.code).text(values.label));
+					$('select#require').append($('<option>').attr('value',values.code).text(values.label));
 					$('select#trigger').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 			}
 		});
 		/* initialize valiable */
 		vars.relationtable=$('.relations').adjustabletable({
-			add:'img.addouter',
-			del:'img.delouter',
-			addcallback:function(row){
-				vars.fieldtable.push(
-					$('.fields',row).adjustabletable({
-						add:'img.addinner',
-						del:'img.delinner'
-					})
-				);
-			}
+			add:'img.add',
+			del:'img.del'
 		});
-		var addouter=false;
-		var addinner=false;
+		var add=false;
 		var row=null;
 		var relations=[];
-		var fields=[];
 		if (Object.keys(config).length!==0)
 		{
 			relations=JSON.parse(config['relation']);
-			$.each(relations,function(key,values){
-				if (addouter) vars.relationtable.addrow();
-				else addouter=true;
+			$.each(relations,function(index){
+				if (add) vars.relationtable.addrow();
+				else add=true;
 				row=vars.relationtable.rows.last();
-				fields=values.split(',');
-				$('select#trigger',row).val(key);
-				addinner=false;
-				for (var i=0;i<fields.length;i++)
-				{
-					if (addinner) vars.fieldtable[i].addrow();
-					else addinner=true;
-					$('select#field',vars.fieldtable[i].rows.last()).val(fields[i]);
-				}
+				$('select#trigger',row).val(relations[index].trigger);
+				$('select#require',row).val(relations[index].require);
 			});
 		}
 	},function(error){});
@@ -87,21 +69,18 @@ jQuery.noConflict();
 		var error=false;
 		var row=null;
 		var config=[];
-		var fields=[];
-		var relations={};
+		var relations=[];
 		/* check values */
 		for (var i=0;i<vars.relationtable.rows.length;i++)
-			if ($('select#trigger',vars.relationtable.rows.eq(i)).val()!=0)
-			{
-				fields=[];
-				for (var i2=0;i2<vars.fieldtable[i].rows.length;i2++)
-				{
-					row=vars.fieldtable[i].rows.eq(i2);
-					if ($('select#field',row).val().length==0) continue;
-					fields.push($('select#field',row).val());
-				}
-				relations[$('select#trigger',vars.relationtable.rows.eq(i)).val()]=fields.join(',');
-			}
+		{
+			row=vars.relationtable.rows.eq(i);
+			if ($('select#trigger',row).val().length==0) continue;
+			if ($('select#require',row).val().length==0) continue;
+			relations.push({
+				trigger:$('select#trigger',row).val(),
+				require:$('select#require',row).val()
+			});
+		}
 		/* setup config */
 		config['relation']=JSON.stringify(relations);
 		/* save config */
