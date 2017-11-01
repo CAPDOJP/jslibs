@@ -104,22 +104,25 @@ table.timetable-daily tbody tr td.timetable-daily-merge{
 table.timetable-daily tbody tr td.timetable-daily-merge p.timetable-daily-merge-p{
 	background-color:transparent;
 	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
-	background-position:3px 3px;
+	background-position:3px center;
 	background-repeat:no-repeat;
 	background-size:20px 20px;
 	box-sizing:border-box;
 	font-size:13px;
 	left:0px;
-	line-height:24px;
+	line-height:30px;
 	margin:0px;
 	overflow:hidden;
 	padding:3px 3px 0px 23px;
 	position:absolute;
 	text-overflow:ellipsis;
-	top:0px;
+	top:50%;
 	vertical-align:top;
 	white-space:nowrap;
 	width:100%;
+	-webkit-transform:translate(0%,calc(-50% - 6.5px));
+	-ms-transform:translate(0%,calc(-50% - 6.5px));
+	transform:translate(0%,calc(-50% - 6.5px));
 }
 table.timetable-daily tbody tr td.timetable-daily-merge span.timetable-daily-merge-span{
 	background-color:transparent;

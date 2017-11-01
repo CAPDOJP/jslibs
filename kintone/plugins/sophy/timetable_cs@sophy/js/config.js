@@ -13,7 +13,7 @@ jQuery.noConflict();
 	"use strict";
 	var vars={
 		offset:0,
-		coursetable:null,
+		lecturetable:null,
 		tooltiptable:null,
 		colors:[
 			'#FA8273',
@@ -30,7 +30,7 @@ jQuery.noConflict();
 			'#B473B4'
 		]
 	};
-	var VIEW_NAME=['日次タイムテーブル','月次予定表'];
+	var VIEW_NAME=['日次タイムテーブル','月次予定表','出欠確認','スケジュール作成'];
 	var functions={
 		loadapps:function(callback){
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
@@ -38,7 +38,7 @@ jQuery.noConflict();
 				$.each(resp.apps,function(index,values){
 					if (values.appId!=kintone.app.getId())
 					{
-						$('select#coursekey').append($('<option>').attr('value',values.appId).text(values.name));
+						$('select#lecturekey').append($('<option>').attr('value',values.appId).text(values.name));
 						$('select#grade').append($('<option>').attr('value',values.appId).text(values.name));
 						$('select#student').append($('<option>').attr('value',values.appId).text(values.name));
 					}
@@ -68,26 +68,26 @@ jQuery.noConflict();
 				}
 			});
 			/* initialize valiable */
-			vars.coursetable=$('.courses').adjustabletable();
+			vars.lecturetable=$('.lectures').adjustabletable();
 			vars.tooltiptable=$('.tooltips').adjustabletable({
 				add:'img.add',
 				del:'img.del'
 			});
 			var add=false;
 			var row=null;
-			var courses=[];
-			var coursekeys=[];
+			var lectures=[];
+			var lecturekeys=[];
 			var tooltips=[];
-			var coursenames=$.coursenames();
-			for (var i=0;i<coursenames.length;i++)
+			var lecturenames=$.lecturenames();
+			for (var i=0;i<lecturenames.length;i++)
 			{
-				if (i!=0) vars.coursetable.addrow();
-				row=vars.coursetable.rows.last();
-				$('span.coursename',row).text(coursenames[i]);
+				if (i!=0) vars.lecturetable.addrow();
+				row=vars.lecturetable.rows.last();
+				$('span.lecturename',row).text(lecturenames[i]);
 			}
 			if (Object.keys(config).length!==0)
 			{
-				courses=JSON.parse(config['course']);
+				lectures=JSON.parse(config['lecture']);
 				tooltips=config['tooltip'].split(',');
 				$('select#grade').val(config['grade']);
 				$('select#student').val(config['student']);
@@ -96,14 +96,14 @@ jQuery.noConflict();
 				$('select#endhour').val(config['endhour']);
 				$('input#scalefixedwidth').val(config['scalefixedwidth']);
 				if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
-				coursekeys=Object.keys(courses);
-				for (var i=0;i<coursekeys.length;i++)
+				lecturekeys=Object.keys(lectures);
+				for (var i=0;i<lecturekeys.length;i++)
 				{
-					row=vars.coursetable.rows.eq(i);
+					row=vars.lecturetable.rows.eq(i);
 					if (row)
 					{
-						$('select#coursekey',row).val(coursekeys[i]);
-						$('input#color',row).val(courses[coursekeys[i]].color);
+						$('select#lecturekey',row).val(lecturekeys[i]);
+						$('input#color',row).val(lectures[lecturekeys[i]].color);
 					}
 				}
 				$.each(tooltips,function(index){
@@ -128,7 +128,7 @@ jQuery.noConflict();
 		var error=false;
 		var row=null;
 		var config=[];
-		var courses={};
+		var lectures={};
 		var tooltips=[];
 		/* check values */
 		for (var i=0;i<vars.tooltiptable.rows.length;i++)
@@ -151,10 +151,10 @@ jQuery.noConflict();
 			swal('Error!','生徒情報アプリを選択して下さい。','error');
 			return;
 		}
-		for (var i=0;i<vars.coursetable.rows.length;i++)
+		for (var i=0;i<vars.lecturetable.rows.length;i++)
 		{
-			var row=vars.coursetable.rows.eq(i);
-			if ($('select#coursekey',row).val()=='')
+			var row=vars.lecturetable.rows.eq(i);
+			if ($('select#lecturekey',row).val()=='')
 			{
 				swal('Error!','講座アプリを選択して下さい。','error');
 				error=true;
@@ -164,7 +164,7 @@ jQuery.noConflict();
 				swal('Error!','講座色を選択して下さい。','error');
 				error=true;
 			}
-			courses[$('select#coursekey',row).val().toString()]={color:$('input#color',row).val(),name:row.find('span.coursename').text()};
+			lectures[$('select#lecturekey',row).val().toString()]={color:$('input#color',row).val(),name:row.find('span.lecturename').text()};
 		}
 	    if (error) return;
 		if ($('select#scale').val()=='')
@@ -199,7 +199,7 @@ jQuery.noConflict();
 		config['tooltip']=tooltips.join(',');
 		config['grade']=$('select#grade').val();
 		config['student']=$('select#student').val();
-		config['course']=JSON.stringify(courses);
+		config['lecture']=JSON.stringify(lectures);
 		config['scale']=$('select#scale').val();
 		config['starthour']=$('select#starthour').val();
 		config['endhour']=$('select#endhour').val();
@@ -233,6 +233,8 @@ jQuery.noConflict();
 				/* setup config */
 				config['datetimetable']=resp.views[VIEW_NAME[0]].id;
 				config['monthtimetable']=resp.views[VIEW_NAME[1]].id;
+				config['attend']=resp.views[VIEW_NAME[2]].id;
+				config['scheduling']=resp.views[VIEW_NAME[3]].id;
 				/* save config */
 				kintone.plugin.app.setConfig(config);
 			},function(error){});

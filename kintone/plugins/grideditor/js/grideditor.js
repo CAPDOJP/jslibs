@@ -121,8 +121,12 @@ jQuery.noConflict();
 				case 'RADIO_BUTTON':
 					cell=$('<select id="'+fieldinfo.code+'">');
 					cell.append($('<option>').attr('value','').text(''));
+					var datasource=[fieldinfo.options.length];
 					$.each(fieldinfo.options,function(key,values){
-						cell.append($('<option>').attr('value',values.label).text(values.label));
+						datasource[values.index]=values;
+					});
+					$.each(datasource,function(index){
+						cell.append($('<option>').attr('value',datasource[index].label).text(datasource[index].label));
 					});
 					break;
 				case 'FILE':

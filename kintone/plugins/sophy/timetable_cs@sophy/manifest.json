@@ -28,10 +28,12 @@
             "js/sweetalert.min.js",
             "js/timetable-daily.js",
             "js/timetable-functions.js",
-            "js/timetable-monthly.js"
+            "js/timetable-monthly.js",
+            "js/timetable-scheduling.js"
         ],
         "css":[
             "css/sweetalert.css",
+            "css/51-modern-default.css",
             "css/desktop/common.css",
             "css/desktop/timetable.css"
         ]

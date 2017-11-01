@@ -50,6 +50,14 @@
   border-left: 4px solid #989898;
 }
 
+/* 注意書き */
+/*
+<div class="kintoneplugin-caution">設定項目の注意書き</div>
+*/
+.kintoneplugin-caution {
+  color: #d80000;
+}
+
 /* 必須項目 */
 /*
 <div class="kintoneplugin-label">必須項目の見出し<span class="kintoneplugin-require">*</span></div>
@@ -487,12 +495,15 @@ div.kintoneplugin-row table tbody tr td.button img{
   padding:0px;
   width:100%;
 }
+div.kintoneplugin-row table tbody tr td.segment{
+  padding-top:6px;
+}
 div.kintoneplugin-row table tbody tr td.segment span{
-  line-height:34px;
+  line-height:30px;
 }
 div.kintoneplugin-row table tbody tr td div.kintoneplugin-select-outer{
   margin:2px 0px;
 }
-div.kintoneplugin-row table.fields tbody tr:last-of-type{
+div.kintoneplugin-row table.segments tbody tr:last-of-type{
   border-bottom:none;
 }

@@ -20,10 +20,10 @@ jQuery.noConflict();
 		graphlegend:null,
 		table:null,
 		apps:{},
-		courses:{},
+		lectures:{},
 		config:{},
 		offset:{},
-		coursekeys:[],
+		lecturekeys:[],
 		fields:[],
 		tooltips:[],
 		week:['日','月','火','水','木','金','土']
@@ -45,14 +45,21 @@ jQuery.noConflict();
 					var student=$.grep(vars.apps[vars.config['student']],function(item,index){return (item['$id'].value==filter[0]['studentcode'].value);})[0];
 					var grade=$.grep(vars.apps[vars.config['grade']],function(item,index){return (item['code'].value==student['gradecode'].value);})[0];
 					baserow.find('td').eq(0).append(
-						$('<p>')
-						.css({'background-color':'#'+grade['color'].value})
-						.text(filter[0]['studentname'].value)
+						$('<p class="timetable-student">')
+						.append(
+							$('<span>').addClass('grade')
+							.css({'background-color':'#'+grade['color'].value})
+							.text(grade['name'].value)
+						)
+						.append(
+							$('<span>').addClass('name')
+							.text(filter[0]['studentname'].value)
+						)
 					);
 					for (var i=0;i<filter.length;i++)
 					{
 						/* create cell */
-						var color=vars.courses[filter[i]['appcode'].value].color;
+						var color=vars.lectures[filter[i]['appcode'].value].color;
 						var fromtime=new Date((vars.date.format('Y-m-d')+'T'+filter[i]['starttime'].value+':00+09:00').dateformat());
 						var totime=new Date(fromtime.getTime()+(parseFloat(filter[i]['hours'].value)*1000*60*60));
 						var from=(fromtime.getHours())*parseInt(vars.config['scale'])+Math.floor(fromtime.getMinutes()/(60/parseInt(vars.config['scale'])));
@@ -138,15 +145,16 @@ jQuery.noConflict();
 				var records=vars.apps[kintone.app.getId()];
 				var heads=[];
 				/* append recoed of schedule */
-				Array.prototype.push.apply(records,$.createschedule(
-					vars.apps[vars.config['student']],
-					vars.apps[vars.coursekeys[0]],
-					records,
-					vars.coursekeys[0],
-					vars.courses[vars.coursekeys[0]].name,
-					vars.week,
-					vars.date
-				));
+				if (vars.date>new Date().calc('-1 day'))
+					Array.prototype.push.apply(records,$.createschedule(
+						vars.apps[vars.config['student']],
+						vars.apps[vars.lecturekeys[0]],
+						records,
+						vars.lecturekeys[0],
+						vars.lectures[vars.lecturekeys[0]].name,
+						vars.week,
+						vars.date
+					));
 				/* sort */
 				records.sort(function(a,b){
 					if(a['starttime'].value<b['starttime'].value) return -1;
@@ -164,7 +172,13 @@ jQuery.noConflict();
 				/* place the segment data */
 				for (var i=0;i<heads.length;i++)
 				{
-					var filter=$.grep(records,function(item,index){return item['studentcode'].value==heads[i];});
+					var filter=$.grep(records,function(item,index){
+						var exists=0;
+						if (item['studentcode'].value==heads[i]) exists++;
+						if (item['transfered'].value==0) exists++;
+						if (item['transferpending'].value==0) exists++;
+						return exists==3;
+					});
 					/* rebuild view */
 					functions.build(filter);
 				}
@@ -310,17 +324,17 @@ jQuery.noConflict();
 				functions.load();
 			});
 		});
-		/* setup courses value */
-		vars.courses=JSON.parse(vars.config['course']);
-		vars.coursekeys=Object.keys(vars.courses);
+		/* setup lectures value */
+		vars.lectures=JSON.parse(vars.config['lecture']);
+		vars.lecturekeys=Object.keys(vars.lectures);
 		/* setup tooltips value */
 		vars.tooltips=vars.config['tooltip'].split(',');
 		/* check app fields */
 		var counter=0;
 		var param=[];
-		$.each(vars.courses,function(key,values){
+		$.each(vars.lectures,function(key,values){
 			param.push({
-				app:key,
+				app:(key==vars.lecturekeys[0])?key:'',
 				appname:values.name,
 				limit:limit,
 				offset:0,
@@ -348,7 +362,7 @@ jQuery.noConflict();
 			splash.addClass('hide');
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
 			/* append graph legend */
-			$.each(vars.courses,function(key,values){
+			$.each(vars.lectures,function(key,values){
 				vars.graphlegend
 				.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+values.color}))
 				.append($('<span class="customview-span timetable-graphlegend-title">').text(values.name));

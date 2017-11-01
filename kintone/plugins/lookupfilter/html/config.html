@@ -1,0 +1,59 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">フィールド変換設定</div>
+		<div class="kintoneplugin-caution">*各フィールドに指定出来るフィールドは「必須項目にする」にチェックが入っているフィールドに限ります。</div>
+		<table class="lookups">
+			<thead>
+				<tr>
+					<th>ルックアップフィールド</th>
+					<th>絞り込み結果表示フィールド</th>
+					<th>階層区分フィールド</th>
+				</tr>
+			</tbody>
+			<tbody>
+				<tr>
+					<td class="segment">
+						<span class="lookupname"></span>
+						<input type="hidden" id="lookupapp">
+						<input type="hidden" id="lookupcode">
+						<input type="hidden" id="lookuprelatedkey">
+						<input type="hidden" id="lookupfiltercond">
+						<input type="hidden" id="tablecode">
+					</td>
+					<td class="segment">
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="display">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<table class="segments">
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="segment">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

@@ -2,6 +2,47 @@
 *.hide{
   display:none;
 }
+div#progress{
+  background-color:rgba(0,0,0,0.5);
+  display:none;
+  height:100%;
+  left:0px;
+  position:fixed;
+  top:0px;
+  width:100%;
+  z-index:2000000;
+}
+div#progress div.message{
+  color:#FFFFFF;
+  left:0px;
+  line-height:20px;
+  position:absolute;
+  text-align:center;
+  top:50%;
+  width:100%;
+  -webkit-transform:translate(0%,-100%);
+  -ms-transform:translate(0%,-100%);
+  transform:translate(0%,-100%);
+}
+div#progress div.progressbar{
+  background-color:rgba(255,255,255,0.25);
+  height:10px;
+  left:50%;
+  position:absolute;
+  top:50%;
+  width:50%;
+  -webkit-transform:translate(-50%,0%);
+  -ms-transform:translate(-50%,0%);
+  transform:translate(-50%,0%);
+}
+div#progress div.progresscell{
+  background-color:rgba(255,255,255,0.5);
+  height:10px;
+  left:0px;
+  position:absolute;
+  top:0px;
+  width:0px;
+}
 div#splash{
 	background:#f3f3f3;
 	height:100%;
@@ -117,6 +158,46 @@ div.timetable-graphlegend{
   padding:6px 3px;
   text-align:center;
 }
+p.timetable-student{
+  box-sizing:border-box;
+  cursor:default;
+  line-height:20px;
+  margin:0px;
+  padding:0px;
+  position:relative;
+  vertical-align:top;
+  width:100%;
+}
+p.timetable-student span{
+  border-radius:3px;
+  display:inline-block;
+  margin:0px;
+  padding:0px;
+  vertical-align:top;
+}
+p.timetable-student span.grade{
+  left:0px;
+  position:absolute;
+  text-align:center;
+  top:0px;
+  width:3em;
+}
+p.timetable-student span.lecture{
+  height:20px;
+  position:absolute;
+  left:calc(3em + 5px);
+  top:0px;
+  width:30px;
+}
+p.timetable-student span.name{
+  padding-left:calc(3em + 5px);
+}
+p.timetable-student.multi{
+  margin-bottom:5px;
+}
+p.timetable-student.multi span.name{
+  padding-left:calc(3em + 40px);
+}
 p.timetable-tooltip{
   margin:0px;
   padding:0px 3px;
@@ -169,22 +250,13 @@ table.timetable-daily tbody tr td{
   position:relative;
   vertical-align:top;
 }
-table.timetable-daily tbody tr td p{
+table.timetable-daily tbody tr td.timetable-daily-merge p{
   border-radius:3px;
   box-sizing:border-box;
-  line-height:20px;
+  height:20px;
   margin:0px;
-  padding:0px 3px;
-  vertical-align:top;
+  padding:0px;
   width:100%;
-}
-table.timetable-daily tbody tr td.timetable-daily-merge p{
-  background-color:transparent;
-  background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
-  background-position:3px top;
-  background-repeat:no-repeat;
-  background-size:20px 20px;
-  box-sizing:border-box;
 }
 /* individual style (monthly) */
 div.timetable-monthly-days{
@@ -216,4 +288,54 @@ div.timetable-monthly-cell{
 table.timetable-monthly tbody tr td{
   padding:3px;
   vertical-align:top;
+}
+/* individual style (scheduling) */
+div.timetable-scheduling-container{
+  box-sizing:border-box;
+  display:inline-block;
+  margin:0px;
+  padding:1em;
+  vertical-align:top;
+  width:50%;
+}
+div.timetable-scheduling-list{
+  border: 1px solid #e3e7e8;
+  height:50vh;
+  margin:0px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  width:100%;
+}
+p.timetable-scheduling-item{
+  border-bottom: 1px solid #e3e7e8;
+  box-sizing:border-box;
+  color: #3498db;
+  margin:0px;
+  padding:5px 35px 5px 15px;
+  position:relative;
+  line-height:20px;
+  width:100%;
+}
+p.timetable-scheduling-item img{
+  box-sizing:border-box;
+  cursor:pointer;
+  height:30px;
+  margin:0px;
+  outline:none;
+  position:absolute;
+  right:0px;
+  top:50%;
+  vertical-align:top;
+  width:30px;
+  -webkit-transform:translate(0%,-50%);
+  -ms-transform:translate(0%,-50%);
+  transform:translate(0%,-50%);
+}
+p.timetable-scheduling-title{
+  box-sizing:border-box;
+  line-height:30px;
+  margin:0px;
+  margin-top:1em;
+  padding:0px 5px;
+  text-align:center;
 }

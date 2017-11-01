@@ -511,8 +511,8 @@ div.listcopy table tbody.copyfields tr td{
   padding:3px;
 }
 div.listcopy table tbody.copyfields tr td.summary{
-  width:35px;
   text-align:center;
+  width:35px;
 }
 div.listcopy table tfoot tr td{
   padding-top:10px;

@@ -20,10 +20,10 @@ jQuery.noConflict();
 		graphlegend:null,
 		table:null,
 		apps:{},
-		courses:{},
+		lectures:{},
 		config:{},
 		offset:{},
-		coursekeys:[],
+		lecturekeys:[],
 		fields:[],
 		tooltips:[],
 		week:['日','月','火','水','木','金','土']
@@ -45,19 +45,26 @@ jQuery.noConflict();
 					var totime=new Date(fromtime.getTime()+(parseFloat(filter[i]['hours'].value)*1000*60*60));
 					var student=$.grep(vars.apps[vars.config['student']],function(item,index){return (item['$id'].value==filter[i]['studentcode'].value);})[0];
 					var grade=$.grep(vars.apps[vars.config['grade']],function(item,index){return (item['code'].value==student['gradecode'].value);})[0];
-					var color={
-						course:vars.courses[filter[i]['appcode'].value].color,
-						grade:grade['color'].value
-					};
+					var item=$('<div class="timetable-monthly-cell">');
 					/* append cell */
-					var inner='';
-					inner+='<p class="timetable-tooltip"><span>'+filter[i]['studentname'].value+'</span></p>';
 					cell.append(
-						$('<div class="timetable-monthly-cell">').css({
-							'background-color':'#'+color.grade,
-							'border-bottom':'5px solid #'+color.course
-						})
-						.html(inner)
+						item
+						.append(
+							$('<p class="timetable-student multi">')
+							.append(
+								$('<span>').addClass('grade')
+								.css({'background-color':'#'+grade['color'].value})
+								.text(grade['name'].value)
+							)
+							.append(
+								$('<span>').addClass('lecture')
+								.css({'background-color':'#'+vars.lectures[filter[i]['appcode'].value].color})
+							)
+							.append(
+								$('<span>').addClass('name')
+								.text(filter[i]['studentname'].value)
+							)
+						)
 					);
 					/* append balloon */
 					var balloon=$('<div class="timetable-balloon">');
@@ -72,10 +79,10 @@ jQuery.noConflict();
 						})
 						.html(inner)
 					);
-					/* setup cell datas */
-					$.data(cell[0],'balloon',balloon);
+					/* setup item datas */
+					$.data(item[0],'balloon',balloon);
 					/* mouse events */
-					cell.on({
+					item.on({
 						'mouseenter':function(){$.data($(this)[0],'balloon').addClass('timetable-balloon-show');},
 						'mouseleave':function(){$.data($(this)[0],'balloon').removeClass('timetable-balloon-show');}
 					});
@@ -123,22 +130,25 @@ jQuery.noConflict();
 							break;
 					}
 					var filter=$.grep(records,function(item,index){
-						var exists=0;
-						if (item['date'].value==day.format('Y-m-d')) exists++;
-						if (item['transfered'].value==0) exists++;
-						if (item['transferpending'].value==0) exists++;
-						return exists==3;
+						return item['date'].value==day.format('Y-m-d');
 					});
 					/* append recoed of schedule */
-					Array.prototype.push.apply(filter,$.createschedule(
-						vars.apps[vars.config['student']],
-						vars.apps[vars.coursekeys[0]],
-						filter,
-						vars.coursekeys[0],
-						vars.courses[vars.coursekeys[0]].name,
-						vars.week,
-						day
-					));
+					if (day>new Date().calc('-1 day'))
+						Array.prototype.push.apply(filter,$.createschedule(
+							vars.apps[vars.config['student']],
+							vars.apps[vars.lecturekeys[0]],
+							filter,
+							vars.lecturekeys[0],
+							vars.lectures[vars.lecturekeys[0]].name,
+							vars.week,
+							day
+						));
+					filter=$.grep(filter,function(item,index){
+						var exists=0;
+						if (item['transfered'].value==0) exists++;
+						if (item['transferpending'].value==0) exists++;
+						return exists==2;
+					});
 					/* sort */
 					filter.sort(function(a,b){
 						if(a['starttime'].value<b['starttime'].value) return -1;
@@ -235,17 +245,17 @@ jQuery.noConflict();
 				functions.load();
 			});
 		});
-		/* setup courses value */
-		vars.courses=JSON.parse(vars.config['course']);
-		vars.coursekeys=Object.keys(vars.courses);
+		/* setup lectures value */
+		vars.lectures=JSON.parse(vars.config['lecture']);
+		vars.lecturekeys=Object.keys(vars.lectures);
 		/* setup tooltips value */
 		vars.tooltips=vars.config['tooltip'].split(',');
 		/* check app fields */
 		var counter=0;
 		var param=[];
-		$.each(vars.courses,function(key,values){
+		$.each(vars.lectures,function(key,values){
 			param.push({
-				app:key,
+				app:(key==vars.lecturekeys[0])?key:'',
 				appname:values.name,
 				limit:limit,
 				offset:0,
@@ -273,7 +283,7 @@ jQuery.noConflict();
 			splash.addClass('hide');
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
 			/* append graph legend */
-			$.each(vars.courses,function(key,values){
+			$.each(vars.lectures,function(key,values){
 				vars.graphlegend
 				.append($('<span class="customview-span timetable-graphlegend-color">').css({'background-color':'#'+values.color}))
 				.append($('<span class="customview-span timetable-graphlegend-title">').text(values.name));

@@ -1,0 +1,47 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone ルックアップ/階層区分対応ドロップダウン変換プラグイン",
+        "en":"kintone Lookup Filter plug-in",
+        "zh":"kintone ルックアップ/階層区分対応ドロップダウン変換プラグイン"
+    },
+    "description":{
+        "ja":"ルックアップフィールドを階層区分化したドロップダウンフィールドに変換するプラグインです。",
+        "en":"This plug-in to converts the lookup field into a classification etc. drop down field",
+        "zh":"ルックアップフィールドを階層区分化したドロップダウンフィールドに変換するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/lookupfilter.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/51-modern-default.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}
