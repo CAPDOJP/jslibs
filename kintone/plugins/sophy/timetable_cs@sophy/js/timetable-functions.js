@@ -84,7 +84,7 @@ jQuery.extend({
 		for (var i=0;i<record['gradetable'].value.length;i++)
 		{
 			row=record['gradetable'].value[i].value;
-			if (grade>row['gradefromcode'].value-1 && grade<row['gradetocode'].value+1) res=row;
+			if (parseInt(grade)>parseInt('0'+row['gradefromcode'].value)-1 && parseInt(grade)<parseInt('0'+row['gradetocode'].value)+1) res=row;
 		}
 		return res;
 	},
@@ -318,6 +318,8 @@ jQuery.extend({
 				if (!('nightbillmonth' in fieldinfos)) error='夜練請求月';
 				if (!('nightbill' in fieldinfos)) error='夜練請求済';
 				if (!('individualid' in fieldinfos)) error='学校独自検査対策講座ID';
+				if (!('individualplusid' in fieldinfos)) error='学校独自検査対策講座追加授業ID';
+				if (!('individualinterviewid' in fieldinfos)) error='学校独自検査対策講座面接ID';
 				if (!('individualbill' in fieldinfos)) error='学校独自検査対策講座請求済';
 				if (!('coursetable' in properties)) error='通常講座テーブル';
 				if (!('shortterm1table' in properties)) error='短期講座テーブル';

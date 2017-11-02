@@ -30,7 +30,7 @@ jQuery.noConflict();
 			'#B473B4'
 		]
 	};
-	var VIEW_NAME=['日次タイムテーブル','月次予定表','出欠確認','スケジュール作成'];
+	var VIEW_NAME=['月次予定表','日次タイムテーブル','出欠確認','スケジュール作成'];
 	var functions={
 		loadapps:function(callback){
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
@@ -39,6 +39,7 @@ jQuery.noConflict();
 					if (values.appId!=kintone.app.getId())
 					{
 						$('select#lecturekey').append($('<option>').attr('value',values.appId).text(values.name));
+						$('select#const').append($('<option>').attr('value',values.appId).text(values.name));
 						$('select#grade').append($('<option>').attr('value',values.appId).text(values.name));
 						$('select#student').append($('<option>').attr('value',values.appId).text(values.name));
 					}
@@ -89,6 +90,7 @@ jQuery.noConflict();
 			{
 				lectures=JSON.parse(config['lecture']);
 				tooltips=config['tooltip'].split(',');
+				$('select#const').val(config['const']);
 				$('select#grade').val(config['grade']);
 				$('select#student').val(config['student']);
 				$('select#scale').val(config['scale']);
@@ -139,6 +141,11 @@ jQuery.noConflict();
 		if (tooltips.length==0)
 		{
 			swal('Error!','ツールチップフィールドを指定して下さい。','error');
+			return;
+		}
+		if ($('select#const').val()=='')
+		{
+			swal('Error!','基本情報アプリを選択して下さい。','error');
 			return;
 		}
 		if ($('select#grade').val()=='')
@@ -197,6 +204,7 @@ jQuery.noConflict();
 		}
 		/* setup config */
 		config['tooltip']=tooltips.join(',');
+		config['const']=$('select#const').val();
 		config['grade']=$('select#grade').val();
 		config['student']=$('select#student').val();
 		config['lecture']=JSON.stringify(lectures);
@@ -231,8 +239,8 @@ jQuery.noConflict();
 			/* save viewid */
 			kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'PUT',req,function(resp){
 				/* setup config */
-				config['datetimetable']=resp.views[VIEW_NAME[0]].id;
-				config['monthtimetable']=resp.views[VIEW_NAME[1]].id;
+				config['monthtimetable']=resp.views[VIEW_NAME[0]].id;
+				config['datetimetable']=resp.views[VIEW_NAME[1]].id;
 				config['attend']=resp.views[VIEW_NAME[2]].id;
 				config['scheduling']=resp.views[VIEW_NAME[3]].id;
 				/* save config */

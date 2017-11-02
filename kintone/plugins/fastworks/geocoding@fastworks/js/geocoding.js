@@ -304,9 +304,9 @@ jQuery.noConflict();
 									}
 									if (checkdate.format('Y-m-d')==olddate.format('Y-m-d'))
 									{
-										if (record['$id'].value<oldid)
+										if (parseInt(record['$id'].value)<oldid)
 										{
-											oldid=record['$id'].value;
+											oldid=parseInt(record['$id'].value);
 											latlng=new google.maps.LatLng(parseFloat('0'+record[vars.config['lat']].value),parseFloat('0'+record[vars.config['lng']].value));
 										}
 									}

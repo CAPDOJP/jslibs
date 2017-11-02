@@ -118,7 +118,11 @@ var RouteMap=function(options){
 			fullscreenControl:true,
 			fullscreenControlOptions:{position:google.maps.ControlPosition.BOTTOM_LEFT},
 			gestureHandling:((my.isfullscreen)?'greedy':'auto'),
-			mapTypeControl:false,
+			mapTypeControl:true,
+			mapTypeControlOptions:{
+				style:google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+				position:google.maps.ControlPosition.TOP_LEFT
+			},
 			overviewMapControl:false,
 			panControl:true,
 			scaleControl:false,
