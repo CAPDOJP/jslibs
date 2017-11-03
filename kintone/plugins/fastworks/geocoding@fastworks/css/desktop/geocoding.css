@@ -20,22 +20,22 @@ button.customsearch-button{
 	width:auto;
 }
 button.customview-menu{
-    background-color:#f7f9fa;
+    background-color:transparent;
     border:none;
-    border-radius:5px;
     box-sizing:border-box;
     cursor:pointer;
     display:inline-block;
     height:48px;
-    margin-right:8px;
-    padding:0px 10px;
     vertical-align:top;
-    width:auto;
+    width:48px;
 }
 button.customview-menu img{
-    height:100%;
+    width:100%;
 }
 button.customview-menuclose{
+    background-color:transparent;
+    border:none;
+    box-sizing:border-box;
     display:none;
     height:30px;
     margin:0px;
@@ -48,6 +48,25 @@ button.customview-menuclose{
 }
 button.customview-menuclose img{
     height:100%;
+}
+div.customview-navi{
+    box-sizing:border-box;
+    margin:0px;
+    padding:0px;
+    vertical-align:top;
+    width:auto;
+}
+div.customview-navicontainer{
+    box-sizing:border-box;
+    margin:0px;
+    padding:0px;
+    vertical-align:top;
+}
+div.customview-navicontents{
+    box-sizing:border-box;
+    margin:0px;
+    padding:0px;
+    vertical-align:top;
 }
 input.customsearch-text{
     box-sizing:border-box;
@@ -88,10 +107,8 @@ label.customview-checkbox input:checked+span{
         display:none;
     }
     div.customview-navi{
-        margin:0px;
-        padding:0px;
+        display:inline-block;
         text-align:right;
-        width:auto;
     }
 }
 @media screen and (max-width:1023px){
@@ -104,6 +121,7 @@ label.customview-checkbox input:checked+span{
         height:100%;
         left:0px;
         position:fixed;
+        text-align:left;
         top:0px;
         transition:all 0.35s linear 0s;
         width:100%;
@@ -112,7 +130,7 @@ label.customview-checkbox input:checked+span{
     div.customview-navi.show{
         display:block;
     }
-    div.customview-navi div.customview-navicontainer{
+    div.customview-navicontainer{
         background-color:#f7f9fa;
         border-radius:5px;
         bottom:1em;
@@ -125,15 +143,16 @@ label.customview-checkbox input:checked+span{
         top:1em;
         width:calc(100% - 2em);
     }
-    div.customview-navi div.customview-navicontents{
+    div.customview-navicontents{
         height:calc(100% - 40px);
         margin-top:40px;
         overflow-x:hidden;
         overflow-y:auto;
-        text-align:center;
+        white-space:normal;
         z-index:1;
     }
     label.customview-checkbox{
-        width:100%;
+        margin-right:0px;
+        width:50%;
     }
 }

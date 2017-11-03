@@ -372,7 +372,7 @@ jQuery.noConflict();
 				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
 				/* swtich view of marker */
 				functions.reloadmap(function(){
-					vars.chaselocation.find('input[type=checkbox]').prop('checked',$(this).prop('checked'));
+					vars.chaselocation.find('input[type=checkbox]').prop('checked',vars.currentlocation.find('input[type=checkbox]').prop('checked'));
 				});
 			})
 		)
@@ -380,7 +380,12 @@ jQuery.noConflict();
 		vars.currentlocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
 		/* create chaselocation checkbox */
 		vars.chaselocation=$('<label class="customview-checkbox">')
-		.append($('<input type="checkbox" id="chaselocation">'))
+		.append($('<input type="checkbox" id="chaselocation">')
+			.on('change',function(e){
+				/* swtich view of menu */
+				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
+			})
+		)
 		.append($('<span>現在地を追跡</span>'));
 		vars.chaselocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
 		if (vars.config['chasemode']!='1') vars.chaselocation.hide();
