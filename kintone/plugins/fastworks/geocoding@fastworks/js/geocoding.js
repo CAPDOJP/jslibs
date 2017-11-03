@@ -168,7 +168,7 @@ jQuery.noConflict();
 			}
 		},
 		/* data load */
-		loaddatas:function(){
+		loaddatas:function(callback){
 			var filters=kintone.app.getQuery();
 			if (filters==null) filters='order by $id asc';
 			else filters=filters.replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,'');
@@ -176,7 +176,7 @@ jQuery.noConflict();
 				if (vars.apps[kintone.app.getId()]==null) vars.apps[kintone.app.getId()]=resp.records;
 				else Array.prototype.push.apply(vars.apps[kintone.app.getId()],resp.records);
 				vars.offset[kintone.app.getId()]+=limit;
-				if (resp.records.length==limit) functions.loaddatas();
+				if (resp.records.length==limit) functions.loaddatas(callback);
 				else
 				{
 					/* create map */
@@ -231,6 +231,7 @@ jQuery.noConflict();
 								vars.map.map.setCenter(latlng);
 							}});
 						}
+						if (callback!=null) callback();
 					},isreload);
 					vars.map.buttonblock
 					.prepend(
@@ -448,7 +449,9 @@ jQuery.noConflict();
 		/* load datas */
 		vars.apps[kintone.app.getId()]=null;
 		vars.offset[kintone.app.getId()]=0;
-		functions.loaddatas();
+		functions.loaddatas(function(){
+			if (vars.ismobile) vars.displaymap.trigger('click');
+		});
 		return event;
 	});
 	kintone.events.on(events.show,function(event){
