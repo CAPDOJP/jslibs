@@ -16,6 +16,8 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		isdisplaymap:false,
+		ismobile:false,
+		chaselocation:null,
 		currentlocation:null,
 		displayinfowindow:null,
 		displaypoi:null,
@@ -221,6 +223,7 @@ jQuery.noConflict();
 						{
 							vars.map.watchlocation({callback:function(latlng){
 								if (!vars.isdisplaymap) return;
+								if (!vars.chaselocation.find('input[type=checkbox]').prop('checked')) return;
 								if (!vars.currentlocation.find('input[type=checkbox]').prop('checked')) return;
 								if (vars.map.markers.length==0) return;
 								/* setup current location */
@@ -230,10 +233,36 @@ jQuery.noConflict();
 						}
 					},isreload);
 					vars.map.buttonblock
-					.prepend(vars.displaypoi)
-					.prepend(vars.displaydatespan)
-					.prepend(vars.displayinfowindow)
-					.prepend(vars.currentlocation)
+					.prepend(
+						$('<button class="customview-menu">')
+						.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/menu.svg" alt="メニュー" title="メニュー" />'))
+						.on('click',function(){
+							$('div.customview-navi').addClass('show');
+						})
+					)
+					.prepend(
+						$('<div class="customview-navi">')
+						.append(
+							$('<div class="customview-navicontainer">')
+							.append(
+									$('<button class="customview-menuclose">')
+									.append(
+										$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.svg" alt="閉じる" title="閉じる" />')
+										.on('click',function(){
+											$('div.customview-navi').removeClass('show');
+										})
+									)
+							)
+							.append(
+									$('<div class="customview-navicontents">')
+									.prepend(vars.displaypoi)
+									.prepend(vars.displaydatespan)
+									.prepend(vars.displayinfowindow)
+									.prepend(vars.chaselocation)
+									.prepend(vars.currentlocation)
+							)
+						)
+					)
 					.find('#mapclose').on('click',function(){vars.isdisplaymap=false;});
 				}
 			},function(error){});
@@ -334,19 +363,33 @@ jQuery.noConflict();
 		if (event.viewType.toUpperCase()=='CALENDAR') return event;
 		/* initialize valiable */
 		vars.markers=[];
+		vars.ismobile=(navigator.userAgent.indexOf('iPhone')>0 || navigator.userAgent.indexOf('iPad')>0 || navigator.userAgent.indexOf('Android')>0);
 		/* create currentlocation checkbox */
 		vars.currentlocation=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="currentlocation">')
 			.on('change',function(e){
+				/* swtich view of menu */
+				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
 				/* swtich view of marker */
-				functions.reloadmap();
+				functions.reloadmap(function(){
+					vars.chaselocation.find('input[type=checkbox]').prop('checked',$(this).prop('checked'));
+				});
 			})
 		)
 		.append($('<span>現在地を表示</span>'));
+		vars.currentlocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
+		/* create chaselocation checkbox */
+		vars.chaselocation=$('<label class="customview-checkbox">')
+		.append($('<input type="checkbox" id="chaselocation">'))
+		.append($('<span>現在地を追跡</span>'));
+		vars.chaselocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
+		if (vars.config['chasemode']!='1') vars.chaselocation.hide();
 		/* create displayinfowindow checkbox */
 		vars.displayinfowindow=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="infowindow">')
 			.on('change',function(e){
+				/* swtich view of menu */
+				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
 				if ($(this).prop('checked')) vars.map.openinfowindow();
 				else vars.map.closeinfowindow();
 			})
@@ -356,6 +399,8 @@ jQuery.noConflict();
 		vars.displaydatespan=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="datespan">')
 			.on('change',function(e){
+				/* swtich view of menu */
+				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
 				var color='';
 				var colors=JSON.parse(vars.config['datespancolors']);
 				for (var i=0;i<vars.markers.length;i++)
@@ -379,6 +424,8 @@ jQuery.noConflict();
 		vars.displaypoi=$('<label class="customview-checkbox">')
 		.append($('<input type="checkbox" id="poi">')
 			.on('change',function(e){
+				/* swtich view of menu */
+				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
 				/* swtich view of poi */
 				if ($(this).prop('checked')) vars.map.map.setOptions({styles:vars.styles.show});
 				else vars.map.map.setOptions({styles:vars.styles.hide});
