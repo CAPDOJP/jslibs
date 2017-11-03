@@ -129,7 +129,7 @@ var RouteMap=function(options){
 			scaleControl:false,
 			streetViewControl:true,
 			zoomControl:true,
-			zoom:(($(window).width()>1024)?14:21-Math.ceil($(window).width()/200))
+			zoom:(($(window).width()>1024)?14:21-Math.ceil($(window).width()/250))
 		};
 		my.map=new google.maps.Map(document.getElementById(my.contents.attr('id')),param);
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});

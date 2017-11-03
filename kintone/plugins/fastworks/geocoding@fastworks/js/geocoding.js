@@ -450,7 +450,7 @@ jQuery.noConflict();
 		vars.apps[kintone.app.getId()]=null;
 		vars.offset[kintone.app.getId()]=0;
 		functions.loaddatas(function(){
-			if (vars.ismobile) vars.displaymap.trigger('click');
+			if (vars.ismobile) functions.reloadmap(function(){vars.isdisplaymap=true;});
 		});
 		return event;
 	});
