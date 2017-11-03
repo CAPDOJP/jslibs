@@ -231,7 +231,11 @@ jQuery.noConflict();
 								vars.map.map.setCenter(latlng);
 							}});
 						}
-					},isreload);
+					},
+					isreload,
+					function(target,latlng){
+						console.log(latlng);
+					});
 					vars.map.buttonblock
 					.prepend(
 						$('<button class="customview-menu">')
