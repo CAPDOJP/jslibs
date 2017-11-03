@@ -22,6 +22,7 @@ var RouteMap=function(options){
 		isfullscreen:true,
 		needroute:true,
 		loadedcallback:null,
+		clickcallback:null,
 		isreload:false
 	},options);
 	/* valiable */
@@ -135,6 +136,12 @@ var RouteMap=function(options){
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
 		if (my.loadedcallback!=null) my.loadedcallback();
+		if (my.clickcallback!=null)
+		{
+			my.map.addListener('click',function(e){
+				my.clickcallback(my.map,e.latLng);
+			});			
+		}
 	});
 };
 RouteMap.prototype={
@@ -533,13 +540,14 @@ jQuery.extend({
 		];
 	}
 });
-jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,isreload){
+jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,isreload,clickcallback){
 	return new RouteMap({
 		apiikey:apiikey,
 		container:this,
 		isfullscreen:(isfullscreen===undefined)?true:isfullscreen,
 		needroute:(needroute===undefined)?true:needroute,
 		loadedcallback:(loadedcallback===undefined)?null:loadedcallback,
+		clickcallback:(clickcallback===undefined)?null:clickcallback,
 		isreload:(isreload===undefined)?false:isreload
 	});
 };

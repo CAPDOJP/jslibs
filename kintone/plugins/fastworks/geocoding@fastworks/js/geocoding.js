@@ -231,7 +231,6 @@ jQuery.noConflict();
 								vars.map.map.setCenter(latlng);
 							}});
 						}
-						if (callback!=null) callback();
 					},isreload);
 					vars.map.buttonblock
 					.prepend(
@@ -265,6 +264,7 @@ jQuery.noConflict();
 						)
 					)
 					.find('#mapclose').on('click',function(){vars.isdisplaymap=false;});
+					if (callback!=null) callback();
 				}
 			},function(error){});
 		},
