@@ -138,7 +138,7 @@ var RouteMap=function(options){
 		if (my.loadedcallback!=null) my.loadedcallback();
 		if (my.clickcallback!=null)
 		{
-			my.map.addListener('click',function(e){
+			google.maps.event.addListener(my.map,'click',function(e){
 				my.clickcallback(my.map,e.latLng);
 			});			
 		}
