@@ -83,6 +83,7 @@ var RouteMap=function(options){
 			'background-color':'transparent',
 			'border':'none',
 			'height':'48px',
+			'padding':'0px',
 			'width':'48px'
 		})
 		.on('click',function(){

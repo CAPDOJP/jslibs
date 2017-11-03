@@ -361,6 +361,26 @@ jQuery.noConflict();
 		if (vars.config['map']!='1') return event;
 		/* check view type */
 		if (event.viewType.toUpperCase()=='CALENDAR') return event;
+		/* check viewport */
+		var metalist=document.getElementsByTagName('meta');
+		var hasMeta=false;
+		for(var i=0;i< metalist.length;i++)
+		{
+			var name=metalist[i].getAttribute('name');
+			if (name && name.toLowerCase()==='viewport')
+			{
+				metalist[i].setAttribute('content','width=device-width,initial-scale=1.0');
+				hasMeta=true;
+				break;
+			}
+		}
+		if (!hasMeta)
+		{
+			var meta=document.createElement('meta');
+			meta.setAttribute('name','viewport');
+			meta.setAttribute('content','width=device-width,initial-scale=1.0');
+			document.getElementsByTagName('head')[0].appendChild(meta);
+		}
 		/* initialize valiable */
 		vars.markers=[];
 		vars.ismobile=(navigator.userAgent.indexOf('iPhone')>0 || navigator.userAgent.indexOf('iPad')>0 || navigator.userAgent.indexOf('Android')>0);

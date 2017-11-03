@@ -25,6 +25,8 @@ button.customview-menu{
     box-sizing:border-box;
     cursor:pointer;
     display:inline-block;
+    margin-right:8px;
+    padding:0px;
     height:48px;
     vertical-align:top;
     width:48px;
@@ -154,5 +156,8 @@ label.customview-checkbox input:checked+span{
     label.customview-checkbox{
         margin-right:0px;
         width:50%;
+    }
+    label.customview-checkbox span{
+        font-size:11px;
     }
 }
