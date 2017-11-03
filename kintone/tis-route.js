@@ -35,6 +35,7 @@ var RouteMap=function(options){
 	this.isfullscreen=options.isfullscreen;
 	this.needroute=options.needroute;
 	this.loadedcallback=options.loadedcallback;
+	this.clickcallback=options.clickcallback;
 	/* loading wait */
 	var waitgoogle=function(callback){
 		setTimeout(function(){
