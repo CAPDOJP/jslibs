@@ -576,6 +576,252 @@ jQuery.fn.multiselect=function(options){
 /*
 *--------------------------------------------------------------------
 * parameters
+* options	@ minutespan		:minute span
+*       	@ isdatepick		:use datepicker
+*       	@ issingle			:starttime only
+*       	@ buttons			:button elements
+*								{
+*									ok:{
+*										class:'',
+*										text:''
+*									},
+*									cancel:{
+*										class:'',
+*										text:''
+*									}
+*								}
+* -------------------------------------------------------------------
+*/
+var TermSelect=function(options){
+	var options=$.extend({
+		container:null,
+		minutespan:30,
+		isdatepick:false,
+		issingle:false,
+		buttons:{
+			ok:{
+				class:'',
+				text:''
+			},
+			cancel:{
+				class:'',
+				text:''
+			}
+		}
+	},options);
+	/* property */
+	this.issingle=options.issingle;
+	this.buttons=options.buttons;
+	/* valiable */
+	var my=this;
+	/* create elements */
+	var div=$('<div>').css({
+		'box-sizing':'border-box',
+		'margin':'0px',
+		'padding':'0px',
+		'position':'relative',
+		'vertical-align':'top'
+	});
+	var button=$('<button>');
+	var select=$('<select>').css({
+		'border':'1px solid #C9C9C9',
+		'border-radius':'3px',
+		'box-sizing':'border-box',
+		'display':'inline-block',
+		'height':'30px',
+		'margin':'0px',
+		'padding':'0px 0.5em',
+		'width':'auto'
+	});
+	var span=$('<span>').css({
+		'box-sizing':'border-box',
+		'display':'inline-block',
+		'line-height':'30px',
+		'margin':'0px',
+		'padding':'0px 5px',
+		'vertical-align':'top'
+	});
+	/* append elements */
+	this.cover=div.clone(true).css({
+		'background-color':'rgba(0,0,0,0.5)',
+		'display':'none',
+		'height':'100%',
+		'left':'0px',
+		'position':'fixed',
+		'top':'0px',
+		'width':'100%',
+		'z-index':'999999'
+	});
+	this.container=div.clone(true).css({
+		'background-color':'#FFFFFF',
+		'bottom':'0',
+		'border-radius':'5px',
+		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+		'height':'500px',
+		'left':'0',
+		'margin':'auto',
+		'max-height':'90%',
+		'max-width':'90%',
+		'padding':'5px',
+		'position':'absolute',
+		'right':'0',
+		'top':'0',
+		'width':((!options.issingle)?550:350).toString()+'px'
+	});
+	this.contents=div.clone(true).css({
+		'height':'100%',
+		'overflow-x':'hidden',
+		'overflow-y':'auto',
+		'margin':'0px',
+		'padding':'5px',
+		'position':'relative',
+		'width':'100%',
+		'z-index':'1'
+	});
+	this.buttonblock=div.clone(true).css({
+		'background-color':'#3498db',
+		'border-bottom-left-radius':'5px',
+		'border-bottom-right-radius':'5px',
+		'bottom':'0px',
+		'left':'0px',
+		'padding':'5px',
+		'position':'absolute',
+		'text-align':'center',
+		'width':'100%',
+		'z-index':'2'
+	});
+	/* append elements */
+	$.each(this.buttons,function(key,values){
+		my.buttonblock.append(
+			button.clone(true)
+			.attr('id',key)
+			.addClass(values.class)
+			.text(values.text)
+		);
+	});
+	this.hour=select.clone(true);
+	this.minute=select.clone(true);
+	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text('00'))
+	this.template=div.clone(true).addClass('term').css({
+		'border-bottom':'1px dotted #C9C9C9',
+		'padding':'3px',
+		'width':'100%'
+	});
+	this.template.append(
+		div.clone(true).css({
+			'display':'inline-block',
+			'min-height':'30px',
+			'width':'calc(100% - '+((!options.issingle)?350:150).toString()+'px)'
+		})
+		.append(span.clone(true).addClass('date'))
+	);
+	this.template.append(this.hour.clone(true).addClass('starthour'));
+	this.template.append(span.clone(true).text('：'));
+	this.template.append(this.minute.clone(true).addClass('startminute').val('00'));
+	if (!options.issingle)
+	{
+		this.template.append(span.clone(true).text('&nbsp;~&nbsp;'));
+		this.template.append(this.hour.clone(true).addClass('endhour'));
+		this.template.append(span.clone(true).text('：'));
+		this.template.append(this.minute.clone(true).addClass('endminute').val('00'));
+	}
+	/* append elements */
+	this.container.append(this.contents);
+	this.container.append(this.buttonblock);
+	this.cover.append(this.container);
+	options.container.append(this.cover);
+	/* adjust container height */
+	$(window).on('load resize',function(){
+		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+	});
+	/* day pickup */
+	if (options.isdatepick)
+	{
+		var activerow=null;
+		this.calendar=$('body').calendar({
+			selected:function(target,value){
+				$('.date',activerow).text(value);
+			}
+		});
+		this.template.find('.date').closest('div').css({'padding-left':'35px'})
+		.append(
+			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png" alt="カレンダー" title="カレンダー">')
+			.css({
+				'position':'absolute',
+				'left':'0px',
+				'top':'0px',
+				'width':'30px'
+			})
+			.on('click',function(){
+				activerow=$(this).closest('div');
+				my.calendar.show({activedate:new Date($('.date',$(this).closest('div')).text())});
+			})
+		);
+	}
+};
+TermSelect.prototype={
+	/* display calendar */
+	show:function(options){
+		var options=$.extend({
+			fromhour:0,
+			tohour:23,
+			dates:[],
+			buttons:{}
+		},options);
+		var my=this;
+		$.each(options.buttons,function(key,values){
+			if (my.buttonblock.find('button#'+key).size())
+				my.buttonblock.find('button#'+key).off('click').on('click',function(){
+					if (values!=null)
+					{
+						var datetimes=[];
+						$.each($('div.term',my.container),function(){
+							var row=$(this);
+							datetimes.push({
+								date:$('.date',row).text(),
+								starttime:$('.starthour',row).val()+':'+$('.startminute',row).val(),
+								endtime:(($('.endhour',row).size())?$('.endhour',row).val():'00')+':'+(($('.endminute',row).size())?$('.endminute',row).val():'00')
+							});
+						});
+						values(datetimes);
+					}
+				});
+		});
+		this.contents.empty();
+		for (var i=0;i<options.dates.length;i++)
+		{
+			var row=this.template.clone(true);
+			for (var i2=options.fromhour;i2<options.tohour+1;i2++)
+			{
+				$('.starthour',row).append($('<option>').attr('value',('0'+i2.toString()).slice(-2)).text(('0'+i2.toString()).slice(-2)));
+				if (!this.issingle) $('.endhour',row).append($('<option>').attr('value',('0'+i2.toString()).slice(-2)).text(('0'+i2.toString()).slice(-2)));
+			}
+			$('.starthour',row).val($('.starthour',row).find('option').first().val());
+			if (!this.issingle) $('.endhour',row).val($('.endhour',row).find('option').first().val());
+			$('.date',row).text(options.dates[i]);
+			this.contents.append(row);
+		}
+		this.cover.show();
+	},
+	/* hide calendar */
+	hide:function(){
+		this.cover.hide();
+	}
+};
+jQuery.fn.termselect=function(options){
+	var options=$.extend({
+		container:null,
+		minutespan:30,
+		isdatepick:false,
+		issingle:false,
+		buttons:{}
+	},options);
+	options.container=this;
+	return new TermSelect(options);
+};
+/*
+*--------------------------------------------------------------------
+* parameters
 * options	@ buttons			:button elements
 *								{
 *									ok:{

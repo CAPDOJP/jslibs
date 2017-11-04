@@ -23,6 +23,7 @@ jQuery.noConflict();
 		lectures:{},
 		config:{},
 		offset:{},
+		const:[],
 		lecturekeys:[],
 		fields:[],
 		tooltips:[],
@@ -66,9 +67,9 @@ jQuery.noConflict();
 						var to=(totime.getHours())*parseInt(vars.config['scale'])+Math.ceil(totime.getMinutes()/(60/parseInt(vars.config['scale'])))-1;
 						var fromindex=0;
 						var toindex=0;
-						if (from<parseInt(vars.config['starthour'])*parseInt(vars.config['scale'])) from=parseInt(vars.config['starthour'])*parseInt(vars.config['scale']);
-						if (to<parseInt(vars.config['starthour'])*parseInt(vars.config['scale'])) continue;
-						if (to>(parseInt(vars.config['endhour'])+1)*parseInt(vars.config['scale'])-1) to=(parseInt(vars.config['endhour'])+1)*parseInt(vars.config['scale'])-1;
+						if (from<parseInt(vars.const['starthour'].value)*parseInt(vars.config['scale'])) from=parseInt(vars.const['starthour'].value)*parseInt(vars.config['scale']);
+						if (to<parseInt(vars.const['starthour'].value)*parseInt(vars.config['scale'])) continue;
+						if (to>(parseInt(vars.const['endhour'].value)+1)*parseInt(vars.config['scale'])-1) to=(parseInt(vars.const['endhour'].value)+1)*parseInt(vars.config['scale'])-1;
 						from++;
 						to++;
 						/* check cell merged */
@@ -358,9 +359,19 @@ jQuery.noConflict();
 			records:[],
 			isstudent:true
 		});
+		param.push({
+			app:vars.config['const'],
+			appname:'基本情報',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
 		$.loadapps(counter,param,splash,function(){
 			splash.addClass('hide');
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
+			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
+			else vars.const=vars.apps[vars.config['const']][0];
 			/* append graph legend */
 			$.each(vars.lectures,function(key,values){
 				vars.graphlegend
@@ -379,8 +390,8 @@ jQuery.noConflict();
 			for (var i=0;i<24;i++)
 			{
 				var hide='';
-				if (i<parseInt(vars.config['starthour'])) hide='class="hide"';
-				if (i>parseInt(vars.config['endhour'])) hide='class="hide"';
+				if (i<parseInt(vars.const['starthour'].value)) hide='class="hide"';
+				if (i>parseInt(vars.const['endhour'].value)) hide='class="hide"';
 				head.eq(0).append($('<th colspan="'+vars.config['scale']+'" '+hide+'>').text(i));
 				for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
 				{

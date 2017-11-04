@@ -18,13 +18,14 @@ jQuery.noConflict();
 		attendants:null,
 		calendar:null,
 		progress:null,
-		selectbox:null,
+		courseselect:null,
 		students:null,
-		term:null,
+		termselect:null,
 		apps:{},
 		lectures:{},
 		config:{},
 		offset:{},
+		const:[],
 		lecturekeys:[],
 		fields:[]
 	};
@@ -71,17 +72,24 @@ jQuery.noConflict();
 			}).length!=0;
 		},
 		/* convert table records for update */
-		converttablerecords:function(code,values){
+		converttablerecords:function(rows,values){
 			var res=[];
+			var row={};
 			for (var i=0;i<values.length;i++)
 			{
-				var value={
-					value:{}
-				};
-				$.each(values[i].value,function(key,values){
-					value.value[key]=values.value;
+				row={value:{}};
+				$.each(values[i],function(key,values){
+					row.value[key]={value:values};
 				});
-				res.push(value);
+				rows.push(row);
+			}
+			for (var i=0;i<rows.length;i++)
+			{
+				row={value:{}};
+				$.each(rows[i].value,function(key,values){
+					row.value[key]={value:values.value};
+				});
+				res.push(row);
 			}
 			return res;
 		},
@@ -93,6 +101,7 @@ jQuery.noConflict();
 			var grade=null;
 			var row=null;
 			var dates=[];
+			var checktime=new Date();
 			var registvalues=[];
 			var updatevalues=[];
 			if ($('#lecturelist').val().length==0)
@@ -142,12 +151,14 @@ jQuery.noConflict();
 									swal('Error!','受講回数は'+course['times'].value.toString()+'回です。','error');
 									return;
 								}
-								vars.term.show({
+								vars.termselect.show({
+									fromhour:parseInt(vars.const['starthour'].value),
+									tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course['hours'].value)),
 									dates:selection,
 									buttons:{
 										ok:function(selection){
-											/* close term */
-											vars.term.hide();
+											/* close termselect */
+											vars.termselect.hide();
 											/* create values */
 											$.each(vars.attendants.find('.list').find('p:visible'),function(){
 												/* filtering by grade */
@@ -183,7 +194,6 @@ jQuery.noConflict();
 													};
 													var courses=Object.keys(values);
 													var fieldcode='';
-													var fields={};
 													if (filter.length==0) return true;
 													switch (index)
 													{
@@ -197,19 +207,19 @@ jQuery.noConflict();
 															fieldcode='shortterm3';
 															break;
 													}
-													fields[fieldcode+'code']={value:courses[0]};
-													fields[fieldcode+'id']={value:values[courses[0]].id.join(',')};
-													fields[fieldcode+'bill']={value:values[courses[0]].bill};
-													updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(fieldcode+'table',filter[0][fieldcode+'table'].value)};
-													updatevalue.record[fieldcode+'table'].value.push(fields);
+													row={};
+													row[fieldcode+'code']=courses[0];
+													row[fieldcode+'id']=values[courses[0]].id.join(',');
+													row[fieldcode+'bill']=values[courses[0]].bill;
+													updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(filter[0][fieldcode+'table'].value,[row])};
 													updatevalues.push(updatevalue);
 												});
 												functions.updatestudents(updatevalues,message);
 											});
 										},
 										cancel:function(){
-											/* close term */
-											vars.term.hide();
+											/* close termselect */
+											vars.termselect.hide();
 										}
 									}
 								});
@@ -268,7 +278,8 @@ jQuery.noConflict();
 							});
 					});
 					/* regist attendants */
-					if (!error) functions.registattendants(registvalues,function(resp,message){
+					if (error) return;
+					functions.registattendants(registvalues,function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -324,15 +335,12 @@ jQuery.noConflict();
 						});
 						selected.push(row.id);
 					}
-					vars.selectbox.show({
+					vars.courseselect.show({
 						datasource:datasource,
 						buttons:{
 							ok:function(selection){
-								target.closest('td').find('input').val(Object.keys(selection).join(','));
-								target.closest('td').find('span').text(Object.values(selection).join(','));
-								functions.fieldregist(target.closest('td').find('input'),{},fieldinfo);
-								/* close the selectbox */
-								vars.selectbox.hide();
+								/* close the courseselect */
+								vars.courseselect.hide();
 								if (selection.length==0) return;
 								/* create values */
 								$.each(vars.attendants.find('.list').find('p:visible'),function(){
@@ -368,7 +376,8 @@ jQuery.noConflict();
 									}
 								});
 								/* regist attendants */
-								if (!error) functions.registattendants(registvalues,function(resp,message){
+								if (error) return;
+								functions.registattendants(registvalues,function(resp,message){
 									/* update students */
 									$.each(resp,function(key,values){
 										var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -381,16 +390,17 @@ jQuery.noConflict();
 										};
 										var courses=Object.keys(values);
 										var fieldcode='morning';
-										var fields={};
+										var rows=[];
 										if (filter.length==0) return true;
-										updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(fieldcode+'table',filter[0][fieldcode+'table'].value)};
 										for (var i=0;i<courses.length;i++)
 										{
-											fields[fieldcode+'code']={value:courses[i]};
-											fields[fieldcode+'id']={value:values[courses[i]].id.join(',')};
-											fields[fieldcode+'bill']={value:values[courses[i]].bill};
-											updatevalue.record[fieldcode+'table'].value.push(fields);
+											row={};
+											row[fieldcode+'code']=courses[i];
+											row[fieldcode+'id']=values[courses[i]].id.join(',');
+											row[fieldcode+'bill']=values[courses[i]].bill;
+											rows.push(row);
 										}
+										updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(filter[0][fieldcode+'table'].value,rows)};
 										updatevalue.record[fieldcode+'bulkbill']={value:(selection.length==datasource.length)?1:0};
 										updatevalues.push(updatevalue);
 									});
@@ -398,8 +408,8 @@ jQuery.noConflict();
 								});
 							},
 							cancel:function(){
-								/* close the selectbox */
-								vars.selectbox.hide();
+								/* close the courseselect */
+								vars.courseselect.hide();
 							}
 						},
 						selected:selected
@@ -442,7 +452,8 @@ jQuery.noConflict();
 							});
 					});
 					/* regist attendants */
-					if (!error) functions.registattendants(registvalues,function(resp,message){
+					if (error) return;
+					functions.registattendants(registvalues,function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -503,7 +514,8 @@ jQuery.noConflict();
 						}
 					});
 					/* regist attendants */
-					if (!error) functions.registattendants(registvalues,function(resp,message){
+					if (error) return;
+					functions.registattendants(registvalues,function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -518,12 +530,106 @@ jQuery.noConflict();
 							var fieldcode='individual';
 							var id=[];
 							if (filter.length==0) return true;
-							updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(fieldcode+'table',filter[0][fieldcode+'table'].value)};
 							for (var i=0;i<courses.length;i++) Array.prototype.push.apply(id,values[courses[i]].id);
 							updatevalue.record[fieldcode+'id']={value:id.join(',')};
 							updatevalues.push(updatevalue);
 						});
 						functions.updatestudents(updatevalues,message);
+					});
+					break;
+				case 11:
+				case 12:
+					var fieldcode='';
+					switch (index)
+					{
+						case 11:
+							fieldcode='plus';
+							break;
+						case 12:
+							fieldcode='interview';
+							break;
+					}
+					index=10;
+					/* get course */
+					if (vars.apps[vars.lecturekeys[index]].length==0)
+					{
+						swal('Error!','学校独自検査対策講座を登録して下さい。','error');
+						return;
+					}
+					else course=vars.apps[vars.lecturekeys[index]][vars.apps[vars.lecturekeys[index]].length-1];
+					/* get date and time */
+					vars.calendar.show({
+						activedates:[],
+						buttons:{
+							ok:function(selection){
+								/* close calendar */
+								vars.calendar.hide();
+								if (selection.length!=course[fieldcode+'times'].value)
+								{
+									swal('Error!','受講回数は'+course[fieldcode+'times'].value.toString()+'回です。','error');
+									return;
+								}
+								vars.termselect.show({
+									fromhour:parseInt(vars.const['starthour'].value),
+									tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course[fieldcode+'hours'].value)),
+									dates:selection,
+									buttons:{
+										ok:function(selection){
+											/* close termselect */
+											vars.termselect.hide();
+											/* create values */
+											$.each(vars.attendants.find('.list').find('p:visible'),function(){
+												/* filtering by grade */
+												if (course['gradecode'].value!=$('#grade',$(this)).val()) return true;
+												for (var i=0;i<selection.length;i++)
+													registvalues.push({
+														studentcode:{value:$(this).attr('id')},
+														studentname:{value:$('#name',$(this)).text()},
+														appcode:{value:vars.lecturekeys[index]},
+														appname:{value:vars.lectures[vars.lecturekeys[index]].name},
+														coursecode:{value:'-1'},
+														coursename:{value:$('#lecturelist').find('option:selected').html().replace(/(&nbsp;|学校独自検査対策講座)/g,'')},
+														date:{value:selection[i].date},
+														starttime:{value:selection[i].starttime},
+														hours:{value:course[fieldcode+'hours'].value},
+														baserecordid:{value:null},
+														transfered:{value:0},
+														transferpending:{value:0},
+														transferlimit:{value:null}
+													});
+											});
+											/* regist attendants */
+											functions.registattendants(registvalues,function(resp,message){
+												/* update students */
+												$.each(resp,function(key,values){
+													var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
+														return (item['$id'].value==key);
+													});
+													var updatevalue={
+														app:vars.config['student'],
+														id:key,
+														record:{}
+													};
+													var courses=Object.keys(values);
+													if (filter.length==0) return true;
+													updatevalue.record['individual'+fieldcode+'id']={value:values[courses[0]].id.join(',')};
+													updatevalues.push(updatevalue);
+												});
+												functions.updatestudents(updatevalues,message);
+											});
+										},
+										cancel:function(){
+											/* close termselect */
+											vars.termselect.hide();
+										}
+									}
+								});
+							},
+							cancel:function(){
+								/* close calendar */
+								vars.calendar.hide();
+							}
+						}
 					});
 					break;
 			}
@@ -691,30 +797,6 @@ jQuery.noConflict();
 		container.append(vars.attendants);
 		$('body').append(vars.progress);
 		$('body').append(splash);
-		/* day pickup */
-		vars.calendar=$('body').calendar({
-			multi:true,
-			span:2
-		});
-		/* term pickup */
-		vars.term=$('body').term({
-			fromhour:0,
-			tohour:24,
-			isterm:false
-		});
-		/* create selectbox */
-		vars.selectbox=$('body').multiselect({
-			buttons:{
-				ok:{
-					class:'customview-button referer-button-ok',
-					text:'OK'
-				},
-				cancel:{
-					class:'customview-button referer-button-cancel',
-					text:'Cancel'
-				}
-			}
-		});
 		/* setup lectures value */
 		vars.lectures=JSON.parse(vars.config['lecture']);
 		vars.lecturekeys=Object.keys(vars.lectures);
@@ -747,9 +829,51 @@ jQuery.noConflict();
 			records:[],
 			isstudent:true
 		});
+		param.push({
+			app:vars.config['const'],
+			appname:'基本情報',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
 		$.loadapps(counter,param,splash,function(){
 			splash.addClass('hide');
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
+			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
+			else vars.const=vars.apps[vars.config['const']][0];
+			/* day pickup */
+			vars.calendar=$('body').calendar({
+				multi:true,
+				span:2
+			});
+			/* create termselect */
+			vars.termselect=$('body').termselect({
+				issingle:true,
+				buttons:{
+					ok:{
+						class:'customview-button referer-button-ok',
+						text:'OK'
+					},
+					cancel:{
+						class:'customview-button referer-button-cancel',
+						text:'Cancel'
+					}
+				}
+			});
+			/* create courseselect */
+			vars.courseselect=$('body').multiselect({
+				buttons:{
+					ok:{
+						class:'customview-button referer-button-ok',
+						text:'OK'
+					},
+					cancel:{
+						class:'customview-button referer-button-cancel',
+						text:'Cancel'
+					}
+				}
+			});
 			/* get fields of app */
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 				vars.fields=['$id'];
@@ -793,6 +917,8 @@ jQuery.noConflict();
 					var courselist=coursecontainer.find('select').attr('id','courselist');
 					lecturelist.empty().append($('<option>').attr('value','').html('&nbsp;講座選択&nbsp;'));
 					for (var i=1;i<vars.lecturekeys.length;i++) lecturelist.append($('<option>').attr('value',i.toString()).html('&nbsp;'+vars.lectures[vars.lecturekeys[i]].name+'&nbsp;'));
+					lecturelist.append($('<option>').attr('value',(vars.lecturekeys.length).toString()).html('&nbsp;学校独自検査対策講座追加授業&nbsp;'));
+					lecturelist.append($('<option>').attr('value',(vars.lecturekeys.length+1).toString()).html('&nbsp;学校独自検査対策講座面接&nbsp;'));
 					lecturelist.on('change',function(){
 						/* setup courses */
 						if ($(this).val().length==0)

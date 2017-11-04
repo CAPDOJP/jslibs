@@ -23,6 +23,7 @@ jQuery.noConflict();
 		lectures:{},
 		config:{},
 		offset:{},
+		const:[],
 		lecturekeys:[],
 		fields:[],
 		tooltips:[],
@@ -279,9 +280,19 @@ jQuery.noConflict();
 			records:[],
 			isstudent:true
 		});
+		param.push({
+			app:vars.config['const'],
+			appname:'基本情報',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
 		$.loadapps(counter,param,splash,function(){
 			splash.addClass('hide');
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
+			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
+			else vars.const=vars.apps[vars.config['const']][0];
 			/* append graph legend */
 			$.each(vars.lectures,function(key,values){
 				vars.graphlegend

@@ -94,8 +94,6 @@ jQuery.noConflict();
 				$('select#grade').val(config['grade']);
 				$('select#student').val(config['student']);
 				$('select#scale').val(config['scale']);
-				$('select#starthour').val(config['starthour']);
-				$('select#endhour').val(config['endhour']);
 				$('input#scalefixedwidth').val(config['scalefixedwidth']);
 				if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
 				lecturekeys=Object.keys(lectures);
@@ -192,16 +190,6 @@ jQuery.noConflict();
 				return;
 			}
 		}
-		if ($('select#starthour').val()=='')
-		{
-			swal('Error!','タイムテーブル設定開始時刻を選択して下さい。','error');
-			return;
-		}
-		if ($('select#endhour').val()=='')
-		{
-			swal('Error!','タイムテーブル設定終了時刻を選択して下さい。','error');
-			return;
-		}
 		/* setup config */
 		config['tooltip']=tooltips.join(',');
 		config['const']=$('select#const').val();
@@ -209,8 +197,6 @@ jQuery.noConflict();
 		config['student']=$('select#student').val();
 		config['lecture']=JSON.stringify(lectures);
 		config['scale']=$('select#scale').val();
-		config['starthour']=$('select#starthour').val();
-		config['endhour']=$('select#endhour').val();
 		config['scalefixedwidth']=$('input#scalefixedwidth').val();
 		config['scalefixed']=($('input#scalefixed').prop('checked'))?'1':'0';
 		/* get view lists */
