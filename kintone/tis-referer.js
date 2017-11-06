@@ -707,7 +707,7 @@ var TermSelect=function(options){
 	});
 	this.hour=select.clone(true);
 	this.minute=select.clone(true);
-	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text('00'))
+	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)))
 	this.template=div.clone(true).addClass('term').css({
 		'border-bottom':'1px dotted #C9C9C9',
 		'padding':'3px 0px',
@@ -825,6 +825,11 @@ TermSelect.prototype={
 							if ($('.date',row).text().length==0) return true;
 							starttime=$('.starthour',row).val()+':'+$('.startminute',row).val();
 							endtime=$('.endhour',row).val()+':'+$('.endminute',row).val();
+							if (parseInt(starttime)>parseInt(endtime))
+							{
+								starttime=$('.endhour',row).val()+':'+$('.endminute',row).val();
+								endtime=$('.starthour',row).val()+':'+$('.startminute',row).val();
+							}
 							times=0;
 							times+=new Date(($('.date',row).text()+'T'+endtime+':00+09:00').dateformat()).getTime();
 							times-=new Date(($('.date',row).text()+'T'+starttime+':00+09:00').dateformat()).getTime();

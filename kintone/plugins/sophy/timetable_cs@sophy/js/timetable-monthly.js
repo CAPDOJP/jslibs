@@ -73,16 +73,26 @@ jQuery.noConflict();
 									})
 									.on('click',function(){
 										var container=$(this).closest('.timetable-monthly-cell');
+										/* get date and time for transfer */
 										vars.termselect.show({
 											fromhour:parseInt(vars.const['starthour'].value),
-											tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat($('#hours',container).val())),
+											tohour:parseInt(vars.const['endhour'].value),
 											buttons:{
 												ok:function(selection){
 													/* close termselect */
 													vars.termselect.hide();
+													var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
 													var hours=0;
-													for (var i=0;i<selection.length;i++) hours+=selection[i].hours;
-													if (hours!=parseFloat($('#hours',container).val()))
+													for (var i=0;i<selection.length;i++)
+													{
+														if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
+														{
+															swal('Error!','受講終了時間が終業時刻を超えています。','error');
+															return;
+														}
+														hours+=selection[i].hours;
+													}
+													if (hours!=parseFloat($('#basehours',container).val()))
 													{
 														swal('Error!','振替前と振替後の時間が合いません。','error');
 														return;

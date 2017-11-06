@@ -61,6 +61,7 @@ jQuery.extend({
 	createtransfer:function(container,terms){
 		var res=[];
 		var baserecordid=($('#baserecordid',container).val())?$('#baserecordid',container).val():'';
+		var transfertimes=parseInt($('#transfertimes',container).val())+1;
 		if (baserecordid.length==0) baserecordid=$('#\\$id',container).val();
 		for (var i=0;i<terms.length;i++)
 			res.push({
@@ -74,7 +75,9 @@ jQuery.extend({
 				starttime:{value:terms[i].starttime},
 				hours:{value:terms[i].hours},
 				baserecordid:{value:baserecordid},
+				basehours:{value:$('#basehours',container).val()},
 				transfered:{value:0},
+				transfertimes:{value:transfertimes},
 				transferpending:{value:0},
 				transferlimit:{value:$('#transferlimit',container).val()}
 			});
@@ -114,7 +117,9 @@ jQuery.extend({
 							starttime:{value:row['coursestarttime'].value},
 							hours:{value:coursegrade['hours'].value},
 							baserecordid:{value:null},
+							basehours:{value:coursegrade['hours'].value},
 							transfered:{value:0},
+							transfertimes:{value:0},
 							transferpending:{value:0},
 							transferlimit:{value:day.calc(limit+' month').format('Y-m-d')}
 						});
@@ -211,10 +216,11 @@ jQuery.extend({
 				$('#\\$id',container).val(resp[$('#studentcode',container).val()][$('#coursecode',container).val()].id[0]);
 				/* regist attendants */
 				$.registattendants($.createtransfer(container,terms),progress,registered,function(resp,message){
+					/* update base attendants */
 					var body={
 						app:kintone.app.getId(),
 						id:$('#\\$id',container).val(),
-						record:{transfered:{value:'1'}}
+						record:{transfered:{value:1}}
 					};
 					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
 						swal({
@@ -234,22 +240,60 @@ jQuery.extend({
 		{
 			/* regist attendants */
 			$.registattendants($.createtransfer(container,terms),progress,registered,function(resp,message){
-				var body={
-					app:kintone.app.getId(),
-					id:$('#\\$id',container).val(),
-					record:{transfered:{value:'1'}}
-				};
-				kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-					swal({
-						title:'振替完了',
-						text:'振替完了'+message,
-						type:'success'
-					},function(){
-						if (callback!=null) callback();
+				/* update base attendants */
+				if (parseInt($('#transfertimes',container).val())!=0)
+				{
+					var body={
+						app:kintone.app.getId(),
+						query:'baserecordid="'+$('#baserecordid',container).val()+'" and transfertimes="'+$('#transfertimes',container).val()+'"'
+					};
+					kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+						body={
+							app:kintone.app.getId(),
+							records:[]
+						};
+						$.each(resp.records,function(index){
+							var record=resp.records[index];
+							body.records.push({
+								id:record['$id'].value,
+								record:{transfered:{value:1}}
+							});
+						});
+						kintone.api(kintone.api.url('/k/v1/records',true),'PUT',body,function(resp){
+							swal({
+								title:'振替完了',
+								text:'振替完了'+message,
+								type:'success'
+							},function(){
+								if (callback!=null) callback();
+							});
+						},function(error){
+							swal('Error!',error.message,'error');
+						});
+					},
+					function(error){
+						swal('Error!',error.message,'error');
 					});
-				},function(error){
-					swal('Error!',error.message,'error');
-				});
+				}
+				else
+				{
+					var body={
+						app:kintone.app.getId(),
+						id:$('#\\$id',container).val(),
+						record:{transfered:{value:1}}
+					};
+					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+						swal({
+							title:'振替完了',
+							text:'振替完了'+message,
+							type:'success'
+						},function(){
+							if (callback!=null) callback();
+						});
+					},function(error){
+						swal('Error!',error.message,'error');
+					});
+				}
 			});
 		}
 	},
@@ -506,7 +550,9 @@ jQuery.extend({
 		if (!('starttime' in fieldinfos)) error='受講開始時刻';
 		if (!('hours' in fieldinfos)) error='受講時間';
 		if (!('baserecordid' in fieldinfos)) error='振替元レコード番号';
+		if (!('basehours' in fieldinfos)) error='振替元受講時間';
 		if (!('transfered' in fieldinfos)) error='振替済';
+		if (!('transfertimes' in fieldinfos)) error='振替回数';
 		if (!('transferpending' in fieldinfos)) error='振替保留';
 		if (!('transferlimit' in fieldinfos)) error='振替期限日';
 		if (error.length!=0)

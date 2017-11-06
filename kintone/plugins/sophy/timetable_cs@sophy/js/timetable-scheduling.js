@@ -162,7 +162,9 @@ jQuery.noConflict();
 														starttime:{value:selection[i].starttime},
 														hours:{value:course['hours'].value},
 														baserecordid:{value:null},
+														basehours:{value:course['hours'].value},
 														transfered:{value:0},
+														transfertimes:{value:0},
 														transferpending:{value:0},
 														transferlimit:{value:new Date(selection[i].date).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 													});
@@ -259,7 +261,9 @@ jQuery.noConflict();
 								starttime:{value:grade['starttime'].value},
 								hours:{value:grade['hours'].value},
 								baserecordid:{value:null},
+								basehours:{value:grade['hours'].value},
 								transfered:{value:0},
+								transfertimes:{value:0},
 								transferpending:{value:0},
 								transferlimit:{value:new Date(dates[i]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 							});
@@ -356,7 +360,9 @@ jQuery.noConflict();
 												starttime:{value:row.value['starttime'].value},
 												hours:{value:row.value['hours'].value},
 												baserecordid:{value:null},
+												basehours:{value:row.value['hours'].value},
 												transfered:{value:0},
+												transfertimes:{value:0},
 												transferpending:{value:0},
 												transferlimit:{value:new Date(dates[i2]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 											});
@@ -433,7 +439,9 @@ jQuery.noConflict();
 								starttime:{value:course['starttime'].value},
 								hours:{value:course['hours'].value},
 								baserecordid:{value:null},
+								basehours:{value:course['hours'].value},
 								transfered:{value:0},
+								transfertimes:{value:0},
 								transferpending:{value:0},
 								transferlimit:{value:new Date(dates[i]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 							});
@@ -494,7 +502,9 @@ jQuery.noConflict();
 									starttime:{value:row.value['starttime'].value},
 									hours:{value:row.value['hours'].value},
 									baserecordid:{value:null},
+									basehours:{value:row.value['hours'].value},
 									transfered:{value:0},
+									transfertimes:{value:0},
 									transferpending:{value:0},
 									transferlimit:{value:new Date(dates[i2]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 								});
@@ -580,7 +590,9 @@ jQuery.noConflict();
 														starttime:{value:selection[i].starttime},
 														hours:{value:course[fieldcode+'hours'].value},
 														baserecordid:{value:null},
+														basehours:{value:course[fieldcode+'hours'].value},
 														transfered:{value:0},
+														transfertimes:{value:0},
 														transferpending:{value:0},
 														transferlimit:{value:new Date(selection[i].date).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 													});
