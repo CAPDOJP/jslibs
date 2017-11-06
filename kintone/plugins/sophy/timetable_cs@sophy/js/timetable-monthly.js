@@ -61,10 +61,16 @@ jQuery.noConflict();
 							)
 							.append(
 								$('<span>').addClass('lecture')
-								.css({'background-color':'#'+vars.lectures[filter[i]['appcode'].value].color})
+								.css({
+									'background-color':'#'+vars.lectures[filter[i]['appcode'].value].color,
+									'text-align':'center'
+								})
 								.append(
 									$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/refresh.png" alt="振替" title="振替">')
-									.css({'height':'100%'})
+									.css({
+										'cursor':'pointer',
+										'height':'100%'
+									})
 									.on('click',function(){
 										var container=$(this).closest('.timetable-monthly-cell');
 										vars.termselect.show({
@@ -75,7 +81,7 @@ jQuery.noConflict();
 													/* close termselect */
 													vars.termselect.hide();
 													var hours=0;
-													for (var i=0;i<terms.length;i++) hours+=terms[i].hours;
+													for (var i=0;i<selection.length;i++) hours+=selection[i].hours;
 													if (hours!=parseFloat($('#hours',container).val()))
 													{
 														swal('Error!','振替前と振替後の時間が合いません。','error');
