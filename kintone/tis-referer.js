@@ -673,7 +673,7 @@ var TermSelect=function(options){
 		'position':'absolute',
 		'right':'0',
 		'top':'0',
-		'width':(((!options.issingle)?550:300)+pluswidth).toString()+'px'
+		'width':(((!options.issingle)?500:300)+pluswidth).toString()+'px'
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
