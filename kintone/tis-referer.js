@@ -619,8 +619,8 @@ var TermSelect=function(options){
 	/* valiable */
 	var my=this;
 	var pluswidth=0;
-	if (this.isadd) pluswidth+=70;
-	if (this.isdatepick) pluswidth+=35;
+	if (this.isadd) pluswidth+=80;
+	if (this.isdatepick) pluswidth+=40;
 	/* create elements */
 	var div=$('<div>').css({
 		'box-sizing':'border-box',
@@ -673,7 +673,7 @@ var TermSelect=function(options){
 		'position':'absolute',
 		'right':'0',
 		'top':'0',
-		'width':(((!options.issingle)?500:300)+pluswidth).toString()+'px'
+		'width':(((!options.issingle)?550:300)+pluswidth).toString()+'px'
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
@@ -718,7 +718,7 @@ var TermSelect=function(options){
 		div.clone(true).css({
 			'display':'inline-block',
 			'min-height':'30px',
-			'width':'calc(100% - '+((!options.issingle)?350:150).toString()+'px)'
+			'width':'calc(100% - '+(((!options.issingle)?350:150)+pluswidth).toString()+'px)'
 		})
 		.append(span.clone(true).addClass('date'))
 	);
@@ -737,13 +737,14 @@ var TermSelect=function(options){
 			.append(
 				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="追加" title="追加">')
 				.css({
+					'cursor':'pointer',
 					'vertical-align':'top',
 					'width':'30px'
 				})
 				.on('click',function(){
-					var row=this.template.clone(true);
+					var row=my.template.clone(true);
 					$('.del',row).show();
-					this.contents.append(row);
+					my.contents.append(row);
 				})
 			)
 		);
@@ -752,6 +753,7 @@ var TermSelect=function(options){
 			.append(
 				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="削除" title="削除">')
 				.css({
+					'cursor':'pointer',
 					'display':'none',
 					'vertical-align':'top',
 					'width':'30px'
@@ -765,12 +767,6 @@ var TermSelect=function(options){
 	/* day pickup */
 	if (options.isdatepick)
 	{
-		var activerow=null;
-		this.calendar=$('body').calendar({
-			selected:function(target,value){
-				$('.date',activerow).text(value);
-			}
-		});
 		this.template.find('.date').closest('div').css({'padding-left':'35px'})
 		.append(
 			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png" alt="カレンダー" title="カレンダー">')
@@ -795,6 +791,16 @@ var TermSelect=function(options){
 	$(window).on('load resize',function(){
 		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
 	});
+	/* day pickup */
+	if (options.isdatepick)
+	{
+		var activerow=null;
+		this.calendar=$('body').calendar({
+			selected:function(target,value){
+				$('.date',activerow).text(value);
+			}
+		});
+	}
 };
 TermSelect.prototype={
 	/* display calendar */
