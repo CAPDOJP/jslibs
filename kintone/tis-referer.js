@@ -822,6 +822,7 @@ TermSelect.prototype={
 						var datetimes=[];
 						$.each($('div.term',my.container),function(){
 							var row=$(this);
+							if ($('.date',row).text().length==0) return true;
 							starttime=$('.starthour',row).val()+':'+$('.startminute',row).val();
 							endtime=$('.endhour',row).val()+':'+$('.endminute',row).val();
 							times=0;

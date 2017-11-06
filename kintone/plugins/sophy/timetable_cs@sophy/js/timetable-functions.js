@@ -60,6 +60,8 @@ jQuery.extend({
 	},
 	createtransfer:function(container,terms){
 		var res=[];
+		var baserecordid=($('#baserecordid',container).val())?$('#baserecordid',container).val():'';
+		if (baserecordid.length==0) baserecordid=$('#\\$id',container).val();
 		for (var i=0;i<terms.length;i++)
 			res.push({
 				studentcode:{value:$('#studentcode',container).val()},
@@ -71,7 +73,7 @@ jQuery.extend({
 				date:{value:terms[i].date},
 				starttime:{value:terms[i].starttime},
 				hours:{value:terms[i].hours},
-				baserecordid:{value:($('#baserecordid',container).val().length!=0)?$('#baserecordid',container).val():$('#$id',container).val()},
+				baserecordid:{value:baserecordid},
 				transfered:{value:0},
 				transferpending:{value:0},
 				transferlimit:{value:$('#transferlimit',container).val()}
@@ -147,7 +149,7 @@ jQuery.extend({
 		for (var i=0;i<values.length;i++)
 		{
 			if (error) return;
-			if (functions.checkregistered(values[i],registered))
+			if ($.checkregistered(values[i],registered))
 			{
 				counter++;
 				if (message.length==0) message='\n(一部登録済みのスケジュールがありました)';
@@ -197,19 +199,21 @@ jQuery.extend({
 		}
 	},
 	registtransfers:function(container,terms,progress,registered,callback){
-		if ($('#$id',container).val().length==0)
+		if ($('#\\$id',container).val().length==0)
 		{
 			var registvalues={};
-			$.each($('input[type=hidden]',container),function(){registvalues[$(this).attr('id')]=$(this).val();});
+			$.each($('input[type=hidden]',container),function(){
+				if ($(this).attr('id')!='$id') registvalues[$(this).attr('id')]={value:$(this).val()};
+			});
 			/* regist attendants */
 			$.registattendants([registvalues],progress,registered,function(resp,message){
 				/* update id */
-				$('#$id',container).val(resp[$('#studentcode',container).val()][$('#coursecode',container).val()].id.split(',')[0]);
+				$('#\\$id',container).val(resp[$('#studentcode',container).val()][$('#coursecode',container).val()].id[0]);
 				/* regist attendants */
 				$.registattendants($.createtransfer(container,terms),progress,registered,function(resp,message){
 					var body={
 						app:kintone.app.getId(),
-						id:$('#$id',container).val(),
+						id:$('#\\$id',container).val(),
 						record:{transfered:{value:'1'}}
 					};
 					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
@@ -232,7 +236,7 @@ jQuery.extend({
 			$.registattendants($.createtransfer(container,terms),progress,registered,function(resp,message){
 				var body={
 					app:kintone.app.getId(),
-					id:$('#$id',container).val(),
+					id:$('#\\$id',container).val(),
 					record:{transfered:{value:'1'}}
 				};
 				kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
