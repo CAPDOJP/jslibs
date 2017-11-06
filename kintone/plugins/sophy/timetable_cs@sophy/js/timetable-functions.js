@@ -36,7 +36,7 @@ jQuery.extend({
 			else callback();
 		}
 	},
-	createschedule:function(studentrecords,lecturerecords,checkrecords,lecturecode,lecturename,week,day){
+	createschedule:function(studentrecords,lecturerecords,checkrecords,lecturecode,lecturename,week,day,limit){
 		var res=[];
 		for (var i=0;i<studentrecords.length;i++)
 		{
@@ -71,7 +71,7 @@ jQuery.extend({
 							baserecordid:{value:null},
 							transfered:{value:0},
 							transferpending:{value:0},
-							transferlimit:{value:null}
+							transferlimit:{value:day.calc(limit+' month').format('Y-m-d')}
 						});
 				}
 			}

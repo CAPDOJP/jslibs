@@ -154,7 +154,8 @@ jQuery.noConflict();
 						vars.lecturekeys[0],
 						vars.lectures[vars.lecturekeys[0]].name,
 						vars.week,
-						vars.date
+						vars.date,
+						vars.const['transferlimit'].value
 					));
 				/* sort */
 				records.sort(function(a,b){

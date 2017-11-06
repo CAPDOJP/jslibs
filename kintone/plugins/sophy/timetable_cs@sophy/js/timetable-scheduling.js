@@ -177,7 +177,7 @@ jQuery.noConflict();
 														baserecordid:{value:null},
 														transfered:{value:0},
 														transferpending:{value:0},
-														transferlimit:{value:null}
+														transferlimit:{value:new Date(selection[i].date).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 													});
 											});
 											/* regist attendants */
@@ -274,7 +274,7 @@ jQuery.noConflict();
 								baserecordid:{value:null},
 								transfered:{value:0},
 								transferpending:{value:0},
-								transferlimit:{value:null}
+								transferlimit:{value:new Date(dates[i]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 							});
 					});
 					/* regist attendants */
@@ -371,7 +371,7 @@ jQuery.noConflict();
 												baserecordid:{value:null},
 												transfered:{value:0},
 												transferpending:{value:0},
-												transferlimit:{value:null}
+												transferlimit:{value:new Date(dates[i2]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 											});
 									}
 								});
@@ -448,7 +448,7 @@ jQuery.noConflict();
 								baserecordid:{value:null},
 								transfered:{value:0},
 								transferpending:{value:0},
-								transferlimit:{value:null}
+								transferlimit:{value:new Date(dates[i]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 							});
 					});
 					/* regist attendants */
@@ -509,7 +509,7 @@ jQuery.noConflict();
 									baserecordid:{value:null},
 									transfered:{value:0},
 									transferpending:{value:0},
-									transferlimit:{value:null}
+									transferlimit:{value:new Date(dates[i2]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 								});
 						}
 					});
@@ -595,7 +595,7 @@ jQuery.noConflict();
 														baserecordid:{value:null},
 														transfered:{value:0},
 														transferpending:{value:0},
-														transferlimit:{value:null}
+														transferlimit:{value:new Date(selection[i].date).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 													});
 											});
 											/* regist attendants */

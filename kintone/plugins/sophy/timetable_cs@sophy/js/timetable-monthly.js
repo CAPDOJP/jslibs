@@ -67,6 +67,11 @@ jQuery.noConflict();
 							)
 						)
 					);
+					$.each(filter[i],function(key,values){
+						if (values!=null)
+							if (values.value!=null)
+								item.append($('<input type="hidden">').attr('id',key).val(values.value));
+					});
 					/* append balloon */
 					var balloon=$('<div class="timetable-balloon">');
 					var inner='';
@@ -142,7 +147,8 @@ jQuery.noConflict();
 							vars.lecturekeys[0],
 							vars.lectures[vars.lecturekeys[0]].name,
 							vars.week,
-							day
+							day,
+							vars.const['transferlimit'].value
 						));
 					filter=$.grep(filter,function(item,index){
 						var exists=0;
