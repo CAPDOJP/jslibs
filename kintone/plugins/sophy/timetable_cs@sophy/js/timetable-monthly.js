@@ -339,6 +339,7 @@ jQuery.noConflict();
 			/* create termselect */
 			vars.termselect=$('body').termselect({
 				isadd:true,
+				isdatepick:true,
 				buttons:{
 					ok:{
 						class:'customview-button referer-button-ok',

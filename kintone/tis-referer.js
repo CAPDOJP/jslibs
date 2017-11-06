@@ -725,7 +725,7 @@ var TermSelect=function(options){
 	this.template.append(this.hour.clone(true).addClass('starthour'));
 	this.template.append(span.clone(true).text('：'));
 	this.template.append(this.minute.clone(true).addClass('startminute').val('00'));
-	this.template.append(span.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).text('&nbsp;~&nbsp;'));
+	this.template.append(span.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).html('&nbsp;~&nbsp;'));
 	this.template.append(this.hour.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endhour'));
 	this.template.append(span.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).text('：'));
 	this.template.append(this.minute.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endminute').val('00'));
