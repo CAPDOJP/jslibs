@@ -725,15 +725,12 @@ var TermSelect=function(options){
 	this.template.append(this.hour.clone(true).addClass('starthour'));
 	this.template.append(span.clone(true).text('：'));
 	this.template.append(this.minute.clone(true).addClass('startminute').val('00'));
-	if (!options.issingle)
-	{
-		this.template.append(span.clone(true).text('&nbsp;~&nbsp;'));
-		this.template.append(this.hour.clone(true).addClass('endhour'));
-		this.template.append(span.clone(true).text('：'));
-		this.template.append(this.minute.clone(true).addClass('endminute').val('00'));
-	}
+	this.template.append(span.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).text('&nbsp;~&nbsp;'));
+	this.template.append(this.hour.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endhour'));
+	this.template.append(span.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).text('：'));
+	this.template.append(this.minute.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endminute').val('00'));
 	/* add row */
-	if (!options.isadd)
+	if (options.isadd)
 	{
 		this.template.append(
 			span.clone(true)
@@ -821,7 +818,7 @@ TermSelect.prototype={
 						$.each($('div.term',my.container),function(){
 							var row=$(this);
 							starttime=$('.starthour',row).val()+':'+$('.startminute',row).val();
-							endtime=(($('.endhour',row).size())?$('.endhour',row).val():'00')+':'+(($('.endminute',row).size())?$('.endminute',row).val():'00');
+							endtime=$('.endhour',row).val()+':'+$('.endminute',row).val();
 							times=0;
 							times+=new Date(($('.date',row).text()+'T'+endtime+':00+09:00').dateformat()).getTime();
 							times-=new Date(($('.date',row).text()+'T'+starttime+':00+09:00').dateformat()).getTime();
@@ -837,19 +834,22 @@ TermSelect.prototype={
 				});
 		});
 		this.contents.empty();
+		$('.starthour',this.template).empty();
+		$('.endhour',this.template).empty();
+		for (var i=options.fromhour;i<options.tohour+1;i++)
+		{
+			$('.starthour',this.template).append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)));
+			$('.endhour',this.template).append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)));
+		}
 		for (var i=0;i<options.dates.length;i++)
 		{
 			var row=this.template.clone(true);
-			for (var i2=options.fromhour;i2<options.tohour+1;i2++)
-			{
-				$('.starthour',row).append($('<option>').attr('value',('0'+i2.toString()).slice(-2)).text(('0'+i2.toString()).slice(-2)));
-				if (!this.issingle) $('.endhour',row).append($('<option>').attr('value',('0'+i2.toString()).slice(-2)).text(('0'+i2.toString()).slice(-2)));
-			}
 			$('.starthour',row).val($('.starthour',row).find('option').first().val());
-			if (!this.issingle) $('.endhour',row).val($('.endhour',row).find('option').first().val());
+			$('.endhour',row).val($('.endhour',row).find('option').first().val());
 			$('.date',row).text(options.dates[i]);
 			this.contents.append(row);
 		}
+		if (this.isadd && options.dates.length==0) this.contents.append(this.template.clone(true));
 		this.cover.show();
 	},
 	/* hide calendar */

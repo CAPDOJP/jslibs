@@ -20,6 +20,7 @@ jQuery.noConflict();
 		graphlegend:null,
 		progress:null,
 		table:null,
+		termselect:null,
 		apps:{},
 		lectures:{},
 		config:{},
@@ -63,8 +64,9 @@ jQuery.noConflict();
 								.css({'background-color':'#'+vars.lectures[filter[i]['appcode'].value].color})
 								.append(
 									$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/refresh.png" alt="振替" title="振替">')
+									.css({'height':'100%'})
 									.on('click',function(){
-										var container=$(this).closest('.class="timetable-monthly-cell');
+										var container=$(this).closest('.timetable-monthly-cell');
 										vars.termselect.show({
 											fromhour:parseInt(vars.const['starthour'].value),
 											tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat($('#hours',container).val())),
@@ -334,6 +336,20 @@ jQuery.noConflict();
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
 			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
 			else vars.const=vars.apps[vars.config['const']][0];
+			/* create termselect */
+			vars.termselect=$('body').termselect({
+				isadd:true,
+				buttons:{
+					ok:{
+						class:'customview-button referer-button-ok',
+						text:'OK'
+					},
+					cancel:{
+						class:'customview-button referer-button-cancel',
+						text:'Cancel'
+					}
+				}
+			});
 			/* append graph legend */
 			$.each(vars.lectures,function(key,values){
 				vars.graphlegend
