@@ -619,7 +619,7 @@ var TermSelect=function(options){
 	/* valiable */
 	var my=this;
 	var pluswidth=0;
-	if (this.isadd) pluswidth+=80;
+	if (this.isadd) pluswidth+=60;
 	/* create elements */
 	var div=$('<div>').css({
 		'box-sizing':'border-box',
@@ -672,7 +672,7 @@ var TermSelect=function(options){
 		'position':'absolute',
 		'right':'0',
 		'top':'0',
-		'width':(((!options.issingle)?480:300)+pluswidth).toString()+'px'
+		'width':(((!options.issingle)?490:310)+pluswidth).toString()+'px'
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
@@ -710,7 +710,7 @@ var TermSelect=function(options){
 	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text('00'))
 	this.template=div.clone(true).addClass('term').css({
 		'border-bottom':'1px dotted #C9C9C9',
-		'padding':'3px',
+		'padding':'3px 0px',
 		'width':'100%'
 	});
 	this.template.append(
@@ -732,7 +732,7 @@ var TermSelect=function(options){
 	if (options.isadd)
 	{
 		this.template.append(
-			span.clone(true)
+			span.clone(true).css({'padding':'0px'})
 			.append(
 				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="追加" title="追加">')
 				.css({
@@ -748,7 +748,7 @@ var TermSelect=function(options){
 			)
 		);
 		this.template.append(
-			span.clone(true)
+			span.clone(true).css({'padding':'0px'})
 			.append(
 				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="削除" title="削除">')
 				.css({
