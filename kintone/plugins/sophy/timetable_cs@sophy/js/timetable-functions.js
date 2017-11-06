@@ -36,6 +36,48 @@ jQuery.extend({
 			else callback();
 		}
 	},
+	checkregistered:function(values,registered){
+		return $.grep(registered,function(item,index){
+			var exists=0;
+			if (item['studentcode'].value==values.studentcode.value) exists++;
+			if (item['appcode'].value==values.appcode.value) exists++;
+			if (item['coursecode'].value==values.coursecode.value) exists++;
+			if (item['date'].value==values.date.value) exists++;
+			if (item['starttime'].value==values.starttime.value) exists++;
+			if (item['hours'].value==values.hours.value) exists++;
+			return exists==6;
+		}).length!=0;
+	},
+	coursegrade:function(record,grade){
+		var res=null;
+		var row=null;
+		for (var i=0;i<record['gradetable'].value.length;i++)
+		{
+			row=record['gradetable'].value[i].value;
+			if (parseInt(grade)>parseInt('0'+row['gradefromcode'].value)-1 && parseInt(grade)<parseInt('0'+row['gradetocode'].value)+1) res=row;
+		}
+		return res;
+	},
+	createtransfer:function(container,terms){
+		var res=[];
+		for (var i=0;i<terms.length;i++)
+			res.push({
+				studentcode:{value:$('#studentcode',container).val()},
+				studentname:{value:$('#studentname',container).val()},
+				appcode:{value:$('#appcode',container).val()},
+				appname:{value:$('#appname',container).val()},
+				coursecode:{value:$('#coursecode',container).val()},
+				coursename:{value:$('#coursename',container).val()},
+				date:{value:terms[i].date},
+				starttime:{value:terms[i].starttime},
+				hours:{value:terms[i].hours},
+				baserecordid:{value:($('#baserecordid',container).val().length!=0)?$('#baserecordid',container).val():$('#$id',container).val()},
+				transfered:{value:0},
+				transferpending:{value:0},
+				transferlimit:{value:$('#transferlimit',container).val()}
+			});
+		return res;
+	},
 	createschedule:function(studentrecords,lecturerecords,checkrecords,lecturecode,lecturename,week,day,limit){
 		var res=[];
 		for (var i=0;i<studentrecords.length;i++)
@@ -59,6 +101,7 @@ jQuery.extend({
 					});
 					if (reserved.length==0)
 						res.push({
+							'$id':{value:''},
 							studentcode:{value:student['$id'].value},
 							studentname:{value:student['name'].value},
 							appcode:{value:lecturecode},
@@ -78,16 +121,6 @@ jQuery.extend({
 		}
 		return res;
 	},
-	coursegrade:function(record,grade){
-		var res=null;
-		var row=null;
-		for (var i=0;i<record['gradetable'].value.length;i++)
-		{
-			row=record['gradetable'].value[i].value;
-			if (parseInt(grade)>parseInt('0'+row['gradefromcode'].value)-1 && parseInt(grade)<parseInt('0'+row['gradetocode'].value)+1) res=row;
-		}
-		return res;
-	},
 	lecturenames:function(){
 		return [
 			'通常講座',
@@ -102,6 +135,119 @@ jQuery.extend({
 			'夜練',
 			'学校独自検査対策講座'
 		];
+	},
+	registattendants:function(values,progress,registered,callback){
+		var error=false;
+		var counter=0;
+		var message='';
+		var results={};
+		progress.find('.message').text('スケジュール作成中');
+		progress.find('.progressbar').find('.progresscell').width(0);
+		progress.show();
+		for (var i=0;i<values.length;i++)
+		{
+			if (error) return;
+			if (functions.checkregistered(values[i],registered))
+			{
+				counter++;
+				if (message.length==0) message='\n(一部登録済みのスケジュールがありました)';
+				continue;
+			}
+			(function(values,total,callback){
+				var body={
+					app:kintone.app.getId(),
+					record:values
+				};
+				kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+					if (!(values.studentcode.value in results))
+					{
+						results[values.studentcode.value]={};
+						results[values.studentcode.value][values.coursecode.value]={
+							id:[],
+							bill:'0'
+						};
+					}
+					if (!(values.coursecode.value in results[values.studentcode.value]))
+						results[values.studentcode.value][values.coursecode.value]={
+							id:[],
+							bill:'0'
+						};
+					results[values.studentcode.value][values.coursecode.value].id.push(resp.id);
+					counter++;
+					if (counter<total)
+					{
+						progress.find('.progressbar').find('.progresscell').width(progress.find('.progressbar').innerWidth()*(counter/total));
+					}
+					else
+					{
+						progress.hide();
+						if (callback!=null) callback(results,message);
+					}
+				},function(error){
+					progress.hide();
+					swal('Error!',error.message,'error');
+					error=true;
+				});
+			})(values[i],values.length,callback);
+		}
+		if (counter==values.length)
+		{
+			progress.hide();
+			swal('Error!','スケジュールは作成済みです。','error');
+		}
+	},
+	registtransfers:function(container,terms,progress,registered,callback){
+		if ($('#$id',container).val().length==0)
+		{
+			var registvalues={};
+			$.each($('input[type=hidden]',container),function(){registvalues[$(this).attr('id')]=$(this).val();});
+			/* regist attendants */
+			$.registattendants([registvalues],progress,registered,function(resp,message){
+				/* update id */
+				$('#$id',container).val(resp[$('#studentcode',container).val()][$('#coursecode',container).val()].id.split(',')[0]);
+				/* regist attendants */
+				$.registattendants($.createtransfer(container,terms),progress,registered,function(resp,message){
+					var body={
+						app:kintone.app.getId(),
+						id:$('#$id',container).val(),
+						record:{transfered:{value:'1'}}
+					};
+					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+						swal({
+							title:'振替完了',
+							text:'振替完了'+message,
+							type:'success'
+						},function(){
+							if (callback!=null) callback();
+						});
+					},function(error){
+						swal('Error!',error.message,'error');
+					});
+				});
+			});
+		}
+		else
+		{
+			/* regist attendants */
+			$.registattendants($.createtransfer(container,terms),progress,registered,function(resp,message){
+				var body={
+					app:kintone.app.getId(),
+					id:$('#$id',container).val(),
+					record:{transfered:{value:'1'}}
+				};
+				kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+					swal({
+						title:'振替完了',
+						text:'振替完了'+message,
+						type:'success'
+					},function(){
+						if (callback!=null) callback();
+					});
+				},function(error){
+					swal('Error!',error.message,'error');
+				});
+			});
+		}
 	},
 	checkfield:function(index,name,properties,splash){
 		var error='';

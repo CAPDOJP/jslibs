@@ -58,19 +58,6 @@ jQuery.noConflict();
 				swal('Error!',error.message,'error');
 			});
 		},
-		/* check registered of schedule */
-		checkregistered:function(values){
-			return $.grep(vars.apps[kintone.app.getId()],function(item,index){
-				var exists=0;
-				if (item['studentcode'].value==values.studentcode.value) exists++;
-				if (item['appcode'].value==values.appcode.value) exists++;
-				if (item['coursecode'].value==values.coursecode.value) exists++;
-				if (item['date'].value==values.date.value) exists++;
-				if (item['starttime'].value==values.starttime.value) exists++;
-				if (item['hours'].value==values.hours.value) exists++;
-				return exists==6;
-			}).length!=0;
-		},
 		/* convert table records for update */
 		converttablerecords:function(rows,values){
 			var res=[];
@@ -181,7 +168,7 @@ jQuery.noConflict();
 													});
 											});
 											/* regist attendants */
-											functions.registattendants(registvalues,function(resp,message){
+											$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 												/* update students */
 												$.each(resp,function(key,values){
 													var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -279,7 +266,7 @@ jQuery.noConflict();
 					});
 					/* regist attendants */
 					if (error) return;
-					functions.registattendants(registvalues,function(resp,message){
+					$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -377,7 +364,7 @@ jQuery.noConflict();
 								});
 								/* regist attendants */
 								if (error) return;
-								functions.registattendants(registvalues,function(resp,message){
+								$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 									/* update students */
 									$.each(resp,function(key,values){
 										var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -453,7 +440,7 @@ jQuery.noConflict();
 					});
 					/* regist attendants */
 					if (error) return;
-					functions.registattendants(registvalues,function(resp,message){
+					$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -515,7 +502,7 @@ jQuery.noConflict();
 					});
 					/* regist attendants */
 					if (error) return;
-					functions.registattendants(registvalues,function(resp,message){
+					$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -599,7 +586,7 @@ jQuery.noConflict();
 													});
 											});
 											/* regist attendants */
-											functions.registattendants(registvalues,function(resp,message){
+											$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 												/* update students */
 												$.each(resp,function(key,values){
 													var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -632,67 +619,6 @@ jQuery.noConflict();
 						}
 					});
 					break;
-			}
-		},
-		/* regist attendants */
-		registattendants:function(values,callback){
-			var error=false;
-			var counter=0;
-			var message='';
-			var results={};
-			vars.progress.find('.message').text('スケジュール作成中');
-			vars.progress.find('.progressbar').find('.progresscell').width(0);
-			vars.progress.show();
-			for (var i=0;i<values.length;i++)
-			{
-				if (error) return;
-				if (functions.checkregistered(values[i]))
-				{
-					counter++;
-					if (message.length==0) message='\n(一部登録済みのスケジュールがありました)';
-					continue;
-				}
-				(function(values,total,callback){
-					var body={
-						app:kintone.app.getId(),
-						record:values
-					};
-					kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-						if (!(values.studentcode.value in results))
-						{
-							results[values.studentcode.value]={};
-							results[values.studentcode.value][values.coursecode.value]={
-								id:[],
-								bill:'0'
-							};
-						}
-						if (!(values.coursecode.value in results[values.studentcode.value]))
-							results[values.studentcode.value][values.coursecode.value]={
-								id:[],
-								bill:'0'
-							};
-						results[values.studentcode.value][values.coursecode.value].id.push(resp.id);
-						counter++;
-						if (counter<total)
-						{
-							vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/total));
-						}
-						else
-						{
-							vars.progress.hide();
-							if (callback!=null) callback(results,message);
-						}
-					},function(error){
-						vars.progress.hide();
-						swal('Error!',error.message,'error');
-						error=true;
-					});
-				})(values[i],values.length,callback);
-			}
-			if (counter==values.length)
-			{
-				vars.progress.hide();
-				swal('Error!','スケジュールは作成済みです。','error');
 			}
 		},
 		/* search students */

@@ -577,6 +577,7 @@ jQuery.fn.multiselect=function(options){
 *--------------------------------------------------------------------
 * parameters
 * options	@ minutespan		:minute span
+*       	@ isadd				:enable user append
 *       	@ isdatepick		:use datepicker
 *       	@ issingle			:starttime only
 *       	@ buttons			:button elements
@@ -596,6 +597,7 @@ var TermSelect=function(options){
 	var options=$.extend({
 		container:null,
 		minutespan:30,
+		isadd:false,
 		isdatepick:false,
 		issingle:false,
 		buttons:{
@@ -610,10 +612,15 @@ var TermSelect=function(options){
 		}
 	},options);
 	/* property */
+	this.isadd=options.isadd;
+	this.isdatepick=options.isdatepick;
 	this.issingle=options.issingle;
 	this.buttons=options.buttons;
 	/* valiable */
 	var my=this;
+	var pluswidth=0;
+	if (this.isadd) pluswidth+=70;
+	if (this.isdatepick) pluswidth+=35;
 	/* create elements */
 	var div=$('<div>').css({
 		'box-sizing':'border-box',
@@ -666,7 +673,7 @@ var TermSelect=function(options){
 		'position':'absolute',
 		'right':'0',
 		'top':'0',
-		'width':((!options.issingle)?550:350).toString()+'px'
+		'width':(((!options.issingle)?500:300)+pluswidth).toString()+'px'
 	});
 	this.contents=div.clone(true).css({
 		'height':'100%',
@@ -725,15 +732,39 @@ var TermSelect=function(options){
 		this.template.append(span.clone(true).text('：'));
 		this.template.append(this.minute.clone(true).addClass('endminute').val('00'));
 	}
-	/* append elements */
-	this.container.append(this.contents);
-	this.container.append(this.buttonblock);
-	this.cover.append(this.container);
-	options.container.append(this.cover);
-	/* adjust container height */
-	$(window).on('load resize',function(){
-		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
-	});
+	/* add row */
+	if (!options.isadd)
+	{
+		this.template.append(
+			span.clone(true)
+			.append(
+				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="追加" title="追加">')
+				.css({
+					'vertical-align':'top',
+					'width':'30px'
+				})
+				.on('click',function(){
+					var row=this.template.clone(true);
+					$('.del',row).show();
+					this.contents.append(row);
+				})
+			)
+		);
+		this.template.append(
+			span.clone(true)
+			.append(
+				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="削除" title="削除">')
+				.css({
+					'display':'none',
+					'vertical-align':'top',
+					'width':'30px'
+				})
+				.on('click',function(){
+					$(this).closest('.term').remove();
+				})
+			)
+		);
+	}
 	/* day pickup */
 	if (options.isdatepick)
 	{
@@ -758,6 +789,15 @@ var TermSelect=function(options){
 			})
 		);
 	}
+	/* append elements */
+	this.container.append(this.contents);
+	this.container.append(this.buttonblock);
+	this.cover.append(this.container);
+	options.container.append(this.cover);
+	/* adjust container height */
+	$(window).on('load resize',function(){
+		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+	});
 };
 TermSelect.prototype={
 	/* display calendar */
@@ -774,13 +814,22 @@ TermSelect.prototype={
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){
 					if (values!=null)
 					{
+						var starttime='';
+						var endtime='';
+						var times=0;
 						var datetimes=[];
 						$.each($('div.term',my.container),function(){
 							var row=$(this);
+							starttime=$('.starthour',row).val()+':'+$('.startminute',row).val();
+							endtime=(($('.endhour',row).size())?$('.endhour',row).val():'00')+':'+(($('.endminute',row).size())?$('.endminute',row).val():'00');
+							times=0;
+							times+=new Date(($('.date',row).text()+'T'+endtime+':00+09:00').dateformat()).getTime();
+							times-=new Date(($('.date',row).text()+'T'+starttime+':00+09:00').dateformat()).getTime();
 							datetimes.push({
 								date:$('.date',row).text(),
-								starttime:$('.starthour',row).val()+':'+$('.startminute',row).val(),
-								endtime:(($('.endhour',row).size())?$('.endhour',row).val():'00')+':'+(($('.endminute',row).size())?$('.endminute',row).val():'00')
+								starttime:starttime,
+								endtime:endtime,
+								hours:times/(1000*60*60)
 							});
 						});
 						values(datetimes);

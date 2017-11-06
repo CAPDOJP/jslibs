@@ -18,6 +18,7 @@ jQuery.noConflict();
 		fromdate:new Date(),
 		todate:new Date(),
 		graphlegend:null,
+		progress:null,
 		table:null,
 		apps:{},
 		lectures:{},
@@ -60,6 +61,38 @@ jQuery.noConflict();
 							.append(
 								$('<span>').addClass('lecture')
 								.css({'background-color':'#'+vars.lectures[filter[i]['appcode'].value].color})
+								.append(
+									$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/refresh.png" alt="振替" title="振替">')
+									.on('click',function(){
+										var container=$(this).closest('.class="timetable-monthly-cell');
+										vars.termselect.show({
+											fromhour:parseInt(vars.const['starthour'].value),
+											tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat($('#hours',container).val())),
+											buttons:{
+												ok:function(selection){
+													/* close termselect */
+													vars.termselect.hide();
+													var hours=0;
+													for (var i=0;i<terms.length;i++) hours+=terms[i].hours;
+													if (hours!=parseFloat($('#hours',container).val()))
+													{
+														swal('Error!','振替前と振替後の時間が合いません。','error');
+														return;
+													}
+													/* regist transfers */
+													$.registtransfers(container,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+														/* reload view */
+														functions.load();
+													});
+												},
+												cancel:function(){
+													/* close termselect */
+													vars.termselect.hide();
+												}
+											}
+										});
+									})
+								)
 							)
 							.append(
 								$('<span>').addClass('name')
@@ -221,6 +254,7 @@ jQuery.noConflict();
 		var next=$('<button id="next" class="customview-button next-button">');
 		var splash=$('<div id="splash">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
+		vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
 		splash.append(
 			$('<p>')
 			.append($('<span>').text('now loading'))
@@ -236,6 +270,7 @@ jQuery.noConflict();
 		feed.append(next);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
+		$('body').append(vars.progress);
 		$('body').append(splash);
 		/* setup date value */
 		vars.fromdate=vars.fromdate.calc('first-of-month');
