@@ -620,7 +620,6 @@ var TermSelect=function(options){
 	var my=this;
 	var pluswidth=0;
 	if (this.isadd) pluswidth+=80;
-	if (this.isdatepick) pluswidth+=40;
 	/* create elements */
 	var div=$('<div>').css({
 		'box-sizing':'border-box',
@@ -767,7 +766,7 @@ var TermSelect=function(options){
 	/* day pickup */
 	if (options.isdatepick)
 	{
-		this.template.find('.date').closest('div').css({'padding-left':'35px'})
+		this.template.find('.date').closest('div').css({'padding-left':'40px'})
 		.append(
 			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png" alt="カレンダー" title="カレンダー">')
 			.css({
