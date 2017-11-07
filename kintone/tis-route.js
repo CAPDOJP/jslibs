@@ -210,36 +210,6 @@ RouteMap.prototype={
 		}
 		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
 	},
-	watchlocation:function(options){
-		var options=$.extend({
-			callback:null
-		},options);
-		var my=this;
-		if (navigator.geolocation)
-		{
-			var userAgent=window.navigator.userAgent.toLowerCase();
-			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
-			this.watchID=navigator.geolocation.watchPosition(
-				function(pos){
-					my.currentlatlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
-					if (options.callback!=null) options.callback(my.currentlatlng);
-				},
-				function(error){
-					if (my.currentlatlng==null) my.currentlatlng=new google.maps.LatLng(0,0);
-				},
-				{
-					enableHighAccuracy:true,
-					maximumAge:0,
-					timeout:10000
-				}
-			);
-		}
-		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
-	},
-	unwatchlocation:function(){
-		if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
-		this.watchID=null;
-	},
 	/* open information widnow */
 	openinfowindow:function(){
 		var my=this;
@@ -509,6 +479,39 @@ RouteMap.prototype={
 				break;
 		}
 		if (this.isfullscreen) this.container.css({'bottom':'0px'});
+	},
+	refresh:function(){
+		google.maps.event.trigger(this.map,'resize');
+	},
+	watchlocation:function(options){
+		var options=$.extend({
+			callback:null
+		},options);
+		var my=this;
+		if (navigator.geolocation)
+		{
+			var userAgent=window.navigator.userAgent.toLowerCase();
+			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
+			this.watchID=navigator.geolocation.watchPosition(
+				function(pos){
+					my.currentlatlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+					if (options.callback!=null) options.callback(my.currentlatlng);
+				},
+				function(error){
+					if (my.currentlatlng==null) my.currentlatlng=new google.maps.LatLng(0,0);
+				},
+				{
+					enableHighAccuracy:true,
+					maximumAge:0,
+					timeout:10000
+				}
+			);
+		}
+		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
+	},
+	unwatchlocation:function(){
+		if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
+		this.watchID=null;
 	}
 };
 jQuery.extend({

@@ -1,6 +1,6 @@
 <div class="block">
-  <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">対象フィールド</div>
+	<div class="kintoneplugin-row">
+	<div class="kintoneplugin-label">対象フィールド</div>
 	<div class="kintoneplugin-select-outer">
 		<div class="kintoneplugin-select">
 			<select id="trigger">
@@ -8,38 +8,44 @@
 			</select>
 		</div>
 	</div>
-  </div>
-  <div class="kintoneplugin-row">
-	<table class="items">
-		<tbody>
-			<tr>
-				<td class="segment">
-					<span class="itemname"></span>
-					<input type="hidden" id="item">
-				</td>
-				<td>
-					<table class="fields">
-						<tbody>
-							<tr>
-								<td>
-									<div class="kintoneplugin-select-outer">
-										<div class="kintoneplugin-select">
-											<select id="field">
-												<option value=""></option>
-											</select>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="items">
+			<tbody>
+				<tr>
+					<td class="segment">
+						<span class="itemname"></span>
+						<input type="hidden" id="item">
+					</td>
+					<td>
+						<table class="fields">
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="field">
+													<option value=""></option>
+												</select>
+											</div>
 										</div>
-									</div>
-								</td>
-								<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-								<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
-							</tr>
-						</tbody>
-					</table>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-  </div>
+									</td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
 </div>
 <div class="block">
 	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>

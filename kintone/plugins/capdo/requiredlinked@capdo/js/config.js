@@ -53,6 +53,7 @@ jQuery.noConflict();
 		if (Object.keys(config).length!==0)
 		{
 			relations=JSON.parse(config['relation']);
+			$('input#license').val(config['license']);
 			$.each(relations,function(index){
 				if (add) vars.relationtable.addrow();
 				else add=true;
@@ -81,8 +82,14 @@ jQuery.noConflict();
 				require:$('select#require',row).val()
 			});
 		}
+		if ($('input#license').val().length==0)
+		{
+			swal('Error!','ライセンス認証URLを入力して下さい。','error');
+			return;
+		}
 		/* setup config */
 		config['relation']=JSON.stringify(relations);
+		config['license']=$('input#license').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

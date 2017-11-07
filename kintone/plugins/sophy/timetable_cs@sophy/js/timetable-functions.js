@@ -36,18 +36,6 @@ jQuery.extend({
 			else callback();
 		}
 	},
-	checkregistered:function(values,registered){
-		return $.grep(registered,function(item,index){
-			var exists=0;
-			if (item['studentcode'].value==values.studentcode.value) exists++;
-			if (item['appcode'].value==values.appcode.value) exists++;
-			if (item['coursecode'].value==values.coursecode.value) exists++;
-			if (item['date'].value==values.date.value) exists++;
-			if (item['starttime'].value==values.starttime.value) exists++;
-			if (item['hours'].value==values.hours.value) exists++;
-			return exists==6;
-		}).length!=0;
-	},
 	coursegrade:function(record,grade){
 		var res=null;
 		var row=null;
@@ -58,28 +46,28 @@ jQuery.extend({
 		}
 		return res;
 	},
-	createtransfer:function(container,terms){
+	createtransfer:function(cell,terms){
 		var res=[];
-		var baserecordid=($('#baserecordid',container).val())?$('#baserecordid',container).val():'';
-		var transfertimes=parseInt($('#transfertimes',container).val())+1;
-		if (baserecordid.length==0) baserecordid=$('#\\$id',container).val();
+		var baserecordid=($('#baserecordid',cell).val())?$('#baserecordid',cell).val():'';
+		var transfertimes=parseInt($('#transfertimes',cell).val())+1;
+		if (baserecordid.length==0) baserecordid=$('#\\$id',cell).val();
 		for (var i=0;i<terms.length;i++)
 			res.push({
-				studentcode:{value:$('#studentcode',container).val()},
-				studentname:{value:$('#studentname',container).val()},
-				appcode:{value:$('#appcode',container).val()},
-				appname:{value:$('#appname',container).val()},
-				coursecode:{value:$('#coursecode',container).val()},
-				coursename:{value:$('#coursename',container).val()},
+				studentcode:{value:$('#studentcode',cell).val()},
+				studentname:{value:$('#studentname',cell).val()},
+				appcode:{value:$('#appcode',cell).val()},
+				appname:{value:$('#appname',cell).val()},
+				coursecode:{value:$('#coursecode',cell).val()},
+				coursename:{value:$('#coursename',cell).val()},
 				date:{value:terms[i].date},
 				starttime:{value:terms[i].starttime},
 				hours:{value:terms[i].hours},
 				baserecordid:{value:baserecordid},
-				basehours:{value:$('#basehours',container).val()},
+				basehours:{value:$('#basehours',cell).val()},
 				transfered:{value:0},
 				transfertimes:{value:transfertimes},
 				transferpending:{value:0},
-				transferlimit:{value:$('#transferlimit',container).val()}
+				transferlimit:{value:$('#transferlimit',cell).val()}
 			});
 		return res;
 	},
@@ -154,7 +142,18 @@ jQuery.extend({
 		for (var i=0;i<values.length;i++)
 		{
 			if (error) return;
-			if ($.checkregistered(values[i],registered))
+			if ((function(values,registered){
+				return $.grep(registered,function(item,index){
+					var exists=0;
+					if (item['studentcode'].value==values.studentcode.value) exists++;
+					if (item['appcode'].value==values.appcode.value) exists++;
+					if (item['coursecode'].value==values.coursecode.value) exists++;
+					if (item['date'].value==values.date.value) exists++;
+					if (item['starttime'].value==values.starttime.value) exists++;
+					if (item['hours'].value==values.hours.value) exists++;
+					return exists==6;
+				}).length!=0;
+			})(values[i],registered))
 			{
 				counter++;
 				if (message.length==0) message='\n(一部登録済みのスケジュールがありました)';
@@ -203,23 +202,23 @@ jQuery.extend({
 			swal('Error!','スケジュールは作成済みです。','error');
 		}
 	},
-	registtransfers:function(container,terms,progress,registered,callback){
-		if ($('#\\$id',container).val().length==0)
+	registtransfers:function(cell,terms,progress,registered,callback){
+		if ($('#\\$id',cell).val().length==0)
 		{
 			var registvalues={};
-			$.each($('input[type=hidden]',container),function(){
+			$.each($('input[type=hidden]',cell),function(){
 				if ($(this).attr('id')!='$id') registvalues[$(this).attr('id')]={value:$(this).val()};
 			});
 			/* regist attendants */
 			$.registattendants([registvalues],progress,registered,function(resp,message){
 				/* update id */
-				$('#\\$id',container).val(resp[$('#studentcode',container).val()][$('#coursecode',container).val()].id[0]);
+				$('#\\$id',cell).val(resp[$('#studentcode',cell).val()][$('#coursecode',cell).val()].id[0]);
 				/* regist attendants */
-				$.registattendants($.createtransfer(container,terms),progress,registered,function(resp,message){
+				$.registattendants($.createtransfer(cell,terms),progress,registered,function(resp,message){
 					/* update base attendants */
 					var body={
 						app:kintone.app.getId(),
-						id:$('#\\$id',container).val(),
+						id:$('#\\$id',cell).val(),
 						record:{transfered:{value:1}}
 					};
 					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
@@ -239,13 +238,13 @@ jQuery.extend({
 		else
 		{
 			/* regist attendants */
-			$.registattendants($.createtransfer(container,terms),progress,registered,function(resp,message){
+			$.registattendants($.createtransfer(cell,terms),progress,registered,function(resp,message){
 				/* update base attendants */
-				if (parseInt($('#transfertimes',container).val())!=0)
+				if (parseInt($('#transfertimes',cell).val())!=0)
 				{
 					var body={
 						app:kintone.app.getId(),
-						query:'baserecordid="'+$('#baserecordid',container).val()+'" and transfertimes="'+$('#transfertimes',container).val()+'"'
+						query:'baserecordid="'+$('#baserecordid',cell).val()+'" and transfertimes="'+$('#transfertimes',cell).val()+'"'
 					};
 					kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 						body={
@@ -279,7 +278,7 @@ jQuery.extend({
 				{
 					var body={
 						app:kintone.app.getId(),
-						id:$('#\\$id',container).val(),
+						id:$('#\\$id',cell).val(),
 						record:{transfered:{value:1}}
 					};
 					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){

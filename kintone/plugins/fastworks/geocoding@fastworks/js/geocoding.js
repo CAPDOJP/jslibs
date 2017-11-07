@@ -24,6 +24,7 @@ jQuery.noConflict();
 		displaydatespan:null,
 		displaymap:null,
 		map:null,
+		viewlist:null,
 		apps:{},
 		config:{},
 		offset:{},
@@ -168,56 +169,23 @@ jQuery.noConflict();
 			}
 		},
 		/* data load */
-		loaddatas:function(callback){
-			var filters=kintone.app.getQuery();
+		loaddatas:function(condition,callback){
+			var filters=(condition.length==0)?kintone.app.getQuery():condition;
 			if (filters==null) filters='order by $id asc';
 			else filters=filters.replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,'');
-			kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:kintone.app.getId(),query:filters+' limit '+limit.toString()+' offset '+vars.offset[kintone.app.getId()].toString()},function(resp){
-				if (vars.apps[kintone.app.getId()]==null) vars.apps[kintone.app.getId()]=resp.records;
-				else Array.prototype.push.apply(vars.apps[kintone.app.getId()],resp.records);
-				vars.offset[kintone.app.getId()]+=limit;
-				if (resp.records.length==limit) functions.loaddatas(callback);
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['app'],query:filters+' limit '+limit.toString()+' offset '+vars.offset[vars.config['app']].toString()},function(resp){
+				if (vars.apps[vars.config['app']]==null) vars.apps[vars.config['app']]=resp.records;
+				else Array.prototype.push.apply(vars.apps[vars.config['app']],resp.records);
+				vars.offset[vars.config['app']]+=limit;
+				if (resp.records.length==limit) functions.loaddatas(condition,callback);
 				else
 				{
 					/* create map */
 					var isreload=(vars.map!=null);
-					if (isreload) vars.map.container.remove();
-					vars.map=$('body').routemap(vars.config['apikey'],true,false,function(){
-						/* create map */
-						vars.map.map.setOptions({styles:vars.styles.hide});
-						$.each(vars.apps[kintone.app.getId()],function(index,values){
-							var record=values
-							var lat=parseFloat('0'+record[vars.config['lat']].value);
-							var lng=parseFloat('0'+record[vars.config['lng']].value);
-							var label='';
-							var datespan='';
-							if (lat+lng!=0)
-							{
-								if (vars.config["datespan"].length!=0)
-									if (record[vars.config['datespan']].value!=null)
-									{
-										var datefrom=new Date(record[vars.config['datespan']].value.dateformat());
-										var dateto=new Date();
-										var datediff=dateto.getTime()-datefrom.getTime();
-										datespan=Math.floor(datediff/(1000*60*60*24)).toString();
-									}
-								label='';
-								label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
-								label+='<br><a href="https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
-								vars.markers.push({
-									colors:vars.config['defaultcolor'],
-									fontsize:vars.config['markerfont'],
-									label:label,
-									lat:lat,
-									lng:lng,
-									size:vars.config['markersize'],
-									extensionindex:datespan
-								});
-							}
-						});
-						/* append elements */
-						kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-						kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
+					if (isreload)
+					{
+						vars.markers=functions.loadmarkers();
+						if (callback!=null) callback();
 						/* chase mode */
 						if (vars.config['chasemode']=='1')
 						{
@@ -229,48 +197,190 @@ jQuery.noConflict();
 								/* setup current location */
 								vars.map.markers[0].setPosition(latlng);
 								vars.map.map.setCenter(latlng);
+								vars.map.refresh();
 							}});
 						}
-					},
-					isreload,
-					function(target,latlng){
-						console.log(latlng);
-					});
-					vars.map.buttonblock
-					.prepend(
-						$('<button class="customview-menu">')
-						.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/menu.svg" alt="メニュー" title="メニュー" />'))
-						.on('click',function(){
-							$('div.customview-navi').addClass('show');
-						})
-					)
-					.prepend(
-						$('<div class="customview-navi">')
-						.append(
-							$('<div class="customview-navicontainer">')
+					}
+					else
+					{
+						vars.map=$('body').routemap(vars.config['apikey'],true,false,function(){
+							/* create map */
+							vars.map.map.setOptions({styles:vars.styles.hide});
+							vars.markers=functions.loadmarkers();
+							/* append elements */
+							if (!vars.ismobile)
+							{
+								kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+								kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
+							}
+							if (callback!=null) callback();
+							/* chase mode */
+							if (vars.config['chasemode']=='1')
+							{
+								vars.map.watchlocation({callback:function(latlng){
+									if (!vars.isdisplaymap) return;
+									if (!vars.chaselocation.find('input[type=checkbox]').prop('checked')) return;
+									if (!vars.currentlocation.find('input[type=checkbox]').prop('checked')) return;
+									if (vars.map.markers.length==0) return;
+									/* setup current location */
+									vars.map.markers[0].setPosition(latlng);
+									vars.map.map.setCenter(latlng);
+									vars.map.refresh();
+								}});
+							}
+						},
+						isreload,
+						function(target,latlng){
+							console.log(latlng);
+						});
+						vars.map.buttonblock
+						.prepend(
+							$('<button class="customview-menu">')
 							.append(
-									$('<button class="customview-menuclose">')
-									.append(
-										$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.svg" alt="閉じる" title="閉じる" />')
-										.on('click',function(){
-											$('div.customview-navi').removeClass('show');
-										})
-									)
-							)
+								$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/menu.svg" alt="メニュー" title="メニュー" />')
+								.css({'width':'100%'})
+								)
+							.on('click',function(){
+								if (vars.ismobile) $('div.customview-navi').show();
+								else $('div.customview-navi').addClass('show');
+							})
+						)
+						.prepend(
+							$('<div class="customview-navi">')
 							.append(
-									$('<div class="customview-navicontents">')
-									.prepend(vars.displaypoi)
-									.prepend(vars.displaydatespan)
-									.prepend(vars.displayinfowindow)
-									.prepend(vars.chaselocation)
-									.prepend(vars.currentlocation)
+								$('<div class="customview-navicontainer">')
+								.append(
+										$('<button class="customview-menuclose">')
+										.append(
+											$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.svg" alt="閉じる" title="閉じる" />')
+											.css({'height':'100%'})
+											.on('click',function(){
+												if (vars.ismobile) $('div.customview-navi').hide();
+												else $('div.customview-navi').removeClass('show');
+											})
+										)
+								)
+								.append(
+										$('<div class="customview-navicontents">')
+										.prepend(vars.displaypoi)
+										.prepend(vars.displaydatespan)
+										.prepend(vars.displayinfowindow)
+										.prepend(vars.chaselocation)
+										.prepend(vars.currentlocation)
+								)
 							)
 						)
-					)
-					.find('#mapclose').on('click',function(){vars.isdisplaymap=false;});
-					if (callback!=null) callback();
+						.find('#mapclose').on('click',function(){vars.isdisplaymap=false;});
+						if (vars.ismobile)
+						{
+							$('button.customview-menu').css({
+								'background-color':'transparent',
+								'border':'none',
+								'box-sizing':'border-box',
+								'cursor':'pointer',
+								'display':'inline-block',
+								'margin-right':'8px',
+								'padding':'0px',
+								'height':'48px',
+								'vertical-align':'top',
+								'width':'48px'
+							});
+							$('button.customview-menuclose').css({
+								'background-color':'transparent',
+								'border':'none',
+								'box-sizing':'border-box',
+								'height':'30px',
+								'margin':'0px',
+								'padding':'0px',
+								'position':'absolute',
+								'right':'5px',
+								'top':'5px',
+								'width':'30px',
+								'z-index':'2'
+							})
+							$('div.customview-navi').css({
+								'background-color':'rgba(0,0,0,0.5)',
+								'box-sizing':'border-box',
+								'display':'none',
+								'height':'100%',
+								'left':'0px',
+								'margin':'0px',
+								'padding':'0px',
+								'position':'fixed',
+								'text-align':'left',
+								'top':'0px',
+								'transition':'all 0.35s linear 0s',
+								'vertical-align':'top',
+								'width':'100%',
+								'z-index':'1000000'
+							});
+							$('div.customview-navicontainer').css({
+								'background-color':'#f7f9fa',
+								'border-radius':'5px',
+								'bottom':'1em',
+								'box-sizing':'border-box',
+								'height':'calc(100% - 2em)',
+								'left':'1em',
+								'margin':'auto',
+								'padding':'0.25em',
+								'position':'absolute',
+								'right':'1em',
+								'top':'1em',
+								'vertical-align':'top',
+								'width':'calc(100% - 2em)'
+							});
+							$('div.customview-navicontents').css({
+								'box-sizing':'border-box',
+								'height':'calc(100% - 40px)',
+								'margin':'0px',
+								'margin-top':'40px',
+								'padding':'0px',
+								'overflow-x':'hidden',
+								'overflow-y':'auto',
+								'vertical-align':'top',
+								'white-space':'normal',
+								'z-index':'1'
+							})
+							.prepend(vars.viewlist);
+						}
+					}
 				}
 			},function(error){});
+		},
+		/* marker load */
+		loadmarkers:function(){
+			var markers=[];
+			$.each(vars.apps[vars.config['app']],function(index,values){
+				var record=values
+				var lat=parseFloat('0'+record[vars.config['lat']].value);
+				var lng=parseFloat('0'+record[vars.config['lng']].value);
+				var label='';
+				var datespan='';
+				if (lat+lng!=0)
+				{
+					if (vars.config["datespan"].length!=0)
+						if (record[vars.config['datespan']].value!=null)
+						{
+							var datefrom=new Date(record[vars.config['datespan']].value.dateformat());
+							var dateto=new Date();
+							var datediff=dateto.getTime()-datefrom.getTime();
+							datespan=Math.floor(datediff/(1000*60*60*24)).toString();
+						}
+					label='';
+					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
+					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
+					markers.push({
+						colors:vars.config['defaultcolor'],
+						fontsize:vars.config['markerfont'],
+						label:label,
+						lat:lat,
+						lng:lng,
+						size:vars.config['markersize'],
+						extensionindex:datespan
+					});
+				}
+			});
+			return markers;
 		},
 		/* swtich view of marker */
 		reloadmap:function(callback){
@@ -326,7 +436,7 @@ jQuery.noConflict();
 							var latlng=null;
 							var olddate=new Date();
 							var oldid=Number.MAX_SAFE_INTEGER;
-							$.each(vars.apps[kintone.app.getId()],function(index,values){
+							$.each(vars.apps[vars.config['app']],function(index,values){
 								var record=values
 								if (record[vars.config['datespan']].value!=null)
 								{
@@ -364,55 +474,93 @@ jQuery.noConflict();
 		/* check display map */
 		if (!'map' in vars.config) return event;
 		if (vars.config['map']!='1') return event;
+		/* check device */
+		vars.ismobile=!('viewType' in event);
 		/* check view type */
-		if (event.viewType.toUpperCase()=='CALENDAR') return event;
+		if (!vars.ismobile) if (event.viewType.toUpperCase()=='CALENDAR') return event;
 		/* initialize valiable */
 		vars.markers=[];
-		vars.ismobile=(navigator.userAgent.indexOf('iPhone')>0 || navigator.userAgent.indexOf('iPad')>0 || navigator.userAgent.indexOf('Android')>0);
-		/* check viewport */
-		if (!$('meta[name=viewport]').size()) $('meta').last().after($('<meta name="viewport">').attr('content','width=device-width,initial-scale=1.0'));
+		var checkbox=$('<label class="customview-checkbox">');
+		var span=$('<span>');
+		if (vars.ismobile)
+		{
+			checkbox.css({
+				'background-color':'#f7f9fa',
+				'border':'none',
+				'border-radius':'5px',
+				'box-sizing':'border-box',
+				'cursor':'pointer',
+				'display':'inline-block',
+				'height':'48px',
+				'line-height':'48px',
+				'margin':'0px',
+				'padding':'0px 10px',
+				'vertical-align':'top',
+				'width':'100%'
+			})
+			span.css({
+				'color':'#3498db',
+				'padding-left':'5px'
+			})
+		}
 		/* create currentlocation checkbox */
-		vars.currentlocation=$('<label class="customview-checkbox">')
+		vars.currentlocation=checkbox.clone(true)
 		.append($('<input type="checkbox" id="currentlocation">')
 			.on('change',function(e){
 				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
+				if ($('.customview-menu').is(':visible'))
+				{
+					if (vars.ismobile) $('div.customview-navi').hide();
+					else $('div.customview-navi').removeClass('show');
+				}
 				/* swtich view of marker */
 				functions.reloadmap(function(){
 					vars.chaselocation.find('input[type=checkbox]').prop('checked',vars.currentlocation.find('input[type=checkbox]').prop('checked'));
 				});
 			})
 		)
-		.append($('<span>現在地を表示</span>'));
+		.append(span.clone(true).text('現在地を表示'));
 		vars.currentlocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
 		/* create chaselocation checkbox */
-		vars.chaselocation=$('<label class="customview-checkbox">')
+		vars.chaselocation=checkbox.clone(true)
 		.append($('<input type="checkbox" id="chaselocation">')
 			.on('change',function(e){
 				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
+				if ($('.customview-menu').is(':visible'))
+				{
+					if (vars.ismobile) $('div.customview-navi').hide();
+					else $('div.customview-navi').removeClass('show');
+				}
 			})
 		)
-		.append($('<span>現在地を追跡</span>'));
+		.append(span.clone(true).text('現在地を追跡'));
 		vars.chaselocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
 		if (vars.config['chasemode']!='1') vars.chaselocation.hide();
 		/* create displayinfowindow checkbox */
-		vars.displayinfowindow=$('<label class="customview-checkbox">')
+		vars.displayinfowindow=checkbox.clone(true)
 		.append($('<input type="checkbox" id="infowindow">')
 			.on('change',function(e){
 				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
+				if ($('.customview-menu').is(':visible'))
+				{
+					if (vars.ismobile) $('div.customview-navi').hide();
+					else $('div.customview-navi').removeClass('show');
+				}
 				if ($(this).prop('checked')) vars.map.openinfowindow();
 				else vars.map.closeinfowindow();
 			})
 		)
-		.append($('<span>情報ウインドウを表示</span>'));
+		.append(span.clone(true).text('情報ウインドウを表示'));
 		/* create displaydatespan checkbox */
-		vars.displaydatespan=$('<label class="customview-checkbox">')
+		vars.displaydatespan=checkbox.clone(true)
 		.append($('<input type="checkbox" id="datespan">')
 			.on('change',function(e){
 				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
+				if ($('.customview-menu').is(':visible'))
+				{
+					if (vars.ismobile) $('div.customview-navi').hide();
+					else $('div.customview-navi').removeClass('show');
+				}
 				var color='';
 				var colors=JSON.parse(vars.config['datespancolors']);
 				for (var i=0;i<vars.markers.length;i++)
@@ -430,20 +578,24 @@ jQuery.noConflict();
 				functions.reloadmap();
 			})
 		)
-		.append($('<span>経過日数を表示</span>'));
+		.append(span.clone(true).text('経過日数を表示'));
 		if (vars.config["datespan"].length==0) vars.displaydatespan.css({'display':'none'});
 		/* create displaypoi checkbox */
-		vars.displaypoi=$('<label class="customview-checkbox">')
+		vars.displaypoi=checkbox.clone(true)
 		.append($('<input type="checkbox" id="poi">')
 			.on('change',function(e){
 				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible')) $('div.customview-navi').removeClass('show');
+				if ($('.customview-menu').is(':visible'))
+				{
+					if (vars.ismobile) $('div.customview-navi').hide();
+					else $('div.customview-navi').removeClass('show');
+				}
 				/* swtich view of poi */
 				if ($(this).prop('checked')) vars.map.map.setOptions({styles:vars.styles.show});
 				else vars.map.map.setOptions({styles:vars.styles.hide});
 			})
 		)
-		.append($('<span>施設を表示</span>'));
+		.append(span.clone(true).text('施設を表示'));
 		/* create display map button */
 		vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
 		.text('地図を表示')
@@ -451,11 +603,45 @@ jQuery.noConflict();
 			functions.reloadmap(function(){vars.isdisplaymap=true;});
 		});
 		/* load datas */
-		vars.apps[kintone.app.getId()]=null;
-		vars.offset[kintone.app.getId()]=0;
-		functions.loaddatas(function(){
-			if (vars.ismobile) functions.reloadmap(function(){vars.isdisplaymap=true;});
-		});
+		vars.apps[vars.config['app']]=null;
+		vars.offset[vars.config['app']]=0;
+		if (vars.ismobile)
+		{
+			kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:vars.config['app']},function(resp){
+				vars.viewlist=$('<select>').css({
+					'background-color':'#f7f9fa',
+					'border':'1px solid #3498db',
+					'border-radius':'5px',
+					'box-sizing':'border-box',
+					'color':'#3498db',
+					'display':'block',
+					'height':'48px',
+					'line-height':'48px',
+					'margin':'0px',
+					'margin-bottom':'15px',
+					'padding':'0px 10px',
+					'vertical-align':'top',
+					'width':'100%'
+				});
+				$.each(resp.views,function(key,values){
+				    if (values.type.toUpperCase()=='LIST') vars.viewlist.append($('<option>').text(values.name).val(values.filterCond));
+				})
+				vars.viewlist.on('change',function(){
+					if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
+					vars.isdisplaymap=false;
+					vars.apps[vars.config['app']]=null;
+					vars.offset[vars.config['app']]=0;
+					functions.loaddatas($(this).val(),function(){
+						functions.reloadmap(function(){
+							vars.isdisplaymap=true;
+							$('div.customview-navi').hide();
+						});
+					});
+				});
+				functions.loaddatas($('option',vars.viewlist).first().val(),function(){functions.reloadmap(function(){vars.isdisplaymap=true;});});
+			},function(error){});
+		}
+		else functions.loaddatas('');
 		return event;
 	});
 	kintone.events.on(events.show,function(event){

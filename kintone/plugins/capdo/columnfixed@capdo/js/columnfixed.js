@@ -17,7 +17,8 @@ jQuery.noConflict();
 	var vars={
 		columnlist:null,
 		loaded:false,
-		columns:[]
+		columns:[],
+		config:{}
 	};
 	var events={
 		lists:[
@@ -74,36 +75,52 @@ jQuery.noConflict();
 	kintone.events.on(events.lists,function(event){
 		/* check view type */
 		if (event.viewType.toUpperCase()!='LIST') return event;
-		/* check loaded */
-		if(!vars.loaded)
-		{
-			kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
-				$.each(resp.views,function(key,values){
-				    if (values.type.toUpperCase()=='LIST' && values.id==event.viewId)
-				    {
-						var headspace=$(kintone.app.getHeaderMenuSpaceElement());
-						vars.columnlist=$('<select id="columnlist">').addClass('columnlist-select').on('change',function(){functions.setsticky();});
-						/* initialize valiable */
-						vars.columns=values.fields;
-						/* append columns */
-						vars.columnlist.append($('<option>').text('列固定フィールド').val(''));
-						$.each(values.fields,function(index){
-							vars.columnlist.append($('<option>').text(values.fields[index]).val(values.fields[index]));
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					/* check loaded */
+					if(!vars.loaded)
+					{
+						kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
+							$.each(resp.views,function(key,values){
+							    if (values.type.toUpperCase()=='LIST' && values.id==event.viewId)
+							    {
+									var headspace=$(kintone.app.getHeaderMenuSpaceElement());
+									vars.columnlist=$('<select id="columnlist">').addClass('columnlist-select').on('change',function(){functions.setsticky();});
+									/* initialize valiable */
+									vars.columns=values.fields;
+									/* append columns */
+									vars.columnlist.append($('<option>').text('列固定フィールド').val(''));
+									$.each(values.fields,function(index){
+										vars.columnlist.append($('<option>').text(values.fields[index]).val(values.fields[index]));
+									});
+									headspace.append($('<div>').addClass('columnlist-container').append(vars.columnlist));
+									vars.loaded=true;
+							    }
+							})
 						});
-						headspace.append($('<div>').addClass('columnlist-container').append(vars.columnlist));
-						vars.loaded=true;
-				    }
-				})
-			});
-		}
-		$.each($('div#view-list-data-gaia').find('td'),function(){
-			$(this).css({'background-color':$(this).closest('tr').css('background-color')});
-		});
-		$.each($('div#view-list-data-gaia').find('th'),function(index){
-			$(this).css({'z-index':index.toString()});
-			$(this).find('div').css({'background-color':'#FFFFFF'});
-		});
-		$('div#view-list-data-gaia').children('table').on('mousemove',function(){functions.setsticky();});
+					}
+					$.each($('div#view-list-data-gaia').find('td'),function(){
+						$(this).css({'background-color':$(this).closest('tr').css('background-color')});
+					});
+					$.each($('div#view-list-data-gaia').find('th'),function(index){
+						$(this).css({'z-index':index.toString()});
+						$(this).find('div').css({'background-color':'#FFFFFF'});
+					});
+					$('div#view-list-data-gaia').children('table').on('mousemove',function(){functions.setsticky();});
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

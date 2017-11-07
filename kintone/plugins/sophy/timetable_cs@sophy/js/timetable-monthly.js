@@ -72,7 +72,7 @@ jQuery.noConflict();
 										'height':'100%'
 									})
 									.on('click',function(){
-										var container=$(this).closest('.timetable-monthly-cell');
+										var cell=$(this).closest('.timetable-monthly-cell');
 										/* get date and time for transfer */
 										vars.termselect.show({
 											fromhour:parseInt(vars.const['starthour'].value),
@@ -92,13 +92,13 @@ jQuery.noConflict();
 														}
 														hours+=selection[i].hours;
 													}
-													if (hours!=parseFloat($('#basehours',container).val()))
+													if (hours!=parseFloat($('#basehours',cell).val()))
 													{
 														swal('Error!','振替前と振替後の時間が合いません。','error');
 														return;
 													}
 													/* regist transfers */
-													$.registtransfers(container,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+													$.registtransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
 														/* reload view */
 														functions.load();
 													});

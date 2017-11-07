@@ -29,24 +29,39 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
-	kintone.events.on(events.save,function(event){
-		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		if (!vars.config) return event;
-		if (!('relation' in vars.config))  return event;
-		var error='';
-		vars.relations=JSON.parse(vars.config['relation']);
-		$.each(vars.relations,function(index){
-			error='';
-			if (!event.record[vars.relations[index].trigger].value) return true;
-			if (event.record[vars.relations[index].trigger].value.length==0) return true;
-			if (error.length==0 && !event.record[vars.relations[index].require].value) error='必須項目です。';
-			if (error.length==0 && event.record[vars.relations[index].require].value.length==0) error='必須項目です。';
-			if (error.length!=0)
+	vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+	kintone.proxy(
+		vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+		'GET',
+		{},
+		{},
+		function(body,status,headers){
+			if (status>=200 && status<300)
 			{
-				event.record[vars.relations[index].require].error=error;
-				event.error='未入力項目があります。';
+				var json=JSON.parse(body);
+				if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+				kintone.events.on(events.save,function(event){
+					if (!vars.config) return event;
+					if (!('relation' in vars.config))  return event;
+					var error='';
+					vars.relations=JSON.parse(vars.config['relation']);
+					$.each(vars.relations,function(index){
+						error='';
+						if (!event.record[vars.relations[index].trigger].value) return true;
+						if (event.record[vars.relations[index].trigger].value.length==0) return true;
+						if (error.length==0 && !event.record[vars.relations[index].require].value) error='必須項目です。';
+						if (error.length==0 && event.record[vars.relations[index].require].value.length==0) error='必須項目です。';
+						if (error.length!=0)
+						{
+							event.record[vars.relations[index].require].error=error;
+							event.error='未入力項目があります。';
+						}
+					});
+					return event;
+				});
 			}
-		});
-		return event;
-	});
+			else swal('Error!','ライセンス認証に失敗しました。','error');
+		},
+		function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+	);
 })(jQuery,kintone.$PLUGIN_ID);

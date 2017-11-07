@@ -18,7 +18,9 @@ jQuery.noConflict();
 		date:new Date(),
 		calendar:null,
 		graphlegend:null,
+		progress:null,
 		table:null,
+		termselect:null,
 		apps:{},
 		lectures:{},
 		config:{},
@@ -109,8 +111,56 @@ jQuery.noConflict();
 			/* cell value switching */
 			cell.append(
 				$('<p>')
-				.css({'background-color':'#'+color})
-				.html('&nbsp;')
+				.css({
+					'background-color':'#'+color,
+					'padding-left':'5px'
+				})
+				.append(
+					$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/refresh.png" alt="振替" title="振替">')
+					.css({
+						'cursor':'pointer',
+						'height':'100%'
+					})
+					.on('click',function(){
+						var cell=$(this).closest('td');
+						/* get date and time for transfer */
+						vars.termselect.show({
+							fromhour:parseInt(vars.const['starthour'].value),
+							tohour:parseInt(vars.const['endhour'].value),
+							buttons:{
+								ok:function(selection){
+									/* close termselect */
+									vars.termselect.hide();
+									var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
+									var hours=0;
+									for (var i=0;i<selection.length;i++)
+									{
+										if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
+										{
+											swal('Error!','受講終了時間が終業時刻を超えています。','error');
+											return;
+										}
+										hours+=selection[i].hours;
+									}
+									if (hours!=parseFloat($('#basehours',cell).val()))
+									{
+										swal('Error!','振替前と振替後の時間が合いません。','error');
+										return;
+									}
+									/* regist transfers */
+									$.registtransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+										/* reload view */
+										functions.load();
+									});
+								},
+								cancel:function(){
+									/* close termselect */
+									vars.termselect.hide();
+								}
+							}
+						});
+					})
+				)
 			);
 			$.each(filter,function(key,values){
 				if (values!=null)
@@ -265,6 +315,7 @@ jQuery.noConflict();
 		var next=$('<button id="next" class="customview-button next-button">');
 		var splash=$('<div id="splash">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
+		vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
 		splash.append(
 			$('<p>')
 			.append($('<span>').text('now loading'))
@@ -281,6 +332,7 @@ jQuery.noConflict();
 		feed.append(next);
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
+		$('body').append(vars.progress);
 		$('body').append(splash);
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
@@ -373,6 +425,21 @@ jQuery.noConflict();
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
 			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
 			else vars.const=vars.apps[vars.config['const']][0];
+			/* create termselect */
+			vars.termselect=$('body').termselect({
+				isadd:true,
+				isdatepick:true,
+				buttons:{
+					ok:{
+						class:'customview-button referer-button-ok',
+						text:'OK'
+					},
+					cancel:{
+						class:'customview-button referer-button-cancel',
+						text:'Cancel'
+					}
+				}
+			});
 			/* append graph legend */
 			$.each(vars.lectures,function(key,values){
 				vars.graphlegend

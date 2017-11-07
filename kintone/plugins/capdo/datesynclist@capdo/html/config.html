@@ -1,50 +1,56 @@
 <div class="block">
-  <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">フィールド設定</div>
-	<table class="relations">
-		<thead>
-			<tr>
-				<th>日付フィールド</th>
-				<th>変更フィールド</th>
-				<th>変更値</th>
-				<th colspan="2"></th>
-			</tr>
-		</tbody>
-		<tbody>
-			<tr>
-				<td>
-					<div class="kintoneplugin-select-outer">
-						<div class="kintoneplugin-select">
-							<select id="date">
-								<option value=""></option>
-							</select>
+	<div class="kintoneplugin-row">
+	<div class="kintoneplugin-label">フィールド設定</div>
+		<table class="relations">
+			<thead>
+				<tr>
+					<th>日付フィールド</th>
+					<th>変更フィールド</th>
+					<th>変更値</th>
+					<th colspan="2"></th>
+				</tr>
+			</tbody>
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="date">
+									<option value=""></option>
+								</select>
+							</div>
 						</div>
-					</div>
-				</td>
-				<td>
-					<div class="kintoneplugin-select-outer">
-						<div class="kintoneplugin-select">
-							<select id="dropdown">
-								<option value=""></option>
-							</select>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="dropdown">
+									<option value=""></option>
+								</select>
+							</div>
 						</div>
-					</div>
-				</td>
-				<td>
-					<div class="kintoneplugin-select-outer">
-						<div class="kintoneplugin-select">
-							<select id="item">
-								<option value=""></option>
-							</select>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="item">
+									<option value=""></option>
+								</select>
+							</div>
 						</div>
-					</div>
-				</td>
-				<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-				<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
-			</tr>
-		</tbody>
-	</table>
-  </div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
 </div>
 <div class="block">
 	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>

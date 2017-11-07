@@ -181,6 +181,7 @@ jQuery.noConflict();
 	    }
 	    if (error) return;
 		/* setup config */
+        config['app']=kintone.app.getId().toString();
         config['address']=$('select#address').val();
         config['pluscode']=$('select#pluscode').val();
         config['lat']=$('select#lat').val();
