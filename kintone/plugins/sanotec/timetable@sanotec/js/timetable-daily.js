@@ -221,6 +221,18 @@ jQuery.noConflict();
 								rowspans[i].cache=cell.find('p').text();
 								rowspans[i].index=index;
 								rowspans[i].span=0;
+								for (var i2=i+1;i2<vars.segments.length;i2++)
+								{
+									cell=row.find('td').eq(i2);
+									if (rowspans[i2].index!=-1)
+									{
+										vars.table.contents.find('tr').eq(rowspans[i2].index).find('td').eq(i2).attr('rowspan',rowspans[i2].span);
+										for (var i3=rowspans[i2].index+1;i3<index;i3++) vars.table.contents.find('tr').eq(i3).find('td').eq(i2).hide();
+									}
+									rowspans[i2].cache=cell.find('p').text();
+									rowspans[i2].index=index;
+									rowspans[i2].span=0;
+								}
 							}
 							rowspans[i].span++;
 						}

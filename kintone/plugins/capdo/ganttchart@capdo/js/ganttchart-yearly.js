@@ -23,6 +23,7 @@ jQuery.noConflict();
 		table:null,
 		apps:{},
 		config:{},
+		fieldinfos:{},
 		offset:{},
 		colors:[],
 		fields:[],
@@ -124,7 +125,7 @@ jQuery.noConflict();
 				/* create rowheads */
 				$.each(records,function(index){
 					var head='';
-					for (var i=0;i<vars.segments.length;i++) head+=records[index][vars.segments[i]].value+',';
+					for (var i=0;i<vars.segments.length;i++) head+=$.fieldvalue(records[index][vars.segments[i]])+',';
 					head=head.replace(/,$/g,'');
 					if (heads.indexOf(head)<0) heads.push(head);
 				});
@@ -217,7 +218,7 @@ jQuery.noConflict();
 						var head=heads[i].split(',');
 						var filter=$.grep(records,function(item,index){
 							var exists=0;
-							for (var i2=0;i2<vars.segments.length;i2++) if (item[vars.segments[i2]].value==head[i2]) exists++;
+							for (var i2=0;i2<vars.segments.length;i2++) if ($.fieldvalue(item[vars.segments[i2]])==head[i2]) exists++;
 							return exists==vars.segments.length;
 						});
 						/* rebuild view */
@@ -248,6 +249,18 @@ jQuery.noConflict();
 							rowspans[i].cache=cell.find('p').text();
 							rowspans[i].index=index;
 							rowspans[i].span=0;
+							for (var i2=i+1;i2<vars.segments.length;i2++)
+							{
+								cell=row.find('td').eq(i2);
+								if (rowspans[i2].index!=-1)
+								{
+									vars.table.contents.find('tr').eq(rowspans[i2].index).find('td').eq(i2).attr('rowspan',rowspans[i2].span);
+									for (var i3=rowspans[i2].index+1;i3<index;i3++) vars.table.contents.find('tr').eq(i3).find('td').eq(i2).hide();
+								}
+								rowspans[i2].cache=cell.find('p').text();
+								rowspans[i2].index=index;
+								rowspans[i2].span=0;
+							}
 						}
 						rowspans[i].span++;
 					}
@@ -286,7 +299,18 @@ jQuery.noConflict();
 			query+='('+vars.config['fromdate']+'<"'+vars.fromdate.format('Y-m-d')+'" and '+vars.config['todate']+'>"'+vars.todate.format('Y-m-d')+'")';
 			query+=')';
 			sort=' order by ';
-			for (var i=0;i<vars.segments.length;i++) sort+=vars.segments[i]+' asc,';
+			for (var i=0;i<vars.segments.length;i++)
+				switch (vars.fieldinfos[vars.segments[i]].type)
+				{
+					case 'GROUP_SELECT':
+					case 'ORGANIZATION_SELECT':
+					case 'STATUS_ASSIGNEE':
+					case 'USER_SELECT':
+						break;
+					default:
+						sort+=vars.segments[i]+' asc,';
+						break;
+				}
 			sort+=vars.config['fromdate']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -387,6 +411,7 @@ jQuery.noConflict();
 					vars.segments=vars.config['segment'].split(',');
 					/* get fields of app */
 					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+						vars.fieldinfos=resp.properties;
 						vars.fields=['$id'];
 						$.each(resp.properties,function(key,values){
 							vars.fields.push(values.code);

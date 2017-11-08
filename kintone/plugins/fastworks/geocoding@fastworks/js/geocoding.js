@@ -182,6 +182,8 @@ jQuery.noConflict();
 				{
 					/* create map */
 					var isreload=(vars.map!=null);
+					var checkbox=$('<label class="customview-checkbox">');
+					var span=$('<span>');
 					if (isreload)
 					{
 						vars.markers=functions.loadmarkers();
@@ -232,6 +234,110 @@ jQuery.noConflict();
 						isreload,
 						function(target,latlng){
 							console.log(latlng);
+						});
+						if (vars.ismobile)
+						{
+							checkbox.css({
+								'background-color':'#f7f9fa',
+								'border':'none',
+								'border-radius':'5px',
+								'box-sizing':'border-box',
+								'cursor':'pointer',
+								'display':'inline-block',
+								'height':'48px',
+								'line-height':'48px',
+								'margin':'0px',
+								'padding':'0px 10px',
+								'vertical-align':'top',
+								'width':'100%'
+							})
+							span.css({
+								'color':'#3498db',
+								'padding-left':'5px'
+							})
+						}
+						/* create currentlocation checkbox */
+						vars.currentlocation=checkbox.clone(true)
+						.append($('<input type="checkbox" id="currentlocation">')
+							.on('change',function(e){
+								/* swtich view of menu */
+								if ($('.customview-menu').is(':visible'))
+								{
+									if (vars.ismobile) $('div.customview-navi').hide();
+									else $('div.customview-navi').removeClass('show');
+								}
+								/* swtich view of marker */
+								functions.reloadmap();
+							})
+						)
+						.append(span.clone(true).text('現在地を表示'));
+						vars.currentlocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
+						/* create chaselocation checkbox */
+						vars.chaselocation=checkbox.clone(true)
+						.append($('<input type="checkbox" id="chaselocation">')
+							.on('change',function(e){
+								/* swtich view of menu */
+								if ($('.customview-menu').is(':visible'))
+								{
+									if (vars.ismobile) $('div.customview-navi').hide();
+									else $('div.customview-navi').removeClass('show');
+								}
+							})
+						)
+						.append(span.clone(true).text('現在地を追跡'));
+						if (vars.config['chasemode']!='1') vars.chaselocation.hide();
+						/* create displayinfowindow checkbox */
+						vars.displayinfowindow=checkbox.clone(true)
+						.append($('<input type="checkbox" id="infowindow">')
+							.on('change',function(e){
+								/* swtich view of menu */
+								if ($('.customview-menu').is(':visible'))
+								{
+									if (vars.ismobile) $('div.customview-navi').hide();
+									else $('div.customview-navi').removeClass('show');
+								}
+								if ($(this).prop('checked')) vars.map.openinfowindow();
+								else vars.map.closeinfowindow();
+							})
+						)
+						.append(span.clone(true).text('情報ウインドウを表示'));
+						/* create displaydatespan checkbox */
+						vars.displaydatespan=checkbox.clone(true)
+						.append($('<input type="checkbox" id="datespan">')
+							.on('change',function(e){
+								/* swtich view of menu */
+								if ($('.customview-menu').is(':visible'))
+								{
+									if (vars.ismobile) $('div.customview-navi').hide();
+									else $('div.customview-navi').removeClass('show');
+								}
+								/* swtich view of marker */
+								functions.reloadmap();
+							})
+						)
+						.append(span.clone(true).text('経過日数を表示'));
+						if (vars.config["datespan"].length==0) vars.displaydatespan.css({'display':'none'});
+						/* create displaypoi checkbox */
+						vars.displaypoi=checkbox.clone(true)
+						.append($('<input type="checkbox" id="poi">')
+							.on('change',function(e){
+								/* swtich view of menu */
+								if ($('.customview-menu').is(':visible'))
+								{
+									if (vars.ismobile) $('div.customview-navi').hide();
+									else $('div.customview-navi').removeClass('show');
+								}
+								/* swtich view of poi */
+								if ($(this).prop('checked')) vars.map.map.setOptions({styles:vars.styles.show});
+								else vars.map.map.setOptions({styles:vars.styles.hide});
+							})
+						)
+						.append(span.clone(true).text('施設を表示'));
+						/* create display map button */
+						vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
+						.text('地図を表示')
+						.on('click',function(e){
+							functions.reloadmap(function(){vars.isdisplaymap=true;});
 						});
 						vars.map.buttonblock
 						.prepend(
@@ -387,6 +493,8 @@ jQuery.noConflict();
 			var iscurrentlocation=vars.currentlocation.find('input[type=checkbox]').prop('checked');
 			var isextensionindex=vars.displaydatespan.find('input[type=checkbox]').prop('checked');
 			var isopeninfowindow=vars.displayinfowindow.find('input[type=checkbox]').prop('checked');
+			var color='';
+			var colors=JSON.parse(vars.config['datespancolors']);
 			var markers=$.extend(true,[],vars.markers);
 			if (isextensionindex)
 			{
@@ -396,6 +504,18 @@ jQuery.noConflict();
 					if(parseFloat('0'+a.extensionindex)<parseFloat('0'+b.extensionindex)) return 1;
 					return 0;
 				});
+			}
+			for (var i=0;i<markers.length;i++)
+			{
+				color=vars.config['defaultcolor'];
+				if (isextensionindex)
+				{
+					var datespan=markers[i].extensionindex;
+					$.each(colors,function(key,values){
+						if (parseInt(datespan)>parseInt(key)-1){color=values;}
+					});
+				}
+				markers[i].colors=color;
 			}
 			if (iscurrentlocation)
 			{
@@ -480,129 +600,12 @@ jQuery.noConflict();
 		if (!vars.ismobile) if (event.viewType.toUpperCase()=='CALENDAR') return event;
 		/* initialize valiable */
 		vars.markers=[];
-		var checkbox=$('<label class="customview-checkbox">');
-		var span=$('<span>');
-		if (vars.ismobile)
+		if (vars.map!=null)
 		{
-			checkbox.css({
-				'background-color':'#f7f9fa',
-				'border':'none',
-				'border-radius':'5px',
-				'box-sizing':'border-box',
-				'cursor':'pointer',
-				'display':'inline-block',
-				'height':'48px',
-				'line-height':'48px',
-				'margin':'0px',
-				'padding':'0px 10px',
-				'vertical-align':'top',
-				'width':'100%'
-			})
-			span.css({
-				'color':'#3498db',
-				'padding-left':'5px'
-			})
+			if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
 		}
-		/* create currentlocation checkbox */
-		vars.currentlocation=checkbox.clone(true)
-		.append($('<input type="checkbox" id="currentlocation">')
-			.on('change',function(e){
-				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible'))
-				{
-					if (vars.ismobile) $('div.customview-navi').hide();
-					else $('div.customview-navi').removeClass('show');
-				}
-				/* swtich view of marker */
-				functions.reloadmap(function(){
-					vars.chaselocation.find('input[type=checkbox]').prop('checked',vars.currentlocation.find('input[type=checkbox]').prop('checked'));
-				});
-			})
-		)
-		.append(span.clone(true).text('現在地を表示'));
-		vars.currentlocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
-		/* create chaselocation checkbox */
-		vars.chaselocation=checkbox.clone(true)
-		.append($('<input type="checkbox" id="chaselocation">')
-			.on('change',function(e){
-				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible'))
-				{
-					if (vars.ismobile) $('div.customview-navi').hide();
-					else $('div.customview-navi').removeClass('show');
-				}
-			})
-		)
-		.append(span.clone(true).text('現在地を追跡'));
-		vars.chaselocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
-		if (vars.config['chasemode']!='1') vars.chaselocation.hide();
-		/* create displayinfowindow checkbox */
-		vars.displayinfowindow=checkbox.clone(true)
-		.append($('<input type="checkbox" id="infowindow">')
-			.on('change',function(e){
-				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible'))
-				{
-					if (vars.ismobile) $('div.customview-navi').hide();
-					else $('div.customview-navi').removeClass('show');
-				}
-				if ($(this).prop('checked')) vars.map.openinfowindow();
-				else vars.map.closeinfowindow();
-			})
-		)
-		.append(span.clone(true).text('情報ウインドウを表示'));
-		/* create displaydatespan checkbox */
-		vars.displaydatespan=checkbox.clone(true)
-		.append($('<input type="checkbox" id="datespan">')
-			.on('change',function(e){
-				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible'))
-				{
-					if (vars.ismobile) $('div.customview-navi').hide();
-					else $('div.customview-navi').removeClass('show');
-				}
-				var color='';
-				var colors=JSON.parse(vars.config['datespancolors']);
-				for (var i=0;i<vars.markers.length;i++)
-				{
-					color=vars.config['defaultcolor'];
-					if ($(this).prop('checked'))
-					{
-						var datespan=vars.markers[i].extensionindex;
-						$.each(colors,function(key,values){
-							if (parseInt(datespan)>parseInt(key)-1){color=values;}
-						});
-					}
-					vars.markers[i].colors=color;
-				}
-				functions.reloadmap();
-			})
-		)
-		.append(span.clone(true).text('経過日数を表示'));
-		if (vars.config["datespan"].length==0) vars.displaydatespan.css({'display':'none'});
-		/* create displaypoi checkbox */
-		vars.displaypoi=checkbox.clone(true)
-		.append($('<input type="checkbox" id="poi">')
-			.on('change',function(e){
-				/* swtich view of menu */
-				if ($('.customview-menu').is(':visible'))
-				{
-					if (vars.ismobile) $('div.customview-navi').hide();
-					else $('div.customview-navi').removeClass('show');
-				}
-				/* swtich view of poi */
-				if ($(this).prop('checked')) vars.map.map.setOptions({styles:vars.styles.show});
-				else vars.map.map.setOptions({styles:vars.styles.hide});
-			})
-		)
-		.append(span.clone(true).text('施設を表示'));
-		/* create display map button */
-		vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
-		.text('地図を表示')
-		.on('click',function(e){
-			functions.reloadmap(function(){vars.isdisplaymap=true;});
-		});
 		/* load datas */
+		vars.isdisplaymap=false;
 		vars.apps[vars.config['app']]=null;
 		vars.offset[vars.config['app']]=0;
 		if (vars.ismobile)

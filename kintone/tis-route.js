@@ -23,6 +23,7 @@ var RouteMap=function(options){
 		needroute:true,
 		loadedcallback:null,
 		clickcallback:null,
+		markerclickcallback:null,
 		isreload:false
 	},options);
 	/* valiable */
@@ -36,6 +37,7 @@ var RouteMap=function(options){
 	this.needroute=options.needroute;
 	this.loadedcallback=options.loadedcallback;
 	this.clickcallback=options.clickcallback;
+	this.markerclickcallback=options.markerclickcallback;
 	/* loading wait */
 	var waitgoogle=function(callback){
 		setTimeout(function(){
@@ -141,7 +143,7 @@ var RouteMap=function(options){
 		{
 			google.maps.event.addListener(my.map,'click',function(e){
 				my.clickcallback(my.map,e.latLng);
-			});			
+			});
 		}
 	});
 };
@@ -225,6 +227,7 @@ RouteMap.prototype={
 			isopeninfowindow:true,
 			callback:null
 		},options);
+		var my=this;
 		var colors=this.colors;
 		var map=this.map;
 		var renderer=this.directionsRenderer;
@@ -278,6 +281,12 @@ RouteMap.prototype={
 					text:markeroptions.label.toString(),
 					fontSize:markeroptions.fontsize+'px',
 				});
+			if (my.markerclickcallback!=null)
+			{
+				google.maps.event.addListener(marker,'click',function(e){
+					my.markerclickcallback(e.latLng);
+				});
+			}
 			markers.push(marker);
 			/* append balloons */
 			if (infowindowoptions.label.length!=0)

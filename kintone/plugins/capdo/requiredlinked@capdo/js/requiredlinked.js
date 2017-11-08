@@ -23,7 +23,8 @@ jQuery.noConflict();
 			'app.record.create.submit',
 			'app.record.edit.submit',
 			'mobile.app.record.create.submit',
-			'mobile.app.record.edit.submit'
+			'mobile.app.record.edit.submit',
+			'app.record.index.edit.submit'
 		]
 	};
 	/*---------------------------------------------------------------

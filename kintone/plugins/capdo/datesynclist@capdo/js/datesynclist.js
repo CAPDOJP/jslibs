@@ -42,6 +42,7 @@ jQuery.noConflict();
 						vars.events.push('mobile.app.record.create.change.'+vars.relations[i].date);
 						vars.events.push('app.record.edit.change.'+vars.relations[i].date);
 						vars.events.push('mobile.app.record.edit.change.'+vars.relations[i].date);
+						vars.events.push('app.record.index.edit.change.'+vars.relations[i].date);
 					}
 					if (vars.events)
 						kintone.events.on(vars.events,function(event){
