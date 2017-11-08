@@ -553,7 +553,7 @@ jQuery.extend({
 		];
 	}
 });
-jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,isreload,clickcallback){
+jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,isreload,clickcallback,markerclickcallback){
 	return new RouteMap({
 		apiikey:apiikey,
 		container:this,
@@ -561,6 +561,7 @@ jQuery.fn.routemap=function(apiikey,isfullscreen,needroute,loadedcallback,isrelo
 		needroute:(needroute===undefined)?true:needroute,
 		loadedcallback:(loadedcallback===undefined)?null:loadedcallback,
 		clickcallback:(clickcallback===undefined)?null:clickcallback,
+		markerclickcallback:(markerclickcallback===undefined)?null:markerclickcallback,
 		isreload:(isreload===undefined)?false:isreload
 	});
 };
