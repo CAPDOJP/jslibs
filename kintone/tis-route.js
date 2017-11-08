@@ -302,7 +302,7 @@ RouteMap.prototype={
 				var balloon=new google.maps.InfoWindow({content:infowindowoptions.label,disableAutoPan:true});
 				if (options.isopeninfowindow) balloon.open(map,marker);
 				google.maps.event.addListener(marker,'click',function(event){
-					if (!balloon.getMap()) balloon.open(map,marker);
+					if (!balloon.getMap() && my.markerclickcallback==null) balloon.open(map,marker);
 				});
 				balloons.push(balloon);
 			}

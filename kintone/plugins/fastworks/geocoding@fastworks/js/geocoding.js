@@ -297,17 +297,11 @@ jQuery.noConflict();
 									break;
 							}
 						},
-						function(latlng){
-							console.log(latlng.lat());
-							console.log(latlng.lng());
+						function(index){
 							/* marker click */
 							var informationname=vars.fieldinfos[vars.config['information']].label;
-							var filter=$.grep(vars.markers,function(item,index){
-								return (new google.maps.LatLng(item['lat'],item['lng'])==latlng);
-							});
-							if (filter.length==0) return;
-							if (!('id' in filter[0])) return;
-							vars.editor.text.val(filter[0].label.replace(/<br>.*$/g,''));
+							if (!('id' in vars.markers[index])) return;
+							vars.editor.text.val(vars.markers[index].label.replace(/<br>.*$/g,''));
 							vars.editor.show({
 								type:'upd',
 								placeholder:informationname+'を入力',
@@ -320,16 +314,16 @@ jQuery.noConflict();
 										}
 										var body={
 											app:kintone.app.getId(),
-											id:filter[0].id,
+											id:vars.markers[index].id,
 											record:{}
 										};
 										body.record[vars.config['information']]={value:vars.editor.text.val()};
 										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
 										if ($('input[type=checkbox]',vars.editor.checkbox).prop('checked')) body.record[vars.config['remove']]={value:['一時撤去']};
 										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-											filter[0].label='';
-											filter[0].label+=vars.editor.text.val();
-											filter[0].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+filter[0].id+'" target="_blank">詳細画面へ</a>';
+											vars.markers[index].label='';
+											vars.markers[index].label+=vars.editor.text.val();
+											vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
 											functions.reloadmap(function(){vars.map.map.setCenter(latlng);});
 										},function(error){
 											alert(error.message);
@@ -341,10 +335,10 @@ jQuery.noConflict();
 										if (!confirm('削除します。\nよろしいですか？')) return;
 										var body={
 											app:kintone.app.getId(),
-											ids:[filter[0].id]
+											ids:[vars.markers[index].id]
 										};
 										kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
-											vars.markers.splice(vars.markers.indexOf(filter[0]),1);
+											vars.markers.splice(index,1);
 											functions.reloadmap();
 										},function(error){
 											alert(error.message);
