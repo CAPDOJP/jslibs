@@ -297,12 +297,11 @@ jQuery.noConflict();
 									break;
 							}
 						},
-						function(latlng){
-							console.log(latlng);
+						function(marker){
 							/* marker click */
 							var informationname=vars.fieldinfos[vars.config['information']].label;
 							var filter=$.grep(vars.markers,function(item,index){
-								return (item['lat']==latlng.lat() && item['lng']==latlng.lng())
+								return (new google.maps.LatLng(item['lat'],item['lng'])==marker.position)
 							});
 							if (filter.length==0) return;
 							if (!('id' in filter[0])) return;

@@ -292,7 +292,7 @@ RouteMap.prototype={
 			if (my.markerclickcallback!=null)
 			{
 				google.maps.event.addListener(marker,'click',function(e){
-					my.markerclickcallback(marker);
+					my.markerclickcallback(e.latLng);
 				});
 			}
 			markers.push(marker);
