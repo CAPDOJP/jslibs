@@ -298,6 +298,8 @@ jQuery.noConflict();
 							}
 						},
 						function(latlng){
+							console.log(latlng.lat());
+							console.log(latlng.lng());
 							/* marker click */
 							var informationname=vars.fieldinfos[vars.config['information']].label;
 							var filter=$.grep(vars.markers,function(item,index){
