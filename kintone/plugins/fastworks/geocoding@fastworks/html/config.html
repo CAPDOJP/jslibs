@@ -55,15 +55,8 @@
     </div>
   </div>
   <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">一覧地図表示</div>
-    <div class="kintoneplugin-desc">一覧画面に地図を表示したい場合は、チェックを付けて下さい。</div>
-    <div class="kintoneplugin-input-checkbox-item">
-      <label><input type="checkbox" id="map" value="0">一覧画面に地図を表示する</label>
-    </div>
-  </div>
-  <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">表示フィールド</div>
-    <div class="kintoneplugin-desc">各マーカーの情報ウインドウに表示するフィールドを選択して下さい。【文字列(1行)フィールド】<br>指定がない場合は住所入力フィールドで指定したフィールドが表示されます。</div>
+    <div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">各マーカーの情報ウインドウに表示するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
     <div class="kintoneplugin-select-outer">
       <div class="kintoneplugin-select">
         <select id="information">
@@ -73,7 +66,18 @@
     </div>
   </div>
   <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">経過日数算出フィールド</div>
+    <div class="kintoneplugin-label">一時撤去フィールド<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">一時撤去の判定対象となるフィールドを選択して下さい。【チェックボックスフィールド】</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="remove">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">経過日数算出フィールド<span class="kintoneplugin-require">*</span></div>
     <div class="kintoneplugin-desc">地図内のマーカーに表示する経過日数の対象となるフィールドを選択して下さい。【日付フィールド】</div>
     <div class="kintoneplugin-select-outer">
       <div class="kintoneplugin-select">

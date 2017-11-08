@@ -23,10 +23,12 @@ jQuery.noConflict();
 		displaypoi:null,
 		displaydatespan:null,
 		displaymap:null,
+		editor:null,
 		map:null,
 		viewlist:null,
 		apps:{},
 		config:{},
+		fieldinfos:{},
 		offset:{},
 		styles:{
 			show:null,
@@ -233,7 +235,140 @@ jQuery.noConflict();
 						},
 						isreload,
 						function(target,latlng){
-							console.log(latlng);
+							/* map click */
+							var informationname=vars.fieldinfos[vars.config['information']].label;
+							vars.editor.show({
+								type:'add',
+								placeholder:informationname+'を入力',
+								buttons:{
+									ok:function(){
+										if (vars.editor.text.val().length==0)
+										{
+											alert(informationname+'を入力して下さい。');
+											return;
+										}
+										kintone.proxy(
+											'https://plus.codes/api?address='+latlng.lat()+','+latlng.lng()+'&ekey=AIzaSyC9Ee1Qoi5afjhqNR0YlpjmaBSqXYkORfs&language=ja',
+											'GET',
+											{},
+											{},
+											function(body,status,headers){
+												if (status>=200 && status<300){
+													var json=JSON.parse(body);
+													switch (json.status)
+													{
+														case 'ZERO_RESULTS':
+														case 'OVER_QUERY_LIMIT':
+														case 'REQUEST_DENIED':
+														case 'INVALID_REQUEST':
+															break;
+														case 'OK':
+															var address=json.plus_code.best_street_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}/g,'');
+															var pluscode=json.plus_code.global_code;
+															var lat=json.plus_code.geometry.location.lat;
+															var lng=json.plus_code.geometry.location.lng;
+															var body={
+																app:kintone.app.getId(),
+																record:{}
+															};
+															body.record[vars.config['address']]={value:address};
+															body.record[vars.config['pluscode']]={value:pluscode};
+															body.record[vars.config['lat']]={value:lat};
+															body.record[vars.config['lng']]={value:lng};
+															body.record[vars.config['information']]={value:vars.editor.text.val()};
+															body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
+															kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+																var label='';
+																label+=vars.editor.text.val();
+																label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
+																vars.markers.push({
+																	id:resp.id,
+																	colors:vars.config['defaultcolor'],
+																	fontsize:vars.config['markerfont'],
+																	label:label,
+																	lat:lat,
+																	lng:lng,
+																	size:vars.config['markersize'],
+																	extensionindex:0
+																});
+																functions.reloadmap(function(){vars.map.map.setCenter(latlng);});
+															},function(error){
+																alert(error.message);
+															});
+															break;
+													}
+												}
+											}
+										);
+										/* close editor */
+										vars.editor.hide();
+									},
+									cancel:function(){
+										/* close editor */
+										vars.editor.hide();
+									}
+								}
+							});
+						},
+						function(latlng){
+							/* marker click */
+							var informationname=vars.fieldinfos[vars.config['information']].label;
+							var filter=$.grep(vars.markers,function(item,index){
+								return (item['lat']==latlng.lat() && item['lng']==latlng.lng())
+							});
+							if (filter.length==0) return;
+							if (!('id' in filter[0])) return;
+							vars.editor.text.val(filter[0].label.replace(/<br>.*$/g,''));
+							vars.editor.show({
+								type:'upd',
+								placeholder:informationname+'を入力',
+								buttons:{
+									ok:function(){
+										if (vars.editor.text.val().length==0)
+										{
+											alert(informationname+'を入力して下さい。');
+											return;
+										}
+										var body={
+											app:kintone.app.getId(),
+											id:filter[0].id,
+											record:{}
+										};
+										body.record[vars.config['information']]={value:vars.editor.text.val()};
+										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
+										if ($('input[type=checkbox]',vars.editor.checkbox).prop('checked')) body.record[vars.config['remove']]={value:['一時撤去']};
+										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+											filter[0].label='';
+											filter[0].label+=vars.editor.text.val();
+											filter[0].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+filter[0].id+'" target="_blank">詳細画面へ</a>';
+											functions.reloadmap(function(){vars.map.map.setCenter(latlng);});
+										},function(error){
+											alert(error.message);
+										});
+										/* close editor */
+										vars.editor.hide();
+									},
+									del:function(){
+										if (!confirm('削除します。\nよろしいですか？')) return;
+										var body={
+											app:kintone.app.getId(),
+											ids:[filter[0].id]
+										};
+										kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
+											vars.markers.splice(vars.markers.indexOf(filter[0]),1);
+											functions.reloadmap();
+										},function(error){
+											alert(error.message);
+										});
+										/* close editor */
+										vars.editor.hide();
+									},
+									cancel:function(){
+										/* close editor */
+										vars.editor.hide();
+									}
+								}
+							});
 						});
 						if (vars.ismobile)
 						{
@@ -449,6 +584,19 @@ jQuery.noConflict();
 							})
 							.prepend(vars.viewlist);
 						}
+						vars.editor=$('body').editor({
+							buttons:{
+								ok:{
+									text:'OK'
+								},
+								del:{
+									text:'削除'
+								},
+								cancel:{
+									text:'キャンセル'
+								}
+							}
+						});
 					}
 				}
 			},function(error){});
@@ -476,6 +624,7 @@ jQuery.noConflict();
 					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
 					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					markers.push({
+						id:record['$id'].value,
 						colors:vars.config['defaultcolor'],
 						fontsize:vars.config['markerfont'],
 						label:label,
@@ -585,15 +734,185 @@ jQuery.noConflict();
 			}
 		}
 	};
+	var EditDialog=function(options){
+		var options=$.extend({
+			container:null,
+			buttons:{
+				ok:{
+					text:''
+				},
+				del:{
+					text:''
+				},
+				cancel:{
+					text:''
+				}
+			}
+		},options);
+		/* property */
+		this.buttons=options.buttons;
+		/* valiable */
+		var my=this;
+		/* create elements */
+		var div=$('<div>').css({
+			'box-sizing':'border-box',
+			'margin':'0px',
+			'padding':'0px',
+			'position':'relative',
+			'vertical-align':'top'
+		});
+		var button=$('<button>').css({
+			'background-color':'transparent',
+			'border':'none',
+			'box-sizing':'border-box',
+			'color':'#FFFFFF',
+			'cursor':'pointer',
+			'font-size':'13px',
+			'height':'auto',
+			'margin':'0px 3px',
+			'min-height':'30px',
+			'min-width':'30px',
+			'outline':'none',
+			'padding':'0px 2em',
+			'vertical-align':'top',
+			'width':'auto'
+		});
+		/* append elements */
+		this.cover=div.clone(true).css({
+			'background-color':'rgba(0,0,0,0.5)',
+			'display':'none',
+			'height':'100%',
+			'left':'0px',
+			'position':'fixed',
+			'top':'0px',
+			'width':'100%',
+			'z-index':'999999'
+		});
+		this.container=div.clone(true).css({
+			'background-color':'#FFFFFF',
+			'bottom':'0',
+			'border-radius':'5px',
+			'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+			'left':'0',
+			'margin':'auto',
+			'max-height':'90%',
+			'max-width':'90%',
+			'padding':'0px',
+			'position':'absolute',
+			'right':'0',
+			'text-align':'center',
+			'top':'0',
+			'width':'600px'
+		});
+		this.contents=div.clone(true).css({
+			'height':'auto',
+			'overflow-x':'hidden',
+			'overflow-y':'auto',
+			'margin':'0px',
+			'padding':'10px',
+			'position':'relative',
+			'width':'100%',
+			'z-index':'1'
+		});
+		this.buttonblock=div.clone(true).css({
+			'background-color':'#3498db',
+			'border-bottom-left-radius':'5px',
+			'border-bottom-right-radius':'5px',
+			'bottom':'0px',
+			'left':'0px',
+			'padding':'5px',
+			'position':'absolute',
+			'text-align':'center',
+			'width':'100%',
+			'z-index':'2'
+		});
+		this.text=$('<input type="text">').css({
+			'box-sizing':'border-box',
+			'height':'45px',
+			'line-height':'45px',
+			'margin':'0px',
+		    'padding':'0px 5px',
+			'width':'100%'
+		});
+		this.checkbox=$('<label>').css({
+			'border':'none',
+			'box-sizing':'border-box',
+			'cursor':'pointer',
+			'display':'inline-block',
+			'height':'48px',
+			'line-height':'48px',
+			'margin':'0px',
+			'padding':'0px 5px',
+			'vertical-align':'top',
+			'width':'100%'
+		})
+		.append($('<input type="checkbox">'))
+		.append($('<span>').css({'color':'#3498db','padding-left':'5px'}).text('一時撤去'));
+		/* append elements */
+		$.each(this.buttons,function(key,values){
+			my.buttonblock.append(
+				button.clone(true)
+				.attr('id',key)
+				.text(values.text)
+			);
+		});
+		/* append elements */
+		this.contents.append(this.text);
+		this.contents.append(this.checkbox);
+		this.container.append(this.contents);
+		this.container.append(this.buttonblock);
+		this.cover.append(this.container);
+		options.container.append(this.cover);
+	};
+	EditDialog.prototype={
+		/* display calendar */
+		show:function(options){
+			var options=$.extend({
+				type:'add',
+				placeholder:'',
+				buttons:{}
+			},options);
+			var my=this;
+			$.each(options.buttons,function(key,values){
+				if (my.buttonblock.find('button#'+key).size())
+					my.buttonblock.find('button#'+key).off('click').on('click',function(){
+						if (values!=null) values();
+					});
+			});
+			this.text.attr('placeholder',options.placeholder);
+			if (options.type=='add')
+			{
+				this.text.val('');
+				this.checkbox.hide();
+				$('button#del',this.container).hide();
+			}
+			else
+			{
+				this.checkbox.show();
+				$('button#del',this.container).show();
+			}
+			this.cover.show();
+			this.container.css({'height':(this.contents.outerHeight(true)+this.buttonblock.outerHeight(true)).toString()+'px'});
+		},
+		/* hide calendar */
+		hide:function(){
+			this.cover.hide();
+		}
+	};
+	jQuery.fn.editor=function(options){
+		var options=$.extend({
+			container:null,
+			buttons:{}
+		},options);
+		options.container=this;
+		return new EditDialog(options);
+	};
 	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return event;
-		/* check display map */
-		if (!'map' in vars.config) return event;
-		if (vars.config['map']!='1') return event;
 		/* check device */
 		vars.ismobile=!('viewType' in event);
 		/* check view type */
@@ -604,47 +923,51 @@ jQuery.noConflict();
 		{
 			if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
 		}
-		/* load datas */
-		vars.isdisplaymap=false;
-		vars.apps[vars.config['app']]=null;
-		vars.offset[vars.config['app']]=0;
-		if (vars.ismobile)
-		{
-			kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:vars.config['app']},function(resp){
-				vars.viewlist=$('<select>').css({
-					'background-color':'#f7f9fa',
-					'border':'1px solid #3498db',
-					'border-radius':'5px',
-					'box-sizing':'border-box',
-					'color':'#3498db',
-					'display':'block',
-					'height':'48px',
-					'line-height':'48px',
-					'margin':'0px',
-					'margin-bottom':'15px',
-					'padding':'0px 10px',
-					'vertical-align':'top',
-					'width':'100%'
-				});
-				$.each(resp.views,function(key,values){
-				    if (values.type.toUpperCase()=='LIST') vars.viewlist.append($('<option>').text(values.name).val(values.filterCond));
-				})
-				vars.viewlist.on('change',function(){
-					if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
-					vars.isdisplaymap=false;
-					vars.apps[vars.config['app']]=null;
-					vars.offset[vars.config['app']]=0;
-					functions.loaddatas($(this).val(),function(){
-						functions.reloadmap(function(){
-							vars.isdisplaymap=true;
-							$('div.customview-navi').hide();
+		/* get fields of app */
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+			vars.fieldinfos=resp.properties;
+			/* load datas */
+			vars.isdisplaymap=false;
+			vars.apps[vars.config['app']]=null;
+			vars.offset[vars.config['app']]=0;
+			if (vars.ismobile)
+			{
+				kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:vars.config['app']},function(resp){
+					vars.viewlist=$('<select>').css({
+						'background-color':'#f7f9fa',
+						'border':'1px solid #3498db',
+						'border-radius':'5px',
+						'box-sizing':'border-box',
+						'color':'#3498db',
+						'display':'block',
+						'height':'48px',
+						'line-height':'48px',
+						'margin':'0px',
+						'margin-bottom':'15px',
+						'padding':'0px 10px',
+						'vertical-align':'top',
+						'width':'100%'
+					});
+					$.each(resp.views,function(key,values){
+					    if (values.type.toUpperCase()=='LIST') vars.viewlist.append($('<option>').text(values.name).val(values.filterCond));
+					})
+					vars.viewlist.on('change',function(){
+						if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
+						vars.isdisplaymap=false;
+						vars.apps[vars.config['app']]=null;
+						vars.offset[vars.config['app']]=0;
+						functions.loaddatas($(this).val(),function(){
+							functions.reloadmap(function(){
+								vars.isdisplaymap=true;
+								$('div.customview-navi').hide();
+							});
 						});
 					});
-				});
-				functions.loaddatas($('option',vars.viewlist).first().val(),function(){functions.reloadmap(function(){vars.isdisplaymap=true;});});
-			},function(error){});
-		}
-		else functions.loaddatas('');
+					functions.loaddatas($('option',vars.viewlist).first().val(),function(){functions.reloadmap(function(){vars.isdisplaymap=true;});});
+				},function(error){});
+			}
+			else functions.loaddatas('');
+		},function(error){});
 		return event;
 	});
 	kintone.events.on(events.show,function(event){

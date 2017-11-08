@@ -115,6 +115,7 @@ var RouteMap=function(options){
 	this.map=null;
 	this.directionsRenderer=null;
 	this.directionsService=null;
+	this.geocoder=null;
 	/* loading wait */
 	if (options.container!=null) waitgoogle(function(){
 		var latlng=new google.maps.LatLng(0,0);
@@ -138,11 +139,18 @@ var RouteMap=function(options){
 		my.map=new google.maps.Map(document.getElementById(my.contents.attr('id')),param);
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
+		my.geocoder=new google.maps.Geocoder();
 		if (my.loadedcallback!=null) my.loadedcallback();
 		if (my.clickcallback!=null)
 		{
 			google.maps.event.addListener(my.map,'click',function(e){
-				my.clickcallback(my.map,e.latLng);
+				my.geocoder.geocode({
+					'location':e.latLng
+				},
+				function(results,status){
+					if (status===google.maps.GeocoderStatus.OK && results[0]) my.clickcallback(my.map,results[0],status);
+					else my.clickcallback(my.map,null,status);
+				});
 			});
 		}
 	});

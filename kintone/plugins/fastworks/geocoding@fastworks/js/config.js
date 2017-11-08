@@ -27,6 +27,9 @@ jQuery.noConflict();
 			/* check field type */
 			switch (values.type)
 			{
+				case 'CHECK_BOX':
+					$('select#remove').append($('<option>').attr('value',values.code).text(values.label));
+					break;
 				case 'DATE':
 					$('select#datespan').append($('<option>').attr('value',values.code).text(values.label));
 					break;
@@ -74,6 +77,7 @@ jQuery.noConflict();
         	$('select#lng').val(config['lng']);
         	$('select#spacer').val(config['spacer']);
         	$('select#information').val(config['information']);
+        	$('select#remove').val(config['remove']);
         	$('select#datespan').val(config['datespan']);
         	$('input#defaultcolor').val(config['defaultcolor']);
 			var add=false;
@@ -88,7 +92,6 @@ jQuery.noConflict();
         	$('input#markersize').val(config['markersize']);
         	$('input#markerfont').val(config['markerfont']);
         	$('input#apikey').val(config['apikey']);
-        	if (config['map']=='1') $('input#map').prop('checked',true);
         	if (config['chasemode']=='1') $('input#chasemode').prop('checked',true);
         }
         else
@@ -136,48 +139,60 @@ jQuery.noConflict();
 	    	swal('Error!','地図表示フィールドを選択して下さい。','error');
 	    	return;
 	    }
+	    if ($('select#information').val()=='')
+	    {
+	    	swal('Error!','表示フィールドを選択して下さい。','error');
+	    	return;
+	    }
+	    if ($('select#remove').val()=='')
+	    {
+	    	swal('Error!','一時撤去フィールドを選択して下さい。','error');
+	    	return;
+	    }
+	    if ($('select#datespan').val()=='')
+	    {
+	    	swal('Error!','経過日数算出フィールドを選択して下さい。','error');
+	    	return;
+	    }
 	    if ($('select#lat').val()==$('select#lng').val())
 	    {
 	    	swal('Error!','緯度表示フィールドと経度表示フィールドは異なるフィールドを選択して下さい。','error');
 	    	return;
 	    }
-	    if ($('input#map').prop('checked'))
+	    if ($('input#defaultcolor').val()=='')
 	    {
-		    if ($('input#defaultcolor').val()=='')
-		    {
-		    	swal('Error!','マーカー規定色を選択して下さい。','error');
-		    	return;
-		    }
-			for (var i=0;i<vars.colortable.rows.length;i++)
+	    	swal('Error!','マーカー規定色を選択して下さい。','error');
+	    	return;
+	    }
+		for (var i=0;i<vars.colortable.rows.length;i++)
+		{
+			var row=vars.colortable.rows.eq(i);
+			if ($('input#datespanday',row).val().length!=0)
 			{
-				var row=vars.colortable.rows.eq(i);
-				if ($('input#datespanday',row).val().length!=0)
-				{
-				    if ($('input#datespancolor',row).val()=='')
-				    {
-				    	swal('Error!','マーカー色を選択して下さい。','error');
-				    	error=true;
-				    }
-					datespancolors[$('input#datespanday',row).val().toString()]=$('input#datespancolor',row).val();
-				}
+			    if ($('input#datespancolor',row).val()=='')
+			    {
+			    	swal('Error!','マーカー色を選択して下さい。','error');
+			    	error=true;
+			    }
+				datespancolors[$('input#datespanday',row).val().toString()]=$('input#datespancolor',row).val();
 			}
-		    if ($('input#markersize').val()=='') $('input#markersize').val('34');
-			if (!$.isNumeric($('input#markersize').val()))
-		    {
-		    	swal('Error!','マーカーサイズは数値を入力して下さい。','error');
-		    	return;
-		    }
-		    if ($('input#markerfont').val()=='') $('input#markerfont').val('11');
-			if (!$.isNumeric($('input#markerfont').val()))
-		    {
-		    	swal('Error!','マーカーフォントサイズは数値を入力して下さい。','error');
-		    	return;
-		    }
-		    if ($('input#apikey').val()=='')
-		    {
-		    	swal('Error!','Google Maps APIキーを入力して下さい。','error');
-		    	return;
-		    }
+		}
+	    if ($('input#markersize').val()=='') $('input#markersize').val('34');
+		if (!$.isNumeric($('input#markersize').val()))
+	    {
+	    	swal('Error!','マーカーサイズは数値を入力して下さい。','error');
+	    	return;
+	    }
+	    if ($('input#markerfont').val()=='') $('input#markerfont').val('11');
+		if (!$.isNumeric($('input#markerfont').val()))
+	    {
+	    	swal('Error!','マーカーフォントサイズは数値を入力して下さい。','error');
+	    	return;
+	    }
+	    if ($('input#apikey').val()=='')
+	    {
+	    	swal('Error!','Google Maps APIキーを入力して下さい。','error');
+	    	return;
 	    }
 	    if (error) return;
 		/* setup config */
@@ -187,8 +202,8 @@ jQuery.noConflict();
         config['lat']=$('select#lat').val();
         config['lng']=$('select#lng').val();
         config['spacer']=$('select#spacer').val();
-        config['map']=($('input#map').prop('checked'))?'1':'0';
         config['information']=$('select#information').val();
+        config['remove']=$('select#remove').val();
         config['datespan']=$('select#datespan').val();
         config['defaultcolor']=$('input#defaultcolor').val();
 		config['datespancolors']=JSON.stringify(datespancolors);
