@@ -144,13 +144,13 @@ var RouteMap=function(options){
 		if (my.clickcallback!=null)
 		{
 			google.maps.event.addListener(my.map,'click',function(e){
-				my.geocoder.geocode({
-					'location':e.latLng
-				},
-				function(results,status){
-					if (status===google.maps.GeocoderStatus.OK && results[0]) my.clickcallback(my.map,results[0],status);
-					else my.clickcallback(my.map,null,status);
-				});
+				my.inaddress({
+					lat:e.latLng.lat(),
+					lng:e.latLng.lng(),
+					callback:function(result){
+						my.clickcallback(result,e.latlng);
+					}
+				})
 			});
 		}
 	});
@@ -301,9 +301,10 @@ RouteMap.prototype={
 			{
 				var balloon=new google.maps.InfoWindow({content:infowindowoptions.label,disableAutoPan:true});
 				if (options.isopeninfowindow) balloon.open(map,marker);
-				google.maps.event.addListener(marker,'click',function(event){
-					if (!balloon.getMap() && my.markerclickcallback==null) balloon.open(map,marker);
-				});
+				if (my.markerclickcallback==null)
+					google.maps.event.addListener(marker,'click',function(event){
+						if (!balloon.getMap()) balloon.open(map,marker);
+					});
 				balloons.push(balloon);
 			}
 		};
@@ -508,6 +509,49 @@ RouteMap.prototype={
 				break;
 		}
 		if (this.isfullscreen) this.container.css({'bottom':'0px'});
+	},
+	inaddress:function(options){
+		var options=$.extend({
+			target:null,
+			lat:0,
+			lng:0,
+			callback:null
+		},options);
+		this.geocoder.geocode({
+			'location':new google.maps.LatLng(options.lat,options.lng)
+		},
+		function(results,status){
+			switch (status)
+			{
+				case google.maps.GeocoderStatus.ZERO_RESULTS:
+					break;
+				case google.maps.GeocoderStatus.OVER_QUERY_LIMIT:
+					alert('リクエストが割り当て量を超えています。');
+					break;
+				case google.maps.GeocoderStatus.REQUEST_DENIED:
+					alert('リクエストが拒否されました。');
+					break;
+				case google.maps.GeocoderStatus.INVALID_REQUEST:
+					alert('クエリが不足しています。');
+					break;
+				case 'OK':
+					if (options.target!=null)
+					{
+						switch (options.target.prop('tagName').toLowerCase())
+						{
+							case 'input':
+							case 'textarea':
+								options.target.val(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
+								break;
+							default:
+								options.target.text(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
+								break;
+						}
+					}
+					if (options.callback!=null) options.callback(results[0]);
+					break;
+			}
+		});
 	},
 	refresh:function(){
 		google.maps.event.trigger(this.map,'resize');

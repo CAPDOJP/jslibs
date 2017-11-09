@@ -74,9 +74,12 @@ var DynamicMap=function(options){
 	var options=$.extend({
 		display:null,
 		route:null,
-		idle:null
+		idle:null,
+		clickcallback:null,
+		markerclickcallback:null
 	},options);
 	if (options.display==null) {alert('地図表示用ボックスを指定して下さい。');return;}
+	var my=this;
 	var latlng=new google.maps.LatLng(0,0);
 	var param={
 		center:latlng,
@@ -90,6 +93,7 @@ var DynamicMap=function(options){
 	};
 	this.displaybox=options.display;
 	this.routingbox=options.route;
+	this.markerclickcallback=options.markerclickcallback;
 	this.currentlatlng=null;
 	this.watchId=null;
 	this.locations=[];
@@ -124,8 +128,21 @@ var DynamicMap=function(options){
 	this.map=new google.maps.Map(document.getElementById(this.displaybox.attr('id')),param);
 	this.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 	this.directionsService=new google.maps.DirectionsService();
+	this.geocoder=new google.maps.Geocoder();
 	this.travelmode=google.maps.TravelMode.DRIVING;
 	if (options.idle!=null) google.maps.event.addListener(this.map,'idle',function(){options.idle();});
+	if (options.clickcallback!=null)
+	{
+		google.maps.event.addListener(this.map,'click',function(e){
+			my.inaddress({
+				lat:e.latLng.lat(),
+				lng:e.latLng.lng(),
+				callback:function(result){
+					options.clickcallback(result,e.latlng);
+				}
+			})
+		});
+	}
 };
 /* 関数定義 */
 DynamicMap.prototype={
@@ -186,36 +203,6 @@ DynamicMap.prototype={
 		}
 		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
 	},
-	watchlocation:function(options){
-		var options=$.extend({
-			callback:null
-		},options);
-		var my=this;
-		if (navigator.geolocation)
-		{
-			var userAgent=window.navigator.userAgent.toLowerCase();
-			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
-			this.watchID=navigator.geolocation.watchPosition(
-				function(pos){
-					my.currentlatlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
-					if (options.callback!=null) options.callback(my.currentlatlng);
-				},
-				function(error){
-					if (my.currentlatlng==null) my.currentlatlng=new google.maps.LatLng(0,0);
-				},
-				{
-					enableHighAccuracy:true,
-					maximumAge:0,
-					timeout:10000
-				}
-			);
-		}
-		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
-	},
-	unwatchlocation:function(){
-		if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
-		this.watchID=null;
-	},
 	/*地図再読込*/
 	reloadmap:function(options){
 		var options=$.extend({
@@ -223,6 +210,7 @@ DynamicMap.prototype={
 			type:'marking',
 			callback:null
 		},options);
+		var my=this;
 		var colors=this.colors;
 		var map=this.map;
 		var renderer=this.directionsRenderer;
@@ -242,7 +230,7 @@ DynamicMap.prototype={
 		balloons=this.balloons;
 		/*ルート初期化*/
 		renderer.setMap(null);
-		var addmarker=function(markeroptions,infowindowoptions){
+		var addmarker=function(markeroptions,infowindowoptions,index){
 			/*マーカー配置*/
 			var markeroptions=$.extend({
 				color:0,
@@ -278,6 +266,12 @@ DynamicMap.prototype={
 					text:markeroptions.label.toString(),
 					fontSize:markeroptions.fontsize+'px',
 				});
+			if (my.markerclickcallback!=null)
+			{
+				google.maps.event.addListener(marker,'click',function(e){
+					my.markerclickcallback(index);
+				});
+			}
 			markers.push(marker);
 			/*吹き出し配置*/
 			if (infowindowoptions.label.length!=0)
@@ -315,7 +309,8 @@ DynamicMap.prototype={
 						},
 						{
 							label:values.label
-						}
+						},
+						index
 					);
 				});
 				if (options.callback!=null) options.callback();
@@ -347,7 +342,8 @@ DynamicMap.prototype={
 							},
 							{
 								label:values.label
-							}
+							},
+							0
 						);
 						/*中心位置設定*/
 						map.setCenter(new google.maps.LatLng(values.lat,values.lng));
@@ -422,7 +418,8 @@ DynamicMap.prototype={
 										},
 										{
 											label:values.label
-										}
+										},
+										index
 									);
 								});
 								renderer.setDirections(result);
@@ -491,23 +488,21 @@ DynamicMap.prototype={
 			lng:0,
 			callback:null
 		},options);
-		$.ajax({
-			url:'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&latlng='+options.lat+','+options.lng,
-			type:'get',
-			datatype:'json'
-		})
-		.done(function(json){
-			switch (json.status)
+		this.geocoder.geocode({
+			'location':new google.maps.LatLng(options.lat,options.lng)
+		},
+		function(results,status){
+			switch (status)
 			{
-				case 'ZERO_RESULTS':
+				case google.maps.GeocoderStatus.ZERO_RESULTS:
 					break;
-				case 'OVER_QUERY_LIMIT':
+				case google.maps.GeocoderStatus.OVER_QUERY_LIMIT:
 					alert('リクエストが割り当て量を超えています。');
 					break;
-				case 'REQUEST_DENIED':
+				case google.maps.GeocoderStatus.REQUEST_DENIED:
 					alert('リクエストが拒否されました。');
 					break;
-				case 'INVALID_REQUEST':
+				case google.maps.GeocoderStatus.INVALID_REQUEST:
 					alert('クエリが不足しています。');
 					break;
 				case 'OK':
@@ -517,18 +512,17 @@ DynamicMap.prototype={
 						{
 							case 'input':
 							case 'textarea':
-								options.target.val(json.results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
+								options.target.val(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
 								break;
 							default:
-								options.target.text(json.results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
+								options.target.text(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
 								break;
 						}
 					}
-					if (options.callback!=null) options.callback(json);
+					if (options.callback!=null) options.callback(results[0]);
 					break;
 			}
-		})
-		.fail(function(){alert('地図座標取得に失敗しました。');});
+		});
 	},
 	/*表示領域取得*/
 	inbounds:function(){
@@ -543,5 +537,38 @@ DynamicMap.prototype={
 	/*中心座標取得*/
 	incenter:function(){
 		return this.map.getCenter();
+	},
+	refresh:function(){
+		google.maps.event.trigger(this.map,'resize');
+	},
+	watchlocation:function(options){
+		var options=$.extend({
+			callback:null
+		},options);
+		var my=this;
+		if (navigator.geolocation)
+		{
+			var userAgent=window.navigator.userAgent.toLowerCase();
+			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
+			this.watchID=navigator.geolocation.watchPosition(
+				function(pos){
+					my.currentlatlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+					if (options.callback!=null) options.callback(my.currentlatlng);
+				},
+				function(error){
+					if (my.currentlatlng==null) my.currentlatlng=new google.maps.LatLng(0,0);
+				},
+				{
+					enableHighAccuracy:true,
+					maximumAge:0,
+					timeout:10000
+				}
+			);
+		}
+		else {alert('お使いのブラウザでは位置情報が取得出来ません。');}
+	},
+	unwatchlocation:function(){
+		if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
+		this.watchID=null;
 	}
 };
