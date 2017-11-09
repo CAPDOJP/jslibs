@@ -148,7 +148,7 @@ var RouteMap=function(options){
 					lat:e.latLng.lat(),
 					lng:e.latLng.lng(),
 					callback:function(result){
-						my.clickcallback(result,e.latlng);
+						my.clickcallback(result,e.latLng);
 					}
 				})
 			});
