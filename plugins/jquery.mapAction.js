@@ -138,7 +138,7 @@ var DynamicMap=function(options){
 				lat:e.latLng.lat(),
 				lng:e.latLng.lng(),
 				callback:function(result){
-					options.clickcallback(result,e.latlng);
+					options.clickcallback(result,e.latLng);
 				}
 			})
 		});
