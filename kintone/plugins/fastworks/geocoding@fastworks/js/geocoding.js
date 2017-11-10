@@ -25,6 +25,7 @@ jQuery.noConflict();
 		displaymap:null,
 		editor:null,
 		map:null,
+		splash:null,
 		viewlist:null,
 		apps:{},
 		config:{},
@@ -252,7 +253,7 @@ jQuery.noConflict();
 											return;
 										}
 										var body={
-											app:kintone.app.getId(),
+											app:vars.config['app'],
 											record:{}
 										};
 										body.record[vars.config['address']]={value:vars.editor.address.val()};
@@ -266,6 +267,8 @@ jQuery.noConflict();
 											label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
 											vars.markers.push({
 												id:resp.id,
+												address:vars.editor.address.val(),
+												remove:0,
 												colors:vars.config['defaultcolor'],
 												fontsize:vars.config['markerfont'],
 												label:label,
@@ -288,10 +291,15 @@ jQuery.noConflict();
 								}
 							});
 						},
-						function(index){
+						function(target){
+							var index=target;
+							if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) index--;
 							/* marker click */
 							if (!('id' in vars.markers[index])) return;
+							var center=vars.map.map.getCenter();
+							vars.editor.address.val(vars.markers[index].address);
 							vars.editor.information.val(vars.markers[index].label.replace(/<br>.*$/g,''));
+							$('input[type=checkbox]',vars.editor.remove).prop('checked',(vars.markers[index].remove!=0))
 							vars.editor.show({
 								type:'upd',
 								buttons:{
@@ -307,19 +315,21 @@ jQuery.noConflict();
 											return;
 										}
 										var body={
-											app:kintone.app.getId(),
+											app:vars.config['app'],
 											id:vars.markers[index].id,
 											record:{}
 										};
 										body.record[vars.config['address']]={value:vars.editor.address.val()};
 										body.record[vars.config['information']]={value:vars.editor.information.val()};
 										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
-										if ($('input[type=checkbox]',vars.editor.checkbox).prop('checked')) body.record[vars.config['remove']]={value:['一時撤去']};
+										if ($('input[type=checkbox]',vars.editor.remove).prop('checked')) body.record[vars.config['remove']]={value:['一時撤去']};
 										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+											vars.markers[index].address=vars.editor.address.val();
+											vars.markers[index].remove=(($('input[type=checkbox]',vars.editor.remove).prop('checked'))?1:0);
 											vars.markers[index].label='';
 											vars.markers[index].label+=vars.editor.information.val();
 											vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
-											functions.reloadmap();
+											functions.reloadmap(function(){vars.map.map.setCenter(center)});
 										},function(error){
 											alert(error.message);
 										});
@@ -329,12 +339,12 @@ jQuery.noConflict();
 									del:function(){
 										if (!confirm('削除します。\nよろしいですか？')) return;
 										var body={
-											app:kintone.app.getId(),
+											app:vars.config['app'],
 											ids:[vars.markers[index].id]
 										};
 										kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
 											vars.markers.splice(index,1);
-											functions.reloadmap();
+											functions.reloadmap(function(){vars.map.map.setCenter(center)});
 										},function(error){
 											alert(error.message);
 										});
@@ -603,6 +613,8 @@ jQuery.noConflict();
 					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					markers.push({
 						id:record['$id'].value,
+						address:record[vars.config['address']].value,
+						remove:record[vars.config['remove']].value.length,
 						colors:vars.config['defaultcolor'],
 						fontsize:vars.config['markerfont'],
 						label:label,
@@ -823,7 +835,7 @@ jQuery.noConflict();
 		this.information=text.clone(true);
 		this.addresstitle=title.clone(true);
 		this.informationtitle=title.clone(true);
-		this.checkbox=$('<label>').css({
+		this.remove=$('<label>').css({
 			'border':'none',
 			'box-sizing':'border-box',
 			'cursor':'pointer',
@@ -850,7 +862,7 @@ jQuery.noConflict();
 		this.contents.append(this.address.attr('placeholder',vars.fieldinfos[vars.config['address']].label+'を入力'));
 		this.contents.append(this.informationtitle.text(vars.fieldinfos[vars.config['information']].label));
 		this.contents.append(this.information.attr('placeholder',vars.fieldinfos[vars.config['information']].label+'を入力'));
-		this.contents.append(this.checkbox);
+		this.contents.append(this.remove);
 		this.container.append(this.contents);
 		this.container.append(this.buttonblock);
 		this.cover.append(this.container);
@@ -873,12 +885,12 @@ jQuery.noConflict();
 			if (options.type=='add')
 			{
 				this.information.val('');
-				this.checkbox.hide();
+				this.remove.hide();
 				$('button#del',this.container).hide();
 			}
 			else
 			{
-				this.checkbox.show();
+				this.remove.show();
 				$('button#del',this.container).show();
 			}
 			this.cover.show();
@@ -906,7 +918,44 @@ jQuery.noConflict();
 		/* check device */
 		vars.ismobile=!('viewType' in event);
 		/* check view type */
-		if (!vars.ismobile) if (event.viewType.toUpperCase()=='CALENDAR') return event;
+		if (vars.ismobile)
+		{
+			vars.splash=$('<div id="splash">').css({
+				'background':'#f3f3f3',
+				'height':'100%',
+				'left':'0px',
+				'position':'fixed',
+				'top':'0px',
+				'width':'100%',
+				'z-index':'2000000'
+			});
+			vars.splash.append(
+				$('<p>')
+				.css({
+					'display':'block',
+					'bottom':'0',
+					'height':'2em',
+					'left':'0',
+					'line-height':'2em',
+					'margin':'auto',
+					'max-height':'100%',
+					'max-width':'100%',
+					'overflow':'hidden',
+					'padding':'0px',
+					'position':'absolute',
+					'right':'0',
+					'text-align':'center',
+					'top':'0',
+					'width':'100%'
+				})
+				.text('now loading')
+			);
+			$('body').append(vars.splash);
+		}
+		else
+		{
+			if (event.viewType.toUpperCase()=='CALENDAR') return event;
+		}
 		/* initialize valiable */
 		vars.markers=[];
 		if (vars.map!=null)
@@ -914,7 +963,7 @@ jQuery.noConflict();
 			if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
 		}
 		/* get fields of app */
-		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.config['app']},function(resp){
 			vars.fieldinfos=resp.properties;
 			/* load datas */
 			vars.isdisplaymap=false;
@@ -923,6 +972,7 @@ jQuery.noConflict();
 			if (vars.ismobile)
 			{
 				kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:vars.config['app']},function(resp){
+					var views=[];
 					vars.viewlist=$('<select>').css({
 						'background-color':'#f7f9fa',
 						'border':'1px solid #3498db',
@@ -939,8 +989,14 @@ jQuery.noConflict();
 						'width':'100%'
 					});
 					$.each(resp.views,function(key,values){
-					    if (values.type.toUpperCase()=='LIST') vars.viewlist.append($('<option>').text(values.name).val(values.filterCond));
+					    if (values.type.toUpperCase()=='LIST') views.push(values);
 					})
+					views.sort(function(a,b){
+						if(a.index<b.index) return -1;
+						if(a.index>b.index) return 1;
+						return 0;
+					});
+					for (var i=0;i<views.length;i++) vars.viewlist.append($('<option>').attr('id',views[i].id).text(views[i].name).val(views[i].filterCond));
 					vars.viewlist.on('change',function(){
 						if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
 						vars.isdisplaymap=false;
@@ -953,11 +1009,17 @@ jQuery.noConflict();
 							});
 						});
 					});
-					functions.loaddatas($('option',vars.viewlist).first().val(),function(){functions.reloadmap(function(){vars.isdisplaymap=true;});});
-				},function(error){});
+					if ($('option#'+event.viewId,vars.viewlist).size()) $('option#'+event.viewId,vars.viewlist).attr('selected',true);
+					functions.loaddatas(vars.viewlist.val(),function(){
+						functions.reloadmap(function(){
+							vars.isdisplaymap=true;
+							if (vars.splash!=null) vars.splash.hide();
+						});
+					});
+				},function(error){if (vars.splash!=null) vars.splash.hide();});
 			}
 			else functions.loaddatas('');
-		},function(error){});
+		},function(error){if (vars.splash!=null) vars.splash.hide();});
 		return event;
 	});
 	kintone.events.on(events.show,function(event){

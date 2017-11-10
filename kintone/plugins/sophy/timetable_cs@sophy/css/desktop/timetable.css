@@ -192,10 +192,11 @@ p.timetable-student span.grade{
 }
 p.timetable-student span.lecture{
   height:20px;
-  position:absolute;
   left:calc(3em + 5px);
+  padding:0px 5px;
+  position:absolute;
   top:0px;
-  width:30px;
+  width:50px;
 }
 p.timetable-student span.name{
   padding-left:calc(3em + 5px);

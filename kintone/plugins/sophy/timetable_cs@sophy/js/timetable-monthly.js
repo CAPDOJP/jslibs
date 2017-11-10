@@ -20,6 +20,7 @@ jQuery.noConflict();
 		graphlegend:null,
 		progress:null,
 		table:null,
+		minilecselect:null,
 		termselect:null,
 		apps:{},
 		lectures:{},
@@ -62,8 +63,7 @@ jQuery.noConflict();
 							.append(
 								$('<span>').addClass('lecture')
 								.css({
-									'background-color':'#'+vars.lectures[filter[i]['appcode'].value].color,
-									'text-align':'center'
+									'background-color':'#'+vars.lectures[filter[i]['appcode'].value].color
 								})
 								.append(
 									$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/refresh.png" alt="振替" title="振替">')
@@ -97,8 +97,8 @@ jQuery.noConflict();
 														swal('Error!','振替前と振替後の時間が合いません。','error');
 														return;
 													}
-													/* regist transfers */
-													$.registtransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+													/* entry transfers */
+													$.entrytransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
 														/* reload view */
 														functions.load();
 													});
@@ -118,6 +118,79 @@ jQuery.noConflict();
 							)
 						)
 					);
+					if (vars.lecturekeys[$.minilecindex]!=filter[i]['appcode'].value)
+					{
+						$('.lecture',item).append(
+							$($.minilecsvg())
+							.css({
+								'cursor':'pointer',
+								'height':'100%'
+							})
+							.on('click',function(){
+								var cell=$(this).closest('.timetable-monthly-cell');
+								vars.minilecselect.datasource=[];
+								for (var i2=0;i2<vars.apps[vars.lecturekeys[$.minilecindex]].length;i2++)
+								{
+									var course=vars.apps[vars.lecturekeys[$.minilecindex]][i];
+									if (course['lecturetype'].value=='無料') continue;
+									vars.minilecselect.datasource.push(course);
+								}
+								vars.minilecselect.search();
+								vars.minilecselect.show({
+									buttons:{
+										cancel:function(){
+											/* close the reference box */
+											vars.minilecselect.hide();
+										}
+									},
+									callback:function(row){
+										/* close the reference box */
+										vars.minilecselect.hide();
+										var course=$.grep(vars.apps[vars.lecturekeys[$.minilecindex]],function(item,index){
+											return item['$id'].value==$('#\\$id',row).val();
+										});
+										if (course.length==0) return;
+										vars.termselect.show({
+											fromhour:parseInt(vars.const['starthour'].value),
+											tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course['hours'].value)),
+											dates:[new Date(filter[i]['date'].value.dateformat()).format('Y-m-d')],
+											buttons:{
+												ok:function(selection){
+													/* close termselect */
+													vars.termselect.hide();
+													var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
+													var hours=0;
+													for (var i=0;i<selection.length;i++)
+													{
+														if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
+														{
+															swal('Error!','受講終了時間が終業時刻を超えています。','error');
+															return;
+														}
+														hours+=selection[i].hours;
+													}
+													if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#basehours',cell).val()))
+													{
+														swal('Error!','振替前と振替後の時間が合いません。','error');
+														return;
+													}
+													/* entry transfers */
+													$.entryminilec(vars.lecturekeys[$.minilecindex],vars.lectures[vars.lecturekeys[$.minilecindex]].name,cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+														/* reload view */
+														functions.load();
+													});
+												},
+												cancel:function(){
+													/* close termselect */
+													vars.termselect.hide();
+												}
+											}
+										});
+									}
+								});
+							})
+						);
+					}
 					$.each(filter[i],function(key,values){
 						if (values!=null)
 							if (values.value!=null)
@@ -352,6 +425,18 @@ jQuery.noConflict();
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
 			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
 			else vars.const=vars.apps[vars.config['const']][0];
+			/* create minilecselect */
+			vars.minilecselect=$('body').referer({
+				datasource:null,
+				displaytext:'name',
+				buttons:[
+					{
+						id:'cancel',
+						class:'customview-button referer-button-cancel',
+						text:'Cancel'
+					}
+				]
+			});
 			/* create termselect */
 			vars.termselect=$('body').termselect({
 				isadd:true,

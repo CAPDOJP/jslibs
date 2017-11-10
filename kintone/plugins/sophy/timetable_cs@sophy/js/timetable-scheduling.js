@@ -89,7 +89,7 @@ jQuery.noConflict();
 			var row=null;
 			var dates=[];
 			var checktime=new Date();
-			var registvalues=[];
+			var entryvalues=[];
 			var updatevalues=[];
 			if ($('#lecturelist').val().length==0)
 			{
@@ -99,7 +99,7 @@ jQuery.noConflict();
 			else index=parseInt($('#lecturelist').val());
 			if ($('#courselist').is(':visible') && $('#courselist').val().length==0)
 			{
-				swal('Error!',((index==vars.lecturekeys.length-4)?'講座':'コース')+'を選択して下さい。','error');
+				swal('Error!',(($.minilecindex==index)?'講座':'コース')+'を選択して下さい。','error');
 				return;
 			}
 			if (vars.attendants.find('.list').find('p:visible').length==0)
@@ -151,7 +151,7 @@ jQuery.noConflict();
 												/* filtering by grade */
 												if ($.coursegrade(course,$('#grade',$(this)).val())==null) return true;
 												for (var i=0;i<selection.length;i++)
-													registvalues.push({
+													entryvalues.push({
 														studentcode:{value:$(this).attr('id')},
 														studentname:{value:$('#name',$(this)).text()},
 														appcode:{value:vars.lecturekeys[index]},
@@ -169,8 +169,8 @@ jQuery.noConflict();
 														transferlimit:{value:new Date(selection[i].date).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 													});
 											});
-											/* regist attendants */
-											$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
+											/* entry attendants */
+											$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 												/* update students */
 												$.each(resp,function(key,values){
 													var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -250,7 +250,7 @@ jQuery.noConflict();
 							return false;
 						}
 						for (var i=0;i<dates.length;i++)
-							registvalues.push({
+							entryvalues.push({
 								studentcode:{value:$(this).attr('id')},
 								studentname:{value:$('#name',$(this)).text()},
 								appcode:{value:vars.lecturekeys[index]},
@@ -268,9 +268,9 @@ jQuery.noConflict();
 								transferlimit:{value:new Date(dates[i]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 							});
 					});
-					/* regist attendants */
+					/* entry attendants */
 					if (error) return;
-					$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
+					$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -305,7 +305,51 @@ jQuery.noConflict();
 					});
 					break;
 				case 7:
-					/* ミニレク保留 */
+					/* get course */
+					for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
+					{
+						if (vars.apps[vars.lecturekeys[index]][i]['$id'].value==$('#courselist').val())
+						{
+							course=vars.apps[vars.lecturekeys[index]][i];
+							break;
+						}
+					}
+					if (course==null)
+					{
+						swal('Error!','コース指定を確認して下さい。','error');
+						return;
+					}
+					/* create values */
+					$.each(vars.attendants.find('.list').find('p:visible'),function(){
+						/* filtering by grade */
+						if (parseInt($('#grade',$(this)).val())<parseInt('0'+course['gradefromcode'].value) || parseInt($('#grade',$(this)).val())>parseInt('0'+course['gradetocode'].value)) return true;
+						entryvalues.push({
+							studentcode:{value:$(this).attr('id')},
+							studentname:{value:$('#name',$(this)).text()},
+							appcode:{value:vars.lecturekeys[index]},
+							appname:{value:vars.lectures[vars.lecturekeys[index]].name},
+							coursecode:{value:course['$id'].value},
+							coursename:{value:course['name'].value},
+							date:{value:new Date(course['date'].value.dateformat()).format('Y-m-d')},
+							starttime:{value:course['starttime'].value},
+							hours:{value:course['hours'].value},
+							baserecordid:{value:null},
+							basehours:{value:course['hours'].value},
+							transfered:{value:0},
+							transfertimes:{value:0},
+							transferpending:{value:0},
+							transferlimit:{value:new Date(course['date'].value.dateformat()).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
+						});
+					});
+					/* entry attendants */
+					if (error) return;
+					$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
+						swal({
+							title:'登録完了',
+							text:'スケジュール作成完了'+message,
+							type:'success'
+						});
+					});
 					break;
 				case 8:
 					/* get course */
@@ -349,7 +393,7 @@ jQuery.noConflict();
 											return false;
 										}
 										for (var i2=0;i2<dates.length;i2++)
-											registvalues.push({
+											entryvalues.push({
 												studentcode:{value:$(this).attr('id')},
 												studentname:{value:$('#name',$(this)).text()},
 												appcode:{value:vars.lecturekeys[index]},
@@ -368,9 +412,9 @@ jQuery.noConflict();
 											});
 									}
 								});
-								/* regist attendants */
+								/* entry attendants */
 								if (error) return;
-								$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
+								$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 									/* update students */
 									$.each(resp,function(key,values){
 										var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -428,7 +472,7 @@ jQuery.noConflict();
 							return false;
 						}
 						for (var i=0;i<dates.length;i++)
-							registvalues.push({
+							entryvalues.push({
 								studentcode:{value:$(this).attr('id')},
 								studentname:{value:$('#name',$(this)).text()},
 								appcode:{value:vars.lecturekeys[index]},
@@ -446,9 +490,9 @@ jQuery.noConflict();
 								transferlimit:{value:new Date(dates[i]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 							});
 					});
-					/* regist attendants */
+					/* entry attendants */
 					if (error) return;
-					$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
+					$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -491,7 +535,7 @@ jQuery.noConflict();
 								return false;
 							}
 							for (var i2=0;i2<dates.length;i2++)
-								registvalues.push({
+								entryvalues.push({
 									studentcode:{value:$(this).attr('id')},
 									studentname:{value:$('#name',$(this)).text()},
 									appcode:{value:vars.lecturekeys[index]},
@@ -510,9 +554,9 @@ jQuery.noConflict();
 								});
 						}
 					});
-					/* regist attendants */
+					/* entry attendants */
 					if (error) return;
-					$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
+					$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 						/* update students */
 						$.each(resp,function(key,values){
 							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -579,7 +623,7 @@ jQuery.noConflict();
 												/* filtering by grade */
 												if (course['gradecode'].value!=$('#grade',$(this)).val()) return true;
 												for (var i=0;i<selection.length;i++)
-													registvalues.push({
+													entryvalues.push({
 														studentcode:{value:$(this).attr('id')},
 														studentname:{value:$('#name',$(this)).text()},
 														appcode:{value:vars.lecturekeys[index]},
@@ -597,8 +641,8 @@ jQuery.noConflict();
 														transferlimit:{value:new Date(selection[i].date).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
 													});
 											});
-											/* regist attendants */
-											$.registattendants(registvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
+											/* entry attendants */
+											$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
 												/* update students */
 												$.each(resp,function(key,values){
 													var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
@@ -869,12 +913,24 @@ jQuery.noConflict();
 							var index=parseInt($(this).val());
 							if (index<vars.lecturekeys.length-3)
 							{
-								courselist.empty().append($('<option>').attr('value','').html('&nbsp;'+((index==vars.lecturekeys.length-4)?'講座選択':'コース選択')+'&nbsp;'));
-								for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
+								if ($.minilecindex==index)
 								{
-									var course=vars.apps[vars.lecturekeys[index]][i];
-									if (index==vars.lecturekeys.length-4) courselist.append($('<option>').attr('value',course['$id'].value).html('&nbsp;'+course['name'].value+'&nbsp;'));
-									else courselist.append($('<option>').attr('value',course['code'].value).html('&nbsp;'+course['name'].value+'&nbsp;'));
+									courselist.empty().append($('<option>').attr('value','').html('&nbsp;講座選択&nbsp;'));
+									for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
+									{
+										var course=vars.apps[vars.lecturekeys[index]][i];
+										if (course['lecturetype'].value=='有料') continue;
+										courselist.append($('<option>').attr('value',course['$id'].value).html('&nbsp;'+course['name'].value+'&nbsp;'));
+									}
+								}
+								else
+								{
+									courselist.empty().append($('<option>').attr('value','').html('&nbsp;コース選択&nbsp;'));
+									for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
+									{
+										var course=vars.apps[vars.lecturekeys[index]][i];
+										courselist.append($('<option>').attr('value',course['code'].value).html('&nbsp;'+course['name'].value+'&nbsp;'));
+									}
 								}
 								coursecontainer.show();
 								return;

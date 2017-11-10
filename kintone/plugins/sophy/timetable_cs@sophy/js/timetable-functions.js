@@ -7,8 +7,11 @@ jQuery.extend({
 				if (!$.checkfield(counter,param[counter].appname,resp.properties,splash)) return;
 				var body={
 					app:param[counter].app,
-					query:((param[counter].isstudent)?'status in ("通塾中") ':'')+'order by $id asc limit '+param[counter].limit.toString()+' offset '+param[counter].offset.toString()
+					query:''
 				};
+				if (param[counter].isstudent) body.query+='status in ("通塾中") ';
+				if ($.minilecindex==counter) body.query+='date>"'+new Date().calc('-1 day').format('Y-m-d')+'" ';
+				body.query+='order by $id asc limit '+param[counter].limit.toString()+' offset '+param[counter].offset.toString();
 				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 					Array.prototype.push.apply(param[counter].records,resp.records);
 					param[counter].offset+=param[counter].limit;
@@ -116,22 +119,7 @@ jQuery.extend({
 		}
 		return res;
 	},
-	lecturenames:function(){
-		return [
-			'通常講座',
-			'短期講座',
-			'テスト対策講座',
-			'英検対策講座',
-			'春季特別講座',
-			'夏季特別講座',
-			'冬季特別講座',
-			'ミニレク',
-			'朝練',
-			'夜練',
-			'学校独自検査対策講座'
-		];
-	},
-	registattendants:function(values,progress,registered,callback){
+	entryattendants:function(values,progress,entries,callback){
 		var error=false;
 		var counter=0;
 		var message='';
@@ -142,8 +130,8 @@ jQuery.extend({
 		for (var i=0;i<values.length;i++)
 		{
 			if (error) return;
-			if ((function(values,registered){
-				return $.grep(registered,function(item,index){
+			if ((function(values,entries){
+				return $.grep(entries,function(item,index){
 					var exists=0;
 					if (item['studentcode'].value==values.studentcode.value) exists++;
 					if (item['appcode'].value==values.appcode.value) exists++;
@@ -153,7 +141,7 @@ jQuery.extend({
 					if (item['hours'].value==values.hours.value) exists++;
 					return exists==6;
 				}).length!=0;
-			})(values[i],registered))
+			})(values[i],entries))
 			{
 				counter++;
 				if (message.length==0) message='\n(一部登録済みのスケジュールがありました)';
@@ -199,22 +187,53 @@ jQuery.extend({
 		if (counter==values.length)
 		{
 			progress.hide();
-			swal('Error!','スケジュールは作成済みです。','error');
+			if (values.length==0) swal('Error!','スケジュール作成の対象学年に該当する生徒が見つかりませんでした。','error');
+			else swal('Error!','スケジュールは作成済みです。','error');
 		}
 	},
-	registtransfers:function(cell,terms,progress,registered,callback){
+	entryminilec:function(lecturecode,lecturename,course,cell,terms,progress,entries,callback){
+		var baserecordid=($('#baserecordid',cell).val())?$('#baserecordid',cell).val():'';
+		var transfertimes=parseInt($('#transfertimes',cell).val())+1;
+		if (baserecordid.length==0) baserecordid=$('#\\$id',cell).val();
+		var body={
+			app:kintone.app.getId(),
+			record:{
+				studentcode:{value:$('#studentcode',cell).val()},
+				studentname:{value:$('#studentname',cell).val()},
+				appcode:{value:lecturecode},
+				appname:{value:lecturename},
+				coursecode:{value:course['$id'].value},
+				coursename:{value:course['name'].value},
+				date:{value:new Date(course['date'].value.dateformat()).format('Y-m-d')},
+				starttime:{value:course['starttime'].value},
+				hours:{value:course['hours'].value},
+				baserecordid:{value:baserecordid},
+				basehours:{value:$('#basehours',cell).val()},
+				transfered:{value:0},
+				transfertimes:{value:transfertimes},
+				transferpending:{value:0},
+				transferlimit:{value:$('#transferlimit',cell).val()}
+			}
+		};
+		kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+			$.entrytransfers(cell,terms,progress,entries,callback);
+		},function(error){
+			swal('Error!',error.message,'error');
+		});
+	},
+	entrytransfers:function(cell,terms,progress,entries,callback){
 		if ($('#\\$id',cell).val().length==0)
 		{
-			var registvalues={};
+			var entryvalues={};
 			$.each($('input[type=hidden]',cell),function(){
-				if ($(this).attr('id')!='$id') registvalues[$(this).attr('id')]={value:$(this).val()};
+				if ($(this).attr('id')!='$id') entryvalues[$(this).attr('id')]={value:$(this).val()};
 			});
-			/* regist attendants */
-			$.registattendants([registvalues],progress,registered,function(resp,message){
+			/* entry attendants */
+			$.entryattendants([entryvalues],progress,entries,function(resp,message){
 				/* update id */
 				$('#\\$id',cell).val(resp[$('#studentcode',cell).val()][$('#coursecode',cell).val()].id[0]);
-				/* regist attendants */
-				$.registattendants($.createtransfer(cell,terms),progress,registered,function(resp,message){
+				/* entry attendants */
+				$.entryattendants($.createtransfer(cell,terms),progress,entries,function(resp,message){
 					/* update base attendants */
 					var body={
 						app:kintone.app.getId(),
@@ -237,8 +256,8 @@ jQuery.extend({
 		}
 		else
 		{
-			/* regist attendants */
-			$.registattendants($.createtransfer(cell,terms),progress,registered,function(resp,message){
+			/* entry attendants */
+			$.entryattendants($.createtransfer(cell,terms),progress,entries,function(resp,message){
 				/* update base attendants */
 				if (parseInt($('#transfertimes',cell).val())!=0)
 				{
@@ -295,6 +314,24 @@ jQuery.extend({
 				}
 			});
 		}
+	},
+	minilecindex:function(){
+		return 7;
+	},
+	lecturenames:function(){
+		return [
+			'通常講座',
+			'短期講座',
+			'テスト対策講座',
+			'英検対策講座',
+			'春季特別講座',
+			'夏季特別講座',
+			'冬季特別講座',
+			'ミニレク',
+			'朝練',
+			'夜練',
+			'学校独自検査対策講座'
+		];
 	},
 	checkfield:function(index,name,properties,splash){
 		var error='';
@@ -410,6 +447,7 @@ jQuery.extend({
 			case '7':
 				/* ミニレク */
 				if (!('name' in fieldinfos)) error='講座名';
+				if (!('lecturetype' in fieldinfos)) error='料金区分';
 				if (!('gradefromcode' in fieldinfos)) error='学年コード（From）';
 				if (!('gradefromname' in fieldinfos)) error='学年名（From）';
 				if (!('gradetocode' in fieldinfos)) error='学年コード（To）';
@@ -560,6 +598,9 @@ jQuery.extend({
 			return false;
 		}
 		else return true;
+	},
+	minilecsvg:function(){
+		return '<svg version="1.1" id="minilec" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve"><circle fill="#FFFFFF" cx="15" cy="15" r="11.5"/><path fill="#8F9491" d="M20.105,14.056c0-0.209-0.006-0.405-0.02-0.586c-0.013-0.183-0.038-0.341-0.07-0.476c-0.074-0.296-0.219-0.535-0.436-0.717c-0.215-0.182-0.518-0.276-0.909-0.283c-0.208,0-0.424,0.03-0.646,0.091c-0.222,0.061-0.442,0.146-0.661,.258c-0.22,0.111-0.429,0.245-0.627,0.404c-0.198,0.158-0.379,0.334-0.541,0.53v6.738h-2.393v-5.959c0-0.209-0.007-0.405-0.021-0.586c-0.013-0.183-0.036-0.341-0.069-0.476c-0.075-0.296-0.218-0.535-0.43-0.717c-0.212-0.182-0.518-0.276-0.914-0.283c-0.29,0-0.425,0.03-0.647,0.091c-0.221,0.061-0.442,0.146-0.66,0.258c-0.22,0.111-0.429,0.245-0.627,0.404c-0.199,0.158-0.379,0.334-0.54,0.53v6.738H7.5v-9.788h1.98l0.222,1.363h0.04c0.142-0.202,0.32-0.401,0.535-0.596c0.217-0.195,0.46-0.367,0.732-0.516c0.273-0.148,0.572-0.267,0.899-0.358c0.327-0.09,0.672-0.136,1.035-0.136c0.646,0,1.228,0.143,1.742,0.429c0.516,0.287,0.907,0.732,1.177,1.338h0.04c0.189-0.262,0.399-0.501,0.632-0.717c0.231-0.215,0.49-0.4,0.772-0.556c0.283-0.155,0.587-0.276,0.914-0.363c0.327-0.088,0.676-0.131,1.047-0.131c0.699,0.006,1.287,0.153,1.761,0.439c0.477,0.286,0.841,0.678,1.098,1.176c0.067,0.128,0.124,0.269,0.171,0.42c0.048,0.151,0.086,0.322,0.116,0.51c0.03,0.188,0.052,0.397,0.065,0.626c0.014,0.229,0.021,0.491,0.021,0.788v6.071h-2.395V14.056z"/></svg>';
 	}
 });
 })(jQuery);

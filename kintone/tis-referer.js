@@ -77,7 +77,7 @@ var Referer=function(options){
 		searches:[]
 	},options);
 	/* property */
-	this.datasource=options.datasource;
+	this.datasource=(options.datasource!=null)?options.datasource:[];
 	this.displaytext=options.displaytext;
 	this.parambuttons=options.buttons;
 	this.paramsearches=options.searches;
