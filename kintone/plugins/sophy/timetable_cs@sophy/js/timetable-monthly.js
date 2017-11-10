@@ -69,7 +69,8 @@ jQuery.noConflict();
 									$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/refresh.png" alt="振替" title="振替">')
 									.css({
 										'cursor':'pointer',
-										'height':'100%'
+										'height':'100%',
+										'margin-right':'5px'
 									})
 									.on('click',function(){
 										var cell=$(this).closest('.timetable-monthly-cell');
@@ -118,20 +119,23 @@ jQuery.noConflict();
 							)
 						)
 					);
-					if (vars.lecturekeys[$.minilecindex]!=filter[i]['appcode'].value)
+					if (vars.lecturekeys[$.minilecindex()]!=filter[i]['appcode'].value)
 					{
+						var lecturecode=vars.lecturekeys[$.minilecindex()];
+						var lecturename=vars.lectures[lecturecode].name;
 						$('.lecture',item).append(
 							$($.minilecsvg())
 							.css({
 								'cursor':'pointer',
-								'height':'100%'
+								'height':'20px',
+								'width':'20px'
 							})
 							.on('click',function(){
 								var cell=$(this).closest('.timetable-monthly-cell');
 								vars.minilecselect.datasource=[];
-								for (var i2=0;i2<vars.apps[vars.lecturekeys[$.minilecindex]].length;i2++)
+								for (var i2=0;i2<vars.apps[lecturecode].length;i2++)
 								{
-									var course=vars.apps[vars.lecturekeys[$.minilecindex]][i];
+									var course=vars.apps[lecturecode][i];
 									if (course['lecturetype'].value=='無料') continue;
 									vars.minilecselect.datasource.push(course);
 								}
@@ -146,7 +150,7 @@ jQuery.noConflict();
 									callback:function(row){
 										/* close the reference box */
 										vars.minilecselect.hide();
-										var course=$.grep(vars.apps[vars.lecturekeys[$.minilecindex]],function(item,index){
+										var course=$.grep(vars.apps[lecturecode],function(item,index){
 											return item['$id'].value==$('#\\$id',row).val();
 										});
 										if (course.length==0) return;
@@ -175,7 +179,7 @@ jQuery.noConflict();
 														return;
 													}
 													/* entry transfers */
-													$.entryminilec(vars.lecturekeys[$.minilecindex],vars.lectures[vars.lecturekeys[$.minilecindex]].name,cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+													$.entryminilec(lecturecode,lecturename,cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
 														/* reload view */
 														functions.load();
 													});
@@ -388,7 +392,7 @@ jQuery.noConflict();
 		var param=[];
 		$.each(vars.lectures,function(key,values){
 			param.push({
-				app:(key==vars.lecturekeys[0])?key:'',
+				app:(key==vars.lecturekeys[0] || key==vars.lecturekeys[$.minilecindex()])?key:'',
 				appname:values.name,
 				limit:limit,
 				offset:0,

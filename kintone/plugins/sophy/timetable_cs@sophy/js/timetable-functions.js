@@ -10,7 +10,7 @@ jQuery.extend({
 					query:''
 				};
 				if (param[counter].isstudent) body.query+='status in ("通塾中") ';
-				if ($.minilecindex==counter) body.query+='date>"'+new Date().calc('-1 day').format('Y-m-d')+'" ';
+				if ($.minilecindex()==counter) body.query+='date>"'+new Date().calc('-1 day').format('Y-m-d')+'" ';
 				body.query+='order by $id asc limit '+param[counter].limit.toString()+' offset '+param[counter].offset.toString();
 				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 					Array.prototype.push.apply(param[counter].records,resp.records);

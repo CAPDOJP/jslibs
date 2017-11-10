@@ -196,7 +196,10 @@ p.timetable-student span.lecture{
   padding:0px 5px;
   position:absolute;
   top:0px;
-  width:50px;
+  width:45px;
+}
+p.timetable-student span.lecture *{
+  vertical-align:top;
 }
 p.timetable-student span.name{
   padding-left:calc(3em + 5px);
@@ -205,7 +208,7 @@ p.timetable-student.multi{
   margin-bottom:5px;
 }
 p.timetable-student.multi span.name{
-  padding-left:calc(3em + 40px);
+  padding-left:calc(3em + 65px);
 }
 p.timetable-tooltip{
   margin:0px;

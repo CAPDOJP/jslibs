@@ -99,7 +99,7 @@ jQuery.noConflict();
 			else index=parseInt($('#lecturelist').val());
 			if ($('#courselist').is(':visible') && $('#courselist').val().length==0)
 			{
-				swal('Error!',(($.minilecindex==index)?'講座':'コース')+'を選択して下さい。','error');
+				swal('Error!',(($.minilecindex()==index)?'講座':'コース')+'を選択して下さい。','error');
 				return;
 			}
 			if (vars.attendants.find('.list').find('p:visible').length==0)
@@ -913,7 +913,7 @@ jQuery.noConflict();
 							var index=parseInt($(this).val());
 							if (index<vars.lecturekeys.length-3)
 							{
-								if ($.minilecindex==index)
+								if ($.minilecindex()==index)
 								{
 									courselist.empty().append($('<option>').attr('value','').html('&nbsp;講座選択&nbsp;'));
 									for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
