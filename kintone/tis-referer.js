@@ -284,9 +284,10 @@ Referer.prototype={
 	search:function(){
 		var my=this;
 		var lists=this.listblock.find('tbody').find('tr').find('td');
-		var searches=this.searchblock.find('input[type=text],select');
 		var filtersearch=this.datasource;
-		if (searches.size())
+		if (this.paramsearches.length!=0)
+		{
+			var searches=this.searchblock.find('input[type=text],select');
 			filtersearch=$.grep(this.datasource,function(item,index){
 				var exists=0;
 				$.each(searches,function(index){
@@ -313,6 +314,7 @@ Referer.prototype={
 				});
 				return searches.length==exists;
 			});
+		}
 		/* lists callback */
 		$.each(lists,function(index){
 			$(this).off('click');
