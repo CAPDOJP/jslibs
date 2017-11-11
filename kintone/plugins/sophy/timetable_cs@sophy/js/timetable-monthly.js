@@ -54,7 +54,7 @@ jQuery.noConflict();
 					cell.append(
 						item
 						.append(
-							$('<p class="timetable-student multi">')
+							$('<p class="timetable-datacell multi">')
 							.append(
 								$('<span>').addClass('grade')
 								.css({'background-color':'#'+grade['color'].value})
@@ -66,51 +66,82 @@ jQuery.noConflict();
 									'background-color':'#'+vars.lectures[filter[i]['appcode'].value].color
 								})
 								.append(
-									$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/refresh.png" alt="振替" title="振替">')
-									.css({
-										'cursor':'pointer',
-										'height':'100%',
-										'margin-right':'5px'
-									})
-									.on('click',function(){
-										var cell=$(this).closest('.timetable-monthly-cell');
-										/* get date and time for transfer */
-										vars.termselect.show({
-											fromhour:parseInt(vars.const['starthour'].value),
-											tohour:parseInt(vars.const['endhour'].value),
-											buttons:{
-												ok:function(selection){
-													/* close termselect */
-													vars.termselect.hide();
-													var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
-													var hours=0;
-													for (var i=0;i<selection.length;i++)
-													{
-														if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
+									$('<span>').addClass('button')
+									.append(
+										$($.transfersvg())
+										.on('click',function(){
+											var cell=$(this).closest('.timetable-monthly-cell');
+											/* get date and time for transfer */
+											vars.termselect.show({
+												fromhour:parseInt(vars.const['starthour'].value),
+												tohour:parseInt(vars.const['endhour'].value),
+												buttons:{
+													ok:function(selection){
+														/* close termselect */
+														vars.termselect.hide();
+														var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
+														var hours=0;
+														for (var i=0;i<selection.length;i++)
 														{
-															swal('Error!','受講終了時間が終業時刻を超えています。','error');
+															if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
+															{
+																swal('Error!','受講終了時間が終業時刻を超えています。','error');
+																return;
+															}
+															hours+=selection[i].hours;
+														}
+														if (hours!=parseFloat($('#basehours',cell).val()))
+														{
+															swal('Error!','振替前と振替後の時間が合いません。','error');
 															return;
 														}
-														hours+=selection[i].hours;
+														/* entry transfers */
+														$.entrytransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+															/* reload view */
+															functions.load();
+														});
+													},
+													cancel:function(){
+														/* close termselect */
+														vars.termselect.hide();
 													}
-													if (hours!=parseFloat($('#basehours',cell).val()))
-													{
-														swal('Error!','振替前と振替後の時間が合いません。','error');
-														return;
-													}
-													/* entry transfers */
-													$.entrytransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
-														/* reload view */
-														functions.load();
-													});
-												},
-												cancel:function(){
-													/* close termselect */
-													vars.termselect.hide();
 												}
-											}
-										});
-									})
+											});
+										})
+										.on({
+											'mouseenter':function(){$(this).closest('.button').addClass('show');},
+											'mouseleave':function(){$(this).closest('.button').removeClass('show');}
+										})
+									)
+								)
+								.append(
+									$('<span>').addClass('button')
+									.append(
+										$($.pendingsvg())
+										.on('click',function(){
+											var cell=$(this).closest('.timetable-monthly-cell');
+											swal({
+												title:'確認',
+												text:'振替保留にします。宜しいですか？',
+												type:'warning',
+												allowOutsideClick:false,
+												showCancelButton:true,
+												confirmButtonText:'OK',
+												cancelButtonText:'Cancel'
+											},
+											function(){
+												/* entry pending */
+												$.entrypending(cell,vars.progress,vars.apps[kintone.app.getId()],function(){
+													/* reload view */
+													functions.load();
+												});
+											});
+										})
+										.on({
+											'mouseenter':function(){$(this).closest('.button').addClass('show');},
+											'mouseleave':function(){$(this).closest('.button').removeClass('show');}
+										})
+									)
 								)
 							)
 							.append(
@@ -124,75 +155,77 @@ jQuery.noConflict();
 						var lecturecode=vars.lecturekeys[$.minilecindex()];
 						var lecturename=vars.lectures[lecturecode].name;
 						$('.lecture',item).append(
-							$($.minilecsvg())
-							.css({
-								'cursor':'pointer',
-								'height':'20px',
-								'width':'20px'
-							})
-							.on('click',function(){
-								var cell=$(this).closest('.timetable-monthly-cell');
-								vars.minilecselect.datasource=[];
-								for (var i2=0;i2<vars.apps[lecturecode].length;i2++)
-								{
-									var course=vars.apps[lecturecode][i];
-									if (course['lecturetype'].value=='無料') continue;
-									vars.minilecselect.datasource.push(course);
-								}
-								vars.minilecselect.search();
-								vars.minilecselect.show({
-									buttons:{
-										cancel:function(){
+							$('<span>').addClass('button')
+							.append(
+								$($.minilecsvg())
+								.on('click',function(){
+									var cell=$(this).closest('.timetable-monthly-cell');
+									vars.minilecselect.datasource=[];
+									for (var i2=0;i2<vars.apps[lecturecode].length;i2++)
+									{
+										var course=vars.apps[lecturecode][i2];
+										if (course['lecturetype'].value=='無料') continue;
+										vars.minilecselect.datasource.push(course);
+									}
+									vars.minilecselect.search();
+									vars.minilecselect.show({
+										buttons:{
+											cancel:function(){
+												/* close the reference box */
+												vars.minilecselect.hide();
+											}
+										},
+										callback:function(row){
 											/* close the reference box */
 											vars.minilecselect.hide();
-										}
-									},
-									callback:function(row){
-										/* close the reference box */
-										vars.minilecselect.hide();
-										var course=$.grep(vars.apps[lecturecode],function(item,index){
-											return item['$id'].value==$('#\\$id',row).val();
-										});
-										if (course.length==0) return;
-										vars.termselect.show({
-											fromhour:parseInt(vars.const['starthour'].value),
-											tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course['hours'].value)),
-											dates:[new Date(filter[i]['date'].value.dateformat()).format('Y-m-d')],
-											buttons:{
-												ok:function(selection){
-													/* close termselect */
-													vars.termselect.hide();
-													var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
-													var hours=0;
-													for (var i=0;i<selection.length;i++)
-													{
-														if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
+											var course=$.grep(vars.apps[lecturecode],function(item,index){
+												return item['$id'].value==$('#\\$id',row).val();
+											});
+											if (course.length==0) return;
+											vars.termselect.show({
+												fromhour:parseInt(vars.const['starthour'].value),
+												tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course[0]['hours'].value)),
+												dates:[new Date($('#date',cell).val().dateformat()).format('Y-m-d')],
+												buttons:{
+													ok:function(selection){
+														/* close termselect */
+														vars.termselect.hide();
+														var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
+														var hours=0;
+														for (var i2=0;i2<selection.length;i2++)
 														{
-															swal('Error!','受講終了時間が終業時刻を超えています。','error');
+															if (new Date((new Date().format('Y-m-d')+'T'+selection[i2].endtime+':00+09:00').dateformat())>endhour)
+															{
+																swal('Error!','受講終了時間が終業時刻を超えています。','error');
+																return;
+															}
+															hours+=selection[i2].hours;
+														}
+														if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#basehours',cell).val()))
+														{
+															swal('Error!','振替前と振替後の時間が合いません。','error');
 															return;
 														}
-														hours+=selection[i].hours;
+														/* entry transfers */
+														$.entryminilec(lecturecode,lecturename,course[0],cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+															/* reload view */
+															functions.load();
+														});
+													},
+													cancel:function(){
+														/* close termselect */
+														vars.termselect.hide();
 													}
-													if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#basehours',cell).val()))
-													{
-														swal('Error!','振替前と振替後の時間が合いません。','error');
-														return;
-													}
-													/* entry transfers */
-													$.entryminilec(lecturecode,lecturename,cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
-														/* reload view */
-														functions.load();
-													});
-												},
-												cancel:function(){
-													/* close termselect */
-													vars.termselect.hide();
 												}
-											}
-										});
-									}
-								});
-							})
+											});
+										}
+									});
+								})
+								.on({
+									'mouseenter':function(){$(this).closest('.button').addClass('show');},
+									'mouseleave':function(){$(this).closest('.button').removeClass('show');}
+								})
+							)
 						);
 					}
 					$.each(filter[i],function(key,values){
@@ -268,7 +301,8 @@ jQuery.noConflict();
 					});
 					/* append recoed of schedule */
 					if (day>new Date().calc('-1 day'))
-						Array.prototype.push.apply(filter,$.createschedule(
+					{
+						var schedule=$.createschedule(
 							vars.apps[vars.config['student']],
 							vars.apps[vars.lecturekeys[0]],
 							filter,
@@ -277,7 +311,10 @@ jQuery.noConflict();
 							vars.week,
 							day,
 							vars.const['transferlimit'].value
-						));
+						);
+						Array.prototype.push.apply(filter,schedule);
+						Array.prototype.push.apply(records,schedule);
+					}
 					filter=$.grep(filter,function(item,index){
 						var exists=0;
 						if (item['transfered'].value==0) exists++;
@@ -432,7 +469,7 @@ jQuery.noConflict();
 			/* create minilecselect */
 			vars.minilecselect=$('body').referer({
 				datasource:null,
-				displaytext:'name',
+				displaytext:['name'],
 				buttons:[
 					{
 						id:'cancel',

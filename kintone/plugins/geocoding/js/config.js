@@ -55,6 +55,7 @@ jQuery.noConflict();
 	        	$('select#information').val(config['information']);
 	        	$('input#apikey').val(config['apikey']);
 	        	if (config['map']=='1') $('input#map').prop('checked',true);
+	        	if (config['usegeocoder']=='1') $('input#usegeocoder').prop('checked',true);
 	        }
 	        else $('input#mapheight').val('50');
 		});
@@ -112,6 +113,7 @@ jQuery.noConflict();
         config['map']=($('input#map').prop('checked'))?'1':'0';
         config['mapheight']=$('input#mapheight').val();
         config['information']=$('select#information').val();
+        config['usegeocoder']=($('input#usegeocoder').prop('checked'))?'1':'0';
         config['apikey']=$('input#apikey').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);

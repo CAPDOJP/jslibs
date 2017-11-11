@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "timetable-daily"
+* jQuery-Plugin "timetable-attend"
 * Version: 1.0
 * Copyright (c) 2016 TIS
 *
@@ -20,8 +20,6 @@ jQuery.noConflict();
 		graphlegend:null,
 		progress:null,
 		table:null,
-		minilecselect:null,
-		termselect:null,
 		apps:{},
 		lectures:{},
 		config:{},
@@ -109,176 +107,66 @@ jQuery.noConflict();
 				from,
 				to
 			);
-			/* cell value switching */
-			cell.append(
-				$('<p class="timetable-datacell">')
-				.css({'background-color':'#'+color})
-				.append(
-					$('<span>').addClass('lecture')
-					.append(
-						$('<span>').addClass('button')
-						.append(
-							$($.transfersvg())
-							.on('click',function(){
-								var cell=$(this).closest('td');
-								/* get date and time for transfer */
-								vars.termselect.show({
-									fromhour:parseInt(vars.const['starthour'].value),
-									tohour:parseInt(vars.const['endhour'].value),
-									buttons:{
-										ok:function(selection){
-											/* close termselect */
-											vars.termselect.hide();
-											var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
-											var hours=0;
-											for (var i=0;i<selection.length;i++)
-											{
-												if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
-												{
-													swal('Error!','受講終了時間が終業時刻を超えています。','error');
-													return;
-												}
-												hours+=selection[i].hours;
-											}
-											if (hours!=parseFloat($('#basehours',cell).val()))
-											{
-												swal('Error!','振替前と振替後の時間が合いません。','error');
-												return;
-											}
-											/* entry transfers */
-											$.entrytransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
-												/* reload view */
-												functions.load();
-											});
-										},
-										cancel:function(){
-											/* close termselect */
-											vars.termselect.hide();
-										}
-									}
-								});
-							})
-							.on({
-								'mouseenter':function(){$(this).closest('.button').addClass('show');},
-								'mouseleave':function(){$(this).closest('.button').removeClass('show');}
-							})
-						)
-					)
-					.append(
-						$('<span>').addClass('button')
-						.append(
-							$($.pendingsvg())
-							.on('click',function(){
-								var cell=$(this).closest('td');
-								swal({
-									title:'確認',
-									text:'振替保留にします。宜しいですか？',
-									type:'warning',
-									allowOutsideClick:false,
-									showCancelButton:true,
-									confirmButtonText:'OK',
-									cancelButtonText:'Cancel'
-								},
-								function(){
-									/* entry pending */
-									$.entrypending(cell,vars.progress,vars.apps[kintone.app.getId()],function(){
-										/* reload view */
-										functions.load();
-									});
-								});
-
-							})
-							.on({
-								'mouseenter':function(){$(this).closest('.button').addClass('show');},
-								'mouseleave':function(){$(this).closest('.button').removeClass('show');}
-							})
-						)
-					)
-				)
-			);
-			if (vars.lecturekeys[$.minilecindex()]!=filter['appcode'].value)
-			{
-				var lecturecode=vars.lecturekeys[$.minilecindex()];
-				var lecturename=vars.lectures[lecturecode].name;
-				$('.lecture',cell).append(
-					$('<span>').addClass('button')
-					.append(
-						$($.minilecsvg())
-						.on('click',function(){
-							var cell=$(this).closest('td');
-							vars.minilecselect.datasource=[];
-							for (var i=0;i<vars.apps[lecturecode].length;i++)
-							{
-								var course=vars.apps[lecturecode][i];
-								if (course['lecturetype'].value=='無料') continue;
-								vars.minilecselect.datasource.push(course);
-							}
-							vars.minilecselect.search();
-							vars.minilecselect.show({
-								buttons:{
-									cancel:function(){
-										/* close the reference box */
-										vars.minilecselect.hide();
-									}
-								},
-								callback:function(row){
-									/* close the reference box */
-									vars.minilecselect.hide();
-									var course=$.grep(vars.apps[lecturecode],function(item,index){
-										return item['$id'].value==$('#\\$id',row).val();
-									});
-									if (course.length==0) return;
-									vars.termselect.show({
-										fromhour:parseInt(vars.const['starthour'].value),
-										tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course[0]['hours'].value)),
-										dates:[new Date($('#date',cell).val().dateformat()).format('Y-m-d')],
-										buttons:{
-											ok:function(selection){
-												/* close termselect */
-												vars.termselect.hide();
-												var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
-												var hours=0;
-												for (var i=0;i<selection.length;i++)
-												{
-													if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
-													{
-														swal('Error!','受講終了時間が終業時刻を超えています。','error');
-														return;
-													}
-													hours+=selection[i].hours;
-												}
-												if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#basehours',cell).val()))
-												{
-													swal('Error!','振替前と振替後の時間が合いません。','error');
-													return;
-												}
-												/* entry transfers */
-												$.entryminilec(lecturecode,lecturename,course[0],cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
-													/* reload view */
-													functions.load();
-												});
-											},
-											cancel:function(){
-												/* close termselect */
-												vars.termselect.hide();
-											}
-										}
-									});
-								}
-							});
-						})
-						.on({
-							'mouseenter':function(){$(this).closest('.button').addClass('show');},
-							'mouseleave':function(){$(this).closest('.button').removeClass('show');}
-						})
-					)
-				);
-			}
 			$.each(filter,function(key,values){
 				if (values!=null)
 					if (values.value!=null)
 						cell.append($('<input type="hidden">').attr('id',key).val(values.value));
 			});
+			var green=$($.greensvg())
+			.on('click',function(){
+				var cell=$(this).closest('td');
+				$.entryhistory(vars.config['history'],0,cell,function(record){
+					vars.apps[vars.config['history']].push(record);
+					$('.lecture',cell).addClass('textonly').empty().append($('<span>').text('出席'));
+				});
+			})
+			.on({
+				'mouseenter':function(){$(this).closest('.button').addClass('show');},
+				'mouseleave':function(){$(this).closest('.button').removeClass('show');}
+			});
+			var red=$($.redsvg())
+			.on('click',function(){
+				var cell=$(this).closest('td');
+				$.entryhistory(vars.config['history'],1,cell,function(record){
+					vars.apps[vars.config['history']].push(record);
+					$('.lecture',cell).empty().addClass('textonly').append($('<span>').text('欠席'));
+				});
+			})
+			.on({
+				'mouseenter':function(){$(this).closest('.button').addClass('show');},
+				'mouseleave':function(){$(this).closest('.button').removeClass('show');}
+			});
+			var history=$.grep(vars.apps[vars.config['history']],function(item,index){
+				var exists=0;
+				if (item['studentcode'].value==$('#studentcode',cell).val()) exists++;
+				if (item['appcode'].value==$('#appcode',cell).val()) exists++;
+				if (item['coursecode'].value==$('#coursecode',cell).val()) exists++;
+				if (item['date'].value==$('#date',cell).val()) exists++;
+				if (item['starttime'].value==$('#starttime',cell).val()) exists++;
+				if (item['hours'].value==$('#hours',cell).val()) exists++;
+				return exists==6;
+			});
+			/* cell value switching */
+			cell.append(
+				$('<p class="timetable-datacell">')
+				.css({
+					'background-color':'#'+color,
+					'padding-left':'5px'
+				})
+				.append($('<span>').addClass('lecture'))
+			);
+			if (history.length!=0)
+			{
+				if (history[0]['absence'].value=='0') $('.lecture',cell).addClass('textonly').append($('<span>').text('出席'));
+				else $('.lecture',cell).addClass('textonly').append($('<span>').text('欠席'));
+			}
+			else
+			{
+				$('.lecture',cell)
+				.append($('<span>').addClass('button').append(green))
+				.append($('<span>').addClass('button').append(red));
+
+			}
 			/* append balloon */
 			var balloon=$('<div class="timetable-balloon">');
 			var inner='';
@@ -414,10 +302,7 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
 		/* check viewid */
-		if (event.viewId!=vars.config.datetimetable) return;
-		/* get query strings */
-		var queries=$.queries();
-		if ('date' in queries) vars.date=new Date(queries['date'].dateformat());
+		if (event.viewId!=vars.config.attend) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container');
 		var feed=$('<div class="timetable-dayfeed">');
@@ -500,7 +385,7 @@ jQuery.noConflict();
 		var param=[];
 		$.each(vars.lectures,function(key,values){
 			param.push({
-				app:(key==vars.lecturekeys[0] || key==vars.lecturekeys[$.minilecindex()])?key:'',
+				app:(key==vars.lecturekeys[0])?key:'',
 				appname:values.name,
 				limit:limit,
 				offset:0,
@@ -532,38 +417,19 @@ jQuery.noConflict();
 			records:[],
 			isstudent:false
 		});
+		param.push({
+			app:vars.config['history'],
+			appname:'受講履歴',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
 		$.loadapps(counter,param,splash,function(){
 			splash.addClass('hide');
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
 			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
 			else vars.const=vars.apps[vars.config['const']][0];
-			/* create minilecselect */
-			vars.minilecselect=$('body').referer({
-				datasource:null,
-				displaytext:['name'],
-				buttons:[
-					{
-						id:'cancel',
-						class:'customview-button referer-button-cancel',
-						text:'Cancel'
-					}
-				]
-			});
-			/* create termselect */
-			vars.termselect=$('body').termselect({
-				isadd:true,
-				isdatepick:true,
-				buttons:{
-					ok:{
-						class:'customview-button referer-button-ok',
-						text:'OK'
-					},
-					cancel:{
-						class:'customview-button referer-button-cancel',
-						text:'Cancel'
-					}
-				}
-			});
 			/* append graph legend */
 			$.each(vars.lectures,function(key,values){
 				vars.graphlegend
@@ -592,7 +458,7 @@ jQuery.noConflict();
 					template.append($('<td '+hide+'>'));
 				}
 			}
-			vars.table=$('<table id="timetable" class="customview-table timetable-daily '+((vars.config['scalefixed']=='1')?'cellfixed':'')+'">').mergetable({
+			vars.table=$('<table id="timetable" class="customview-table timetable-attend '+((vars.config['scalefixed']=='1')?'cellfixed':'')+'">').mergetable({
 				container:container,
 				head:head,
 				template:template,

@@ -166,7 +166,7 @@ div.timetable-graphlegend{
   padding:6px 3px;
   text-align:center;
 }
-p.timetable-student{
+p.timetable-datacell{
   box-sizing:border-box;
   cursor:default;
   line-height:20px;
@@ -176,39 +176,81 @@ p.timetable-student{
   vertical-align:top;
   width:100%;
 }
-p.timetable-student span{
+p.timetable-datacell span{
   border-radius:3px;
   display:inline-block;
   margin:0px;
   padding:0px;
+  position:relative;
   vertical-align:top;
 }
-p.timetable-student span.grade{
+p.timetable-datacell span.grade{
   left:0px;
   position:absolute;
   text-align:center;
   top:0px;
   width:3em;
 }
-p.timetable-student span.lecture{
+p.timetable-datacell span.lecture{
+  box-sizing:border-box;
+  padding:0px 2.5px;
+}
+p.timetable-datacell span.lecture span.button{
+  box-sizing:border-box;
   height:20px;
-  left:calc(3em + 5px);
-  padding:0px 5px;
-  position:absolute;
-  top:0px;
-  width:45px;
-}
-p.timetable-student span.lecture *{
+  padding:0px 2.5px;
   vertical-align:top;
+  width:25px;
+  z-index:2;
 }
-p.timetable-student span.name{
+p.timetable-datacell span.lecture span.button:after{
+  background-color:#3498db;
+  border-radius:5px;
+  box-sizing:border-box;
+  color:#FFFFFF;
+  content:'';
+  display:none;
+  line-height:20px;
+  left:50%;
+  position:absolute;
+  padding:0px 5px;
+  top:0px;
+  transition:all 0.35s ease-out 0s;
+  white-space:nowrap;
+  z-index:1;
+  -webkit-transform:translateX(-50%);
+  -ms-transform:translateX(-50%);
+  transform:translateX(-50%);
+}
+p.timetable-datacell span.lecture span.button.show:after{
+  display:block;
+  top:-25px;
+}
+p.timetable-datacell span.lecture span.button svg{
+  cursor:pointer;
+  height:20px;
+  width:20px;
+}
+p.timetable-datacell span.lecture.textonly span{
+  background-color:#FFFFFF;
+  line-height:18px;
+  margin:1px 0px;
+  padding:0px 5px;
+}
+p.timetable-datacell span.name{
   padding-left:calc(3em + 5px);
 }
-p.timetable-student.multi{
+p.timetable-datacell.multi{
   margin-bottom:5px;
 }
-p.timetable-student.multi span.name{
-  padding-left:calc(3em + 65px);
+p.timetable-datacell.multi span.lecture{
+  left:calc(3em + 5px);
+  position:absolute;
+  top:0px;
+  width:80px;
+}
+p.timetable-datacell.multi span.name{
+  padding-left:calc(3em + 95px);
 }
 p.timetable-tooltip{
   margin:0px;
@@ -233,19 +275,22 @@ span.timetable-graphlegend-title{
   margin-right:12px;
   text-align:left;
 }
+table tbody tr td.timetable-merge p{
+  border-radius:3px;
+}
 /* individual style (daily) */
 table.timetable-daily{
   background-color:#FFFFFF;
   table-layout:fixed;
   width:100%;
 }
-table.timetable-daily .timetable-daily-cellhead{
+table.timetable-daily *.timetable-cellhead{
   width:10em;
 }
 table.timetable-daily.cellfixed{
   table-layout:auto;
 }
-table.timetable-daily.cellfixed .timetable-daily-cellhead{
+table.timetable-daily.cellfixed *.timetable-cellhead{
   white-space:nowrap;
   width:auto;
 }
@@ -262,13 +307,14 @@ table.timetable-daily tbody tr td{
   position:relative;
   vertical-align:top;
 }
-table.timetable-daily tbody tr td.timetable-daily-merge p{
-  border-radius:3px;
-  box-sizing:border-box;
-  height:20px;
-  margin:0px;
-  padding:0px;
-  width:100%;
+table.timetable-daily tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(1):after{
+  content:'通常振替';
+}
+table.timetable-daily tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(2):after{
+  content:'振替保留';
+}
+table.timetable-daily tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(3):after{
+  content:'ミニレク振替';
 }
 /* individual style (monthly) */
 div.timetable-monthly-days{
@@ -300,6 +346,50 @@ div.timetable-monthly-cell{
 table.timetable-monthly tbody tr td{
   padding:3px;
   vertical-align:top;
+}
+table.timetable-monthly tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(1):after{
+  content:'通常振替';
+}
+table.timetable-monthly tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(2):after{
+  content:'振替保留';
+}
+table.timetable-monthly tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(3):after{
+  content:'ミニレク振替';
+}
+/* individual style (attend) */
+table.timetable-attend{
+  background-color:#FFFFFF;
+  table-layout:fixed;
+  width:100%;
+}
+table.timetable-attend *.timetable-cellhead{
+  width:10em;
+}
+table.timetable-attend.cellfixed{
+  table-layout:auto;
+}
+table.timetable-attend.cellfixed *.timetable-cellhead{
+  white-space:nowrap;
+  width:auto;
+}
+table.timetable-attend thead tr:first-of-type th{
+  border-bottom:none;
+}
+table.timetable-attend thead tr:last-of-type th{
+  border-top:none;
+  height:10px;
+}
+table.timetable-attend tbody tr td{
+  cursor:pointer;
+  padding:2px;
+  position:relative;
+  vertical-align:top;
+}
+table.timetable-attend tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(1):after{
+  content:'出席';
+}
+table.timetable-attend tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(2):after{
+  content:'欠席';
 }
 /* individual style (scheduling) */
 div.timetable-scheduling-container{

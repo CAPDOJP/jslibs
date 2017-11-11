@@ -992,8 +992,8 @@ jQuery.noConflict();
 					    if (values.type.toUpperCase()=='LIST') views.push(values);
 					})
 					views.sort(function(a,b){
-						if(a.index<b.index) return -1;
-						if(a.index>b.index) return 1;
+						if(parseInt(a.index)<parseInt(b.index)) return -1;
+						if(parseInt(a.index)>parseInt(b.index)) return 1;
 						return 0;
 					});
 					for (var i=0;i<views.length;i++) vars.viewlist.append($('<option>').attr('id',views[i].id).text(views[i].name).val(views[i].filterCond));

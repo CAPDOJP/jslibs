@@ -15,10 +15,12 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
+		istransit:false,
 		infowindow:null,
 		currentlocation:null,
 		map:null,
 		config:{},
+		events:[],
 		markers:[]
 	};
 	var events={
@@ -69,8 +71,11 @@ jQuery.noConflict();
 									var lat=json.results[0].geometry.location.lat
 									var lng=json.results[0].geometry.location.lng;
 									var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(options.address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
-									vars.map.empty();
-									vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
+									if (vars.map!=null)
+									{
+										vars.map.empty();
+										vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
+									}
 									if (options.callback!=null) options.callback(json);
 									break;
 							}
@@ -79,18 +84,19 @@ jQuery.noConflict();
 					function(error){alert('地図座標取得に失敗しました。\n'+error);}
 				);
 			if (options.latlng.length!=0)
-			{
-				var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
-				vars.map.empty();
-				vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
-			}
+				if (vars.map!=null)
+				{
+					var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
+					vars.map.empty();
+					vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
+				}
 		}
 	};
 	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
+	vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 	kintone.events.on(events.lists,function(event){
-		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return event;
 		/* check display map */
 		if (!'map' in vars.config) return event;
@@ -160,7 +166,16 @@ jQuery.noConflict();
 			if (vars.markers.length==0) return;
 			/* display map */
 			vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
-		},isreload);
+		},
+		isreload,
+		function(results,latlng){
+			if (vars.config['usegeocoder']!='1') return;
+			var query='';
+			query+=vars.config['address']+'='+results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
+			query+='&'+vars.config['lat']+'='+latlng.lat();
+			query+='&'+vars.config['lng']+'='+latlng.lng();
+			window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
+		});
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
@@ -170,28 +185,54 @@ jQuery.noConflict();
 		return event;
 	});
 	kintone.events.on(events.show,function(event){
-		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
+		/* get query strings */
+		var queries=$.queries();
+		if (Object.keys(queries).length!=0) vars.istransit=true;
+		if (vars.config['address'] in queries) event.record[vars.config['address']].value=queries[vars.config['address']];
+		if (vars.config['lat'] in queries) event.record[vars.config['lat']].value=queries[vars.config['lat']];
+		if (vars.config['lng'] in queries) event.record[vars.config['lng']].value=queries[vars.config['lng']];
 		/* hide elements  */
 		kintone.app.record.setFieldShown(vars.config['lat'],false);
 		kintone.app.record.setFieldShown(vars.config['lng'],false);
 		/* map action  */
 		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
 		/* the initial display when editing */
-		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record.lat.value+','+event.record.lng.value});
-		/* display map in value change event */
-		if (event.type.match(/(create|edit)/g)!=null)
-			$('body').fields(vars.config['address'])[0].on('change',function(){
-				var target=$(this);
-				functions.displaymap({
-					address:target.val(),
-					callback:function(json){
-						$('body').fields(vars.config['lat'])[0].val(json.results[0].geometry.location.lat);
-						$('body').fields(vars.config['lng'])[0].val(json.results[0].geometry.location.lng);
-					}
-				});
-			});
+		if (event.type.match(/(edit|detail)/g)!=null || vars.istransit)
+			functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
 		kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
 	});
+	if ('address' in vars.config)
+	{
+		vars.events.push('app.record.create.change.'+vars.config['address']);
+		vars.events.push('mobile.app.record.create.change.'+vars.config['address']);
+		vars.events.push('app.record.edit.change.'+vars.config['address']);
+		vars.events.push('mobile.app.record.edit.change.'+vars.config['address']);
+		/* display map in value change event */
+		kintone.events.on(vars.events,function(event){
+			var type=event.type.split('.');
+			if (type[type.length-1]!=vars.config['address']) return event;
+			if (!vars.istransit)
+			{
+				if (event.changes.field.value)
+				{
+					functions.displaymap({
+						address:event.changes.field.value,
+						callback:function(json){
+							$('body').fields(vars.config['lat'])[0].val(json.results[0].geometry.location.lat);
+							$('body').fields(vars.config['lng'])[0].val(json.results[0].geometry.location.lng);
+						}
+					});
+				}
+				else
+				{
+					event.record[vars.config['lat']].value=null;
+					event.record[vars.config['lng']].value=null;
+				}
+			}
+			vars.istransit=false;
+			return event;
+		});
+	}
 })(jQuery,kintone.$PLUGIN_ID);

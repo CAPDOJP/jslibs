@@ -133,13 +133,15 @@ jQuery.extend({
 			if ((function(values,entries){
 				return $.grep(entries,function(item,index){
 					var exists=0;
+					var id=(item['$id'].value)?item['$id'].value:'';
+					if (id.length!=0) exists++;
 					if (item['studentcode'].value==values.studentcode.value) exists++;
 					if (item['appcode'].value==values.appcode.value) exists++;
 					if (item['coursecode'].value==values.coursecode.value) exists++;
 					if (item['date'].value==values.date.value) exists++;
 					if (item['starttime'].value==values.starttime.value) exists++;
 					if (item['hours'].value==values.hours.value) exists++;
-					return exists==6;
+					return exists==7;
 				}).length!=0;
 			})(values[i],entries))
 			{
@@ -191,7 +193,46 @@ jQuery.extend({
 			else swal('Error!','スケジュールは作成済みです。','error');
 		}
 	},
+	entryhistory:function(appcode,absence,cell,callback){
+		var body={
+			app:appcode,
+			record:{
+				studentcode:{value:$('#studentcode',cell).val()},
+				studentname:{value:$('#studentname',cell).val()},
+				appcode:{value:$('#appcode',cell).val()},
+				appname:{value:$('#appname',cell).val()},
+				coursecode:{value:$('#coursecode',cell).val()},
+				coursename:{value:$('#coursename',cell).val()},
+				date:{value:new Date($('#date',cell).val().dateformat()).format('Y-m-d')},
+				starttime:{value:$('#starttime',cell).val()},
+				hours:{value:$('#hours',cell).val()},
+				absence:{value:absence.toString()},
+				reporttable:{value:[]}
+			}
+		};
+		kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+			if (callback!=null) callback(body.record);
+		},function(error){
+			swal('Error!',error.message,'error');
+		});
+	},
 	entryminilec:function(lecturecode,lecturename,course,cell,terms,progress,entries,callback){
+		if ((function(values,entries){
+			return $.grep(entries,function(item,index){
+				var exists=0;
+				if (item['studentcode'].value==$('#studentcode',cell).val()) exists++;
+				if (item['appcode'].value==lecturecode) exists++;
+				if (item['coursecode'].value==values['$id'].value) exists++;
+				if (item['date'].value==values['date'].value) exists++;
+				if (item['starttime'].value==values['starttime'].value) exists++;
+				if (item['hours'].value==values['hours'].value) exists++;
+				return exists==6;
+			}).length!=0;
+		})(course,entries))
+		{
+			swal('Error!','スケジュールは作成済みです。','error');
+			return;
+		}
 		var baserecordid=($('#baserecordid',cell).val())?$('#baserecordid',cell).val():'';
 		var transfertimes=parseInt($('#transfertimes',cell).val())+1;
 		if (baserecordid.length==0) baserecordid=$('#\\$id',cell).val();
@@ -220,6 +261,33 @@ jQuery.extend({
 		},function(error){
 			swal('Error!',error.message,'error');
 		});
+	},
+	entrypending:function(cell,progress,entries,callback){
+		if ($('#\\$id',cell).val().length==0)
+		{
+			var entryvalues={};
+			$('input#transferpending',cell).val(('1'));
+			$.each($('input[type=hidden]',cell),function(){
+				if ($(this).attr('id')!='$id') entryvalues[$(this).attr('id')]={value:$(this).val()};
+			});
+			/* entry attendants */
+			$.entryattendants([entryvalues],progress,entries,function(resp,message){
+				if (callback!=null) callback();
+			});
+		}
+		else
+		{
+			var body={
+				app:kintone.app.getId(),
+				id:$('#\\$id',cell).val(),
+				record:{transferpending:{value:1}}
+			};
+			kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+				if (callback!=null) callback();
+			},function(error){
+				swal('Error!',error.message,'error');
+			});
+		}
 	},
 	entrytransfers:function(cell,terms,progress,entries,callback){
 		if ($('#\\$id',cell).val().length==0)
@@ -565,6 +633,20 @@ jQuery.extend({
 				if (!('endhour' in fieldinfos)) error='終業時間';
 				if (!('transferlimit' in fieldinfos)) error='振替期限';
 				break;
+			case '14':
+				/* 受講履歴 */
+				if (!('studentcode' in fieldinfos)) error='生徒番号';
+				if (!('studentname' in fieldinfos)) error='生徒名';
+				if (!('appcode' in fieldinfos)) error='講座アプリコード';
+				if (!('appname' in fieldinfos)) error='講座アプリ名';
+				if (!('coursecode' in fieldinfos)) error='講座コースコード';
+				if (!('coursename' in fieldinfos)) error='講座コース名';
+				if (!('date' in fieldinfos)) error='受講日';
+				if (!('starttime' in fieldinfos)) error='受講開始時刻';
+				if (!('hours' in fieldinfos)) error='受講時間';
+				if (!('absence' in fieldinfos)) error='欠席';
+				if (!('reporttable' in properties)) error='レポート記入テーブル';
+				break;
 		}
 		if (error.length!=0)
 		{
@@ -599,8 +681,20 @@ jQuery.extend({
 		}
 		else return true;
 	},
+	transfersvg:function(){
+		return '<svg version="1.1" id="transfer" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve"><circle fill="#FFFFFF" cx="15" cy="15" r="11.5"/><path fill="#8F9491" d="M15,21.923c-2.391,0-4.496-1.212-5.741-3.054H7.473c1.405,2.727,4.249,4.592,7.527,4.592c4.414,0,8.038-3.38,8.427-7.692H25l-2.308-3.077l-2.309,3.077h1.497C21.498,19.23,18.563,21.923,15,21.923z"/><path fill="#8F9491" d="M15,6.539c-4.147,0-7.599,2.983-8.322,6.922H5l2.308,3.076l2.308-3.076H8.249C8.947,10.377,11.706,8.076,15,8.076c2.082,0,3.949,0.919,5.218,2.374l0.298-0.075h1.571C20.575,8.064,17.967,6.539,15,6.539z"/><polygon fill="#8F9491" points="14.283,10.628 14.283,16.387 18.383,18.803 18.783,18.126 15.069,15.918 15.069,10.628 		"/></svg>';
+	},
+	pendingsvg:function(){
+		return '<svg version="1.1" id="pending" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve"><circle fill="#FFFFFF" cx="15" cy="15" r="11.5"/><path fill="#8F9491" d="M15,6c-4.943,0-9,4.057-9,9s4.057,9,9,9s9-4.057,9-9S19.943,6,15,6z M9.414,18.972c-0.831-1.165-1.27-2.539-1.27-3.972c0-3.78,3.075-6.855,6.855-6.855c1.432,0,2.806,0.438,3.971,1.27c0.024,0.018,0.046,0.037,0.066,0.058l-9.566,9.566C9.451,19.018,9.432,18.995,9.414,18.972z M15,21.855c-1.432,0-2.806-0.438-3.971-1.27c-0.024-0.018-0.046-0.037-0.066-0.057l9.566-9.566c0.02,0.021,0.039,0.042,0.057,0.066c0.831,1.165,1.27,2.539,1.27,3.971C21.855,18.78,18.78,21.855,15,21.855z"/></svg>';
+	},
 	minilecsvg:function(){
 		return '<svg version="1.1" id="minilec" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve"><circle fill="#FFFFFF" cx="15" cy="15" r="11.5"/><path fill="#8F9491" d="M20.105,14.056c0-0.209-0.006-0.405-0.02-0.586c-0.013-0.183-0.038-0.341-0.07-0.476c-0.074-0.296-0.219-0.535-0.436-0.717c-0.215-0.182-0.518-0.276-0.909-0.283c-0.208,0-0.424,0.03-0.646,0.091c-0.222,0.061-0.442,0.146-0.661,.258c-0.22,0.111-0.429,0.245-0.627,0.404c-0.198,0.158-0.379,0.334-0.541,0.53v6.738h-2.393v-5.959c0-0.209-0.007-0.405-0.021-0.586c-0.013-0.183-0.036-0.341-0.069-0.476c-0.075-0.296-0.218-0.535-0.43-0.717c-0.212-0.182-0.518-0.276-0.914-0.283c-0.29,0-0.425,0.03-0.647,0.091c-0.221,0.061-0.442,0.146-0.66,0.258c-0.22,0.111-0.429,0.245-0.627,0.404c-0.199,0.158-0.379,0.334-0.54,0.53v6.738H7.5v-9.788h1.98l0.222,1.363h0.04c0.142-0.202,0.32-0.401,0.535-0.596c0.217-0.195,0.46-0.367,0.732-0.516c0.273-0.148,0.572-0.267,0.899-0.358c0.327-0.09,0.672-0.136,1.035-0.136c0.646,0,1.228,0.143,1.742,0.429c0.516,0.287,0.907,0.732,1.177,1.338h0.04c0.189-0.262,0.399-0.501,0.632-0.717c0.231-0.215,0.49-0.4,0.772-0.556c0.283-0.155,0.587-0.276,0.914-0.363c0.327-0.088,0.676-0.131,1.047-0.131c0.699,0.006,1.287,0.153,1.761,0.439c0.477,0.286,0.841,0.678,1.098,1.176c0.067,0.128,0.124,0.269,0.171,0.42c0.048,0.151,0.086,0.322,0.116,0.51c0.03,0.188,0.052,0.397,0.065,0.626c0.014,0.229,0.021,0.491,0.021,0.788v6.071h-2.395V14.056z"/></svg>';
-	}
+	},
+	greensvg:function(){
+		return '<svg version="1.1" id="button" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve"><circle fill="#FFFFFF" cx="15" cy="15" r="11.5"/><circle fill="#66bb6a" cx="15" cy="15" r="9"/></svg>';
+	},
+	redsvg:function(){
+		return '<svg version="1.1" id="button" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve"><circle fill="#FFFFFF" cx="15" cy="15" r="11.5"/><circle fill="#ef5350" cx="15" cy="15" r="9"/></svg>';
+	},
 });
 })(jQuery);

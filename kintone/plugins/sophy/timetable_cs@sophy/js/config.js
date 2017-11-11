@@ -42,6 +42,7 @@ jQuery.noConflict();
 						$('select#const').append($('<option>').attr('value',values.appId).text(values.name));
 						$('select#grade').append($('<option>').attr('value',values.appId).text(values.name));
 						$('select#student').append($('<option>').attr('value',values.appId).text(values.name));
+						$('select#history').append($('<option>').attr('value',values.appId).text(values.name));
 					}
 				})
 				vars.offset+=100;
@@ -93,6 +94,7 @@ jQuery.noConflict();
 				$('select#const').val(config['const']);
 				$('select#grade').val(config['grade']);
 				$('select#student').val(config['student']);
+				$('select#history').val(config['history']);
 				$('select#scale').val(config['scale']);
 				$('input#scalefixedwidth').val(config['scalefixedwidth']);
 				if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
@@ -156,6 +158,11 @@ jQuery.noConflict();
 			swal('Error!','生徒情報アプリを選択して下さい。','error');
 			return;
 		}
+		if ($('select#history').val()=='')
+		{
+			swal('Error!','受講履歴アプリを選択して下さい。','error');
+			return;
+		}
 		for (var i=0;i<vars.lecturetable.rows.length;i++)
 		{
 			var row=vars.lecturetable.rows.eq(i);
@@ -195,6 +202,7 @@ jQuery.noConflict();
 		config['const']=$('select#const').val();
 		config['grade']=$('select#grade').val();
 		config['student']=$('select#student').val();
+		config['history']=$('select#history').val();
 		config['lecture']=JSON.stringify(lectures);
 		config['scale']=$('select#scale').val();
 		config['scalefixedwidth']=$('input#scalefixedwidth').val();

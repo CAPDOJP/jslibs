@@ -554,6 +554,7 @@ RouteMap.prototype={
 		});
 	},
 	refresh:function(){
+		console.log('reflesh');
 		google.maps.event.trigger(this.map,'resize');
 	},
 	watchlocation:function(options){

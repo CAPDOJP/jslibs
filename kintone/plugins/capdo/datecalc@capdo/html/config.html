@@ -1,0 +1,64 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">計算式設定</div>
+		<table class="calculations">
+			<thead>
+				<tr>
+					<th>基準フィールド</th>
+					<th>結果表示フィールド</th>
+					<th>加算日数</th>
+					<th colspan="2"></th>
+				</tr>
+			</tbody>
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="fromdate">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="todate">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-input-outer">
+							<input type="text" id="year" class="kintoneplugin-input-text" value="" >
+						</div>
+						<span class="kintoneplugin-unit">年</span>
+						<div class="kintoneplugin-input-outer">
+							<input type="text" id="month" class="kintoneplugin-input-text" value="" >
+						</div>
+						<span class="kintoneplugin-unit">ヶ月</span>
+						<div class="kintoneplugin-input-outer">
+							<input type="text" id="day" class="kintoneplugin-input-text" value="" >
+						</div>
+						<span class="kintoneplugin-unit">日後の日付を算出</span>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="kintoneplugin-alert">月初を指定する場合は「初」、月末を指定する場合は「末」を日数欄に入力して下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>
