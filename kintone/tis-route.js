@@ -140,7 +140,7 @@ var RouteMap=function(options){
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
 		my.geocoder=new google.maps.Geocoder();
-		if (my.loadedcallback!=null) my.loadedcallback();
+		if (my.loadedcallback!=null) google.maps.event.addListener(my.map,'idle',function(){my.loadedcallback();});
 		if (my.clickcallback!=null)
 		{
 			google.maps.event.addListener(my.map,'click',function(e){
