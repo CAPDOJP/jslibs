@@ -1260,7 +1260,7 @@ var FieldsForm=function(options){
 		'vertical-align':'top'
 	})
 	.append($('<input type="checkbox" class="receiver">'))
-	.append($('<span class="label">').css({'color':'#3498db'}));
+	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 5px'}));
 	var label=$('<label>').css({
 		'box-sizing':'border-box',
 		'border-left':'5px solid #3498db',
@@ -1280,7 +1280,7 @@ var FieldsForm=function(options){
 		'vertical-align':'top'
 	})
 	.append($('<input type="radio" class="receiver">'))
-	.append($('<span class="label">').css({'color':'#3498db'}));
+	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 5px'}));
 	var referer=$('<label>').css({
 		'box-sizing':'border-box',
 		'display':'inline-block',
@@ -1708,15 +1708,11 @@ var FieldsForm=function(options){
 		}
 		this.contents.append(fieldcontainer);
 	}
-	$.each(this.buttons,function(index){
-		var param=$.extend({
-			id:'',
-			text:''
-		},my.buttons[index]);
+	$.each(this.buttons,function(key,values){
 		my.buttonblock.append(
 			button.clone(true)
-			.attr('id',param.id)
-			.text(param.text)
+			.attr('id',key)
+			.text(values.text)
 		);
 	});
 	this.container.append(this.contents);
