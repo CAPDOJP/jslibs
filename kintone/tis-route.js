@@ -141,7 +141,7 @@ var RouteMap=function(options){
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
 		my.geocoder=new google.maps.Geocoder();
-		if (my.loadedcallback!=null) google.maps.event.addListener(my.map,'idle',function(){if(!my.loaded) my.loadedcallback();my.loaded=true;});
+		if (my.loadedcallback!=null) google.maps.event.addListener(my.map,'idle',function(){if (!my.loaded) my.loadedcallback();my.loaded=true;});
 		if (my.clickcallback!=null)
 		{
 			google.maps.event.addListener(my.map,'click',function(e){
