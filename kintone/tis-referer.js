@@ -92,14 +92,13 @@ var Referer=function(options){
 		'border':'none',
 		'box-sizing':'border-box',
 		'color':'#FFFFFF',
-		'padding':'0px 1em',
 		'cursor':'pointer',
 		'font-size':'13px',
 		'height':'auto',
 		'line-height':'30px',
 		'margin':'0px 3px',
 		'outline':'none',
-		'padding':'0px',
+		'padding':'0px 1em',
 		'vertical-align':'top',
 		'width':'auto'
 	});
@@ -449,14 +448,13 @@ var MultiSelect=function(options){
 		'border':'none',
 		'box-sizing':'border-box',
 		'color':'#FFFFFF',
-		'padding':'0px 1em',
 		'cursor':'pointer',
 		'font-size':'13px',
 		'height':'auto',
 		'line-height':'30px',
 		'margin':'0px 3px',
 		'outline':'none',
-		'padding':'0px',
+		'padding':'0px 1em',
 		'vertical-align':'top',
 		'width':'auto'
 	});
@@ -656,14 +654,13 @@ var TermSelect=function(options){
 		'border':'none',
 		'box-sizing':'border-box',
 		'color':'#FFFFFF',
-		'padding':'0px 1em',
 		'cursor':'pointer',
 		'font-size':'13px',
 		'height':'auto',
 		'line-height':'30px',
 		'margin':'0px 3px',
 		'outline':'none',
-		'padding':'0px',
+		'padding':'0px 1em',
 		'vertical-align':'top',
 		'width':'auto'
 	});
@@ -954,14 +951,13 @@ var FileSelect=function(options){
 		'border':'none',
 		'box-sizing':'border-box',
 		'color':'#FFFFFF',
-		'padding':'0px 1em',
 		'cursor':'pointer',
 		'font-size':'13px',
 		'height':'auto',
 		'line-height':'30px',
 		'margin':'0px 3px',
 		'outline':'none',
-		'padding':'0px',
+		'padding':'0px 1em',
 		'vertical-align':'top',
 		'width':'auto'
 	});
@@ -1024,7 +1020,11 @@ var FileSelect=function(options){
 		})
 	)
 	.append(
-		button.clone(true).addClass('kintoneplugin-button-normal').css({'width':'100%'})
+		button.clone(true).addClass('kintoneplugin-button-normal').css({
+			'border':'1px solid #3498db',
+			'color':'#3498db',
+			'width':'100%'
+		})
 		.text('ファイルを追加')
 		.on('click',function(){
 			$(this).closest('div').find('input').click();
