@@ -423,6 +423,296 @@ jQuery.fn.referer=function(options){
 *								}
 * -------------------------------------------------------------------
 */
+var FileSelect=function(options){
+	var options=$.extend({
+		container:null,
+		buttons:{
+			ok:{
+				text:''
+			},
+			cancel:{
+				text:''
+			}
+		}
+	},options);
+	/* property */
+	this.buttons=options.buttons;
+	/* valiable */
+	var my=this;
+	var div=$('<div>').css({
+		'box-sizing':'border-box'
+	});
+	var button=$('<button>').css({
+		'background-color':'transparent',
+		'border':'none',
+		'box-sizing':'border-box',
+		'color':'#FFFFFF',
+		'cursor':'pointer',
+		'font-size':'13px',
+		'height':'auto',
+		'line-height':'30px',
+		'margin':'0px 3px',
+		'outline':'none',
+		'padding':'0px 1em',
+		'vertical-align':'top',
+		'width':'auto'
+	});
+	var table=$('<table>');
+	var row=$('<tr>');
+	/* append elements */
+	this.cover=div.clone(true).css({
+		'background-color':'rgba(0,0,0,0.5)',
+		'display':'none',
+		'height':'100%',
+		'left':'0px',
+		'position':'fixed',
+		'top':'0px',
+		'width':'100%',
+		'z-index':'999999'
+	});
+	this.container=div.clone(true).css({
+		'background-color':'#FFFFFF',
+		'bottom':'0',
+		'border-radius':'5px',
+		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+		'height':'600px',
+		'left':'0',
+		'margin':'auto',
+		'max-height':'90%',
+		'max-width':'90%',
+		'padding':'5px',
+		'position':'absolute',
+		'right':'0',
+		'top':'0',
+		'width':'500px'
+	});
+	this.contents=div.clone(true).css({
+		'height':'100%',
+		'overflow-x':'hidden',
+		'overflow-y':'auto',
+		'padding':'5px',
+		'position':'relative',
+		'width':'100%',
+		'z-index':'666'
+	});
+	this.fileblock=div.clone(true).css({
+		'padding':'5px',
+		'position':'relative',
+		'width':'100%',
+		'z-index':'777'
+	})
+	.append(
+		$('<input type="file">').css({'display':'none'}).on('change',function(){
+			var target=$(this);
+			if (target[0].files.length!=0)
+				my.upload(target[0].files[0]).then(function(res){
+					var values={
+						contentType:target[0].files[0].type,
+						fileKey:JSON.parse(res).fileKey,
+						name:target[0].files[0].name
+					};
+					my.addrow(values);
+				});
+		})
+	)
+	.append(
+		button.clone(true).addClass('kintoneplugin-button-normal').css({
+			'border':'1px solid #3498db',
+			'color':'#3498db',
+			'width':'100%'
+		})
+		.text('ファイルを追加')
+		.on('click',function(){
+			$(this).closest('div').find('input').click();
+		})
+	);
+	this.buttonblock=div.clone(true).css({
+		'background-color':'#3498db',
+		'border-bottom-left-radius':'5px',
+		'border-bottom-right-radius':'5px',
+		'bottom':'0px',
+		'left':'0px',
+		'padding':'5px',
+		'position':'absolute',
+		'text-align':'center',
+		'width':'100%',
+		'z-index':'999'
+	});
+	this.listblock=table.clone(true).css({
+		'box-sizing':'border-box',
+		'width':'100%'
+	}).append($('<tbody>'));
+	/* append elements */
+	$.each(this.buttons,function(key,values){
+		my.buttonblock.append(
+			button.clone(true)
+			.attr('id',key)
+			.text(values.text)
+		);
+	});
+	this.contents.append(this.fileblock);
+	this.contents.append(this.listblock);
+	this.container.append(this.contents);
+	this.container.append(this.buttonblock);
+	this.cover.append(this.container);
+	options.container.append(this.cover);
+	/* create template */
+	this.template=row.clone(true);
+	this.template.append(
+		$('<td>').css({
+			'border-bottom':'1px solid #C9C9C9',
+			'cursor':'pointer',
+			'padding':'0px 5px'
+		})
+		.append(
+			$('<a href="" id="link">').on('click',function(e){
+				var list=$(this).closest('tr');
+				my.download(list.find('input#fileKey').val()).then(function(blob){
+					var url=window.URL || window.webkitURL;
+					var a=document.createElement('a');
+					a.href=url.createObjectURL(blob);
+					a.download=list.find('input#name').val();
+					a.click();
+				});
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			})
+		)
+		.append($('<input type="hidden" id="contentType">'))
+		.append($('<input type="hidden" id="fileKey">'))
+		.append($('<input type="hidden" id="name">'))
+	);
+	this.template.append(
+		$('<td>').css({
+			'border-bottom':'1px solid #C9C9C9',
+			'cursor':'pointer',
+			'width':'30px'
+		})
+		.append(
+			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">')
+			.css({'width':'100%'})
+			.on('click',function(){
+				$(this).closest('tr').remove();
+			})
+		)
+	);
+	/* adjust container height */
+	$(window).on('load resize',function(){
+		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+	});
+};
+FileSelect.prototype={
+	/* download */
+	download:function(fileKey)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+fileKey;
+			var xhr=new XMLHttpRequest();
+			xhr.open('GET',url);
+			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+			xhr.responseType='blob';
+			xhr.onload=function(){
+				if (xhr.status===200) resolve(xhr.response);
+				else reject(Error('File download error:' + xhr.statusText));
+			};
+			xhr.onerror=function(){
+				reject(Error('There was a network error.'));
+			};
+			xhr.send();
+		});
+	},
+	/* upload */
+	upload:function(file){
+		return new Promise(function(resolve,reject)
+		{
+			var blob=new Blob([file],{type:file.type});
+			var filedata=new FormData();
+			var xhr=new XMLHttpRequest();
+			filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
+			filedata.append('file',blob,file.name);
+			xhr.open('POST',encodeURI('/k/v1/file.json'),false);
+			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+			xhr.responseType='multipart/form-data';
+			xhr.onload=function(){
+				if (xhr.status===200) resolve(xhr.responseText);
+				else reject(Error('File download error:' + xhr.statusText));
+			};
+			xhr.onerror=function(){
+				reject(Error('There was a network error.'));
+			};
+			xhr.send(filedata);
+		});
+	},
+	/* add row */
+	addrow:function(values){
+		var list=this.template.clone(true);
+		list.find('input#contentType').val(values.contentType);
+		list.find('input#fileKey').val(values.fileKey);
+		list.find('input#name').val(values.name);
+		list.find('a#link').text(values.name);
+		this.listblock.find('tbody').append(list);
+	},
+	/* display referer */
+	show:function(options){
+		var options=$.extend({
+			datasource:[],
+			buttons:{}
+		},options);
+		var my=this;
+		/* buttons callback */
+		$.each(options.buttons,function(key,values){
+			if (my.buttonblock.find('button#'+key).size())
+				my.buttonblock.find('button#'+key).off('click').on('click',function(){
+					if (values!=null)
+					{
+						var res=[];
+						$.each(my.listblock.find('tbody').find('tr'),function(){
+							res.push({
+								contentType:$(this).find('input#contentType').val(),
+								fileKey:$(this).find('input#fileKey').val(),
+								name:$(this).find('input#name').val()
+							});
+						});
+						values(res);
+					}
+				});
+		});
+		/* create lists */
+		this.listblock.find('tbody').empty();
+		$.each(options.datasource,function(index){my.addrow(options.datasource[index]);});
+		this.cover.show();
+		/* adjust container height */
+		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
+	},
+	/* hide referer */
+	hide:function(){
+		this.cover.hide();
+	}
+};
+jQuery.fn.fileselect=function(options){
+	var options=$.extend({
+		container:null,
+		buttons:{}
+	},options);
+	options.container=this;
+	return new FileSelect(options);
+};
+/*
+*--------------------------------------------------------------------
+* parameters
+* options	@ buttons			:button elements
+*								{
+*									ok:{
+*										text:''
+*									},
+*									cancel:{
+*										text:''
+*									}
+*								}
+* -------------------------------------------------------------------
+*/
 var MultiSelect=function(options){
 	var options=$.extend({
 		container:null,
@@ -925,26 +1215,26 @@ jQuery.fn.termselect=function(options){
 *										text:''
 *									}
 *								}
+* 			@ fields			:field informations
 * -------------------------------------------------------------------
 */
-var FileSelect=function(options){
+var FieldsForm=function(options){
 	var options=$.extend({
 		container:null,
-		buttons:{
-			ok:{
-				text:''
-			},
-			cancel:{
-				text:''
-			}
-		}
+		buttons:[],
+		fields:{}
 	},options);
 	/* property */
 	this.buttons=options.buttons;
-	/* valiable */
+	this.fields=options.fields;
+	/* create elements */
 	var my=this;
 	var div=$('<div>').css({
-		'box-sizing':'border-box'
+		'box-sizing':'border-box',
+		'margin':'0px',
+		'padding':'0px',
+		'position':'relative',
+		'vertical-align':'top'
 	});
 	var button=$('<button>').css({
 		'background-color':'transparent',
@@ -961,8 +1251,112 @@ var FileSelect=function(options){
 		'vertical-align':'top',
 		'width':'auto'
 	});
-	var table=$('<table>');
-	var row=$('<tr>');
+	var checkbox=$('<label>').css({
+		'box-sizing':'border-box',
+		'display':'inline-block',
+		'line-height':'40px',
+		'margin':'0px',
+		'padding':'0px',
+		'vertical-align':'top'
+	})
+	.append($('<input type="checkbox" class="receiver">'))
+	.append($('<span class="label">').css({'color':'#3498db'}));
+	var label=$('<label>').css({
+		'box-sizing':'border-box',
+		'border-left':'3px solid #3498db',
+		'display':'block',
+		'line-height':'20px',
+		'margin':'5px 0px',
+		'padding':'0px',
+		'padding-left':'2px'
+	});
+	var radio=$('<label>').css({
+		'box-sizing':'border-box',
+		'display':'inline-block',
+		'line-height':'40px',
+		'margin':'0px',
+		'padding':'0px',
+		'vertical-align':'top'
+	})
+	.append($('<input type="radio" class="receiver">'))
+	.append($('<span class="label">').css({'color':'#3498db'}));
+	var referer=$('<label>').css({
+		'box-sizing':'border-box',
+		'display':'inline-block',
+		'line-height':'40px',
+		'margin':'0px',
+		'padding':'0px',
+		'position':'relative',
+		'vertical-align':'top'
+	})
+	.append(
+		$('<span class="label">').css({
+			'box-sizing':'border-box',
+			'overflow':'hidden',
+			'padding-left':'35px',
+			'text-overflow':'ellipsis',
+			'white-space':'nowrap',
+			'width':'100%'
+		})
+	)
+	.append($('<input type="hidden" class="receiver">'))
+	.append(
+		button.clone(true).addClass('button').css({
+			'left':'0px',
+			'margin':'0px',
+			'padding':'0px',
+			'position':'absolute',
+			'top':'5px',
+			'width':'30px'
+		})
+		.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png">').css({'width':'100%'}))
+	);
+	var select=$('<select class="receiver">').css({
+		'border':'1px solid #3498db',
+		'border-radius':'2px',
+		'box-sizing':'border-box',
+		'color':'#3498db',
+		'display':'block',
+		'height':'40px',
+		'line-height':'40px',
+		'vertical-align':'top',
+		'width':'100%'
+	});
+	var span=$('<span>').css({'color':'#3498db','padding':'0px 5px'});
+	var textarea=$('<textarea class="receiver">').css({
+		'border':'1px solid #3498db',
+		'border-radius':'2px',
+		'box-sizing':'border-box',
+		'display':'block',
+		'height':'calc(7.5em + 10px)',
+		'line-height':'1.5em',
+		'padding':'5px',
+		'vertical-align':'top',
+		'width':'100%'
+	});
+	var textline=$('<input type="text" class="receiver">').css({
+		'border':'1px solid #3498db',
+		'border-radius':'2px',
+		'box-sizing':'border-box',
+		'display':'block',
+		'height':'40px',
+		'line-height':'40px',
+		'vertical-align':'top',
+		'width':'100%'
+	});
+	var time=$('<label>').css({
+		'box-sizing':'border-box',
+		'display':'inline-block',
+		'line-height':'40px',
+		'margin':'0px',
+		'padding':'0px',
+		'vertical-align':'top'
+	})
+	.append(select.clone(true).addClass('receiverhour'))
+	.append(span.clone(true).text('：'))
+	.append(select.clone(true).addClass('receiverminute'));
+	for (var i=0;i<24;i++) $('.receiverhour',time).append($('<option>').attr('value',('0'+(i+1).toString()).slice(-2)).text(('0'+(i+1).toString()).slice(-2)));
+	for (var i=0;i<60;i++) $('.receiverminute',time).append($('<option>').attr('value',('0'+(i+1).toString()).slice(-2)).text(('0'+(i+1).toString()).slice(-2)));
 	/* append elements */
 	this.cover=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
@@ -979,7 +1373,6 @@ var FileSelect=function(options){
 		'bottom':'0',
 		'border-radius':'5px',
 		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-		'height':'600px',
 		'left':'0',
 		'margin':'auto',
 		'max-height':'90%',
@@ -987,49 +1380,20 @@ var FileSelect=function(options){
 		'padding':'5px',
 		'position':'absolute',
 		'right':'0',
+		'text-align':'center',
 		'top':'0',
-		'width':'500px'
+		'width':'600px'
 	});
 	this.contents=div.clone(true).css({
-		'height':'100%',
+		'height':'auto',
+		'margin':'0px',
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
 		'padding':'5px',
 		'position':'relative',
 		'width':'100%',
-		'z-index':'666'
+		'z-index':'1'
 	});
-	this.fileblock=div.clone(true).css({
-		'padding':'5px',
-		'position':'relative',
-		'width':'100%',
-		'z-index':'777'
-	})
-	.append(
-		$('<input type="file">').css({'display':'none'}).on('change',function(){
-			var target=$(this);
-			if (target[0].files.length!=0)
-				my.upload(target[0].files[0]).then(function(res){
-					var values={
-						contentType:target[0].files[0].type,
-						fileKey:JSON.parse(res).fileKey,
-						name:target[0].files[0].name
-					};
-					my.addrow(values);
-				});
-		})
-	)
-	.append(
-		button.clone(true).addClass('kintoneplugin-button-normal').css({
-			'border':'1px solid #3498db',
-			'color':'#3498db',
-			'width':'100%'
-		})
-		.text('ファイルを追加')
-		.on('click',function(){
-			$(this).closest('div').find('input').click();
-		})
-	);
 	this.buttonblock=div.clone(true).css({
 		'background-color':'#3498db',
 		'border-bottom-left-radius':'5px',
@@ -1040,167 +1404,389 @@ var FileSelect=function(options){
 		'position':'absolute',
 		'text-align':'center',
 		'width':'100%',
-		'z-index':'999'
+		'z-index':'2'
 	});
-	this.listblock=table.clone(true).css({
-		'box-sizing':'border-box',
-		'width':'100%'
-	}).append($('<tbody>'));
-	/* append elements */
-	$.each(this.buttons,function(key,values){
+	this.groupsource=null;
+	this.organizationsource=null;
+	this.usersource=null;
+	this.apps={};
+	this.offset={};
+	this.referer={};
+	vars.filebox=$('body').fileselect({
+		buttons:{
+			ok:{
+				text:'OK'
+			},
+			cancel:{
+				text:'キャンセル'
+			}
+		}
+	});
+	/* create selectbox */
+	vars.selectbox=$('body').multiselect({
+		buttons:{
+			ok:{
+				text:'OK'
+			},
+			cancel:{
+				text:'キャンセル'
+			}
+		}
+	});
+	this.fieldcontainer=div.clone(true).addClass('container').css({'padding-bottom':'5px;','width':'100%'}).append(label.clone(true).addClass('title'));
+	for (var i=0;i<this.fields.length;i++)
+	{
+		var fieldinfo=this.fields[i];
+		var fieldcontainer=this.fieldcontainer.clone(true).attr('id',fieldinfo.code).find('.title').text(fieldinfo.label);
+		var receiver=null;
+		switch (fieldinfo.type)
+		{
+			case 'CHECK_BOX':
+			case 'MULTI_SELECT':
+				$.each(fieldinfo.options,function(key,values){
+					receiver=checkbox.clone(true);
+					$('.receiver',receiver).val(values.label);
+					$('.label',receiver).val(values.label);
+					fieldcontainer.append(receiver);
+				});
+				break;
+			case 'DATE':
+				receiver=referer.clone(true);
+				$('.button',receiver).on('click',function(){
+					/* day pickup */
+					var calendar=$('body').calendar({
+						selected:function(target,value){
+							target.closest('.container').find('.receiver').val(value.dateformat());
+							target.closest('.container').find('.label').text(value.dateformat());
+						}
+					});
+					calendar.show({activedate:new Date(target.closest('.container').find('.label').text())});
+				});
+				fieldcontainer.append(receiver);
+				break;
+			case 'DATETIME':
+				receiver=referer.clone(true).append(time.clone(true));
+				$('.label',receiver).css({'width':'calc(100% - 150px)'});
+				$('.button',receiver).on('click',function(){
+					/* day pickup */
+					var calendar=$('body').calendar({
+						selected:function(target,value){
+							target.closest('.container').find('.receiver').val(value.dateformat());
+							target.closest('.container').find('.label').text(value.dateformat());
+						}
+					});
+					calendar.show({activedate:new Date(target.closest('.container').find('.label').text())});
+				});
+				fieldcontainer.append(receiver);
+				break;
+			case 'DROP_DOWN':
+				receiver=select.clone(true);
+				receiver.append($('<option>').attr('value','').text(''));
+				$.each(fieldinfo.options,function(key,values){
+					receiver.append($('<option>').attr('value',values.label).text(values.label));
+				});
+				fieldcontainer.append(receiver);
+				break;
+			case 'FILE':
+				receiver=referer.clone(true);
+				$('.button',receiver).on('click',function(){
+					var target=$(this);
+					vars.filebox.show({
+						datasource:((target.closest('.container').find('.receiver').val().length!=0)?JSON.parse(target.closest('.container').find('.receiver').val()):[]),
+						buttons:{
+							ok:function(resp){
+								var files=this.filevalue(resp);
+								target.closest('.container').find('.receiver').val(files.values);
+								target.closest('.container').find('.label').text(files.names);
+								/* close the filebox */
+								vars.filebox.hide();
+							},
+							cancel:function(){
+								/* close the filebox */
+								vars.filebox.hide();
+							}
+						}
+					});
+				});
+				fieldcontainer.append(receiver);
+				break;
+			case 'GROUP_SELECT':
+				/* load group datas */
+				if (this.groupsource==null)
+				{
+					this.groupsource=[];
+					$.loadgroups(function(records){
+						records.sort(function(a,b){
+							if(parseInt(a.id)<parseInt(b.id)) return -1;
+							if(parseInt(a.id)>parseInt(b.id)) return 1;
+							return 0;
+						});
+						$.each(records,function(index,values){
+							my.groupsource.push({value:values.code,text:values.name});
+						});
+					});
+				}
+				receiver=referer.clone(true);
+				$('.button',receiver).on('click',function(){
+					var target=$(this);
+					vars.selectbox.show({
+						datasource:my.groupsource,
+						buttons:{
+							ok:function(selection){
+								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+								target.closest('.container').find('.label').text(Object.values(selection).join(','));
+								/* close the selectbox */
+								vars.selectbox.hide();
+							},
+							cancel:function(){
+								/* close the selectbox */
+								vars.selectbox.hide();
+							}
+						},
+						selected:target.closest('.container').find('.receiver').val().split(',')
+					});
+				});
+				fieldcontainer.append(receiver);
+				break;
+			case 'LINK':
+			case 'SINGLE_LINE_TEXT':
+				if (fieldinfo.lookup)
+				{
+					this.apps[fieldinfo.code]=null;
+					this.offset[fieldinfo.code]=0;
+					this.loaddatas(fieldinfo);
+					receiver=referer.clone(true);
+					$('.button',receiver).on('click',function(){
+						var target=$(this);
+						vars.referer[target.closest('.container').attr('id')].show({
+							buttons:{
+								cancel:function(){
+									/* close the reference box */
+									vars.referer[target.closest('.container').attr('id')].hide();
+								}
+							},
+							callback:function(row){
+								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
+								target.closest('.container').find('.label').text(row.find('#'+fieldinfo.lookup.lookupPickerFields[0]).val());
+								/* close the reference box */
+								vars.referer[target.closest('.container').attr('id')].hide();
+							}
+						});
+					});
+				}
+				else receiver=textline.clone(true);
+				fieldcontainer.append(receiver);
+				break;
+			case 'MULTI_LINE_TEXT':
+			case 'RICH_TEXT':
+				receiver=textarea.clone(true);
+				fieldcontainer.append(receiver);
+				break;
+			case 'NUMBER':
+				if (fieldinfo.lookup)
+				{
+					this.apps[fieldinfo.code]=null;
+					this.offset[fieldinfo.code]=0;
+					this.loaddatas(fieldinfo);
+					receiver=referer.clone(true);
+					$('.button',receiver).on('click',function(){
+						var target=$(this);
+						vars.referer[target.closest('.container').attr('id')].show({
+							buttons:{
+								cancel:function(){
+									/* close the reference box */
+									vars.referer[target.closest('.container').attr('id')].hide();
+								}
+							},
+							callback:function(row){
+								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
+								target.closest('.container').find('.label').text(row.find('#'+fieldinfo.lookup.lookupPickerFields[0]).val());
+								/* close the reference box */
+								vars.referer[target.closest('.container').attr('id')].hide();
+							}
+						});
+					});
+				}
+				else
+				{
+					receiver=textline.clone(true);
+					$('.receiver',receiver).css({'text-align':'right'});
+				}
+				fieldcontainer.append(receiver);
+				break;
+			case 'ORGANIZATION_SELECT':
+				/* load organization datas */
+				if (this.organizationsource==null)
+				{
+					this.organizationsource=[];
+					$.loadorganizations(function(records){
+						records.sort(function(a,b){
+							if(parseInt(a.id)<parseInt(b.id)) return -1;
+							if(parseInt(a.id)>parseInt(b.id)) return 1;
+							return 0;
+						});
+						$.each(records,function(index,values){
+							my.organizationsource.push({value:values.code,text:values.name});
+						});
+					});
+				}
+				receiver=referer.clone(true);
+				$('.button',receiver).on('click',function(){
+					var target=$(this);
+					vars.selectbox.show({
+						datasource:my.organizationsource,
+						buttons:{
+							ok:function(selection){
+								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+								target.closest('.container').find('.label').text(Object.values(selection).join(','));
+								/* close the selectbox */
+								vars.selectbox.hide();
+							},
+							cancel:function(){
+								/* close the selectbox */
+								vars.selectbox.hide();
+							}
+						},
+						selected:target.closest('.container').find('.receiver').val().split(',')
+					});
+				});
+				fieldcontainer.append(receiver);
+				break;
+			case 'RADIO_BUTTON':
+				$.each(fieldinfo.options,function(key,values){
+					receiver=radio.clone(true);
+					$('.receiver',receiver).attr('name',fieldinfo.code).val(values.label);
+					$('.label',receiver).val(values.label);
+					fieldcontainer.append(receiver);
+				});
+				break;
+			case 'TIME':
+				receiver=time.clone(true);
+				fieldcontainer.append(receiver);
+				break;
+			case 'USER_SELECT':
+				/* load user datas */
+				if (this.usersource==null)
+				{
+					this.usersource=[];
+					$.loadusers(function(records){
+						records.sort(function(a,b){
+							if(parseInt(a.id)<parseInt(b.id)) return -1;
+							if(parseInt(a.id)>parseInt(b.id)) return 1;
+							return 0;
+						});
+						$.each(records,function(index,values){
+							my.usersource.push({value:values.code,text:values.name});
+						});
+					});
+				}
+				receiver=referer.clone(true);
+				$('.button',receiver).on('click',function(){
+					var target=$(this);
+					vars.selectbox.show({
+						datasource:my.usersource,
+						buttons:{
+							ok:function(selection){
+								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+								target.closest('.container').find('.label').text(Object.values(selection).join(','));
+								/* close the selectbox */
+								vars.selectbox.hide();
+							},
+							cancel:function(){
+								/* close the selectbox */
+								vars.selectbox.hide();
+							}
+						},
+						selected:target.closest('.container').find('.receiver').val().split(',')
+					});
+				});
+				fieldcontainer.append(receiver);
+				break;
+		}
+		this.contents.append(fieldcontainer);
+	}
+	$.each(this.buttons,function(index){
+		var param=$.extend({
+			id:'',
+			text:''
+		},my.buttons[index]);
 		my.buttonblock.append(
 			button.clone(true)
-			.attr('id',key)
-			.text(values.text)
+			.attr('id',param.id)
+			.text(param.text)
 		);
 	});
-	this.contents.append(this.fileblock);
-	this.contents.append(this.listblock);
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
 	this.cover.append(this.container);
 	options.container.append(this.cover);
-	/* create template */
-	this.template=row.clone(true);
-	this.template.append(
-		$('<td>').css({
-			'border-bottom':'1px solid #C9C9C9',
-			'cursor':'pointer',
-			'padding':'0px 5px'
-		})
-		.append(
-			$('<a href="" id="link">').on('click',function(e){
-				var list=$(this).closest('tr');
-				my.download(list.find('input#fileKey').val()).then(function(blob){
-					var url=window.URL || window.webkitURL;
-					var a=document.createElement('a');
-					a.href=url.createObjectURL(blob);
-					a.download=list.find('input#name').val();
-					a.click();
-				});
-				e.preventDefault();
-				e.stopPropagation();
-				return false;
-			})
-		)
-		.append($('<input type="hidden" id="contentType">'))
-		.append($('<input type="hidden" id="fileKey">'))
-		.append($('<input type="hidden" id="name">'))
-	);
-	this.template.append(
-		$('<td>').css({
-			'border-bottom':'1px solid #C9C9C9',
-			'cursor':'pointer',
-			'width':'30px'
-		})
-		.append(
-			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">')
-			.css({'width':'100%'})
-			.on('click',function(){
-				$(this).closest('tr').remove();
-			})
-		)
-	);
-	/* adjust container height */
-	$(window).on('load resize',function(){
-		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
-	});
 };
-FileSelect.prototype={
-	/* download */
-	download:function(fileKey)
-	{
-		return new Promise(function(resolve,reject)
-		{
-			var url=kintone.api.url('/k/v1/file',true)+'?fileKey='+fileKey;
-			var xhr=new XMLHttpRequest();
-			xhr.open('GET',url);
-			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
-			xhr.responseType='blob';
-			xhr.onload=function(){
-				if (xhr.status===200) resolve(xhr.response);
-				else reject(Error('File download error:' + xhr.statusText));
-			};
-			xhr.onerror=function(){
-				reject(Error('There was a network error.'));
-			};
-			xhr.send();
+FieldsForm.prototype={
+	/* create file values */
+	filevalue:function(files){
+		var names='';
+		var values=[];
+		$.each(files,function(index){
+			names+=files[index].name+',';
+			values.push({
+				contentType:files[index].contentType,
+				fileKey:files[index].fileKey,
+				name:files[index].name
+			});
 		});
+		names=names.replace(/,$/g,'');
+		return {names:names,values:JSON.stringify(values)};
 	},
-	/* upload */
-	upload:function(file){
-		return new Promise(function(resolve,reject)
-		{
-			var blob=new Blob([file],{type:file.type});
-			var filedata=new FormData();
-			var xhr=new XMLHttpRequest();
-			filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
-			filedata.append('file',blob,file.name);
-			xhr.open('POST',encodeURI('/k/v1/file.json'),false);
-			xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
-			xhr.responseType='multipart/form-data';
-			xhr.onload=function(){
-				if (xhr.status===200) resolve(xhr.responseText);
-				else reject(Error('File download error:' + xhr.statusText));
-			};
-			xhr.onerror=function(){
-				reject(Error('There was a network error.'));
-			};
-			xhr.send(filedata);
-		});
+	/* load looup datas */
+	loaddatas:function(fieldinfo){
+		var my=this;
+		var limit=500;
+		kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:fieldinfo.lookup.relatedApp.app,query:'order by $id asc limit '+limit.toString()+' offset '+this.offset[fieldinfo.code].toString()},function(resp){
+			if (my.apps[fieldinfo.code]==null) my.apps[fieldinfo.code]=resp.records;
+			else Array.prototype.push.apply(my.apps[fieldinfo.code],resp.records);
+			my.offset[fieldinfo.code]+=limit;
+			if (resp.records.length==limit) my.loaddatas(fieldinfo);
+			else
+			{
+				/* create reference box */
+				my.referer[fieldinfo.code]=$('body').referer({
+					datasource:my.apps[fieldinfo.code],
+					displaytext:fieldinfo.lookup.lookupPickerFields,
+					buttons:[
+						{
+							id:'cancel',
+							text:'キャンセル'
+						}
+					]
+				});
+			}
+		},function(error){});
 	},
-	/* add row */
-	addrow:function(values){
-		var list=this.template.clone(true);
-		list.find('input#contentType').val(values.contentType);
-		list.find('input#fileKey').val(values.fileKey);
-		list.find('input#name').val(values.name);
-		list.find('a#link').text(values.name);
-		this.listblock.find('tbody').append(list);
-	},
-	/* display referer */
+	/* display form */
 	show:function(options){
 		var options=$.extend({
-			datasource:[],
 			buttons:{}
 		},options);
 		var my=this;
-		/* buttons callback */
 		$.each(options.buttons,function(key,values){
 			if (my.buttonblock.find('button#'+key).size())
-				my.buttonblock.find('button#'+key).off('click').on('click',function(){
-					if (values!=null)
-					{
-						var res=[];
-						$.each(my.listblock.find('tbody').find('tr'),function(){
-							res.push({
-								contentType:$(this).find('input#contentType').val(),
-								fileKey:$(this).find('input#fileKey').val(),
-								name:$(this).find('input#name').val()
-							});
-						});
-						values(res);
-					}
-				});
+				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values();});
 		});
-		/* create lists */
-		this.listblock.find('tbody').empty();
-		$.each(options.datasource,function(index){my.addrow(options.datasource[index]);});
 		this.cover.show();
-		/* adjust container height */
-		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
+		this.container.css({'height':(this.contents.outerHeight(true)+this.buttonblock.outerHeight(true)+10).toString()+'px'});
 	},
-	/* hide referer */
+	/* hide form */
 	hide:function(){
 		this.cover.hide();
 	}
 };
-jQuery.fn.fileselect=function(options){
+jQuery.fn.fieldsform=function(options){
 	var options=$.extend({
 		container:null,
-		buttons:{}
+		buttons:[],
+		fields:{}
 	},options);
 	options.container=this;
-	return new FileSelect(options);
+	return new FieldsForm(options);
 };
 })(jQuery);
