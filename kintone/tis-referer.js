@@ -1268,7 +1268,8 @@ var FieldsForm=function(options){
 		'line-height':'20px',
 		'margin':'5px 0px',
 		'padding':'0px',
-		'padding-left':'2px'
+		'padding-left':'2px',
+		'text-align':'left'
 	});
 	var radio=$('<label>').css({
 		'box-sizing':'border-box',
@@ -1437,8 +1438,9 @@ var FieldsForm=function(options){
 	for (var i=0;i<this.fields.length;i++)
 	{
 		var fieldinfo=this.fields[i];
-		var fieldcontainer=this.fieldcontainer.clone(true).attr('id',fieldinfo.code).find('.title').text(fieldinfo.label);
+		var fieldcontainer=this.fieldcontainer.clone(true).attr('id',fieldinfo.code);
 		var receiver=null;
+		fieldcontainer.find('.title').text(fieldinfo.label);
 		switch (fieldinfo.type)
 		{
 			case 'CHECK_BOX':
