@@ -87,7 +87,22 @@ var Referer=function(options){
 	var div=$('<div>').css({
 		'box-sizing':'border-box'
 	});
-	var button=$('<button>');
+	var button=$('<button>').css({
+		'background-color':'transparent',
+		'border':'none',
+		'box-sizing':'border-box',
+		'color':'#FFFFFF',
+		'padding':'0px 1em',
+		'cursor':'pointer',
+		'font-size':'13px',
+		'height':'auto',
+		'line-height':'30px',
+		'margin':'0px 3px',
+		'outline':'none',
+		'padding':'0px',
+		'vertical-align':'top',
+		'width':'auto'
+	});
 	var label=$('<label>');
 	var select=$('<select>').css({
 		'border':'none',
@@ -175,13 +190,11 @@ var Referer=function(options){
 	$.each(this.parambuttons,function(index){
 		var buttonvalue=$.extend({
 			id:'',
-			class:'',
 			text:''
 		},my.parambuttons[index]);
 		my.buttonblock.append(
 			button.clone(true)
 			.attr('id',buttonvalue.id)
-			.addClass(buttonvalue.class)
 			.text(buttonvalue.text)
 		);
 	});
@@ -403,11 +416,9 @@ jQuery.fn.referer=function(options){
 * options	@ buttons			:button elements
 *								{
 *									ok:{
-*										class:'',
 *										text:''
 *									},
 *									cancel:{
-*										class:'',
 *										text:''
 *									}
 *								}
@@ -418,11 +429,9 @@ var MultiSelect=function(options){
 		container:null,
 		buttons:{
 			ok:{
-				class:'',
 				text:''
 			},
 			cancel:{
-				class:'',
 				text:''
 			}
 		}
@@ -435,7 +444,22 @@ var MultiSelect=function(options){
 	var div=$('<div>').css({
 		'box-sizing':'border-box'
 	});
-	var button=$('<button>');
+	var button=$('<button>').css({
+		'background-color':'transparent',
+		'border':'none',
+		'box-sizing':'border-box',
+		'color':'#FFFFFF',
+		'padding':'0px 1em',
+		'cursor':'pointer',
+		'font-size':'13px',
+		'height':'auto',
+		'line-height':'30px',
+		'margin':'0px 3px',
+		'outline':'none',
+		'padding':'0px',
+		'vertical-align':'top',
+		'width':'auto'
+	});
 	var table=$('<table>');
 	/* append elements */
 	this.cover=div.clone(true).css({
@@ -494,7 +518,6 @@ var MultiSelect=function(options){
 		my.buttonblock.append(
 			button.clone(true)
 			.attr('id',key)
-			.addClass(values.class)
 			.text(values.text)
 		);
 	});
@@ -587,11 +610,9 @@ jQuery.fn.multiselect=function(options){
 *       	@ buttons			:button elements
 *								{
 *									ok:{
-*										class:'',
 *										text:''
 *									},
 *									cancel:{
-*										class:'',
 *										text:''
 *									}
 *								}
@@ -606,11 +627,9 @@ var TermSelect=function(options){
 		issingle:false,
 		buttons:{
 			ok:{
-				class:'',
 				text:''
 			},
 			cancel:{
-				class:'',
 				text:''
 			}
 		}
@@ -632,7 +651,22 @@ var TermSelect=function(options){
 		'position':'relative',
 		'vertical-align':'top'
 	});
-	var button=$('<button>');
+	var button=$('<button>').css({
+		'background-color':'transparent',
+		'border':'none',
+		'box-sizing':'border-box',
+		'color':'#FFFFFF',
+		'padding':'0px 1em',
+		'cursor':'pointer',
+		'font-size':'13px',
+		'height':'auto',
+		'line-height':'30px',
+		'margin':'0px 3px',
+		'outline':'none',
+		'padding':'0px',
+		'vertical-align':'top',
+		'width':'auto'
+	});
 	var select=$('<select>').css({
 		'border':'1px solid #C9C9C9',
 		'border-radius':'3px',
@@ -705,7 +739,6 @@ var TermSelect=function(options){
 		my.buttonblock.append(
 			button.clone(true)
 			.attr('id',key)
-			.addClass(values.class)
 			.text(values.text)
 		);
 	});
@@ -889,11 +922,9 @@ jQuery.fn.termselect=function(options){
 * options	@ buttons			:button elements
 *								{
 *									ok:{
-*										class:'',
 *										text:''
 *									},
 *									cancel:{
-*										class:'',
 *										text:''
 *									}
 *								}
@@ -904,11 +935,9 @@ var FileSelect=function(options){
 		container:null,
 		buttons:{
 			ok:{
-				class:'',
 				text:''
 			},
 			cancel:{
-				class:'',
 				text:''
 			}
 		}
@@ -920,7 +949,22 @@ var FileSelect=function(options){
 	var div=$('<div>').css({
 		'box-sizing':'border-box'
 	});
-	var button=$('<button>');
+	var button=$('<button>').css({
+		'background-color':'transparent',
+		'border':'none',
+		'box-sizing':'border-box',
+		'color':'#FFFFFF',
+		'padding':'0px 1em',
+		'cursor':'pointer',
+		'font-size':'13px',
+		'height':'auto',
+		'line-height':'30px',
+		'margin':'0px 3px',
+		'outline':'none',
+		'padding':'0px',
+		'vertical-align':'top',
+		'width':'auto'
+	});
 	var table=$('<table>');
 	var row=$('<tr>');
 	/* append elements */
@@ -1007,7 +1051,6 @@ var FileSelect=function(options){
 		my.buttonblock.append(
 			button.clone(true)
 			.attr('id',key)
-			.addClass(values.class)
 			.text(values.text)
 		);
 	});

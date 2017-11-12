@@ -680,7 +680,6 @@ jQuery.noConflict();
 						buttons:[
 							{
 								id:'cancel',
-								class:'customview-button referer-button-cancel',
 								text:'キャンセル'
 							}
 						],
@@ -768,11 +767,9 @@ jQuery.noConflict();
 		vars.filebox=$('body').fileselect({
 			buttons:{
 				ok:{
-					class:'customview-button referer-button-ok',
 					text:'OK'
 				},
 				cancel:{
-					class:'customview-button referer-button-cancel',
 					text:'キャンセル'
 				}
 			}
@@ -781,11 +778,9 @@ jQuery.noConflict();
 		vars.selectbox=$('body').multiselect({
 			buttons:{
 				ok:{
-					class:'customview-button referer-button-ok',
 					text:'OK'
 				},
 				cancel:{
-					class:'customview-button referer-button-cancel',
 					text:'キャンセル'
 				}
 			}

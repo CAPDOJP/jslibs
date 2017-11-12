@@ -834,11 +834,9 @@ jQuery.noConflict();
 				issingle:true,
 				buttons:{
 					ok:{
-						class:'customview-button referer-button-ok',
 						text:'OK'
 					},
 					cancel:{
-						class:'customview-button referer-button-cancel',
 						text:'Cancel'
 					}
 				}
@@ -847,11 +845,9 @@ jQuery.noConflict();
 			vars.courseselect=$('body').multiselect({
 				buttons:{
 					ok:{
-						class:'customview-button referer-button-ok',
 						text:'OK'
 					},
 					cancel:{
-						class:'customview-button referer-button-cancel',
 						text:'Cancel'
 					}
 				}

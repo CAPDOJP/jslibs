@@ -2,14 +2,6 @@
 *.hide{
   display:none;
 }
-button.referer-button-cancel{
-    color:#FFFFFF;
-    padding:0px 1em;
-}
-button.referer-button-ok{
-    color:#FFFFFF;
-    padding:0px 1em;
-}
 div#progress{
   background-color:rgba(0,0,0,0.5);
   display:none;

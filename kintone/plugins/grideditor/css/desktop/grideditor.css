@@ -60,14 +60,6 @@ button.referer-button-search{
     top:5px;
     z-index:999;
 }
-button.referer-button-cancel{
-    color:#FFFFFF;
-    padding:0px 1em;
-}
-button.referer-button-ok{
-    color:#FFFFFF;
-    padding:0px 1em;
-}
 input.referer-input-multi{
 	box-sizing:border-box;
     padding-right:30px;

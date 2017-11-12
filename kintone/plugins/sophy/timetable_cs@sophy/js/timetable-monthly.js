@@ -473,7 +473,6 @@ jQuery.noConflict();
 				buttons:[
 					{
 						id:'cancel',
-						class:'customview-button referer-button-cancel',
 						text:'Cancel'
 					}
 				]
@@ -484,11 +483,9 @@ jQuery.noConflict();
 				isdatepick:true,
 				buttons:{
 					ok:{
-						class:'customview-button referer-button-ok',
 						text:'OK'
 					},
 					cancel:{
-						class:'customview-button referer-button-cancel',
 						text:'Cancel'
 					}
 				}
