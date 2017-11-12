@@ -1263,12 +1263,12 @@ var FieldsForm=function(options){
 	.append($('<span class="label">').css({'color':'#3498db'}));
 	var label=$('<label>').css({
 		'box-sizing':'border-box',
-		'border-left':'3px solid #3498db',
+		'border-left':'5px solid #3498db',
 		'display':'block',
 		'line-height':'20px',
 		'margin':'5px 0px',
 		'padding':'0px',
-		'padding-left':'2px',
+		'padding-left':'5px',
 		'text-align':'left'
 	});
 	var radio=$('<label>').css({
@@ -1434,7 +1434,7 @@ var FieldsForm=function(options){
 			}
 		}
 	});
-	this.fieldcontainer=div.clone(true).addClass('container').css({'padding-bottom':'5px;','width':'100%'}).append(label.clone(true).addClass('title'));
+	this.fieldcontainer=div.clone(true).addClass('container').css({'padding-bottom':'5px','width':'100%'}).append(label.clone(true).addClass('title'));
 	for (var i=0;i<this.fields.length;i++)
 	{
 		var fieldinfo=this.fields[i];
