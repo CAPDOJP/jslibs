@@ -1342,6 +1342,7 @@ var FieldsForm=function(options){
 		'display':'block',
 		'height':'40px',
 		'line-height':'40px',
+		'padding':'0px 5px',
 		'vertical-align':'top',
 		'width':'100%'
 	});
@@ -1448,7 +1449,7 @@ var FieldsForm=function(options){
 				$.each(fieldinfo.options,function(key,values){
 					receiver=checkbox.clone(true);
 					$('.receiver',receiver).val(values.label);
-					$('.label',receiver).val(values.label);
+					$('.label',receiver).text(values.label);
 					fieldcontainer.append(receiver);
 				});
 				break;
@@ -1658,7 +1659,7 @@ var FieldsForm=function(options){
 				$.each(fieldinfo.options,function(key,values){
 					receiver=radio.clone(true);
 					$('.receiver',receiver).attr('name',fieldinfo.code).val(values.label);
-					$('.label',receiver).val(values.label);
+					$('.label',receiver).text(values.label);
 					fieldcontainer.append(receiver);
 				});
 				break;
