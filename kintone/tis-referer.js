@@ -1412,7 +1412,7 @@ var FieldsForm=function(options){
 	this.apps={};
 	this.offset={};
 	this.referer={};
-	vars.filebox=$('body').fileselect({
+	this.filebox=$('body').fileselect({
 		buttons:{
 			ok:{
 				text:'OK'
@@ -1423,7 +1423,7 @@ var FieldsForm=function(options){
 		}
 	});
 	/* create selectbox */
-	vars.selectbox=$('body').multiselect({
+	this.selectbox=$('body').multiselect({
 		buttons:{
 			ok:{
 				text:'OK'
@@ -1491,19 +1491,19 @@ var FieldsForm=function(options){
 				receiver=referer.clone(true);
 				$('.button',receiver).on('click',function(){
 					var target=$(this);
-					vars.filebox.show({
+					my.filebox.show({
 						datasource:((target.closest('.container').find('.receiver').val().length!=0)?JSON.parse(target.closest('.container').find('.receiver').val()):[]),
 						buttons:{
 							ok:function(resp){
-								var files=this.filevalue(resp);
+								var files=my.filevalue(resp);
 								target.closest('.container').find('.receiver').val(files.values);
 								target.closest('.container').find('.label').text(files.names);
 								/* close the filebox */
-								vars.filebox.hide();
+								my.filebox.hide();
 							},
 							cancel:function(){
 								/* close the filebox */
-								vars.filebox.hide();
+								my.filebox.hide();
 							}
 						}
 					});
@@ -1529,18 +1529,18 @@ var FieldsForm=function(options){
 				receiver=referer.clone(true);
 				$('.button',receiver).on('click',function(){
 					var target=$(this);
-					vars.selectbox.show({
+					my.selectbox.show({
 						datasource:my.groupsource,
 						buttons:{
 							ok:function(selection){
 								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								target.closest('.container').find('.label').text(Object.values(selection).join(','));
 								/* close the selectbox */
-								vars.selectbox.hide();
+								my.selectbox.hide();
 							},
 							cancel:function(){
 								/* close the selectbox */
-								vars.selectbox.hide();
+								my.selectbox.hide();
 							}
 						},
 						selected:target.closest('.container').find('.receiver').val().split(',')
@@ -1558,18 +1558,18 @@ var FieldsForm=function(options){
 					receiver=referer.clone(true);
 					$('.button',receiver).on('click',function(){
 						var target=$(this);
-						vars.referer[target.closest('.container').attr('id')].show({
+						my.referer[target.closest('.container').attr('id')].show({
 							buttons:{
 								cancel:function(){
 									/* close the reference box */
-									vars.referer[target.closest('.container').attr('id')].hide();
+									my.referer[target.closest('.container').attr('id')].hide();
 								}
 							},
 							callback:function(row){
 								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
 								target.closest('.container').find('.label').text(row.find('#'+fieldinfo.lookup.lookupPickerFields[0]).val());
 								/* close the reference box */
-								vars.referer[target.closest('.container').attr('id')].hide();
+								my.referer[target.closest('.container').attr('id')].hide();
 							}
 						});
 					});
@@ -1591,18 +1591,18 @@ var FieldsForm=function(options){
 					receiver=referer.clone(true);
 					$('.button',receiver).on('click',function(){
 						var target=$(this);
-						vars.referer[target.closest('.container').attr('id')].show({
+						my.referer[target.closest('.container').attr('id')].show({
 							buttons:{
 								cancel:function(){
 									/* close the reference box */
-									vars.referer[target.closest('.container').attr('id')].hide();
+									my.referer[target.closest('.container').attr('id')].hide();
 								}
 							},
 							callback:function(row){
 								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
 								target.closest('.container').find('.label').text(row.find('#'+fieldinfo.lookup.lookupPickerFields[0]).val());
 								/* close the reference box */
-								vars.referer[target.closest('.container').attr('id')].hide();
+								my.referer[target.closest('.container').attr('id')].hide();
 							}
 						});
 					});
@@ -1633,18 +1633,18 @@ var FieldsForm=function(options){
 				receiver=referer.clone(true);
 				$('.button',receiver).on('click',function(){
 					var target=$(this);
-					vars.selectbox.show({
+					my.selectbox.show({
 						datasource:my.organizationsource,
 						buttons:{
 							ok:function(selection){
 								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								target.closest('.container').find('.label').text(Object.values(selection).join(','));
 								/* close the selectbox */
-								vars.selectbox.hide();
+								my.selectbox.hide();
 							},
 							cancel:function(){
 								/* close the selectbox */
-								vars.selectbox.hide();
+								my.selectbox.hide();
 							}
 						},
 						selected:target.closest('.container').find('.receiver').val().split(',')
@@ -1683,18 +1683,18 @@ var FieldsForm=function(options){
 				receiver=referer.clone(true);
 				$('.button',receiver).on('click',function(){
 					var target=$(this);
-					vars.selectbox.show({
+					my.selectbox.show({
 						datasource:my.usersource,
 						buttons:{
 							ok:function(selection){
 								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								target.closest('.container').find('.label').text(Object.values(selection).join(','));
 								/* close the selectbox */
-								vars.selectbox.hide();
+								my.selectbox.hide();
 							},
 							cancel:function(){
 								/* close the selectbox */
-								vars.selectbox.hide();
+								my.selectbox.hide();
 							}
 						},
 						selected:target.closest('.container').find('.receiver').val().split(',')
