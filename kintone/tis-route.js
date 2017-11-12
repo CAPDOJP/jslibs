@@ -554,7 +554,7 @@ RouteMap.prototype={
 		});
 	},
 	refresh:function(){
-		google.maps.event.trigger(this.map,'bounds_changed');
+		$.each(this.markers,function(index,values){values.setVisible(true);});
 	},
 	watchlocation:function(options){
 		var options=$.extend({
