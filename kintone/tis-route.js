@@ -555,7 +555,6 @@ RouteMap.prototype={
 		});
 	},
 	refresh:function(){
-		alert('refreshed');
 		$.each(this.markers,function(index,values){values.setVisible(true);});
 	},
 	watchlocation:function(options){

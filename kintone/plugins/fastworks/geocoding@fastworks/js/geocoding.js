@@ -233,41 +233,45 @@ jQuery.noConflict();
 									vars.map.refresh();
 								}});
 							}
+							google.maps.event.addListener(vars.map.map,'bounds_changed',function(){
+								vars.map.refresh();
+							});
 						},
 						isreload,
 						function(results,latlng){
 							/* map click */
-							vars.editor.address.val(results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,''));
+							$('#'+vars.config['address'],vars.editor).find('.receiver').val(results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,''));
+							$('#'+vars.config['remove'],vars.editor).hide();
 							vars.editor.show({
 								type:'add',
 								buttons:{
 									ok:function(){
-										if (vars.editor.address.val().length==0)
+										if ($('#'+vars.config['address'],vars.editor).find('.receiver').val().length==0)
 										{
-											alert(vars.editor.addresstitle.text()+'を入力して下さい。');
+											alert($('#'+vars.config['address'],vars.editor).find('.title').text()+'を入力して下さい。');
 											return;
 										}
-										if (vars.editor.information.val().length==0)
+										if ($('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val().length==0)
 										{
-											alert(vars.editor.informationtitle.text()+'を入力して下さい。');
+											alert($('#'+vars.config['informationtitle'],vars.editor).find('.title').text()+'を入力して下さい。');
 											return;
 										}
 										var body={
 											app:vars.config['app'],
 											record:{}
 										};
-										body.record[vars.config['address']]={value:vars.editor.address.val()};
+										body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor).find('.receiver').val()};
 										body.record[vars.config['lat']]={value:latlng.lat()};
 										body.record[vars.config['lng']]={value:latlng.lng()};
-										body.record[vars.config['information']]={value:vars.editor.information.val()};
+										body.record[vars.config['information']]={value:$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val()};
 										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
 										kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
 											var label='';
-											label+=vars.editor.information.val();
+											label+=$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val();
 											label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
 											vars.markers.push({
 												id:resp.id,
-												address:vars.editor.address.val(),
+												address:$('#'+vars.config['address'],vars.editor).find('.receiver').val(),
 												remove:0,
 												colors:vars.config['defaultcolor'],
 												fontsize:vars.config['markerfont'],
@@ -297,21 +301,22 @@ jQuery.noConflict();
 							/* marker click */
 							if (!('id' in vars.markers[index])) return;
 							var center=vars.map.map.getCenter();
-							vars.editor.address.val(vars.markers[index].address);
-							vars.editor.information.val(vars.markers[index].label.replace(/<br>.*$/g,''));
-							$('input[type=checkbox]',vars.editor.remove).prop('checked',(vars.markers[index].remove!=0))
+							$('#'+vars.config['address'],vars.editor).find('.receiver').val(vars.markers[index].address);
+							$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
+							$('#'+vars.config['remove'],vars.editor).find('.receiver').prop('checked',(vars.markers[index].remove!=0))
+							$('#'+vars.config['remove'],vars.editor).show();
 							vars.editor.show({
 								type:'upd',
 								buttons:{
 									ok:function(){
-										if (vars.editor.address.val().length==0)
+										if ($('#'+vars.config['address'],vars.editor).find('.receiver').val().length==0)
 										{
-											alert(vars.editor.addresstitle.text()+'を入力して下さい。');
+											alert($('#'+vars.config['address'],vars.editor).find('.title').text()+'を入力して下さい。');
 											return;
 										}
-										if (vars.editor.information.val().length==0)
+										if ($('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val().length==0)
 										{
-											alert(vars.editor.informationtitle.text()+'を入力して下さい。');
+											alert($('#'+vars.config['informationtitle'],vars.editor).find('.title').text()+'を入力して下さい。');
 											return;
 										}
 										var body={
@@ -319,15 +324,15 @@ jQuery.noConflict();
 											id:vars.markers[index].id,
 											record:{}
 										};
-										body.record[vars.config['address']]={value:vars.editor.address.val()};
-										body.record[vars.config['information']]={value:vars.editor.information.val()};
+										body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor).find('.receiver').val()};
+										body.record[vars.config['information']]={value:$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val()};
 										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
-										if ($('input[type=checkbox]',vars.editor.remove).prop('checked')) body.record[vars.config['remove']]={value:['一時撤去']};
+										if ($('#'+vars.config['remove'],vars.editor).find('.receiver:checked').size()) body.record[vars.config['remove']]={value:['一時撤去']};
 										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-											vars.markers[index].address=vars.editor.address.val();
-											vars.markers[index].remove=(($('input[type=checkbox]',vars.editor.remove).prop('checked'))?1:0);
+											vars.markers[index].address=$('#'+vars.config['address'],vars.editor).find('.receiver').val();
+											vars.markers[index].remove=(($('#'+vars.config['remove'],vars.editor).find('.receiver:checked').size())?1:0);
 											vars.markers[index].label='';
-											vars.markers[index].label+=vars.editor.information.val();
+											vars.markers[index].label+=$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val();
 											vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
 											functions.reloadmap(function(){vars.map.map.setCenter(center)});
 										},function(error){
@@ -572,7 +577,7 @@ jQuery.noConflict();
 							})
 							.prepend(vars.viewlist);
 						}
-						vars.editor=$('body').editor({
+						vars.editor=$('body').fieldsform({
 							buttons:{
 								ok:{
 									text:'OK'
@@ -583,7 +588,12 @@ jQuery.noConflict();
 								cancel:{
 									text:'キャンセル'
 								}
-							}
+							},
+							fields:[
+								vars.fieldinfos[vars.config['address']],
+								vars.fieldinfos[vars.config['information']],
+								vars.fieldinfos[vars.config['remove']]
+							]
 						});
 					}
 				}
@@ -723,191 +733,6 @@ jQuery.noConflict();
 				});
 			}
 		}
-	};
-	var EditDialog=function(options){
-		var options=$.extend({
-			container:null,
-			buttons:{
-				ok:{
-					text:''
-				},
-				del:{
-					text:''
-				},
-				cancel:{
-					text:''
-				}
-			}
-		},options);
-		/* property */
-		this.buttons=options.buttons;
-		/* valiable */
-		var my=this;
-		/* create elements */
-		var div=$('<div>').css({
-			'box-sizing':'border-box',
-			'margin':'0px',
-			'padding':'0px',
-			'position':'relative',
-			'vertical-align':'top'
-		});
-		var button=$('<button>').css({
-			'background-color':'transparent',
-			'border':'none',
-			'box-sizing':'border-box',
-			'color':'#FFFFFF',
-			'cursor':'pointer',
-			'font-size':'13px',
-			'height':'auto',
-			'margin':'0px 3px',
-			'min-height':'30px',
-			'min-width':'30px',
-			'outline':'none',
-			'padding':'0px 2em',
-			'vertical-align':'top',
-			'width':'auto'
-		});
-		var text=$('<input type="text">').css({
-			'box-sizing':'border-box',
-			'height':'45px',
-			'line-height':'45px',
-			'margin':'0px',
-		    'padding':'0px 5px',
-			'width':'100%'
-		});
-		var title=$('<p>').css({
-			'box-sizing':'border-box',
-			'line-height':'30px',
-			'margin':'0px',
-		    'padding':'0px 5px',
-			'width':'100%'
-		});
-		/* append elements */
-		this.cover=div.clone(true).css({
-			'background-color':'rgba(0,0,0,0.5)',
-			'display':'none',
-			'height':'100%',
-			'left':'0px',
-			'position':'fixed',
-			'top':'0px',
-			'width':'100%',
-			'z-index':'999999'
-		});
-		this.container=div.clone(true).css({
-			'background-color':'#FFFFFF',
-			'bottom':'0',
-			'border-radius':'5px',
-			'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-			'left':'0',
-			'margin':'auto',
-			'max-height':'90%',
-			'max-width':'90%',
-			'padding':'0px',
-			'position':'absolute',
-			'right':'0',
-			'text-align':'center',
-			'top':'0',
-			'width':'600px'
-		});
-		this.contents=div.clone(true).css({
-			'height':'auto',
-			'overflow-x':'hidden',
-			'overflow-y':'auto',
-			'margin':'0px',
-			'padding':'10px',
-			'position':'relative',
-			'width':'100%',
-			'z-index':'1'
-		});
-		this.buttonblock=div.clone(true).css({
-			'background-color':'#3498db',
-			'border-bottom-left-radius':'5px',
-			'border-bottom-right-radius':'5px',
-			'bottom':'0px',
-			'left':'0px',
-			'padding':'5px',
-			'position':'absolute',
-			'text-align':'center',
-			'width':'100%',
-			'z-index':'2'
-		});
-		this.address=text.clone(true);
-		this.information=text.clone(true);
-		this.addresstitle=title.clone(true);
-		this.informationtitle=title.clone(true);
-		this.remove=$('<label>').css({
-			'border':'none',
-			'box-sizing':'border-box',
-			'cursor':'pointer',
-			'display':'inline-block',
-			'height':'48px',
-			'line-height':'48px',
-			'margin':'0px',
-			'padding':'0px 5px',
-			'vertical-align':'top',
-			'width':'100%'
-		})
-		.append($('<input type="checkbox">'))
-		.append($('<span>').css({'color':'#3498db','padding-left':'5px'}).text('一時撤去'));
-		/* append elements */
-		$.each(this.buttons,function(key,values){
-			my.buttonblock.append(
-				button.clone(true)
-				.attr('id',key)
-				.text(values.text)
-			);
-		});
-		/* append elements */
-		this.contents.append(this.addresstitle.text(vars.fieldinfos[vars.config['address']].label));
-		this.contents.append(this.address.attr('placeholder',vars.fieldinfos[vars.config['address']].label+'を入力'));
-		this.contents.append(this.informationtitle.text(vars.fieldinfos[vars.config['information']].label));
-		this.contents.append(this.information.attr('placeholder',vars.fieldinfos[vars.config['information']].label+'を入力'));
-		this.contents.append(this.remove);
-		this.container.append(this.contents);
-		this.container.append(this.buttonblock);
-		this.cover.append(this.container);
-		options.container.append(this.cover);
-	};
-	EditDialog.prototype={
-		/* display calendar */
-		show:function(options){
-			var options=$.extend({
-				type:'add',
-				buttons:{}
-			},options);
-			var my=this;
-			$.each(options.buttons,function(key,values){
-				if (my.buttonblock.find('button#'+key).size())
-					my.buttonblock.find('button#'+key).off('click').on('click',function(){
-						if (values!=null) values();
-					});
-			});
-			if (options.type=='add')
-			{
-				this.information.val('');
-				this.remove.hide();
-				$('button#del',this.container).hide();
-			}
-			else
-			{
-				this.remove.show();
-				$('button#del',this.container).show();
-			}
-			this.cover.show();
-			this.container.css({'height':(this.contents.outerHeight(true)+this.buttonblock.outerHeight(true)).toString()+'px'});
-		},
-		/* hide calendar */
-		hide:function(){
-			this.cover.hide();
-		}
-	};
-	jQuery.fn.editor=function(options){
-		var options=$.extend({
-			container:null,
-			buttons:{}
-		},options);
-		options.container=this;
-		return new EditDialog(options);
 	};
 	/*---------------------------------------------------------------
 	 kintone events

@@ -22,6 +22,7 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-route.js",
             "js/geocoding.js"
         ],
@@ -34,6 +35,7 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-route.js",
             "js/geocoding.js"
         ],
