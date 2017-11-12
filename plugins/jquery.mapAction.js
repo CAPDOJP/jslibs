@@ -74,7 +74,7 @@ var DynamicMap=function(options){
 	var options=$.extend({
 		display:null,
 		route:null,
-		idle:null,
+		idlecallback:null,
 		clickcallback:null,
 		markerclickcallback:null
 	},options);
@@ -130,7 +130,7 @@ var DynamicMap=function(options){
 	this.directionsService=new google.maps.DirectionsService();
 	this.geocoder=new google.maps.Geocoder();
 	this.travelmode=google.maps.TravelMode.DRIVING;
-	if (options.idle!=null) google.maps.event.addListener(this.map,'idle',function(){options.idle();});
+	if (options.idlecallback!=null) google.maps.event.addListener(this.map,'idle',function(){options.idlecallback();});
 	if (options.clickcallback!=null)
 	{
 		google.maps.event.addListener(this.map,'click',function(e){
@@ -537,9 +537,6 @@ DynamicMap.prototype={
 	/*中心座標取得*/
 	incenter:function(){
 		return this.map.getCenter();
-	},
-	refresh:function(){
-		google.maps.event.trigger(this.map,'resize');
 	},
 	watchlocation:function(options){
 		var options=$.extend({

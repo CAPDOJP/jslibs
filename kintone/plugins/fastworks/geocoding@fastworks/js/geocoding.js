@@ -202,7 +202,6 @@ jQuery.noConflict();
 								/* setup current location */
 								vars.map.markers[0].setPosition(latlng);
 								vars.map.map.setCenter(latlng);
-								vars.map.refresh();
 							}});
 						}
 					}
@@ -230,48 +229,48 @@ jQuery.noConflict();
 									/* setup current location */
 									vars.map.markers[0].setPosition(latlng);
 									vars.map.map.setCenter(latlng);
-									vars.map.refresh();
 								}});
 							}
-							google.maps.event.addListener(vars.map.map,'bounds_changed',function(){
-								vars.map.refresh();
+							google.maps.event.addListener(vars.map.map,'idle',function(){
+								$.each(this.markers,function(index,values){values.setVisible(true);});
 							});
 						},
 						isreload,
 						function(results,latlng){
 							/* map click */
-							$('#'+vars.config['address'],vars.editor).find('.receiver').val(results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,''));
-							$('#'+vars.config['remove'],vars.editor).hide();
+							$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val(results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,''));
+							$('#'+vars.config['remove'],vars.editor.contents).hide();
+							$('#del',vars.editor.buttonblock).hide();
 							vars.editor.show({
 								type:'add',
 								buttons:{
 									ok:function(){
-										if ($('#'+vars.config['address'],vars.editor).find('.receiver').val().length==0)
+										if ($('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().length==0)
 										{
-											alert($('#'+vars.config['address'],vars.editor).find('.title').text()+'を入力して下さい。');
+											alert($('#'+vars.config['address'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
 											return;
 										}
-										if ($('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val().length==0)
+										if ($('#'+vars.config['information'],vars.editor.contents).find('.receiver').val().length==0)
 										{
-											alert($('#'+vars.config['informationtitle'],vars.editor).find('.title').text()+'を入力して下さい。');
+											alert($('#'+vars.config['information'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
 											return;
 										}
 										var body={
 											app:vars.config['app'],
 											record:{}
 										};
-										body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor).find('.receiver').val()};
+										body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val()};
 										body.record[vars.config['lat']]={value:latlng.lat()};
 										body.record[vars.config['lng']]={value:latlng.lng()};
-										body.record[vars.config['information']]={value:$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val()};
+										body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
 										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
 										kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
 											var label='';
-											label+=$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val();
+											label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
 											label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
 											vars.markers.push({
 												id:resp.id,
-												address:$('#'+vars.config['address'],vars.editor).find('.receiver').val(),
+												address:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val(),
 												remove:0,
 												colors:vars.config['defaultcolor'],
 												fontsize:vars.config['markerfont'],
@@ -301,22 +300,23 @@ jQuery.noConflict();
 							/* marker click */
 							if (!('id' in vars.markers[index])) return;
 							var center=vars.map.map.getCenter();
-							$('#'+vars.config['address'],vars.editor).find('.receiver').val(vars.markers[index].address);
-							$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
-							$('#'+vars.config['remove'],vars.editor).find('.receiver').prop('checked',(vars.markers[index].remove!=0))
-							$('#'+vars.config['remove'],vars.editor).show();
+							$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val(vars.markers[index].address);
+							$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
+							$('#'+vars.config['remove'],vars.editor.contents).find('.receiver').prop('checked',(vars.markers[index].remove!=0))
+							$('#'+vars.config['remove'],vars.editor.contents).show();
+							$('#del',vars.editor.buttonblock).show();
 							vars.editor.show({
 								type:'upd',
 								buttons:{
 									ok:function(){
-										if ($('#'+vars.config['address'],vars.editor).find('.receiver').val().length==0)
+										if ($('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().length==0)
 										{
-											alert($('#'+vars.config['address'],vars.editor).find('.title').text()+'を入力して下さい。');
+											alert($('#'+vars.config['address'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
 											return;
 										}
-										if ($('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val().length==0)
+										if ($('#'+vars.config['information'],vars.editor.contents).find('.receiver').val().length==0)
 										{
-											alert($('#'+vars.config['informationtitle'],vars.editor).find('.title').text()+'を入力して下さい。');
+											alert($('#'+vars.config['information'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
 											return;
 										}
 										var body={
@@ -324,15 +324,15 @@ jQuery.noConflict();
 											id:vars.markers[index].id,
 											record:{}
 										};
-										body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor).find('.receiver').val()};
-										body.record[vars.config['information']]={value:$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val()};
+										body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val()};
+										body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
 										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
-										if ($('#'+vars.config['remove'],vars.editor).find('.receiver:checked').size()) body.record[vars.config['remove']]={value:['一時撤去']};
+										if ($('#'+vars.config['remove'],vars.editor.contents).find('.receiver:checked').size()) body.record[vars.config['remove']]={value:['一時撤去']};
 										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-											vars.markers[index].address=$('#'+vars.config['address'],vars.editor).find('.receiver').val();
-											vars.markers[index].remove=(($('#'+vars.config['remove'],vars.editor).find('.receiver:checked').size())?1:0);
+											vars.markers[index].address=$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val();
+											vars.markers[index].remove=(($('#'+vars.config['remove'],vars.editor.contents).find('.receiver:checked').size())?1:0);
 											vars.markers[index].label='';
-											vars.markers[index].label+=$('#'+vars.config['informationtitle'],vars.editor).find('.receiver').val();
+											vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
 											vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
 											functions.reloadmap(function(){vars.map.map.setCenter(center)});
 										},function(error){
