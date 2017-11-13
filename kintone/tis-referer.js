@@ -1416,27 +1416,6 @@ var FieldsForm=function(options){
 	this.apps={};
 	this.offset={};
 	this.referer={};
-	this.filebox=$('body').fileselect({
-		buttons:{
-			ok:{
-				text:'OK'
-			},
-			cancel:{
-				text:'キャンセル'
-			}
-		}
-	});
-	/* create selectbox */
-	this.selectbox=$('body').multiselect({
-		buttons:{
-			ok:{
-				text:'OK'
-			},
-			cancel:{
-				text:'キャンセル'
-			}
-		}
-	});
 	this.fieldcontainer=div.clone(true).addClass('container').css({'padding-bottom':'5px','width':'100%'}).append(label.clone(true).addClass('title'));
 	for (var i=0;i<this.fields.length;i++)
 	{
@@ -1739,6 +1718,27 @@ var FieldsForm=function(options){
 	/* adjust container height */
 	$(window).on('load resize',function(){
 		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+	});
+	this.filebox=$('body').fileselect({
+		buttons:{
+			ok:{
+				text:'OK'
+			},
+			cancel:{
+				text:'キャンセル'
+			}
+		}
+	});
+	/* create selectbox */
+	this.selectbox=$('body').multiselect({
+		buttons:{
+			ok:{
+				text:'OK'
+			},
+			cancel:{
+				text:'キャンセル'
+			}
+		}
 	});
 };
 FieldsForm.prototype={
