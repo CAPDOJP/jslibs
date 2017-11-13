@@ -1424,17 +1424,23 @@ var FieldsForm=function(options){
 		var fieldinfo=this.fields[i];
 		var fieldcontainer=this.fieldcontainer.clone(true).attr('id',fieldinfo.code);
 		var receiver=null;
+		var options=[];
 		fieldcontainer.find('.title').text(fieldinfo.label);
 		switch (fieldinfo.type)
 		{
 			case 'CHECK_BOX':
 			case 'MULTI_SELECT':
+				options=[fieldinfo.options.length];
 				$.each(fieldinfo.options,function(key,values){
-					receiver=checkbox.clone(true);
-					$('.label',receiver).text(values.label);
-					$('.receiver',receiver).val(values.label);
-					fieldcontainer.append(receiver);
+					options[values.index]=values.label;
 				});
+				for (var i2=0;i2<options.length;i2++)
+				{
+					receiver=checkbox.clone(true);
+					$('.label',receiver).text(options[i2].label);
+					$('.receiver',receiver).val(options[i2].label);
+					fieldcontainer.append(receiver);
+				}
 				break;
 			case 'DATE':
 				receiver=referer.clone(true);
@@ -1476,9 +1482,11 @@ var FieldsForm=function(options){
 			case 'DROP_DOWN':
 				receiver=select.clone(true);
 				receiver.append($('<option>').attr('value','').text(''));
+				options=[fieldinfo.options.length];
 				$.each(fieldinfo.options,function(key,values){
-					receiver.append($('<option>').attr('value',values.label).text(values.label));
+					options[values.index]=values.label;
 				});
+				for (var i2=0;i2<options.length;i2++) receiver.append($('<option>').attr('value',options[i2].label).text(options[i2].label));
 				fieldcontainer.append(receiver);
 				break;
 			case 'FILE':
@@ -1648,13 +1656,18 @@ var FieldsForm=function(options){
 				break;
 			case 'RADIO_BUTTON':
 				var checked=true;
+				options=[fieldinfo.options.length];
 				$.each(fieldinfo.options,function(key,values){
+					options[values.index]=values.label;
+				});
+				for (var i2=0;i2<options.length;i2++)
+				{
 					receiver=radio.clone(true);
-					$('.label',receiver).text(values.label);
-					$('.receiver',receiver).attr('name',fieldinfo.code).val(values.label).prop('checked',checked);
+					$('.label',receiver).text(options[i2].label);
+					$('.receiver',receiver).attr('name',fieldinfo.code).val(options[i2].label).prop('checked',checked);
 					fieldcontainer.append(receiver);
 					checked=false;
-				});
+				}
 				break;
 			case 'TIME':
 				receiver=time.clone(true);

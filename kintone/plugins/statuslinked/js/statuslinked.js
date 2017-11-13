@@ -104,7 +104,7 @@ jQuery.noConflict();
 												else
 												{
 													var values=receivevalue.split(',');
-													for (var i=0;i<values.length;i++) receivevalues.push({code:values[i]});
+													for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2]});
 													event.record[fieldinfo.code].value=receivevalues;
 												}
 												break;
