@@ -52,7 +52,8 @@ jQuery.noConflict();
 								}
 							},
 							fields:fields
-						}).show({
+						});
+						vars.inputform.show({
 							buttons:{
 								ok:function(){
 									/* close inputform */

@@ -1262,7 +1262,7 @@ var FieldsForm=function(options){
 		'vertical-align':'top'
 	})
 	.append($('<input type="checkbox" class="receiver">'))
-	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 5px'}));
+	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 10px 0px 5px'}));
 	var label=$('<label>').css({
 		'box-sizing':'border-box',
 		'border-left':'5px solid #3498db',
@@ -1270,8 +1270,7 @@ var FieldsForm=function(options){
 		'line-height':'20px',
 		'margin':'5px 0px',
 		'padding':'0px',
-		'padding-left':'5px',
-		'text-align':'left'
+		'padding-left':'5px'
 	});
 	var radio=$('<label>').css({
 		'box-sizing':'border-box',
@@ -1282,7 +1281,7 @@ var FieldsForm=function(options){
 		'vertical-align':'top'
 	})
 	.append($('<input type="radio" class="receiver">'))
-	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 5px'}));
+	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 10px 0px 5px'}));
 	var referer=$('<label>').css({
 		'box-sizing':'border-box',
 		'display':'inline-block',
@@ -1325,7 +1324,7 @@ var FieldsForm=function(options){
 		'vertical-align':'top',
 		'width':'100%'
 	});
-	var span=$('<span>').css({'color':'#3498db','padding':'0px 5px'});
+	var span=$('<span>').css({'color':'#3498db','display':'inline-block','padding':'0px 5px'});
 	var textarea=$('<textarea class="receiver">').css({
 		'border':'1px solid #3498db',
 		'border-radius':'2px',
@@ -1356,9 +1355,9 @@ var FieldsForm=function(options){
 		'padding':'0px',
 		'vertical-align':'top'
 	})
-	.append(select.clone(true).addClass('receiverhour'))
+	.append(select.clone(true).addClass('receiverhour').css({'display':'inline-block','width':'auto'}))
 	.append(span.clone(true).text('：'))
-	.append(select.clone(true).addClass('receiverminute'));
+	.append(select.clone(true).addClass('receiverminute').css({'display':'inline-block','width':'auto'}));
 	for (var i=0;i<24;i++) $('.receiverhour',time).append($('<option>').attr('value',('0'+(i+1).toString()).slice(-2)).text(('0'+(i+1).toString()).slice(-2)));
 	for (var i=0;i<60;i++) $('.receiverminute',time).append($('<option>').attr('value',('0'+(i+1).toString()).slice(-2)).text(('0'+(i+1).toString()).slice(-2)));
 	/* append elements */
@@ -1395,6 +1394,7 @@ var FieldsForm=function(options){
 		'overflow-y':'auto',
 		'padding':'5px',
 		'position':'relative',
+		'text-align':'left',
 		'width':'100%',
 		'z-index':'1'
 	});
@@ -1437,9 +1437,10 @@ var FieldsForm=function(options){
 			case 'DATE':
 				receiver=referer.clone(true);
 				$('.button',receiver).on('click',function(){
+					var target=$(this);
 					/* day pickup */
 					var calendar=$('body').calendar({
-						selected:function(target,value){
+						selected:function(cell,value){
 							target.closest('.container').find('.label').text(value.dateformat());
 							target.closest('.container').find('.receiver').val(value.dateformat());
 						}
@@ -1452,9 +1453,10 @@ var FieldsForm=function(options){
 				receiver=referer.clone(true).append(time.clone(true));
 				$('.label',receiver).css({'width':'calc(100% - 150px)'});
 				$('.button',receiver).on('click',function(){
+					var target=$(this);
 					/* day pickup */
 					var calendar=$('body').calendar({
-						selected:function(target,value){
+						selected:function(cell,value){
 							target.closest('.container').find('.label').text(value.dateformat());
 							target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
 						}
