@@ -1299,6 +1299,8 @@ var FieldsForm=function(options){
 		})
 	)
 	.append($('<input type="hidden" class="receiver">'))
+	.append($('<input type="hidden" class="key">'))
+	.append($('<input type="hidden" class="picker">'))
 	.append(
 		button.clone(true).addClass('button').css({
 			'left':'0px',
@@ -1549,6 +1551,8 @@ var FieldsForm=function(options){
 					this.offset[fieldinfo.code]=0;
 					this.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
+					$('.key',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+					$('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.button',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
@@ -1559,8 +1563,8 @@ var FieldsForm=function(options){
 								}
 							},
 							callback:function(row){
-								target.closest('.container').find('.label').text(row.find('#'+fieldinfo.lookup.lookupPickerFields[0]).val());
-								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
+								target.closest('.container').find('.label').text(row.find('#'+target.closest('.container').find('.picker').val()).val());
+								target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
 								/* close the reference box */
 								my.referer[target.closest('.container').attr('id')].hide();
 							}
@@ -1582,6 +1586,8 @@ var FieldsForm=function(options){
 					this.offset[fieldinfo.code]=0;
 					this.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
+					$('.key',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+					$('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.button',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
@@ -1592,8 +1598,8 @@ var FieldsForm=function(options){
 								}
 							},
 							callback:function(row){
-								target.closest('.container').find('.label').text(row.find('#'+fieldinfo.lookup.lookupPickerFields[0]).val());
-								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
+								target.closest('.container').find('.label').text(row.find('#'+target.closest('.container').find('.picker').val()).val());
+								target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
 								/* close the reference box */
 								my.referer[target.closest('.container').attr('id')].hide();
 							}
