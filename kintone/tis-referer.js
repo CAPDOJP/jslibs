@@ -1289,7 +1289,8 @@ var FieldsForm=function(options){
 		'margin':'0px',
 		'padding':'0px',
 		'position':'relative',
-		'vertical-align':'top'
+		'vertical-align':'top',
+		'width':'100%'
 	})
 	.append(
 		$('<span class="label">').css({
