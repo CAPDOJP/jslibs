@@ -1282,14 +1282,9 @@ var FieldsForm=function(options){
 	})
 	.append($('<input type="radio" class="receiver">'))
 	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 10px 0px 5px'}));
-	var referer=$('<label>').css({
-		'box-sizing':'border-box',
+	var referer=div.clone(true).css({
 		'display':'inline-block',
 		'line-height':'40px',
-		'margin':'0px',
-		'padding':'0px',
-		'position':'relative',
-		'vertical-align':'top',
 		'width':'100%'
 	})
 	.append(
@@ -1349,13 +1344,9 @@ var FieldsForm=function(options){
 		'vertical-align':'top',
 		'width':'100%'
 	});
-	var time=$('<label>').css({
-		'box-sizing':'border-box',
+	var time=div.clone(true).css({
 		'display':'inline-block',
-		'line-height':'40px',
-		'margin':'0px',
-		'padding':'0px',
-		'vertical-align':'top'
+		'line-height':'40px'
 	})
 	.append(select.clone(true).addClass('receiverhour').css({'display':'inline-block','width':'auto'}))
 	.append(span.clone(true).text('：'))
