@@ -1551,8 +1551,8 @@ var FieldsForm=function(options){
 					this.offset[fieldinfo.code]=0;
 					this.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
-					$('.key',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
-					$('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
+					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
+					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
 					$('.button',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
@@ -1586,8 +1586,8 @@ var FieldsForm=function(options){
 					this.offset[fieldinfo.code]=0;
 					this.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
-					$('.key',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
-					$('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
+					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
+					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
 					$('.button',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({

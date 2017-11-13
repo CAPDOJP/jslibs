@@ -25,7 +25,7 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "js/sweetalert.min.js",
-            "js/statuslinked.js"
+            "js/processlinked.js"
         ],
         "css":[
             "css/sweetalert.css"

@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "statuslinked -config.js-"
+* jQuery-Plugin "processlinked -config.js-"
 * Version: 3.0
 * Copyright (c) 2016 TIS
 *
