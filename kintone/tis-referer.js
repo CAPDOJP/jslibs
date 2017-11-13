@@ -1360,8 +1360,8 @@ var FieldsForm=function(options){
 	.append(select.clone(true).addClass('receiverhour').css({'display':'inline-block','width':'auto'}))
 	.append(span.clone(true).text('：'))
 	.append(select.clone(true).addClass('receiverminute').css({'display':'inline-block','width':'auto'}));
-	for (var i=0;i<24;i++) $('.receiverhour',time).append($('<option>').attr('value',('0'+(i+1).toString()).slice(-2)).text(('0'+(i+1).toString()).slice(-2)));
-	for (var i=0;i<60;i++) $('.receiverminute',time).append($('<option>').attr('value',('0'+(i+1).toString()).slice(-2)).text(('0'+(i+1).toString()).slice(-2)));
+	for (var i=0;i<24;i++) $('.receiverhour',time).append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)));
+	for (var i=0;i<60;i++) $('.receiverminute',time).append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)));
 	/* append elements */
 	this.cover=div.clone(true).css({
 		'background-color':'rgba(0,0,0,0.5)',
