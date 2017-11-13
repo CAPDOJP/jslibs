@@ -51,7 +51,6 @@ jQuery.noConflict();
 					if (!values.lookup)
 					{
 						$('select#address').append($('<option>').attr('value',values.code).text(values.label));
-						$('select#pluscode').append($('<option>').attr('value',values.code).text(values.label));
 						$('select#information').append($('<option>').attr('value',values.code).text(values.label));
 					}
 					break;
@@ -72,7 +71,6 @@ jQuery.noConflict();
         if (Object.keys(config).length!==0)
         {
         	$('select#address').val(config['address']);
-        	$('select#pluscode').val(config['pluscode']);
         	$('select#lat').val(config['lat']);
         	$('select#lng').val(config['lng']);
         	$('select#spacer').val(config['spacer']);
@@ -117,11 +115,6 @@ jQuery.noConflict();
 	    if ($('select#address').val()=='')
 	    {
 	    	swal('Error!','住所入力フィールドを選択して下さい。','error');
-	    	return;
-	    }
-	    if ($('select#pluscode').val()=='')
-	    {
-	    	swal('Error!','Plusコード入力フィールドを選択して下さい。','error');
 	    	return;
 	    }
 	    if ($('select#lat').val()=='')
@@ -198,7 +191,6 @@ jQuery.noConflict();
 		/* setup config */
         config['app']=kintone.app.getId().toString();
         config['address']=$('select#address').val();
-        config['pluscode']=$('select#pluscode').val();
         config['lat']=$('select#lat').val();
         config['lng']=$('select#lng').val();
         config['spacer']=$('select#spacer').val();

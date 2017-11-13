@@ -246,11 +246,11 @@ RouteMap.prototype={
 		var markers=[];
 		var balloons=[];
 		/* initialize markers */
-		$.each(this.markers,function(index,values){values.setMap(null);});
+		$.each(this.markers,function(index,values){values.setMap(null);values=null;});
 		this.markers=[];
 		markers=this.markers;
 		/* initialize balloons */
-		$.each(this.balloons,function(index,values){values.setMap(null);});
+		$.each(this.balloons,function(index,values){values.setMap(null);values=null;});
 		this.balloons=[];
 		balloons=this.balloons;
 		/* initialize renderer */
