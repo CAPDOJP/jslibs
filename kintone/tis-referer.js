@@ -1267,7 +1267,7 @@ var FieldsForm=function(options){
 		'box-sizing':'border-box',
 		'border-left':'5px solid #3498db',
 		'display':'block',
-		'line-height':'20px',
+		'line-height':'25px',
 		'margin':'5px 0px',
 		'padding':'0px',
 		'padding-left':'5px'
@@ -1294,6 +1294,7 @@ var FieldsForm=function(options){
 	.append(
 		$('<span class="label">').css({
 			'box-sizing':'border-box',
+			'display':'inline-block',
 			'overflow':'hidden',
 			'padding-left':'35px',
 			'text-overflow':'ellipsis',
@@ -1416,7 +1417,7 @@ var FieldsForm=function(options){
 	this.apps={};
 	this.offset={};
 	this.referer={};
-	this.fieldcontainer=div.clone(true).addClass('container').css({'padding-bottom':'5px','width':'100%'}).append(label.clone(true).addClass('title'));
+	this.fieldcontainer=div.clone(true).addClass('container').css({'padding-bottom':'10px','width':'100%'}).append(label.clone(true).addClass('title'));
 	for (var i=0;i<this.fields.length;i++)
 	{
 		var fieldinfo=this.fields[i];
