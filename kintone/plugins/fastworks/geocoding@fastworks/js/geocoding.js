@@ -175,7 +175,24 @@ jQuery.noConflict();
 								}});
 							}
 							google.maps.event.addListener(vars.map.map,'idle',function(){
-								$.each(vars.map.markers,function(index,values){values.setVisible(true);});
+								var bounds=vars.map.inbounds();
+								var fromlat=0;
+								var tolat=0;
+								var fromlng=0;
+								var tolng=0;
+								if (parseFloat(bounds.north)<parseFloat(bounds.south)) {fromlat=bounds.north;tolat=bounds.south;}
+								else {fromlat=bounds.south;tolat=bounds.north;}
+								if (parseFloat(bounds.east)<parseFloat(bounds.west)) {fromlng=bounds.east;tolng=bounds.west;}
+								else {fromlng=bounds.west;tolng=bounds.east;}
+								$.each(vars.map.markers,function(index,values){
+									var latlng=values.getPosition();
+									var target=null;
+									if (latlng.lat()<fromlat) {values.setMap(null);return true;}
+									if (latlng.lat()>tolat) {values.setMap(null);return true;}
+									if (latlng.lng()<fromlng) {values.setMap(null);return true;}
+									if (latlng.lng()>tolng) {values.setMap(null);return true;}
+									values.setMap(vars.map.map);
+								});
 							});
 						},
 						isreload,
