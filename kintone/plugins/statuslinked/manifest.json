@@ -1,0 +1,48 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone ステータス連動必須フィールド設定プラグイン",
+        "en":"kintone Status-linked plug-in",
+        "zh":"kintone ステータス連動必須フィールド設定プラグイン"
+    },
+    "description":{
+        "ja":"プロセス管理ステータスに基づき、必須フィールドの入力フォームを表示するプラグインです。",
+        "en":"This plug-in will displays the input form of required fields based on process management status",
+        "zh":"プロセス管理ステータスに基づき、必須フィールドの入力フォームを表示するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "js/sweetalert.min.js",
+            "js/statuslinked.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

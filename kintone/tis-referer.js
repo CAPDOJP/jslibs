@@ -1186,6 +1186,8 @@ TermSelect.prototype={
 		}
 		if (this.isadd && options.dates.length==0) this.contents.append(this.template.clone(true));
 		this.cover.show();
+		/* adjust container height */
+		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
 	},
 	/* hide calendar */
 	hide:function(){
@@ -1387,7 +1389,7 @@ var FieldsForm=function(options){
 		'width':'600px'
 	});
 	this.contents=div.clone(true).css({
-		'height':'auto',
+		'height':'100%',
 		'margin':'0px',
 		'overflow-x':'hidden',
 		'overflow-y':'auto',
@@ -1734,6 +1736,10 @@ var FieldsForm=function(options){
 	this.container.append(this.buttonblock);
 	this.cover.append(this.container);
 	options.container.append(this.cover);
+	/* adjust container height */
+	$(window).on('load resize',function(){
+		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+	});
 };
 FieldsForm.prototype={
 	/* create datetime value */
@@ -1801,7 +1807,8 @@ FieldsForm.prototype={
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values();});
 		});
 		this.cover.show();
-		this.container.css({'height':(this.contents.outerHeight(true)+this.buttonblock.outerHeight(true)+10).toString()+'px'});
+		/* adjust container height */
+		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
 	},
 	/* hide form */
 	hide:function(){
