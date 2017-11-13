@@ -1417,7 +1417,7 @@ var FieldsForm=function(options){
 	this.apps={};
 	this.offset={};
 	this.referer={};
-	this.fieldcontainer=div.clone(true).addClass('container').css({'padding-bottom':'10px','width':'100%'}).append(label.clone(true).addClass('title'));
+	this.fieldcontainer=div.clone(true).addClass('container').css({'padding':'5px','width':'100%'}).append(label.clone(true).addClass('title'));
 	for (var i=0;i<this.fields.length;i++)
 	{
 		var fieldinfo=this.fields[i];
