@@ -1440,8 +1440,8 @@ var FieldsForm=function(options){
 					/* day pickup */
 					var calendar=$('body').calendar({
 						selected:function(cell,value){
-							target.closest('.container').find('.label').text(value.dateformat());
-							target.closest('.container').find('.receiver').val(value.dateformat());
+							target.closest('.container').find('.label').text(value);
+							target.closest('.container').find('.receiver').val(value);
 						}
 					});
 					calendar.show({activedate:new Date(target.closest('.container').find('.label').text())});
@@ -1456,7 +1456,7 @@ var FieldsForm=function(options){
 					/* day pickup */
 					var calendar=$('body').calendar({
 						selected:function(cell,value){
-							target.closest('.container').find('.label').text(value.dateformat());
+							target.closest('.container').find('.label').text(value);
 							target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
 						}
 					});
