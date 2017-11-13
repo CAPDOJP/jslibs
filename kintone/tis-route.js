@@ -234,7 +234,6 @@ RouteMap.prototype={
 			markers:[],
 			isextensionindex:false,
 			isopeninfowindow:true,
-			iscentering:true,
 			callback:null
 		},options);
 		var my=this;
@@ -358,7 +357,7 @@ RouteMap.prototype={
 						0
 					);
 				/* setup center position */
-				if (options.iscentering) map.setCenter(new google.maps.LatLng(values.lat,values.lng));
+				map.setCenter(new google.maps.LatLng(values.lat,values.lng));
 				if (options.callback!=null) options.callback();
 				break;
 			default:
@@ -393,7 +392,7 @@ RouteMap.prototype={
 						labels.push((values.label.length!=0)?values.label:'');
 					});
 					/* setup center position */
-					if (options.iscentering) map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
+					map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
 					/* display routes */
 					service.route({
 						origin:origin,
@@ -505,7 +504,7 @@ RouteMap.prototype={
 							);
 					});
 					/* setup center position */
-					if (options.iscentering) map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
+					map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
 					if (options.callback!=null) options.callback();
 				}
 				break;

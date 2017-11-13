@@ -19,7 +19,6 @@ jQuery.noConflict();
 		ismobile:false,
 		chaselocation:null,
 		currentlocation:null,
-		currentlatlng:null,
 		displayinfowindow:null,
 		displaypoi:null,
 		displaydatespan:null,
@@ -133,6 +132,7 @@ jQuery.noConflict();
 					var span=$('<span>');
 					if (isreload)
 					{
+						vars.markers=functions.loadmarkers();
 						if (callback!=null) callback();
 						/* chase mode */
 						if (vars.config['chasemode']=='1')
@@ -143,7 +143,7 @@ jQuery.noConflict();
 								if (!vars.currentlocation.find('input[type=checkbox]').prop('checked')) return;
 								if (vars.map.markers.length==0) return;
 								/* setup current location */
-								vars.currentlatlng=latlng;
+								vars.map.markers[0].setPosition(latlng);
 								vars.map.map.setCenter(latlng);
 							}});
 						}
@@ -153,6 +153,7 @@ jQuery.noConflict();
 						vars.map=$('body').routemap(vars.config['apikey'],true,false,function(){
 							/* create map */
 							vars.map.map.setOptions({styles:vars.styles.hide});
+							vars.markers=functions.loadmarkers();
 							/* append elements */
 							if (!vars.ismobile)
 							{
@@ -169,12 +170,12 @@ jQuery.noConflict();
 									if (!vars.currentlocation.find('input[type=checkbox]').prop('checked')) return;
 									if (vars.map.markers.length==0) return;
 									/* setup current location */
-									vars.currentlatlng=latlng;
+									vars.map.markers[0].setPosition(latlng);
 									vars.map.map.setCenter(latlng);
 								}});
 							}
 							google.maps.event.addListener(vars.map.map,'idle',function(){
-								functions.reloadmap();
+								$.each(vars.map.markers,function(index,values){values.setVisible(true);});
 							});
 						},
 						isreload,
@@ -207,15 +208,22 @@ jQuery.noConflict();
 										body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
 										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
 										kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-											var record={};
-											record[vars.config['address']]={value:body.record[vars.config['address']].value};
-											record[vars.config['lat']]={value:body.record[vars.config['lat']].value};
-											record[vars.config['lng']]={value:body.record[vars.config['lng']].value};
-											record[vars.config['information']]={value:body.record[vars.config['information']].value};
-											record[vars.config['datespan']]={value:body.record[vars.config['datespan']].value};
-											record[vars.config['remove']]={value:[]};
-											vars.apps[vars.config['app']].push(record);
-											functions.reloadmap();
+											var label='';
+											label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
+											label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
+											vars.markers.push({
+												id:resp.id,
+												address:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val(),
+												remove:0,
+												colors:vars.config['defaultcolor'],
+												fontsize:vars.config['markerfont'],
+												label:label,
+												lat:latlng.lat(),
+												lng:latlng.lng(),
+												size:vars.config['markersize'],
+												extensionindex:0
+											});
+											functions.reloadmap(function(){vars.map.map.setCenter(latlng)});
 										},function(error){
 											alert(error.message);
 										});
@@ -264,20 +272,12 @@ jQuery.noConflict();
 										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
 										if ($('#'+vars.config['remove'],vars.editor.contents).find('.receiver:checked').size()) body.record[vars.config['remove']]={value:['一時撤去']};
 										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-											var key=0;
-											for (var i=0;i<vars.apps[vars.config['app']].length;i++)
-											{
-												if (vars.apps[vars.config['app']][i]['$id'].value==vars.markers[index].id)
-												{
-													key=i;
-													break;
-												}
-											}
-											vars.apps[vars.config['app']][key][vars.config['address']].value=body.record[vars.config['address']].value;
-											vars.apps[vars.config['app']][key][vars.config['information']].value=body.record[vars.config['information']].value;
-											vars.apps[vars.config['app']][key][vars.config['datespan']].value=body.record[vars.config['datespan']].value;
-											vars.apps[vars.config['app']][key][vars.config['remove']].value=(vars.config['remove'] in body.record)?body.record[vars.config['remove']].value:[];
-											functions.reloadmap();
+											vars.markers[index].address=$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val();
+											vars.markers[index].remove=(($('#'+vars.config['remove'],vars.editor.contents).find('.receiver:checked').size())?1:0);
+											vars.markers[index].label='';
+											vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
+											vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
+											functions.reloadmap(function(){vars.map.map.setCenter(center)});
 										},function(error){
 											alert(error.message);
 										});
@@ -291,15 +291,8 @@ jQuery.noConflict();
 											ids:[vars.markers[index].id]
 										};
 										kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
-											for (var i=0;i<vars.apps[vars.config['app']].length;i++)
-											{
-												if (vars.apps[vars.config['app']][i]['$id'].value==vars.markers[index].id)
-												{
-													vars.apps[vars.config['app']].splice(i,1);
-													break;
-												}
-											}
-											functions.reloadmap();
+											vars.markers.splice(index,1);
+											functions.reloadmap(function(){vars.map.map.setCenter(center)});
 										},function(error){
 											alert(error.message);
 										});
@@ -345,14 +338,7 @@ jQuery.noConflict();
 									else $('div.customview-navi').removeClass('show');
 								}
 								/* swtich view of marker */
-								if ($(this).prop('checked'))
-								{
-									vars.map.currentlocation({callback:function(latlng){
-										vars.currentlatlng=latlng;
-										functions.reloadmap(function(){vars.map.map.setCenter(latlng)});
-									}});
-								}
-								else functions.reloadmap();
+								functions.reloadmap();
 							})
 						)
 						.append(span.clone(true).text('現在地を表示'));
@@ -422,18 +408,7 @@ jQuery.noConflict();
 						vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
 						.text('地図を表示')
 						.on('click',function(e){
-							if (vars.currentlatlng==null)
-							{
-								if (vars.apps[vars.config['app']].length!=0)
-								{
-									var record=vars.apps[vars.config['app']][0];
-									vars.currentlatlng=new google.maps.LatLng(record[vars.config['lat']].value,record[vars.config['lng']].value);
-								}
-								else vars.currentlatlng=new google.maps.LatLng();
-								vars.map.map.setCenter(vars.currentlatlng);
-							}
-							else functions.reloadmap();
-							vars.isdisplaymap=true;
+							functions.reloadmap(function(){vars.isdisplaymap=true;});
 						});
 						vars.map.buttonblock
 						.prepend(
@@ -569,16 +544,7 @@ jQuery.noConflict();
 		},
 		/* marker load */
 		loadmarkers:function(){
-			var bounds=vars.map.inbounds();
-			var fromlat=0;
-			var tolat=0;
-			var fromlng=0;
-			var tolng=0;
-			if (parseFloat(bounds.north)<parseFloat(bounds.south)) {fromlat=bounds.north;tolat=bounds.south;}
-			else {fromlat=bounds.south;tolat=bounds.north;}
-			if (parseFloat(bounds.east)<parseFloat(bounds.west)) {fromlng=bounds.east;tolng=bounds.west;}
-			else {fromlng=bounds.west;tolng=bounds.east;}
-			vars.markers=[];
+			var markers=[];
 			$.each(vars.apps[vars.config['app']],function(index,values){
 				var record=values
 				var lat=parseFloat('0'+record[vars.config['lat']].value);
@@ -587,10 +553,6 @@ jQuery.noConflict();
 				var datespan='';
 				if (lat+lng!=0)
 				{
-					if (lat<fromlat) return true;
-					if (lat>tolat) return true;
-					if (lng<fromlng) return true;
-					if (lng>tolng) return true;
 					if (vars.config["datespan"].length!=0)
 						if (record[vars.config['datespan']].value!=null)
 						{
@@ -602,7 +564,7 @@ jQuery.noConflict();
 					label='';
 					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
 					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
-					vars.markers.push({
+					markers.push({
 						id:record['$id'].value,
 						address:record[vars.config['address']].value,
 						remove:record[vars.config['remove']].value.length,
@@ -616,7 +578,7 @@ jQuery.noConflict();
 					});
 				}
 			});
-			return vars.markers;
+			return markers;
 		},
 		/* swtich view of marker */
 		reloadmap:function(callback){
@@ -625,7 +587,7 @@ jQuery.noConflict();
 			var isopeninfowindow=vars.displayinfowindow.find('input[type=checkbox]').prop('checked');
 			var color='';
 			var colors=JSON.parse(vars.config['datespancolors']);
-			var markers=$.extend(true,[],functions.loadmarkers());
+			var markers=$.extend(true,[],vars.markers);
 			if (isextensionindex)
 			{
 				/* setup zindex */
@@ -649,28 +611,29 @@ jQuery.noConflict();
 			}
 			if (iscurrentlocation)
 			{
-				markers.unshift({
-					icon:{
-						anchor:new google.maps.Point(11,11),
-						origin:new google.maps.Point(0,0),
-						size:new google.maps.Size(22,22),
-						url:'https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/currentpos.png',
-					},
-					lat:vars.currentlatlng.lat(),
-					lng:vars.currentlatlng.lng(),
-					serialnumber:false
-				});
-				/* display map */
-				vars.map.reloadmap({
-					markers:markers,
-					isextensionindex:isextensionindex,
-					isopeninfowindow:isopeninfowindow,
-					iscentering:false,
-					callback:function(){
-						for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
-						if (callback!==undefined) callback();
-					}
-				});
+				vars.map.currentlocation({callback:function(latlng){
+					markers.unshift({
+						icon:{
+							anchor:new google.maps.Point(11,11),
+							origin:new google.maps.Point(0,0),
+							size:new google.maps.Size(22,22),
+							url:'https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/currentpos.png',
+						},
+						lat:latlng.lat(),
+						lng:latlng.lng(),
+						serialnumber:false
+					});
+					/* display map */
+					vars.map.reloadmap({
+						markers:markers,
+						isextensionindex:isextensionindex,
+						isopeninfowindow:isopeninfowindow,
+						callback:function(){
+							for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
+							if (callback!==undefined) callback();
+						}
+					});
+				}});
 			}
 			else
 			{
@@ -679,7 +642,6 @@ jQuery.noConflict();
 					markers:markers,
 					isextensionindex:isextensionindex,
 					isopeninfowindow:isopeninfowindow,
-					iscentering:false,
 					callback:function(){
 						if (isextensionindex)
 						{
@@ -809,22 +771,18 @@ jQuery.noConflict();
 						vars.apps[vars.config['app']]=null;
 						vars.offset[vars.config['app']]=0;
 						functions.loaddatas($(this).val(),function(){
-							vars.map.currentlocation({callback:function(latlng){
-								vars.currentlatlng=latlng;
-								vars.map.map.setCenter(latlng);
+							functions.reloadmap(function(){
 								vars.isdisplaymap=true;
 								$('div.customview-navi').hide();
-							}});
+							});
 						});
 					});
 					if ($('option#'+event.viewId,vars.viewlist).size()) $('option#'+event.viewId,vars.viewlist).attr('selected',true);
 					functions.loaddatas(vars.viewlist.val(),function(){
-						vars.map.currentlocation({callback:function(latlng){
-							vars.currentlatlng=latlng;
-							vars.map.map.setCenter(latlng);
+						functions.reloadmap(function(){
 							vars.isdisplaymap=true;
 							if (vars.splash!=null) vars.splash.hide();
-						}});
+						});
 					});
 				},function(error){if (vars.splash!=null) vars.splash.hide();});
 			}
