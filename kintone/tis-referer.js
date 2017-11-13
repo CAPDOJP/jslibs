@@ -1437,8 +1437,8 @@ var FieldsForm=function(options){
 				for (var i2=0;i2<fieldoptions.length;i2++)
 				{
 					receiver=checkbox.clone(true);
-					$('.label',receiver).text(fieldoptions[i2].label);
-					$('.receiver',receiver).val(fieldoptions[i2].label);
+					$('.label',receiver).text(fieldoptions[i2]);
+					$('.receiver',receiver).val(fieldoptions[i2]);
 					fieldcontainer.append(receiver);
 				}
 				break;
@@ -1486,7 +1486,7 @@ var FieldsForm=function(options){
 				$.each(fieldinfo.options,function(key,values){
 					fieldoptions[values.index]=values.label;
 				});
-				for (var i2=0;i2<fieldoptions.length;i2++) receiver.append($('<option>').attr('value',fieldoptions[i2].label).text(fieldoptions[i2].label));
+				for (var i2=0;i2<fieldoptions.length;i2++) receiver.append($('<option>').attr('value',fieldoptions[i2]).text(fieldoptions[i2]));
 				fieldcontainer.append(receiver);
 				break;
 			case 'FILE':
@@ -1663,8 +1663,8 @@ var FieldsForm=function(options){
 				for (var i2=0;i2<fieldoptions.length;i2++)
 				{
 					receiver=radio.clone(true);
-					$('.label',receiver).text(fieldoptions[i2].label);
-					$('.receiver',receiver).attr('name',fieldinfo.code).val(fieldoptions[i2].label).prop('checked',checked);
+					$('.label',receiver).text(fieldoptions[i2]);
+					$('.receiver',receiver).attr('name',fieldinfo.code).val(fieldoptions[i2]).prop('checked',checked);
 					fieldcontainer.append(receiver);
 					checked=false;
 				}
