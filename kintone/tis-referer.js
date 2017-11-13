@@ -1423,22 +1423,22 @@ var FieldsForm=function(options){
 	{
 		var fieldinfo=this.fields[i];
 		var fieldcontainer=this.fieldcontainer.clone(true).attr('id',fieldinfo.code);
+		var fieldoptions=[];
 		var receiver=null;
-		var options=[];
 		fieldcontainer.find('.title').text(fieldinfo.label);
 		switch (fieldinfo.type)
 		{
 			case 'CHECK_BOX':
 			case 'MULTI_SELECT':
-				options=[fieldinfo.options.length];
+				fieldoptions=[fieldinfo.options.length];
 				$.each(fieldinfo.options,function(key,values){
-					options[values.index]=values.label;
+					fieldoptions[values.index]=values.label;
 				});
-				for (var i2=0;i2<options.length;i2++)
+				for (var i2=0;i2<fieldoptions.length;i2++)
 				{
 					receiver=checkbox.clone(true);
-					$('.label',receiver).text(options[i2].label);
-					$('.receiver',receiver).val(options[i2].label);
+					$('.label',receiver).text(fieldoptions[i2].label);
+					$('.receiver',receiver).val(fieldoptions[i2].label);
 					fieldcontainer.append(receiver);
 				}
 				break;
@@ -1482,11 +1482,11 @@ var FieldsForm=function(options){
 			case 'DROP_DOWN':
 				receiver=select.clone(true);
 				receiver.append($('<option>').attr('value','').text(''));
-				options=[fieldinfo.options.length];
+				fieldoptions=[fieldinfo.options.length];
 				$.each(fieldinfo.options,function(key,values){
-					options[values.index]=values.label;
+					fieldoptions[values.index]=values.label;
 				});
-				for (var i2=0;i2<options.length;i2++) receiver.append($('<option>').attr('value',options[i2].label).text(options[i2].label));
+				for (var i2=0;i2<fieldoptions.length;i2++) receiver.append($('<option>').attr('value',fieldoptions[i2].label).text(fieldoptions[i2].label));
 				fieldcontainer.append(receiver);
 				break;
 			case 'FILE':
@@ -1656,15 +1656,15 @@ var FieldsForm=function(options){
 				break;
 			case 'RADIO_BUTTON':
 				var checked=true;
-				options=[fieldinfo.options.length];
+				fieldoptions=[fieldinfo.options.length];
 				$.each(fieldinfo.options,function(key,values){
-					options[values.index]=values.label;
+					fieldoptions[values.index]=values.label;
 				});
-				for (var i2=0;i2<options.length;i2++)
+				for (var i2=0;i2<fieldoptions.length;i2++)
 				{
 					receiver=radio.clone(true);
-					$('.label',receiver).text(options[i2].label);
-					$('.receiver',receiver).attr('name',fieldinfo.code).val(options[i2].label).prop('checked',checked);
+					$('.label',receiver).text(fieldoptions[i2].label);
+					$('.receiver',receiver).attr('name',fieldinfo.code).val(fieldoptions[i2].label).prop('checked',checked);
 					fieldcontainer.append(receiver);
 					checked=false;
 				}
