@@ -234,6 +234,7 @@ RouteMap.prototype={
 			markers:[],
 			isextensionindex:false,
 			isopeninfowindow:true,
+			iscentering:true,
 			callback:null
 		},options);
 		var my=this;
@@ -357,7 +358,7 @@ RouteMap.prototype={
 						0
 					);
 				/* setup center position */
-				map.setCenter(new google.maps.LatLng(values.lat,values.lng));
+				if (options.iscentering) map.setCenter(new google.maps.LatLng(values.lat,values.lng));
 				if (options.callback!=null) options.callback();
 				break;
 			default:
@@ -392,7 +393,7 @@ RouteMap.prototype={
 						labels.push((values.label.length!=0)?values.label:'');
 					});
 					/* setup center position */
-					map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
+					if (options.iscentering) map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
 					/* display routes */
 					service.route({
 						origin:origin,
@@ -504,7 +505,7 @@ RouteMap.prototype={
 							);
 					});
 					/* setup center position */
-					map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
+					if (options.iscentering) map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
 					if (options.callback!=null) options.callback();
 				}
 				break;
@@ -553,6 +554,15 @@ RouteMap.prototype={
 					break;
 			}
 		});
+	},
+	inbounds:function(){
+		var bounds=this.map.getBounds();
+		return {
+			north:bounds.getNorthEast().lat(),
+			south:bounds.getSouthWest().lat(),
+			east:bounds.getNorthEast().lng(),
+			west:bounds.getSouthWest().lng()
+		};
 	},
 	watchlocation:function(options){
 		var options=$.extend({
