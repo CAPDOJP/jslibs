@@ -191,7 +191,7 @@ jQuery.noConflict();
 									if (latlng.lat()>tolat) {values.setMap(null);return true;}
 									if (latlng.lng()<fromlng) {values.setMap(null);return true;}
 									if (latlng.lng()>tolng) {values.setMap(null);return true;}
-									values.setMap(vars.map.map);
+									if (!values.getMap()) values.setMap(vars.map.map);
 								});
 							});
 						},

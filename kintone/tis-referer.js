@@ -1448,8 +1448,8 @@ var FieldsForm=function(options){
 			case 'MULTI_SELECT':
 				$.each(fieldinfo.options,function(key,values){
 					receiver=checkbox.clone(true);
-					$('.receiver',receiver).val(values.label);
 					$('.label',receiver).text(values.label);
+					$('.receiver',receiver).val(values.label);
 					fieldcontainer.append(receiver);
 				});
 				break;
@@ -1459,8 +1459,8 @@ var FieldsForm=function(options){
 					/* day pickup */
 					var calendar=$('body').calendar({
 						selected:function(target,value){
-							target.closest('.container').find('.receiver').val(value.dateformat());
 							target.closest('.container').find('.label').text(value.dateformat());
+							target.closest('.container').find('.receiver').val(value.dateformat());
 						}
 					});
 					calendar.show({activedate:new Date(target.closest('.container').find('.label').text())});
@@ -1474,11 +1474,17 @@ var FieldsForm=function(options){
 					/* day pickup */
 					var calendar=$('body').calendar({
 						selected:function(target,value){
-							target.closest('.container').find('.receiver').val(value.dateformat());
 							target.closest('.container').find('.label').text(value.dateformat());
+							target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
 						}
 					});
 					calendar.show({activedate:new Date(target.closest('.container').find('.label').text())});
+				});
+				$('.receiverhour',receiver).on('change',function(){
+					$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+				});
+				$('.receiverminute',receiver).on('change',function(){
+					$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
 				});
 				fieldcontainer.append(receiver);
 				break;
@@ -1499,8 +1505,8 @@ var FieldsForm=function(options){
 						buttons:{
 							ok:function(resp){
 								var files=my.filevalue(resp);
-								target.closest('.container').find('.receiver').val(files.values);
 								target.closest('.container').find('.label').text(files.names);
+								target.closest('.container').find('.receiver').val(files.values);
 								/* close the filebox */
 								my.filebox.hide();
 							},
@@ -1536,8 +1542,8 @@ var FieldsForm=function(options){
 						datasource:my.groupsource,
 						buttons:{
 							ok:function(selection){
-								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								target.closest('.container').find('.label').text(Object.values(selection).join(','));
+								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								/* close the selectbox */
 								my.selectbox.hide();
 							},
@@ -1569,8 +1575,8 @@ var FieldsForm=function(options){
 								}
 							},
 							callback:function(row){
-								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
 								target.closest('.container').find('.label').text(row.find('#'+fieldinfo.lookup.lookupPickerFields[0]).val());
+								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
 								/* close the reference box */
 								my.referer[target.closest('.container').attr('id')].hide();
 							}
@@ -1602,8 +1608,8 @@ var FieldsForm=function(options){
 								}
 							},
 							callback:function(row){
-								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
 								target.closest('.container').find('.label').text(row.find('#'+fieldinfo.lookup.lookupPickerFields[0]).val());
+								target.closest('.container').find('.receiver').val(row.find('#'+fieldinfo.lookup.relatedKeyField).val());
 								/* close the reference box */
 								my.referer[target.closest('.container').attr('id')].hide();
 							}
@@ -1640,8 +1646,8 @@ var FieldsForm=function(options){
 						datasource:my.organizationsource,
 						buttons:{
 							ok:function(selection){
-								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								target.closest('.container').find('.label').text(Object.values(selection).join(','));
+								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								/* close the selectbox */
 								my.selectbox.hide();
 							},
@@ -1656,15 +1662,24 @@ var FieldsForm=function(options){
 				fieldcontainer.append(receiver);
 				break;
 			case 'RADIO_BUTTON':
+				var checked=true;
 				$.each(fieldinfo.options,function(key,values){
 					receiver=radio.clone(true);
-					$('.receiver',receiver).attr('name',fieldinfo.code).val(values.label);
 					$('.label',receiver).text(values.label);
+					$('.receiver',receiver).attr('name',fieldinfo.code).val(values.label).prop('checked',checked);
 					fieldcontainer.append(receiver);
+					checked=false;
 				});
 				break;
 			case 'TIME':
 				receiver=time.clone(true);
+				receiver.append($('<input type="hidden" class="receiver" value="00:00">'))
+				$('.receiverhour',receiver).on('change',function(){
+					$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+				});
+				$('.receiverminute',receiver).on('change',function(){
+					$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+				});
 				fieldcontainer.append(receiver);
 				break;
 			case 'USER_SELECT':
@@ -1690,8 +1705,8 @@ var FieldsForm=function(options){
 						datasource:my.usersource,
 						buttons:{
 							ok:function(selection){
-								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								target.closest('.container').find('.label').text(Object.values(selection).join(','));
+								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
 								/* close the selectbox */
 								my.selectbox.hide();
 							},
@@ -1721,6 +1736,14 @@ var FieldsForm=function(options){
 	options.container.append(this.cover);
 };
 FieldsForm.prototype={
+	/* create datetime value */
+	datetimevalue:function(container){
+		var date=container.find('.label').text();
+		var receiverhour=container.find('.receiverhour');
+		var receiverminute=container.find('.receiverminute');
+		if (date.length==0) return '';
+		else return date+'T'+receiverhour.val()+':'+receiverminute.val()+':00+0900';
+	},
 	/* create file values */
 	filevalue:function(files){
 		var names='';
@@ -1735,6 +1758,12 @@ FieldsForm.prototype={
 		});
 		names=names.replace(/,$/g,'');
 		return {names:names,values:JSON.stringify(values)};
+	},
+	/* create time value */
+	timevalue:function(container){
+		var receiverhour=container.find('.receiverhour');
+		var receiverminute=container.find('.receiverminute');
+		return receiverhour.val()+':'+receiverminute.val();
 	},
 	/* load looup datas */
 	loaddatas:function(fieldinfo){
