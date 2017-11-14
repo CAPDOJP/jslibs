@@ -112,7 +112,7 @@ var Referer=function(options){
 		'line-height':'30px',
 		'padding':'0px 3px'
 	});
-	var span=$('<span>');
+	var span=$('<span>').css({'padding':'0x 0.5em'});
 	var table=$('<table>');
 	var text=$('<input type="text">').css({
 		'border':'none',
@@ -233,12 +233,23 @@ var Referer=function(options){
 				break;
 		}
 		if (searchvalue.callback!=null) searchfield.on('change',function(){searchvalue.callback(searchfield);});
-		my.searchblock.append(
-			label.clone(true)
-			.css({'display':'inline-block'})
-			.append(span.clone(true).text(searchvalue.label))
-			.append(searchfield)
-		);
+		if (searchvalue.label.length!=0)
+		{
+			my.searchblock.append(
+				label.clone(true)
+				.css({'display':'inline-block'})
+				.append(span.clone(true).text(searchvalue.label))
+				.append(searchfield)
+			);
+		}
+		else
+		{
+			my.searchblock.append(
+				label.clone(true)
+				.css({'display':'inline-block'})
+				.append(searchfield)
+			);
+		}
 	});
 	if (this.paramsearches.length!=0)
 	{

@@ -460,5 +460,5 @@ table.timetable-pending tbody tr td:last span svg{
 select.referer-select{
 	box-sizing:border-box;
 	border:none;
-    width:100%;
+    width:calc(100% - 3em);
 }

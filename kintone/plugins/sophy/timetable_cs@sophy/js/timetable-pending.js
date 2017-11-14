@@ -65,7 +65,7 @@ jQuery.noConflict();
 			/* initialize table */
 			vars.table.clearrows();
 			/* rebuild view */
-			functions.build(filter);
+			if (filter.length!=0) functions.build(filter);
 		},
 		/* reload datas */
 		loaddatas:function(appkey,callback){
@@ -134,6 +134,7 @@ jQuery.noConflict();
 				}
 			});
 		});
+		$('.searchstudentname').css({'padding':'0px 15px'});
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
 		var headerspace=$(kintone.app.getHeaderSpaceElement());
@@ -237,6 +238,8 @@ jQuery.noConflict();
 					}
 				]
 			});
+			vars.studentselect.searchblock.find('select').closest('label').css({'width':'100%'});
+			vars.studentselect.searchblock.find('button').hide();
 			container.empty();
 			/* get fields of app */
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
