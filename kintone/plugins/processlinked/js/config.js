@@ -36,6 +36,7 @@ jQuery.noConflict();
 				case 'CATEGORY':
 				case 'CREATED_TIME':
 				case 'CREATOR':
+				case 'FILE':
 				case 'GROUP':
 				case 'MODIFIER':
 				case 'RECORD_NUMBER':
@@ -47,7 +48,9 @@ jQuery.noConflict();
 				case 'UPDATED_TIME':
 					break;
 				default:
-					if ($.inArray(values.code,mappings)<0) $('select#field').append($('<option>').attr('value',values.code).text(values.label));
+					/* exclude lookup */
+					if (!values.lookup)
+						if ($.inArray(values.code,mappings)<0) $('select#field').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 			}
 		});
