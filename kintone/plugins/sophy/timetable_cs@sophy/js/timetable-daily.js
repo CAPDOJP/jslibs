@@ -186,7 +186,6 @@ jQuery.noConflict();
 										functions.load();
 									});
 								});
-
 							})
 							.on({
 								'mouseenter':function(){$(this).closest('.button').addClass('show');},

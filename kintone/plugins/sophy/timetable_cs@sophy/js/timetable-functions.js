@@ -306,7 +306,10 @@ jQuery.extend({
 					var body={
 						app:kintone.app.getId(),
 						id:$('#\\$id',cell).val(),
-						record:{transfered:{value:1}}
+						record:{
+							transfered:{value:1},
+							transferpending:{value:0}
+						}
 					};
 					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
 						swal({
@@ -342,7 +345,10 @@ jQuery.extend({
 							var record=resp.records[index];
 							body.records.push({
 								id:record['$id'].value,
-								record:{transfered:{value:1}}
+								record:{
+									transfered:{value:1},
+									transferpending:{value:0}
+								}
 							});
 						});
 						kintone.api(kintone.api.url('/k/v1/records',true),'PUT',body,function(resp){
@@ -366,7 +372,10 @@ jQuery.extend({
 					var body={
 						app:kintone.app.getId(),
 						id:$('#\\$id',cell).val(),
-						record:{transfered:{value:1}}
+						record:{
+							transfered:{value:1},
+							transferpending:{value:0}
+						}
 					};
 					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
 						swal({

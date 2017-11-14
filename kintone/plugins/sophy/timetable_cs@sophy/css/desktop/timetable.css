@@ -433,3 +433,32 @@ p.timetable-scheduling-title{
   padding:0px 5px;
   text-align:center;
 }
+/* individual style (pending) */
+table.timetable-pending{
+  background-color:#FFFFFF;
+  table-layout:fixed;
+  width:100%;
+}
+table.timetable-pending tbody tr td{
+  cursor:pointer;
+  line-height:40px;
+  padding:0px 5px;
+  position:relative;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+table.timetable-pending tbody tr td:last span{
+  height:40px;
+  margin:0px;
+  padding:0px;
+  width:40px;
+}
+table.timetable-pending tbody tr td:last span svg{
+  height:40px;
+  width:40px;
+}
+select.referer-select{
+	box-sizing:border-box;
+	border:none;
+    width:100%;
+}

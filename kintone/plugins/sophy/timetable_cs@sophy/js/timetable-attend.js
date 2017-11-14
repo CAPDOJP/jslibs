@@ -165,7 +165,6 @@ jQuery.noConflict();
 				$('.lecture',cell)
 				.append($('<span>').addClass('button').append(green))
 				.append($('<span>').addClass('button').append(red));
-
 			}
 			/* append balloon */
 			var balloon=$('<div class="timetable-balloon">');

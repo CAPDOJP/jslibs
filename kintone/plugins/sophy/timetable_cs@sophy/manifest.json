@@ -31,6 +31,7 @@
             "js/timetable-daily.js",
             "js/timetable-functions.js",
             "js/timetable-monthly.js",
+            "js/timetable-pending.js",
             "js/timetable-scheduling.js"
         ],
         "css":[
