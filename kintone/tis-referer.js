@@ -112,7 +112,7 @@ var Referer=function(options){
 		'line-height':'30px',
 		'padding':'0px 3px'
 	});
-	var span=$('<span>').css({'padding':'0x 0.5em'});
+	var span=$('<span>').css({'padding':'0px 0.5em'});
 	var table=$('<table>');
 	var text=$('<input type="text">').css({
 		'border':'none',
