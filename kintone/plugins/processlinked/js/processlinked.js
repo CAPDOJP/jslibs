@@ -139,7 +139,8 @@ jQuery.noConflict();
 									event.error='各項目を入力して下さい。';
 									resolve(event);
 								}
-							}
+							},
+							values:event.record
 						});
 					}
 					else resolve(event);
