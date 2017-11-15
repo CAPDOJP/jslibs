@@ -1844,11 +1844,13 @@ FieldsForm.prototype={
 					for (var i=0;i<values.value.length;i++) $('#'+values.value[i],$('#'+key)).prop('checked',true);
 					break;
 				case 'DATE':
+					if (!values.value) return true;
 					if (values.value.length==0) return true;
 					$('.label',$('#'+key)).text(values.value.dateformat());
 					$('.receiver',$('#'+key)).val(values.value.dateformat());
 					break;
 				case 'DATETIME':
+					if (!values.value) return true;
 					if (values.value.length==0) return true;
 					$('.label',$('#'+key)).text(new Date(values.value.dateformat()).format('Y-m-d'));
 					$('.receiver',$('#'+key)).val(values.value.dateformat());
@@ -1876,6 +1878,7 @@ FieldsForm.prototype={
 					$('#'+values.value,$('#'+key)).prop('checked',true);
 					break;
 				case 'TIME':
+					if (!values.value) return true;
 					if (values.value.length==0) return true;
 					$('.receiver',$('#'+key)).val(values.value);
 					$('.receiverhour',$('#'+key)).val(('0'+values.value.split(':')[0]).slice(-2));
