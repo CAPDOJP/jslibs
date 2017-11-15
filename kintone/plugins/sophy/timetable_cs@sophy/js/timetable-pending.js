@@ -43,7 +43,7 @@ jQuery.noConflict();
 						var code=$(this).attr('class');
 						if (!code) return true;
 						if (!(code in filter[i])) return true;
-						$(this).text(filter[i][code].value);
+						$(this).text($.fieldvalue(filter[i][code]));
 					});
 					$.each(filter[i],function(key,values){
 						if (values!=null)
@@ -252,6 +252,12 @@ jQuery.noConflict();
 				var head=$('<tr>');
 				var template=$('<tr>');
 				var columns=[
+					'studentname',
+					'appname',
+					'coursename',
+					'date',
+					'starttime',
+					'hours'
 				];
 				for (var i=0;i<columns.length;i++)
 				{
@@ -286,13 +292,17 @@ jQuery.noConflict();
 												}
 												hours+=selection[i].hours;
 											}
-											if (hours!=parseFloat($('#basehours',cell).val()))
+											if (hours!=parseFloat($('#hours',cell).val()))
 											{
 												swal('Error!','振替前と振替後の時間が合いません。','error');
 												return;
 											}
 											/* entry transfers */
 											$.entrytransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){
+												var index=-1;
+												for (var i=0;i<vars.apps[kintone.app.getId()].length;i++)
+													if (vars.apps[kintone.app.getId()][i]['$id'].value==$('#\\$id',cell).val()) {index=i;break;}
+												if (index>-1) vars.apps[kintone.app.getId()].splice(index,1);
 												/* reload view */
 												functions.load();
 											});

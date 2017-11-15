@@ -303,7 +303,7 @@ jQuery.noConflict();
 		/* check viewid */
 		if (event.viewId!=vars.config.attend) return;
 		/* initialize valiable */
-		var container=$('div#timetable-container');
+		var container=$('div#timetable-container').css({'padding-bottom':'100px'});
 		var feed=$('<div class="timetable-dayfeed">');
 		var date=$('<span id="date" class="customview-span">');
 		var button=$('<button id="datepick" class="customview-button calendar-button">');

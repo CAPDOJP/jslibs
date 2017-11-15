@@ -90,7 +90,7 @@ jQuery.noConflict();
 															}
 															hours+=selection[i].hours;
 														}
-														if (hours!=parseFloat($('#basehours',cell).val()))
+														if (hours!=parseFloat($('#hours',cell).val()))
 														{
 															swal('Error!','振替前と振替後の時間が合いません。','error');
 															return;
@@ -201,7 +201,7 @@ jQuery.noConflict();
 															}
 															hours+=selection[i2].hours;
 														}
-														if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#basehours',cell).val()))
+														if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#hours',cell).val()))
 														{
 															swal('Error!','振替前と振替後の時間が合いません。','error');
 															return;
@@ -242,7 +242,7 @@ jQuery.noConflict();
 					inner+='<p>'+fromtime.format('H:i')+' ～ '+totime.format('H:i')+'</p>';
 					$('body').append(
 						balloon.css({
-							'z-index':(i+filter.length).toString()
+							'z-index':(vars.apps[kintone.app.getId()].length+$('div.timetable-balloon').length+1).toString()
 						})
 						.html(inner)
 					);
@@ -379,7 +379,7 @@ jQuery.noConflict();
 		/* check viewid */
 		if (event.viewId!=vars.config.monthtimetable) return;
 		/* initialize valiable */
-		var container=$('div#timetable-container');
+		var container=$('div#timetable-container').css({'padding-bottom':'100px'});
 		var feed=$('<div class="timetable-dayfeed">');
 		var month=$('<span id="month" class="customview-span">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');

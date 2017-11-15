@@ -1237,7 +1237,7 @@ var FieldsForm=function(options){
 	var options=$.extend({
 		container:null,
 		buttons:[],
-		fields:{}
+		fields:[]
 	},options);
 	/* property */
 	this.buttons=options.buttons;
@@ -1444,7 +1444,7 @@ var FieldsForm=function(options){
 				{
 					receiver=checkbox.clone(true);
 					$('.label',receiver).text(fieldoptions[i2]);
-					$('.receiver',receiver).val(fieldoptions[i2]);
+					$('.receiver',receiver).attr('id',fieldoptions[i2]).val(fieldoptions[i2]);
 					fieldcontainer.append(receiver);
 				}
 				break;
@@ -1674,7 +1674,7 @@ var FieldsForm=function(options){
 				{
 					receiver=radio.clone(true);
 					$('.label',receiver).text(fieldoptions[i2]);
-					$('.receiver',receiver).attr('name',fieldinfo.code).val(fieldoptions[i2]).prop('checked',checked);
+					$('.receiver',receiver).attr('id',fieldoptions[i2]).attr('name',fieldinfo.code).val(fieldoptions[i2]).prop('checked',checked);
 					fieldcontainer.append(receiver);
 					checked=false;
 				}
@@ -1826,12 +1826,66 @@ FieldsForm.prototype={
 	/* display form */
 	show:function(options){
 		var options=$.extend({
-			buttons:{}
+			buttons:{},
+			values:{}
 		},options);
 		var my=this;
 		$.each(options.buttons,function(key,values){
 			if (my.buttonblock.find('button#'+key).size())
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values();});
+		});
+		$.each(options.values,function(key,values){
+			if (!$('#'+key).size()) return true;
+			switch (values.type)
+			{
+				case 'CHECK_BOX':
+				case 'MULTI_SELECT':
+					for (var i=0;i<values.value.length;i++) $('#'+values.value[i],$('#'+key)).prop('checked',true);
+					break;
+				case 'DATE':
+					$('.receiver',$('#'+key)).val(values.value.dateformat());
+					break;
+				case 'DATETIME':
+					$('.label',$('#'+key)).text(new Date(values.value.dateformat()).format('Y-m-d'));
+					$('.receiver',$('#'+key)).val(values.value.dateformat());
+					$('.receiverhour',$('#'+key)).val(new Date(values.value.dateformat()).format('H'));
+					$('.receiverminute',$('#'+key)).val(new Date(values.value.dateformat()).format('i'));
+					break;
+				case 'FILE':
+					var files=my.filevalue(values.value);
+					$('.label',$('#'+key)).text(files.names);
+					$('.receiver',$('#'+key)).val(files.values);
+					break;
+				case 'GROUP_SELECT':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					var label=[];
+					var receiver=[];
+					$.each(values.value,function(index){
+						label.push(values.value[index].name);
+						receiver.push(values.value[index].code);
+					});
+					$('.label',$('#'+key)).text(label.join(','));
+					$('.receiver',$('#'+key)).val(receiver.join(','));
+					break;
+				case 'RADIO_BUTTON':
+					$('#'+values.value,$('#'+key)).prop('checked',true);
+					break;
+				case 'TIME':
+					$('.receiver',$('#'+key)).val(values.value);
+					$('.receiverhour',$('#'+key)).val(('0'+values.value.split(':')[0]).slice(-2));
+					$('.receiverminute',$('#'+key)).val(('0'+values.value.split(':')[1]).slice(-2));
+					break;
+				default:
+					if ($('.label',$('#'+key)).size())
+					{
+						for (var i=0;i<my.apps[key];i++)
+							if (my.apps[key][i][$('.key',$('#'+key)).val()].value==values.value)
+								$('.label',$('#'+key)).text(my.apps[key][i][$('.picker',$('#'+key)).val()].value);
+					}
+					$('.receiver',$('#'+key)).val(values.value);
+					break;
+			}
 		});
 		this.cover.show();
 		/* adjust container height */

@@ -86,6 +86,12 @@ Date.prototype.format=function(pattern){
 	if (pattern.match(/^H:i$/g)!=null) return hour+':'+minute;
 	//H:i:s
 	if (pattern.match(/^H:i:s$/g)!=null) return hour+':'+minute+':'+second;
+	//i
+	if (pattern.match(/^i$/g)!=null) return minute;
+	//i:s
+	if (pattern.match(/^i:s$/g)!=null) return minute+':'+second;
+	//s
+	if (pattern.match(/^s$/g)!=null) return second;
 	return '';
 }
 String.prototype.dateformat=function(){

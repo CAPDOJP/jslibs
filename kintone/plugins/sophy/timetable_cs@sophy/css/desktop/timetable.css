@@ -447,13 +447,15 @@ table.timetable-pending tbody tr td{
   vertical-align:middle;
   white-space:nowrap;
 }
-table.timetable-pending tbody tr td:last span{
+table.timetable-pending tbody tr td:last-of-type span{
+  display:block;
   height:40px;
   margin:0px;
   padding:0px;
+  position:relative;
   width:40px;
 }
-table.timetable-pending tbody tr td:last span svg{
+table.timetable-pending tbody tr td:last-of-type span svg{
   height:40px;
   width:40px;
 }

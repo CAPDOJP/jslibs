@@ -140,7 +140,7 @@ jQuery.noConflict();
 												}
 												hours+=selection[i].hours;
 											}
-											if (hours!=parseFloat($('#basehours',cell).val()))
+											if (hours!=parseFloat($('#hours',cell).val()))
 											{
 												swal('Error!','振替前と振替後の時間が合いません。','error');
 												return;
@@ -246,7 +246,7 @@ jQuery.noConflict();
 													}
 													hours+=selection[i].hours;
 												}
-												if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#basehours',cell).val()))
+												if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#hours',cell).val()))
 												{
 													swal('Error!','振替前と振替後の時間が合いません。','error');
 													return;
@@ -418,7 +418,7 @@ jQuery.noConflict();
 		var queries=$.queries();
 		if ('date' in queries) vars.date=new Date(queries['date'].dateformat());
 		/* initialize valiable */
-		var container=$('div#timetable-container');
+		var container=$('div#timetable-container').css({'padding-bottom':'100px'});
 		var feed=$('<div class="timetable-dayfeed">');
 		var date=$('<span id="date" class="customview-span">');
 		var button=$('<button id="datepick" class="customview-button calendar-button">');

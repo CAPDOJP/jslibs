@@ -66,7 +66,6 @@ jQuery.extend({
 				starttime:{value:terms[i].starttime},
 				hours:{value:terms[i].hours},
 				baserecordid:{value:baserecordid},
-				basehours:{value:$('#basehours',cell).val()},
 				transfered:{value:0},
 				transfertimes:{value:transfertimes},
 				transferpending:{value:0},
@@ -108,7 +107,6 @@ jQuery.extend({
 							starttime:{value:row['coursestarttime'].value},
 							hours:{value:coursegrade['hours'].value},
 							baserecordid:{value:null},
-							basehours:{value:coursegrade['hours'].value},
 							transfered:{value:0},
 							transfertimes:{value:0},
 							transferpending:{value:0},
@@ -249,7 +247,6 @@ jQuery.extend({
 				starttime:{value:course['starttime'].value},
 				hours:{value:course['hours'].value},
 				baserecordid:{value:baserecordid},
-				basehours:{value:$('#basehours',cell).val()},
 				transfered:{value:0},
 				transfertimes:{value:transfertimes},
 				transferpending:{value:0},
@@ -293,6 +290,7 @@ jQuery.extend({
 		if ($('#\\$id',cell).val().length==0)
 		{
 			var entryvalues={};
+			$('input#transfered',cell).val(('1'));
 			$.each($('input[type=hidden]',cell),function(){
 				if ($(this).attr('id')!='$id') entryvalues[$(this).attr('id')]={value:$(this).val()};
 			});
@@ -302,25 +300,12 @@ jQuery.extend({
 				$('#\\$id',cell).val(resp[$('#studentcode',cell).val()][$('#coursecode',cell).val()].id[0]);
 				/* entry attendants */
 				$.entryattendants($.createtransfer(cell,terms),progress,entries,function(resp,message){
-					/* update base attendants */
-					var body={
-						app:kintone.app.getId(),
-						id:$('#\\$id',cell).val(),
-						record:{
-							transfered:{value:1},
-							transferpending:{value:0}
-						}
-					};
-					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-						swal({
-							title:'振替完了',
-							text:'振替完了'+message,
-							type:'success'
-						},function(){
-							if (callback!=null) callback();
-						});
-					},function(error){
-						swal('Error!',error.message,'error');
+					swal({
+						title:'振替完了',
+						text:'振替完了'+message,
+						type:'success'
+					},function(){
+						if (callback!=null) callback();
 					});
 				});
 			});
@@ -337,19 +322,33 @@ jQuery.extend({
 						query:'baserecordid="'+$('#baserecordid',cell).val()+'" and transfertimes="'+$('#transfertimes',cell).val()+'"'
 					};
 					kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+						var transfertimes=parseInt($('#transfertimes',cell).val())+1;
 						body={
 							app:kintone.app.getId(),
 							records:[]
 						};
 						$.each(resp.records,function(index){
 							var record=resp.records[index];
-							body.records.push({
-								id:record['$id'].value,
-								record:{
-									transfered:{value:1},
-									transferpending:{value:0}
-								}
-							});
+							/* the record of cell is transfered */
+							if (record['$id'].value==$('#\\$id',cell).val())
+							{
+								body.records.push({
+									id:record['$id'].value,
+									record:{
+										transfered:{value:1},
+										transferpending:{value:0}
+									}
+								});
+							}
+							else
+							{
+								body.records.push({
+									id:record['$id'].value,
+									record:{
+										transfertimes:{value:transfertimes}
+									}
+								});
+							}
 						});
 						kintone.api(kintone.api.url('/k/v1/records',true),'PUT',body,function(resp){
 							swal({
@@ -641,6 +640,7 @@ jQuery.extend({
 				if (!('starthour' in fieldinfos)) error='始業時間';
 				if (!('endhour' in fieldinfos)) error='終業時間';
 				if (!('transferlimit' in fieldinfos)) error='振替期限';
+				if (!('textbookbillmonths' in fieldinfos)) error='通常講座教材費請求月';
 				break;
 			case '14':
 				/* 受講履歴 */
@@ -678,7 +678,6 @@ jQuery.extend({
 		if (!('starttime' in fieldinfos)) error='受講開始時刻';
 		if (!('hours' in fieldinfos)) error='受講時間';
 		if (!('baserecordid' in fieldinfos)) error='振替元レコード番号';
-		if (!('basehours' in fieldinfos)) error='振替元受講時間';
 		if (!('transfered' in fieldinfos)) error='振替済';
 		if (!('transfertimes' in fieldinfos)) error='振替回数';
 		if (!('transferpending' in fieldinfos)) error='振替保留';
