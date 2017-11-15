@@ -1837,6 +1837,7 @@ FieldsForm.prototype={
 		$.each(options.values,function(key,values){
 			if (key.match(/^\$/g)) return true;
 			if (!$('#'+key).size()) return true;
+			if (values.value.length==0) return true;
 			switch (values.type)
 			{
 				case 'CHECK_BOX':
@@ -1844,6 +1845,7 @@ FieldsForm.prototype={
 					for (var i=0;i<values.value.length;i++) $('#'+values.value[i],$('#'+key)).prop('checked',true);
 					break;
 				case 'DATE':
+					$('.label',$('#'+key)).text(values.value.dateformat());
 					$('.receiver',$('#'+key)).val(values.value.dateformat());
 					break;
 				case 'DATETIME':
