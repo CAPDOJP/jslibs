@@ -1835,7 +1835,7 @@ FieldsForm.prototype={
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values();});
 		});
 		$.each(options.values,function(key,values){
-			if (key.match(/^\\$/g)) return true;
+			if (key.match(/^\$/g)) return true;
 			if (!$('#'+key).size()) return true;
 			switch (values.type)
 			{
