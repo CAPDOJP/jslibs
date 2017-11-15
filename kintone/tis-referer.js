@@ -1837,7 +1837,6 @@ FieldsForm.prototype={
 		$.each(options.values,function(key,values){
 			if (key.match(/^\$/g)) return true;
 			if (!$('#'+key).size()) return true;
-			if (values.value.length==0) return true;
 			switch (values.type)
 			{
 				case 'CHECK_BOX':
@@ -1845,10 +1844,12 @@ FieldsForm.prototype={
 					for (var i=0;i<values.value.length;i++) $('#'+values.value[i],$('#'+key)).prop('checked',true);
 					break;
 				case 'DATE':
+					if (values.value.length==0) return true;
 					$('.label',$('#'+key)).text(values.value.dateformat());
 					$('.receiver',$('#'+key)).val(values.value.dateformat());
 					break;
 				case 'DATETIME':
+					if (values.value.length==0) return true;
 					$('.label',$('#'+key)).text(new Date(values.value.dateformat()).format('Y-m-d'));
 					$('.receiver',$('#'+key)).val(values.value.dateformat());
 					$('.receiverhour',$('#'+key)).val(new Date(values.value.dateformat()).format('H'));
@@ -1875,6 +1876,7 @@ FieldsForm.prototype={
 					$('#'+values.value,$('#'+key)).prop('checked',true);
 					break;
 				case 'TIME':
+					if (values.value.length==0) return true;
 					$('.receiver',$('#'+key)).val(values.value);
 					$('.receiverhour',$('#'+key)).val(('0'+values.value.split(':')[0]).slice(-2));
 					$('.receiverminute',$('#'+key)).val(('0'+values.value.split(':')[1]).slice(-2));
