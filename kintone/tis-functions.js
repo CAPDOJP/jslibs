@@ -160,6 +160,79 @@ var loadusersvalues={
 	size:100
 }
 jQuery.extend({
+	calculatetax:function(options){
+		var options=$.extend({
+			able:0,
+			free:0,
+			isoutsidetax:true,
+			taxround:'round',
+			taxrate:0
+		},options);
+		var tax=0;
+		if (options.isoutsidetax)
+		{
+			//outside
+			switch (options.taxround)
+			{
+				case 'floor':
+					options.able=Math.floor(options.able*(1+options.taxrate));
+					tax=Math.floor((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+				case 'ceil':
+					options.able=Math.ceil(options.able*(1+options.taxrate));
+					tax=Math.ceil((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+				case 'round':
+					options.able=Math.round(options.able*(1+options.taxrate));
+					tax=Math.round((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+			}
+		}
+		else
+		{
+			//inside
+			switch (options.taxround)
+			{
+				case 'floor':
+					options.able=Math.floor(options.able);
+					tax=Math.floor((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+				case 'ceil':
+					options.able=Math.ceil(options.able);
+					tax=Math.ceil((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+				case 'round':
+					options.able=Math.round(options.able);
+					tax=Math.round((options.able*options.taxrate*100)/(100+(options.taxrate*100)));
+					break;
+			}
+		}
+		switch (options.taxround)
+		{
+			case 'floor':
+				options.free=Math.floor(options.free);
+				break;
+			case 'ceil':
+				options.free=Math.ceil(options.free);
+				break;
+			case 'round':
+				options.free=Math.round(options.free);
+				break;
+		}
+		return {able:options.able,tax:tax,free:options.free}
+	},
+	calculatetaxrate:function(date){
+		var taxdatas=[
+			{startdate:'1900-01-01',rate:0},
+			{startdate:'1989-04-01',rate:0.03},
+			{startdate:'1997-04-01',rate:0.05},
+			{startdate:'2014-04-01',rate:0.08},
+			{startdate:'2019-10-01',rate:0.1}
+		];
+		var rate=0;
+		for (var i=0;i<taxdatas.length;i++) if (new Date(taxdatas[i].startdate.dateformat())<date) rate=parseFloat(taxdatas[i].rate);
+		return rate;
+	},
 	fieldparallelize:function(properties){
 		var tablecode='';
 		var fields={};

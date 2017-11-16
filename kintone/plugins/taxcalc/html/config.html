@@ -1,0 +1,106 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">税率判定日付フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">税率の判定対象となるフィールドを選択して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="taxdate">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">税端数<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="taxround">
+					<option value="1">切り捨て</option>
+					<option value="2">切り上げ</option>
+					<option value="3">四捨五入</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">税転嫁<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="taxshift">
+					<option value="0">外税</option>
+					<option value="1">内税</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">フィールド設定</div>
+		<table class="relations">
+			<thead>
+				<tr>
+					<th>小計フィールド</th>
+					<th>消費税フィールド</th>
+					<th>金額フィールド</th>
+					<th>課税区分フィールド</th>
+					<th>課税値</th>
+					<th colspan="2"></th>
+				</tr>
+			</tbody>
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="subtotal">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="tax">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="price">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="taxsegment">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="totax">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>
