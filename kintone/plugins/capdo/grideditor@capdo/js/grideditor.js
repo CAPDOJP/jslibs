@@ -729,209 +729,224 @@ jQuery.noConflict();
 		if (!vars.config) return false;
 		/* check viewid */
 		if (event.viewId!=vars.config.grideditorview) return;
-		/* initialize valiable */
-		vars.container=$('div#grideditor-container');
-		vars.grid=$('<table id="grideditor" class="customview-table">');
-		vars.header=$('<tr>');
-		vars.rows=$('<tbody>');
-		vars.template=$('<tr>');
-		vars.fieldinfos=[];
-		vars.mappings=[];
-		/* setup hidden field */
-		if (vars.config['fieldselect']=='1') vars.visible=vars.config['field'].split(',');
-		/* append elements */
-		vars.grid.append($('<thead>').append(vars.header));
-		vars.grid.append(vars.rows);
-		vars.container.empty().append(vars.grid);
-		/* fixed header */
-		var headeractions=$('div.contents-actionmenu-gaia');
-		var headerspace=$(kintone.app.getHeaderSpaceElement());
-		headeractions.parent().css({'position':'relative'});
-		headerspace.parent().css({'position':'relative'});
-		$(window).on('load resize scroll',function(e){
-			headeractions.css({
-				'left':$(window).scrollLeft().toString()+'px',
-				'position':'absolute',
-				'top':'0px',
-				'width':$(window).width().toString()+'px'
-			});
-			headerspace.css({
-				'left':$(window).scrollLeft().toString()+'px',
-				'position':'absolute',
-				'top':headeractions.outerHeight(false)+'px',
-				'width':$(window).width().toString()+'px'
-			});
-			vars.container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
-		});
-		/* create filebox */
-		vars.filebox=$('body').fileselect({
-			buttons:{
-				ok:{
-					text:'OK'
-				},
-				cancel:{
-					text:'キャンセル'
-				}
-			}
-		});
-		/* create selectbox */
-		vars.selectbox=$('body').multiselect({
-			buttons:{
-				ok:{
-					text:'OK'
-				},
-				cancel:{
-					text:'キャンセル'
-				}
-			}
-		});
-		/* get layout */
-		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
-			var sorted=functions.fieldsort(resp.layout);
-			/* get fieldinfo */
-			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
-				var displayfields=['$id'];
-				var message='';
-				var showed=false;
-				/* create header and template */
-				vars.header.append($('<th>').text('No'));
-				vars.template.append($('<td>').append($('<label>')));
-				$.each(sorted,function(index){
-					if (sorted[index] in resp.properties)
-					{
-						var fieldinfo=resp.properties[sorted[index]];
-						/* check disabled type */
-						if (fieldinfo.type in vars.disabled)
-						{
-							message='';
-							message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
-							$.each(vars.disabled,function(key,value){
-								message+=value+'\n';
-							});
-							swal('Error!',message,'error');
-							vars.grid.hide();
-							return;
-						}
-						/* check required files */
-						if (fieldinfo.type=='FILE' && fieldinfo.required && !showed)
-						{
-							message='';
-							message+='このアプリには、必須設定がなされた添付ファイルフィールドがあります。\n';
-							message+='新規にレコードを登録する場合は、まず最初に添付ファイルをアップロードするようにして下さい。\n';
-							swal('添付ファイルについて',message,'info');
-							showed=true;
-						}
-						/* check exclude type */
-						if ($.inArray(fieldinfo.type,vars.excludes)<0)
-						{
-							/* append header field */
-							vars.header.append($('<th>').text(fieldinfo.label));
-							/* append template field */
-							vars.template.append(functions.fieldcreate(fieldinfo));
-							/* check hidden field */
-							if (vars.config['fieldselect']=='1' && $.inArray(fieldinfo.code,vars.visible)<0)
-							{
-								vars.header.find('th').last().hide();
-								vars.template.find('td').last().hide();
-							}
-							/* append display fields */
-							displayfields.push(fieldinfo.code);
-							/* append fieldinfo */
-							vars.fieldinfos.push(fieldinfo);
-							/* append lookup mappings fields */
-							if (fieldinfo.lookup)
-								$.each(fieldinfo.lookup.fieldMappings,function(index,values){
-									vars.mappings.push(values.field);
-								});
-						}
-					}
-				});
-				/* append header field */
-				vars.header.append($('<th>').text(''));
-				/* append button field */
-				vars.template.append($('<td class="buttoncell">')
-					.append($('<button class="customview-button edit-button">').on('click',function(){
-						var row=$(this).closest('tr');
-						var index=row.find('td').first().find('label').text();
-						if (index.length==0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?';
-						else window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index+'&mode=edit';
-					}))
-					.append($('<button class="customview-button close-button">').on('click',function(){
-						var row=$(this).closest('tr');
-						var index=row.find('td').first().find('label').text();
-						if (index.length!=0)
-						{
-							swal({
-								title:'確認',
-								text:'削除します。\n宜しいですか?',
-								type:'warning',
-								showCancelButton:true,
-								confirmButtonText:'OK',
-								cancelButtonText:"Cancel"
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					/* initialize valiable */
+					vars.container=$('div#grideditor-container');
+					vars.grid=$('<table id="grideditor" class="customview-table">');
+					vars.header=$('<tr>');
+					vars.rows=$('<tbody>');
+					vars.template=$('<tr>');
+					vars.fieldinfos=[];
+					vars.mappings=[];
+					/* setup hidden field */
+					if (vars.config['fieldselect']=='1') vars.visible=vars.config['field'].split(',');
+					/* append elements */
+					vars.grid.append($('<thead>').append(vars.header));
+					vars.grid.append(vars.rows);
+					vars.container.empty().append(vars.grid);
+					/* fixed header */
+					var headeractions=$('div.contents-actionmenu-gaia');
+					var headerspace=$(kintone.app.getHeaderSpaceElement());
+					headeractions.parent().css({'position':'relative'});
+					headerspace.parent().css({'position':'relative'});
+					$(window).on('load resize scroll',function(e){
+						headeractions.css({
+							'left':$(window).scrollLeft().toString()+'px',
+							'position':'absolute',
+							'top':'0px',
+							'width':$(window).width().toString()+'px'
+						});
+						headerspace.css({
+							'left':$(window).scrollLeft().toString()+'px',
+							'position':'absolute',
+							'top':headeractions.outerHeight(false)+'px',
+							'width':$(window).width().toString()+'px'
+						});
+						vars.container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
+					});
+					/* create filebox */
+					vars.filebox=$('body').fileselect({
+						buttons:{
+							ok:{
+								text:'OK'
 							},
-							function(){
-								var method='DELETE';
-								var body={
-									app:kintone.app.getId(),
-									ids:[index]
-								};
-								kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
-									row.remove();
-								},function(error){});
-							});
-						}
-					}))
-				);
-				/* create row */
-				$.each(event.records,function(index,values){
-					var record=values
-					var row=vars.template.clone(true);
-					/* setup field values */
-					row.find('td').first().find('label').text(record['$id'].value);
-					$.each(vars.fieldinfos,function(index,values){
-						switch (values.type)
-						{
-							case 'CHECK_BOX':
-							case 'MULTI_SELECT':
-								row.find('input#'+values.code).val(record[values.code].value.join(','));
-								row.find('span#'+values.code).text(record[values.code].value.join(','));
-								break;
-							case 'DATETIME':
-								if (record[values.code].value.length!=0) row.find('#'+values.code).val(new Date(record[values.code].value.dateformat()).format('Y-m-d H:i'));
-								else row.find('#'+values.code).val(record[values.code].value);
-								break;
-							case 'FILE':
-								var files=functions.filevalue(record[values.code].value);
-								row.find('input#'+values.code).val(files.values);
-								row.find('span#'+values.code).text(files.names);
-								break;
-							case 'GROUP_SELECT':
-							case 'ORGANIZATION_SELECT':
-							case 'USER_SELECT':
-								var text=[];
-								var value=[];
-								$.each(record[values.code].value,function(index){
-									text.push(record[values.code].value[index].name);
-									value.push(record[values.code].value[index].code);
-								});
-								row.find('input#'+values.code).val(value.join(','));
-								row.find('span#'+values.code).text(text.join(','));
-								break;
-							default:
-								row.find('#'+values.code).val(record[values.code].value);
-								break;
+							cancel:{
+								text:'キャンセル'
+							}
 						}
 					});
-					/* append row */
-					vars.rows.append(row);
-				});
-				/* append new row */
-				vars.rows.append(vars.template.clone(true));
-				/* focus */
-				vars.rows.find('input[type=text],select,textarea').first().focus();
-				/* load complete */
-				vars.loaded=true;
-			},function(error){});
-		},function(error){});
+					/* create selectbox */
+					vars.selectbox=$('body').multiselect({
+						buttons:{
+							ok:{
+								text:'OK'
+							},
+							cancel:{
+								text:'キャンセル'
+							}
+						}
+					});
+					/* get layout */
+					kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
+						var sorted=functions.fieldsort(resp.layout);
+						/* get fieldinfo */
+						kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+							var displayfields=['$id'];
+							var message='';
+							var showed=false;
+							/* create header and template */
+							vars.header.append($('<th>').text('No'));
+							vars.template.append($('<td>').append($('<label>')));
+							$.each(sorted,function(index){
+								if (sorted[index] in resp.properties)
+								{
+									var fieldinfo=resp.properties[sorted[index]];
+									/* check disabled type */
+									if (fieldinfo.type in vars.disabled)
+									{
+										message='';
+										message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
+										$.each(vars.disabled,function(key,value){
+											message+=value+'\n';
+										});
+										swal('Error!',message,'error');
+										vars.grid.hide();
+										return;
+									}
+									/* check required files */
+									if (fieldinfo.type=='FILE' && fieldinfo.required && !showed)
+									{
+										message='';
+										message+='このアプリには、必須設定がなされた添付ファイルフィールドがあります。\n';
+										message+='新規にレコードを登録する場合は、まず最初に添付ファイルをアップロードするようにして下さい。\n';
+										swal('添付ファイルについて',message,'info');
+										showed=true;
+									}
+									/* check exclude type */
+									if ($.inArray(fieldinfo.type,vars.excludes)<0)
+									{
+										/* append header field */
+										vars.header.append($('<th>').text(fieldinfo.label));
+										/* append template field */
+										vars.template.append(functions.fieldcreate(fieldinfo));
+										/* check hidden field */
+										if (vars.config['fieldselect']=='1' && $.inArray(fieldinfo.code,vars.visible)<0)
+										{
+											vars.header.find('th').last().hide();
+											vars.template.find('td').last().hide();
+										}
+										/* append display fields */
+										displayfields.push(fieldinfo.code);
+										/* append fieldinfo */
+										vars.fieldinfos.push(fieldinfo);
+										/* append lookup mappings fields */
+										if (fieldinfo.lookup)
+											$.each(fieldinfo.lookup.fieldMappings,function(index,values){
+												vars.mappings.push(values.field);
+											});
+									}
+								}
+							});
+							/* append header field */
+							vars.header.append($('<th>').text(''));
+							/* append button field */
+							vars.template.append($('<td class="buttoncell">')
+								.append($('<button class="customview-button edit-button">').on('click',function(){
+									var row=$(this).closest('tr');
+									var index=row.find('td').first().find('label').text();
+									if (index.length==0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?';
+									else window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index+'&mode=edit';
+								}))
+								.append($('<button class="customview-button close-button">').on('click',function(){
+									var row=$(this).closest('tr');
+									var index=row.find('td').first().find('label').text();
+									if (index.length!=0)
+									{
+										swal({
+											title:'確認',
+											text:'削除します。\n宜しいですか?',
+											type:'warning',
+											showCancelButton:true,
+											confirmButtonText:'OK',
+											cancelButtonText:"Cancel"
+										},
+										function(){
+											var method='DELETE';
+											var body={
+												app:kintone.app.getId(),
+												ids:[index]
+											};
+											kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
+												row.remove();
+											},function(error){});
+										});
+									}
+								}))
+							);
+							/* create row */
+							$.each(event.records,function(index,values){
+								var record=values
+								var row=vars.template.clone(true);
+								/* setup field values */
+								row.find('td').first().find('label').text(record['$id'].value);
+								$.each(vars.fieldinfos,function(index,values){
+									switch (values.type)
+									{
+										case 'CHECK_BOX':
+										case 'MULTI_SELECT':
+											row.find('input#'+values.code).val(record[values.code].value.join(','));
+											row.find('span#'+values.code).text(record[values.code].value.join(','));
+											break;
+										case 'DATETIME':
+											if (record[values.code].value.length!=0) row.find('#'+values.code).val(new Date(record[values.code].value.dateformat()).format('Y-m-d H:i'));
+											else row.find('#'+values.code).val(record[values.code].value);
+											break;
+										case 'FILE':
+											var files=functions.filevalue(record[values.code].value);
+											row.find('input#'+values.code).val(files.values);
+											row.find('span#'+values.code).text(files.names);
+											break;
+										case 'GROUP_SELECT':
+										case 'ORGANIZATION_SELECT':
+										case 'USER_SELECT':
+											var text=[];
+											var value=[];
+											$.each(record[values.code].value,function(index){
+												text.push(record[values.code].value[index].name);
+												value.push(record[values.code].value[index].code);
+											});
+											row.find('input#'+values.code).val(value.join(','));
+											row.find('span#'+values.code).text(text.join(','));
+											break;
+										default:
+											row.find('#'+values.code).val(record[values.code].value);
+											break;
+									}
+								});
+								/* append row */
+								vars.rows.append(row);
+							});
+							/* append new row */
+							vars.rows.append(vars.template.clone(true));
+							/* focus */
+							vars.rows.find('input[type=text],select,textarea').first().focus();
+							/* load complete */
+							vars.loaded=true;
+						},function(error){});
+					},function(error){});
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 	});
 })(jQuery,kintone.$PLUGIN_ID);

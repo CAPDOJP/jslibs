@@ -1,0 +1,139 @@
+/* individual style (common) */
+*.hide{
+  display:none;
+}
+div#progress{
+  background-color:rgba(0,0,0,0.5);
+  display:none;
+  height:100%;
+  left:0px;
+  position:fixed;
+  top:0px;
+  width:100%;
+  z-index:2000000;
+}
+div#progress div.message{
+  color:#FFFFFF;
+  left:0px;
+  line-height:20px;
+  position:absolute;
+  text-align:center;
+  top:50%;
+  width:100%;
+  -webkit-transform:translate(0%,-100%);
+  -ms-transform:translate(0%,-100%);
+  transform:translate(0%,-100%);
+}
+div#progress div.progressbar{
+  background-color:rgba(255,255,255,0.25);
+  height:10px;
+  left:50%;
+  position:absolute;
+  top:50%;
+  width:50%;
+  -webkit-transform:translate(-50%,0%);
+  -ms-transform:translate(-50%,0%);
+  transform:translate(-50%,0%);
+}
+div#progress div.progresscell{
+  background-color:rgba(255,255,255,0.5);
+  height:10px;
+  left:0px;
+  position:absolute;
+  top:0px;
+  width:0px;
+}
+div#splash{
+	background:#f3f3f3;
+	height:100%;
+	left:0px;
+	opacity:0;
+	position:fixed;
+	top:0px;
+	width:100%;
+	z-index:2000000;
+	animation:show 0.5s ease 0s 1 normal forwards;
+}
+div#splash.hide{
+	display:block;
+	animation:hide 1s ease 0s 1 normal forwards;
+}
+div#splash p{
+	display:block;
+	bottom:0;
+	height:6em;
+	left:0;
+	margin:auto;
+	max-height:100%;
+	max-width:100%;
+	overflow:hidden;
+	padding:0px;
+	position:absolute;
+	right:0;
+	text-align:center;
+	top:0;
+	width:100%;
+}
+div#splash p span{
+	display:inline-block;
+	font-size:1em;
+	line-height:2em;
+	vertical-align:top;
+}
+div#splash p span:nth-of-type(1){
+	padding-right:0.5em;
+}
+div#splash p span.dot{
+	padding:0px 0.1em;
+}
+div#splash p span.dot.progress1{
+	animation:progress 1s ease-out 0s infinite;
+}
+div#splash p span.dot.progress2{
+	animation:progress 1s ease-out 0.1s infinite;
+}
+div#splash p span.dot.progress3{
+	animation:progress 1s ease-out 0.2s infinite;
+}
+div#splash p span.dot.progress4{
+	animation:progress 1s ease-out 0.3s infinite;
+}
+div#splash p span.dot.progress5{
+	animation:progress 1s ease-out 0.4s infinite;
+}
+@keyframes show{
+	0%{opacity:0;}
+	100%{opacity:1;}
+}
+@keyframes hide{
+	0%{opacity:1;}
+	99%{height:100%;opacity:0;}
+	100%{height:0%;}
+}
+@keyframes progress{
+	0%{
+		-webkit-transform:translateY(0);
+		-ms-transform:translateY(0);
+		transform:translateY(0);
+	}
+	25%{
+		-webkit-transform:translateY(0);
+		-ms-transform:translateY(0);
+		transform:translateY(0);
+	}
+	50%{
+		-webkit-transform:translateY(-0.5em);
+		-ms-transform:translateY(-0.5em);
+		transform:translateY(-0.5em);
+	}
+	100%{
+		-webkit-transform:translateY(0);
+		-ms-transform:translateY(0);
+		transform:translateY(0);
+	}
+}
+select.referer-select{
+	box-sizing:border-box;
+	border:none;
+    width:calc(100% - 3em);
+}

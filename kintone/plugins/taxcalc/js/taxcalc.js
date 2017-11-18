@@ -22,63 +22,87 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
-	vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-	if ('relation' in vars.config)
-	{
-		vars.relations=JSON.parse(vars.config['relation']);
-		for (var i=0;i<vars.relations.length;i++)
+	kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if ('relation' in vars.config)
 		{
-			vars.events.push('app.record.create.change.'+vars.relations[i].price);
-			vars.events.push('mobile.app.record.create.change.'+vars.relations[i].price);
-			vars.events.push('app.record.edit.change.'+vars.relations[i].price);
-			vars.events.push('mobile.app.record.edit.change.'+vars.relations[i].price);
-			vars.events.push('app.record.index.edit.change.'+vars.relations[i].price);
-		}
-		if (vars.events)
+			vars.relations=JSON.parse(vars.config['relation']);
+			/* setup event */
+			var fieldinfos=$.fieldparallelize(resp.properties);
+			if (!(vars.config['taxdate'] in fieldinfos)) return;
+			vars.events.push('app.record.create.change.'+vars.config['taxdate']);
+			vars.events.push('app.record.edit.change.'+vars.config['taxdate']);
+			vars.events.push('mobile.app.record.create.change.'+vars.config['taxdate']);
+			vars.events.push('mobile.app.record.edit.change.'+vars.config['taxdate']);
+			for (var i=0;i<vars.relations.length;i++)
+			{
+				if (!(vars.relations[i].unitprice in fieldinfos)) continue;
+				if (!(vars.relations[i].taxsegment in fieldinfos)) continue;
+				vars.events.push('app.record.create.change.'+vars.relations[i].unitprice);
+				vars.events.push('app.record.edit.change.'+vars.relations[i].unitprice);
+				vars.events.push('app.record.create.change.'+vars.relations[i].taxsegment);
+				vars.events.push('app.record.edit.change.'+vars.relations[i].taxsegment);
+				vars.events.push('mobile.app.record.create.change.'+vars.relations[i].unitprice);
+				vars.events.push('mobile.app.record.edit.change.'+vars.relations[i].unitprice);
+				vars.events.push('mobile.app.record.create.change.'+vars.relations[i].taxsegment);
+				vars.events.push('mobile.app.record.edit.change.'+vars.relations[i].taxsegment);
+				if (vars.relations[i].quantity.length!=0)
+					if (vars.relations[i].quantity in fieldinfos)
+					{
+						vars.events.push('app.record.create.change.'+vars.relations[i].quantity);
+						vars.events.push('app.record.edit.change.'+vars.relations[i].quantity);
+						vars.events.push('mobile.app.record.create.change.'+vars.relations[i].quantity);
+						vars.events.push('mobile.app.record.edit.change.'+vars.relations[i].quantity);
+					}
+			}
 			kintone.events.on(vars.events,function(event){
 				if (!event.record[vars.config['taxdate']].value) return event;
-				var type=event.type.split('.');
 				/* calculate subtotal and tax */
 				for (var i=0;i<vars.relations.length;i++)
-					if (type[type.length-1]==vars.relations[i].price)
+				{
+					var able=0;
+					var free=0;
+					var unitprice=0;
+					var quantity=0;
+					var totax=false;
+					var relation=vars.relations[i];
+					for (var i2=0;i2<event.record[relation.tablecode].value.length;i2++)
 					{
-						var able=0;
-						var free=0;
-						var price=0;
-						var totax=false;
-						var relation=vars.relations[i];
-						for (var i2=0;i2<event.record[relation.tablecode].value.length;i2++)
-						{
-							var row=event.record[relation.tablecode].value[i2];
-							price=(row.value[relation.price].value)?parseFloat('0'+row.value[relation.price].value.replace(/,/g,'')):0;
-							totax=(row.value[relation.taxsegment].value)?(row.value[relation.taxsegment].value==relation.totax):false;
-							if (totax) able+=price;
-							else free+=price;
-						}
-						var taxround='';
-						switch (vars.config['taxround'])
-						{
-							case '1':
-								taxround='floor';
-								break;
-							case '2':
-								taxround='ceil';
-								break;
-							case '3':
-								taxround='round';
-								break;
-						}
-						var calc=$.calculatetax({
-							able:able,
-							free:free,
-							isoutsidetax:(vars.config['taxshift']=='0'),
-							taxround:taxround,
-							taxrate:$.calculatetaxrate(new Date(event.record[vars.config['taxdate']].value.dateformat()))
-						});
-						event.record[relation.subbill].value=(calc.able-calc.tax+calc.free).toString();
-						event.record[relation.tax].value=calc.tax.toString();
+						var row=event.record[relation.tablecode].value[i2];
+						unitprice=0;
+						quantity=1;
+						totax=false;
+						if (relation.unitprice.length!=0) unitprice=(row.value[relation.unitprice].value)?parseFloat('0'+row.value[relation.unitprice].value.replace(/,/g,'')):0;
+						if (relation.quantity.length!=0) quantity=(row.value[relation.quantity].value)?parseFloat('0'+row.value[relation.quantity].value.replace(/,/g,'')):0;
+						if (relation.totax.length!=0) totax=(row.value[relation.taxsegment].value)?(row.value[relation.taxsegment].value==relation.totax):false;
+						if (totax) able+=unitprice*quantity;
+						else free+=unitprice*quantity;
 					}
+					var taxround='';
+					switch (vars.config['taxround'])
+					{
+						case '1':
+							taxround='floor';
+							break;
+						case '2':
+							taxround='ceil';
+							break;
+						case '3':
+							taxround='round';
+							break;
+					}
+					var calc=$.calculatetax({
+						able:able,
+						free:free,
+						isoutsidetax:(vars.config['taxshift']=='0'),
+						taxround:taxround,
+						taxrate:$.calculatetaxrate(new Date(event.record[vars.config['taxdate']].value.dateformat()))
+					});
+					event.record[relation.subtotal].value=(calc.able-calc.tax+calc.free).toString();
+					event.record[relation.tax].value=calc.tax.toString();
+				}
 				return event;
 			});
-	}
+		}
+	},function(error){});
 })(jQuery,kintone.$PLUGIN_ID);

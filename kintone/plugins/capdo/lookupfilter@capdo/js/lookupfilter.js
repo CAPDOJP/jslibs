@@ -180,50 +180,65 @@ jQuery.noConflict();
 	kintone.events.on(events.show,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
-		/* initialize valiable */
-		vars.segment=$('<div class="kintoneplugin-select-outer lookupfilter">').append($('<div class="kintoneplugin-select">').append($('<select>')));
-		vars.lookups=JSON.parse(vars.config['lookup']);
-		var counter=0;
-		var params=[];
-		$.each(vars.lookups,function(key,values){
-			if ($.grep(params,function(item,index){return item.app==values.app;}).length==0)
-				params.push({
-					app:values.app,
-					condition:values.filtercond,
-					limit:limit,
-					offset:0,
-					records:[]
-				});
-		});
-		if (params.length==0) return event;
-		functions.loaddatas(counter,params,function(){
-			for (var i=0;i<params.length;i++) vars.apps[params[i].app]=params[i].records;
-			$.each(vars.lookups,function(key,values){
-				/* append segments */
-				functions.appendsegments(key);
-				if (values.tablecode.length!=0)
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
 				{
-					var events=[];
-					events.push('app.record.create.change.'+values.tablecode);
-					events.push('app.record.edit.change.'+values.tablecode);
-					kintone.events.on(events,function(event){
-						$.each(event.changes.row.value,function(key,values){
-							if (key in vars.lookups) functions.appendsegments(key);
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					/* initialize valiable */
+					vars.segment=$('<div class="kintoneplugin-select-outer lookupfilter">').append($('<div class="kintoneplugin-select">').append($('<select>')));
+					vars.lookups=JSON.parse(vars.config['lookup']);
+					var counter=0;
+					var params=[];
+					$.each(vars.lookups,function(key,values){
+						if ($.grep(params,function(item,index){return item.app==values.app;}).length==0)
+							params.push({
+								app:values.app,
+								condition:values.filtercond,
+								limit:limit,
+								offset:0,
+								records:[]
+							});
+					});
+					if (params.length==0) return event;
+					functions.loaddatas(counter,params,function(){
+						for (var i=0;i<params.length;i++) vars.apps[params[i].app]=params[i].records;
+						$.each(vars.lookups,function(key,values){
+							/* append segments */
+							functions.appendsegments(key);
+							if (values.tablecode.length!=0)
+							{
+								var events=[];
+								events.push('app.record.create.change.'+values.tablecode);
+								events.push('app.record.edit.change.'+values.tablecode);
+								kintone.events.on(events,function(event){
+									$.each(event.changes.row.value,function(key,values){
+										if (key in vars.lookups) functions.appendsegments(key);
+									});
+									return event;
+								});
+							}
+							/* setup segments */
+							if (values.tablecode.length!=0)
+							{
+								for (var i=0;i<event.record[values.tablecode].value.length;i++)
+								{
+									var record=event.record[values.tablecode].value[i].value;
+									functions.setupsegments(key,record,i);
+								}
+							}
+							else functions.setupsegments(key,event.record,0);
 						});
-						return event;
 					});
 				}
-				/* setup segments */
-				if (values.tablecode.length!=0)
-				{
-					for (var i=0;i<event.record[values.tablecode].value.length;i++)
-					{
-						var record=event.record[values.tablecode].value[i].value;
-						functions.setupsegments(key,record,i);
-					}
-				}
-				else functions.setupsegments(key,event.record,0);
-			});
-		});
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 	});
 })(jQuery,kintone.$PLUGIN_ID);

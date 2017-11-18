@@ -1,0 +1,122 @@
+<div class="block">
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">ツールチップ<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">ツールチップに表示するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+    <table class="tooltips">
+      <tbody>
+        <tr>
+          <td>
+            <div class="kintoneplugin-select-outer">
+              <div class="kintoneplugin-select">
+                <select id="tooltip">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+          <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">基本情報アプリ<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">基本情報アプリを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="const">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">学年アプリ<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">学年アプリを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="grade">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">生徒情報アプリ<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">生徒情報アプリを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="student">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">受講履歴アプリ<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">受講履歴アプリを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="history">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">講座指定<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">講座アプリとタイムテーブルに表示する色分けを指定して下さい。</div>
+    <table class="lectures">
+      <tbody>
+        <tr>
+          <td>
+            <span class="lecturename"></span>
+          </td>
+          <td>
+            <div class="kintoneplugin-select-outer">
+              <div class="kintoneplugin-select">
+                <select id="lecturekey">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span id="color" class="kintoneplugin-unit color">&nbsp;</span>
+            <input type="hidden" id="color" value="">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">目盛り間隔<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-desc">タイムテーブルの目盛り線の間隔を選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="scale">
+          <option value="2">30分間隔</option>
+          <option value="3">20分間隔</option>
+          <option value="4">15分間隔</option>
+          <option value="6">10分間隔</option>
+          <option value="12">5分間隔</option>
+          <option value="60">1分間隔</option>
+        </select>
+      </div>
+    </div>
+    <div class="kintoneplugin-alert">間隔を短く設定すると、タイムテーブル表示時間帯によっては目盛幅が均一にならない場合があります。</div>
+    <div class="kintoneplugin-input-checkbox-item">
+      <label><input type="checkbox" id="scalefixed" value="0">目盛幅を固定する</label>
+    </div>
+    <span class="kintoneplugin-unit">目盛幅</span>
+    <div class="kintoneplugin-input-outer">
+      <input type="text" id="scalefixedwidth" class="kintoneplugin-input-text" value="" >
+    </div>
+    <span class="kintoneplugin-unit">px</span>
+  </div>
+</div>
+<div class="block">
+  <button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+  <button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

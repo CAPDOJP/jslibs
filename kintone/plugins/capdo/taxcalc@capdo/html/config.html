@@ -38,7 +38,8 @@
 		<table class="relations">
 			<thead>
 				<tr>
-					<th>小計フィールド</th>
+					<th>課税計フィールド</th>
+					<th>非課税計フィールド</th>
 					<th>消費税フィールド</th>
 					<th>金額入力フィールド</th>
 					<th></th>
@@ -54,6 +55,15 @@
 						<div class="kintoneplugin-select-outer">
 							<div class="kintoneplugin-select">
 								<select id="subtotal">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="subtotal_free">
 									<option value=""></option>
 								</select>
 							</div>
@@ -115,6 +125,12 @@
 		<div class="kintoneplugin-caution">&nbsp;Kintoneの仕様上、計算フィールドの計算結果そのものを基準に合計金額を算出することが出来ません。</div>
 		<div class="kintoneplugin-caution">&nbsp;そのような場合は、計算フィールド内の計算式に指定したフィールドを金額入力・その他入力フィールドそれぞれに指定して下さい。</div>
 		<div class="kintoneplugin-caution">&nbsp;また、その他入力フィールドに該当するフィールドがない場合は空欄のままで結構です。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
 	</div>
 </div>
 <div class="block">

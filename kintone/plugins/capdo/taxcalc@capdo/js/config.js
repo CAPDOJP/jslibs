@@ -65,6 +65,7 @@ jQuery.noConflict();
 							if (fieldinfo.tablecode.length==0)
 							{
 								$('select#subtotal').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#subtotal_free').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#tax').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							}
 							else
@@ -117,11 +118,13 @@ jQuery.noConflict();
 				$('select#taxdate').val(config['taxdate']);
 				$('select#taxround').val(config['taxround']);
 				$('select#taxshift').val(config['taxshift']);
+				$('input#license').val(config['license']);
 				$.each(relations,function(index){
 					if (add) vars.relationtable.addrow();
 					else add=true;
 					row=vars.relationtable.rows.last();
 					$('select#subtotal',row).val(relations[index].subtotal);
+					$('select#subtotal_free',row).val(relations[index].subtotal_free);
 					$('select#tax',row).val(relations[index].tax);
 					$('select#unitprice',row).val(relations[index].unitprice);
 					$('select#quantity',row).val(relations[index].quantity);
@@ -161,6 +164,7 @@ jQuery.noConflict();
 		{
 			row=vars.relationtable.rows.eq(i);
 			if ($('select#subtotal',row).val().length==0) continue;
+			if ($('select#subtotal_free',row).val().length==0) continue;
 			if ($('select#tax',row).val().length==0) continue;
 			if ($('select#unitprice',row).val().length==0) continue;
 			if ($('select#taxsegment',row).val().length==0) continue;
@@ -184,6 +188,7 @@ jQuery.noConflict();
 			}
 			relations.push({
 				subtotal:$('select#subtotal',row).val(),
+				subtotal_free:$('select#subtotal_free',row).val(),
 				tax:$('select#tax',row).val(),
 				unitprice:$('select#unitprice',row).val(),
 				quantity:$('select#quantity',row).val(),
@@ -192,11 +197,17 @@ jQuery.noConflict();
 				tablecode:vars.fieldinfos[$('select#unitprice',row).val()].tablecode
 			});
 		}
+		if ($('input#license').val().length==0)
+		{
+			swal('Error!','ライセンス認証URLを入力して下さい。','error');
+			return;
+		}
 		/* setup config */
 		config['taxdate']=$('select#taxdate').val();
 		config['taxround']=$('select#taxround').val();
 		config['taxshift']=$('select#taxshift').val();
 		config['relation']=JSON.stringify(relations);
+		config['license']=$('input#license').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

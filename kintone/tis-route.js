@@ -232,7 +232,6 @@ RouteMap.prototype={
 	reloadmap:function(options){
 		var options=$.extend({
 			markers:[],
-			isextensionindex:false,
 			isopeninfowindow:true,
 			callback:null
 		},options);
@@ -323,39 +322,22 @@ RouteMap.prototype={
 					lat:0,
 					lng:0,
 					size:34,
-					serialnumber:true,
-					extensionindex:''
+					serialnumber:true
 				},options.markers[0]);
-				if (options.isextensionindex)
-					addmarker(
-						{
-							color:values.colors,
-							fontsize:values.fontsize,
-							icon:values.icon,
-							label:values.extensionindex,
-							latlng:new google.maps.LatLng(values.lat,values.lng),
-							size:values.size
-						},
-						{
-							label:values.label
-						},
-						0
-					);
-				else
-					addmarker(
-						{
-							color:values.colors,
-							fontsize:values.fontsize,
-							icon:values.icon,
-							label:((values.serialnumber)?'1':''),
-							latlng:new google.maps.LatLng(values.lat,values.lng),
-							size:values.size
-						},
-						{
-							label:values.label
-						},
-						0
-					);
+				addmarker(
+					{
+						color:values.colors,
+						fontsize:values.fontsize,
+						icon:values.icon,
+						label:((values.serialnumber)?'1':''),
+						latlng:new google.maps.LatLng(values.lat,values.lng),
+						size:values.size
+					},
+					{
+						label:values.label
+					},
+					0
+				);
 				/* setup center position */
 				map.setCenter(new google.maps.LatLng(values.lat,values.lng));
 				if (options.callback!=null) options.callback();
@@ -414,40 +396,23 @@ RouteMap.prototype={
 									lat:0,
 									lng:0,
 									size:34,
-									serialnumber:true,
-									extensionindex:''
+									serialnumber:true
 								},values);
 								if (values.serialnumber) serialnumber++;
-								if (options.isextensionindex)
-									addmarker(
-										{
-											color:values.colors,
-											fontsize:values.fontsize,
-											icon:values.icon,
-											label:values.extensionindex,
-											latlng:new google.maps.LatLng(values.lat,values.lng),
-											size:values.size
-										},
-										{
-											label:values.label
-										},
-										index
-									);
-								else
-									addmarker(
-										{
-											color:values.colors,
-											fontsize:values.fontsize,
-											icon:values.icon,
-											label:((values.serialnumber)?serialnumber.toString():''),
-											latlng:new google.maps.LatLng(values.lat,values.lng),
-											size:values.size
-										},
-										{
-											label:values.label
-										},
-										index
-									);
+								addmarker(
+									{
+										color:values.colors,
+										fontsize:values.fontsize,
+										icon:values.icon,
+										label:((values.serialnumber)?serialnumber.toString():''),
+										latlng:new google.maps.LatLng(values.lat,values.lng),
+										size:values.size
+									},
+									{
+										label:values.label
+									},
+									index
+								);
 							});
 							renderer.setDirections(result);
 							renderer.setMap(map);
@@ -468,40 +433,23 @@ RouteMap.prototype={
 							lat:0,
 							lng:0,
 							size:34,
-							serialnumber:true,
-							extensionindex:''
+							serialnumber:true
 						},values);
 						if (values.serialnumber) serialnumber++;
-						if (options.isextensionindex)
-							addmarker(
-								{
-									color:values.colors,
-									fontsize:values.fontsize,
-									icon:values.icon,
-									label:values.extensionindex,
-									latlng:new google.maps.LatLng(values.lat,values.lng),
-									size:values.size
-								},
-								{
-									label:values.label
-								},
-								index
-							);
-						else
-							addmarker(
-								{
-									color:values.colors,
-									fontsize:values.fontsize,
-									icon:values.icon,
-									label:((values.serialnumber)?serialnumber.toString():''),
-									latlng:new google.maps.LatLng(values.lat,values.lng),
-									size:values.size
-								},
-								{
-									label:values.label
-								},
-								index
-							);
+						addmarker(
+							{
+								color:values.colors,
+								fontsize:values.fontsize,
+								icon:values.icon,
+								label:((values.serialnumber)?serialnumber.toString():''),
+								latlng:new google.maps.LatLng(values.lat,values.lng),
+								size:values.size
+							},
+							{
+								label:values.label
+							},
+							index
+						);
 					});
 					/* setup center position */
 					map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
