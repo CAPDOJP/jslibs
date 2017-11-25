@@ -548,6 +548,7 @@ TermSelect.prototype={
 			this.container.append(row);
 		}
 		if (this.isadd && options.dates.length==0) this.container.append(this.template.clone(true));
+		this.container.closest('div.floating').show();
 		/* 日付要素幅調整 */
 		my.adjustdate();
 	}
