@@ -398,7 +398,6 @@ var TermSelect=function(options){
 		}
 	},options);
 	var my=this;
-	if (this.buttons.ok==null) {alert('追加ボタンを指定して下さい。');return;}
 	/* プロパティ */
 	this.container=options.container;
 	this.isadd=options.isadd;
@@ -406,6 +405,7 @@ var TermSelect=function(options){
 	this.issingle=options.issingle;
 	this.buttons=options.buttons;
 	this.calendar=options.calendar;
+	if (this.buttons.ok==null) {alert('追加ボタンを指定して下さい。');return;}
 	/* テンプレート生成 */
 	this.hour=$('<select>');
 	this.minute=$('<select>');
