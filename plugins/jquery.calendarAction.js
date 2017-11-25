@@ -558,7 +558,6 @@ TermSelect.prototype={
 						hours:times/(1000*60*60)
 					});
 				});
-				my.container.closest('div.floating').hide();
 				options.callback(datetimes);
 			});
 		this.container.empty();
