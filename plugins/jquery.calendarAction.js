@@ -365,6 +365,7 @@ Date.prototype.TimeFormat = function(pattern){
 	if (pattern.match(/^H:i:s$/g)!=null) return hour+':'+minute+':'+second;
 	return '';
 }
+})(jQuery);
 /*
 *--------------------------------------------------------------------
 * 期間指定ウインドウ
@@ -551,4 +552,3 @@ TermSelect.prototype={
 		my.adjustdate();
 	}
 }
-})(jQuery);
