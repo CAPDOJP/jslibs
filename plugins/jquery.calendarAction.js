@@ -396,17 +396,16 @@ var TermSelect=function(options){
 			container:null
 		}
 	},options);
+	var my=this;
 	if (this.buttons.ok==null) {alert('追加ボタンを指定して下さい。');return;}
-	/* property */
+	/* プロパティ */
 	this.container=options.container;
 	this.isadd=options.isadd;
 	this.isdatepick=options.isdatepick;
 	this.issingle=options.issingle;
 	this.buttons=options.buttons;
 	this.calendar=options.calendar;
-	/* valiable */
-	var my=this;
-	/* append elements */
+	/* テンプレート生成 */
 	this.hour=$('<select>');
 	this.minute=$('<select>');
 	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)))
@@ -429,7 +428,7 @@ var TermSelect=function(options){
 	this.template.append(this.hour.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endhour'));
 	this.template.append($('<span>').clone(true).css({'display':((options.issingle)?'none':'inline-block')}).text('：'));
 	this.template.append(this.minute.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endminute').val('00'));
-	/* add row */
+	/* 各種ボタン追加 */
 	if (options.isadd)
 	{
 		if (this.buttons.add==null) {alert('追加ボタンを指定して下さい。');return;}
@@ -449,7 +448,7 @@ var TermSelect=function(options){
 			}).hide()
 		);
 	}
-	/* day pickup */
+	/* 日付ピッカー */
 	if (options.isdatepick)
 	{
 		var activerow=null;
@@ -481,8 +480,20 @@ var TermSelect=function(options){
 			})
 		);
 	}
+	$(window).on('load resize',function(){
+		/* 日付要素幅調整 */
+		my.adjustdate();
+	});
 }
 TermSelect.prototype={
+	adjustdate:function(){
+		if (!$('div.term',this.container).size()) return;
+		var width=0;
+		$.each($('div.term',this.container).eq(0).find('select,span'),function(index){
+			if (!$(this).hasClass('date')) width+=$(this).outerWidth(true);
+		});
+		$('.date').css({'width':($('div.term',this.container).innerWidth()-width).toString()+'px'});
+	},
 	show:function(options){
 		var options=$.extend({
 			fromhour:0,
@@ -536,6 +547,8 @@ TermSelect.prototype={
 			this.container.append(row);
 		}
 		if (this.isadd && options.dates.length==0) this.container.append(this.template.clone(true));
+		/* 日付要素幅調整 */
+		my.adjustdate();
 	}
 }
 })(jQuery);
