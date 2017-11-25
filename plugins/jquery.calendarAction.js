@@ -398,8 +398,22 @@ var TermSelect=function(options){
 		}
 	},options);
 	var my=this;
+	var select=$('<select>').css({
+		'display':'inline-block',
+		'line-height':'2em',
+		'margin':'0px',
+		'padding':'0px 0.5em',
+		'vertical-align':'top'
+	});
+	var span=$('<span>').css({
+		'display':'inline-block',
+		'line-height':'2em',
+		'margin':'0px',
+		'padding':'0px 0.25em',
+		'vertical-align':'top'
+	});
 	/* プロパティ */
-	this.container=options.container;
+	this.container=options.container.css({'text-align':'left'});
 	this.isadd=options.isadd;
 	this.isdatepick=options.isdatepick;
 	this.issingle=options.issingle;
@@ -407,27 +421,28 @@ var TermSelect=function(options){
 	this.calendar=options.calendar;
 	if (this.buttons.ok==null) {alert('追加ボタンを指定して下さい。');return;}
 	/* テンプレート生成 */
-	this.hour=$('<select>');
-	this.minute=$('<select>');
+	this.hour=select.clone(true);
+	this.minute=select.clone(true);
 	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)))
-	this.template=$('<div>').addClass('term').css({
+	this.template=$('<div>').css({
 		'border-bottom':'1px dotted #C9C9C9',
 		'padding':'0.25em 0px',
 		'width':'100%'
-	});
+	})
+	.addClass('term');
 	this.template.append(
 		$('<div>').css({
 			'display':'inline-block',
 			'min-height':'2em'
 		})
-		.append($('<span>').clone(true).addClass('date'))
+		.append(span.clone(true).addClass('date'))
 	);
 	this.template.append(this.hour.clone(true).addClass('starthour'));
-	this.template.append($('<span>').clone(true).text('：'));
+	this.template.append(span.clone(true).text('：'));
 	this.template.append(this.minute.clone(true).addClass('startminute').val('00'));
-	this.template.append($('<span>').clone(true).css({'display':((options.issingle)?'none':'inline-block')}).html('&nbsp;~&nbsp;'));
+	this.template.append(span.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).html('&nbsp;~&nbsp;'));
 	this.template.append(this.hour.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endhour'));
-	this.template.append($('<span>').clone(true).css({'display':((options.issingle)?'none':'inline-block')}).text('：'));
+	this.template.append(span.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).text('：'));
 	this.template.append(this.minute.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endminute').val('00'));
 	/* 各種ボタン追加 */
 	if (options.isadd)
@@ -435,15 +450,27 @@ var TermSelect=function(options){
 		if (this.buttons.add==null) {alert('追加ボタンを指定して下さい。');return;}
 		if (this.buttons.del==null) {alert('削除ボタンを指定して下さい。');return;}
 		this.template.append(
-			this.buttons.add
+			this.buttons.add.css({
+				'height':'2em',
+				'vertical-align':'top',
+				'width':'2em'
+			})
+			.addClass('add')
 			.on('click',function(){
 				var row=my.template.clone(true);
 				$('.del',row).show();
 				my.container.append(row);
+				/* 日付要素幅調整 */
+				my.adjustdate();
 			})
 		);
 		this.template.append(
-			this.buttons.del
+			this.buttons.del.css({
+				'height':'2em',
+				'vertical-align':'top',
+				'width':'2em'
+			})
+			.addClass('del')
 			.on('click',function(){
 				$(this).closest('.term').remove();
 			}).hide()
@@ -461,9 +488,10 @@ var TermSelect=function(options){
 			},
 			selected:function(target,value){
 				$('.date',activerow).text(value);
+				options.calendar.container.closest('div.floating').hide();
 			}
 		});
-		this.template.find('.date').closest('div').css({'padding-left':'2em'})
+		this.template.find('.date').css({'padding-left':'0.5em'}).closest('div').css({'padding-left':'2em'})
 		.append(
 			options.calendar.button
 			.css({
@@ -476,12 +504,12 @@ var TermSelect=function(options){
 			})
 			.on('click',function(){
 				activerow=$(this).closest('div');
-				options.calendar.container.calendarShow({target:$('.date',$(this).closest('div')).text()});
+				options.calendar.container.calendarShow({target:($('.date',activerow).text().length!=0)?$('.date',activerow).text():null});
 				options.calendar.container.closest('div.floating').show();
 			})
 		);
 	}
-	$(window).on('load resize',function(){
+	$(window).on('resize',function(){
 		/* 日付要素幅調整 */
 		my.adjustdate();
 	});
@@ -493,7 +521,8 @@ TermSelect.prototype={
 		$.each($('div.term',this.container).eq(0).find('select,span'),function(index){
 			if (!$(this).hasClass('date')) width+=$(this).outerWidth(true);
 		});
-		$('.date').css({'width':($('div.term',this.container).innerWidth()-width).toString()+'px'});
+		if (this.isadd) width+=$('div.term',this.container).eq(0).find('.add').outerWidth(true)*2;
+		$('.date').closest('div').css({'width':'calc(100% - '+width.toString()+'px)'});
 	},
 	show:function(options){
 		var options=$.extend({
@@ -529,6 +558,7 @@ TermSelect.prototype={
 						hours:times/(1000*60*60)
 					});
 				});
+				my.container.closest('div.floating').hide();
 				options.callback(datetimes);
 			});
 		this.container.empty();
@@ -550,6 +580,6 @@ TermSelect.prototype={
 		if (this.isadd && options.dates.length==0) this.container.append(this.template.clone(true));
 		this.container.closest('div.floating').show();
 		/* 日付要素幅調整 */
-		my.adjustdate();
+		this.adjustdate();
 	}
 }
