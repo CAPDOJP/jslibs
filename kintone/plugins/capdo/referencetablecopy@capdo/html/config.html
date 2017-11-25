@@ -1,0 +1,69 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<table class="relations">
+			<tbody>
+				<tr>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+					<td>
+						<table class="fields">
+							<thead>
+								<tr>
+									<th>
+										<div class="kintoneplugin-label">コピー先テーブル</div>
+										<div class="kintoneplugin-desc">コピー先となるテーブルフィールドを選択して下さい。</div>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="copyto">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</th>
+									<th>
+										<div class="kintoneplugin-label">コピー元関連レコード一覧</div>
+										<div class="kintoneplugin-desc">コピー元となる関連レコード一覧フィールドを選択して下さい。</div>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="copyfrom">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										<span id="copytoname"></span>
+										<input type="hidden" id="copytocode">
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="copyfromcode">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

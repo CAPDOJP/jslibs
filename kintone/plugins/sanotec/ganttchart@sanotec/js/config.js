@@ -61,12 +61,10 @@ jQuery.noConflict();
 			switch (values.type)
 			{
 				case 'CALC':
-				case 'CREATOR':
 				case 'DATE':
 				case 'DATETIME':
 				case 'DROP_DOWN':
 				case 'LINK':
-				case 'MODIFIER':
 				case 'NUMBER':
 				case 'RADIO_BUTTON':
 				case 'RECORD_NUMBER':

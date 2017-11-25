@@ -426,20 +426,4 @@ jQuery.noConflict();
 		);
 		return;
 	});
-	kintone.events.on(events.show,function(event){
-		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		if (!vars.config) return false;
-		/* get query strings */
-		var queries=$.queries();
-		if (vars.config['fromdate'] in queries) event.record[vars.config['fromdate']].value=queries[vars.config['fromdate']];
-		if (vars.config['todate'] in queries) event.record[vars.config['todate']].value=queries[vars.config['todate']];
-		vars.segments=vars.config['segment'].split(',');
-		for (var i=0;i<vars.segments.length;i++)
-			if (vars.segments[i] in queries)
-			{
-				event.record[vars.segments[i]].value=queries[vars.segments[i]];
-				event.record[vars.segments[i]].lookup=true;
-			}
-		return event;
-	});
 })(jQuery,kintone.$PLUGIN_ID);

@@ -110,8 +110,13 @@ jQuery.noConflict();
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
 		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok searchstudentbutton">')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<span class="searchstudentname">')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<input type="hidden" class="searchstudent">')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(
+			$('<div class="timetable-headermenucontents">').css({'display':'none'})
+			.append($('<span class="customview-span searchstudentname">').css({'padding':'0px 5px 0px 15px'}))
+			.append($('<button class="customview-button close-button clearstudentbutton">'))
+			.append($('<input type="hidden" class="searchstudent">'))
+			[0]
+		);
 		$('body').append(vars.progress);
 		$('body').append(splash);
 		$('.searchstudentbutton')
@@ -128,13 +133,21 @@ jQuery.noConflict();
 					/* close the reference box */
 					vars.studentselect.hide();
 					$('.searchstudent').val(row.find('#\\$id').val());
-					$('.searchstudentname').text(row.find('#\\name').val());
+					$('.searchstudentname').text(row.find('#name').val());
+					$('.searchstudentname').closest('div').show();
 					/* reload view */
 					functions.load();
 				}
 			});
 		});
-		$('.searchstudentname').css({'padding':'0px 15px'});
+		$('.clearstudentbutton')
+		.on('click',function(e){
+			$('.searchstudent').val('');
+			$('.searchstudentname').text('');
+			$('.searchstudentname').closest('div').hide();
+			/* reload view */
+			functions.load();
+		});
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
 		var headerspace=$(kintone.app.getHeaderSpaceElement());

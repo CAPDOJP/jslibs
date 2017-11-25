@@ -365,4 +365,177 @@ Date.prototype.TimeFormat = function(pattern){
 	if (pattern.match(/^H:i:s$/g)!=null) return hour+':'+minute+':'+second;
 	return '';
 }
+/*
+*--------------------------------------------------------------------
+* 期間指定ウインドウ
+*--------------------------------------------------------------------
+* parameters
+* options @ container	:期間指定要素コンテナ
+*         @ isadd		:行追加判定
+*         @ isdatepick	:日付カレンダー使用判定
+*         @ issingle	:分単一指定判定
+*         @ minutespan	:指定分間隔
+*         @ buttons		:各種ボタン
+*         @ calendar	:日付選択カレンダー
+* -------------------------------------------------------------------
+*/
+var TermSelect=function(options){
+	var options=$.extend({
+		container:null,
+		isadd:false,
+		isdatepick:false,
+		issingle:false,
+		minutespan:30,
+		buttons:{
+			ok:null,
+			add:null,
+			del:null
+		},
+		calendar:{
+			button:null,
+			container:null
+		}
+	},options);
+	if (this.buttons.ok==null) {alert('追加ボタンを指定して下さい。');return;}
+	/* property */
+	this.container=options.container;
+	this.isadd=options.isadd;
+	this.isdatepick=options.isdatepick;
+	this.issingle=options.issingle;
+	this.buttons=options.buttons;
+	this.calendar=options.calendar;
+	/* valiable */
+	var my=this;
+	/* append elements */
+	this.hour=$('<select>');
+	this.minute=$('<select>');
+	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)))
+	this.template=$('<div>').addClass('term').css({
+		'border-bottom':'1px dotted #C9C9C9',
+		'padding':'0.25em 0px',
+		'width':'100%'
+	});
+	this.template.append(
+		$('<div>').css({
+			'display':'inline-block',
+			'min-height':'2em'
+		})
+		.append($('<span>').clone(true).addClass('date'))
+	);
+	this.template.append(this.hour.clone(true).addClass('starthour'));
+	this.template.append($('<span>').clone(true).text('：'));
+	this.template.append(this.minute.clone(true).addClass('startminute').val('00'));
+	this.template.append($('<span>').clone(true).css({'display':((options.issingle)?'none':'inline-block')}).html('&nbsp;~&nbsp;'));
+	this.template.append(this.hour.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endhour'));
+	this.template.append($('<span>').clone(true).css({'display':((options.issingle)?'none':'inline-block')}).text('：'));
+	this.template.append(this.minute.clone(true).css({'display':((options.issingle)?'none':'inline-block')}).addClass('endminute').val('00'));
+	/* add row */
+	if (options.isadd)
+	{
+		if (this.buttons.add==null) {alert('追加ボタンを指定して下さい。');return;}
+		if (this.buttons.del==null) {alert('削除ボタンを指定して下さい。');return;}
+		this.template.append(
+			this.buttons.add
+			.on('click',function(){
+				var row=my.template.clone(true);
+				$('.del',row).show();
+				my.container.append(row);
+			})
+		);
+		this.template.append(
+			this.buttons.del
+			.on('click',function(){
+				$(this).closest('.term').remove();
+			}).hide()
+		);
+	}
+	/* day pickup */
+	if (options.isdatepick)
+	{
+		var activerow=null;
+		options.calendar.container.calendarAction({
+			normal:{
+				'background-color':'#ffffff',
+				'color':'#2b2b2b',
+				'line-height':'3em'
+			},
+			selected:function(target,value){
+				$('.date',activerow).text(value);
+			}
+		});
+		this.template.find('.date').closest('div').css({'padding-left':'2em'})
+		.append(
+			options.calendar.button
+			.css({
+				'height':'2em',
+				'left':'0px',
+				'margin':'0px',
+				'position':'absolute',
+				'top':'0px',
+				'width':'2em'
+			})
+			.on('click',function(){
+				activerow=$(this).closest('div');
+				options.calendar.container.calendarShow({target:$('.date',$(this).closest('div')).text()});
+				options.calendar.container.closest('div.floating').show();
+			})
+		);
+	}
+}
+TermSelect.prototype={
+	show:function(options){
+		var options=$.extend({
+			fromhour:0,
+			tohour:23,
+			dates:[],
+			callback:null
+		},options);
+		var my=this;
+		if (options.callback!=null)
+			this.buttons.ok.off('click').on('click',function(){
+				var starttime='';
+				var endtime='';
+				var times=0;
+				var datetimes=[];
+				$.each($('div.term',my.container),function(){
+					var row=$(this);
+					if ($('.date',row).text().length==0) return true;
+					starttime=$('.starthour',row).val()+':'+$('.startminute',row).val();
+					endtime=$('.endhour',row).val()+':'+$('.endminute',row).val();
+					if (parseInt(starttime)>parseInt(endtime))
+					{
+						starttime=$('.endhour',row).val()+':'+$('.endminute',row).val();
+						endtime=$('.starthour',row).val()+':'+$('.startminute',row).val();
+					}
+					times=0;
+					times+=new Date(($('.date',row).text()+' '+endtime+':00').replace(/-/g,'\/')).getTime();
+					times-=new Date(($('.date',row).text()+' '+starttime+':00').replace(/-/g,'\/')).getTime();
+					datetimes.push({
+						date:$('.date',row).text(),
+						starttime:starttime,
+						endtime:endtime,
+						hours:times/(1000*60*60)
+					});
+				});
+				options.callback(datetimes);
+			});
+		this.container.empty();
+		$('.starthour',this.template).empty();
+		$('.endhour',this.template).empty();
+		for (var i=options.fromhour;i<options.tohour+1;i++)
+		{
+			$('.starthour',this.template).append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)));
+			$('.endhour',this.template).append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)));
+		}
+		for (var i=0;i<options.dates.length;i++)
+		{
+			var row=this.template.clone(true);
+			$('.starthour',row).val($('.starthour',row).find('option').first().val());
+			$('.endhour',row).val($('.endhour',row).find('option').first().val());
+			$('.date',row).text(options.dates[i]);
+			this.container.append(row);
+		}
+		if (this.isadd && options.dates.length==0) this.container.append(this.template.clone(true));
+	}
+}
 })(jQuery);

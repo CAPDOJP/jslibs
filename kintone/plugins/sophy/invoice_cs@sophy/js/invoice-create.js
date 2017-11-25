@@ -15,18 +15,17 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		attendants:null,
-		calendar:null,
+		fromdate:new Date(),
+		todate:new Date(),
+		taxrate:0,
 		progress:null,
-		courseselect:null,
-		students:null,
-		termselect:null,
+		table:null,
+		studentselect:null,
 		apps:{},
-		lectures:{},
 		config:{},
 		offset:{},
 		const:[],
-		lecturekeys:[],
+		lectures:[],
 		fields:[]
 	};
 	var events={
@@ -36,16 +35,423 @@ jQuery.noConflict();
 	};
 	var limit=500;
 	var functions={
+		/* calculate reate of tax */
+		calculatetaxrate:function(){
+			var rate=0;
+			for (var i=0;i<vars.apps[vars.config['tax']].length;i++)
+				if (new Date(vars.apps[vars.config['tax']][i]['date'].value.dateformat())<vars.todate) rate=parseFloat(vars.apps[vars.config['tax']][i]['rate'].value);
+			return rate;
+		},
+		/* convert table records for update */
+		converttablerecords:function(rows){
+			var res=[];
+			var row={};
+			for (var i=0;i<rows.length;i++)
+			{
+				row={value:{}};
+				$.each(rows[i].value,function(key,values){
+					if (key.match(/bill$/g)) row.value[key]={value:'1'};
+					else row.value[key]={value:values.value};
+				});
+				res.push(row);
+			}
+			return res;
+		},
+		/* create invoice */
+		createinvoice:function(){
+			var addtextbookfee=false;
+			var course=null;
+			var coursegrade=null;
+			var lectureindex=0;
+			var lecturekey='';
+			var lecturename='';
+			var entryvalue={};
+			var updatevalue={};
+			var entryvalues=[];
+			var irregularfees=[];
+			var updatevalues=[];
+			vars.progress.find('.message').text('スケジュール作成中');
+			vars.progress.find('.progressbar').find('.progresscell').width(0);
+			vars.progress.show();
+			for (var i=0;i<vars.apps[vars.config['parent']].length;i++)
+			{
+				var parent=vars.apps[vars.config['parent']][i];
+				var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
+					return (item['parentcode'].value==parent['$id'].value);
+				});
+				/* check exclude */
+				if ($.grep(vars.apps[kintone.app.getId()],function(item,index){
+					return (item['customer'].value==parent['$id'].value);
+				}).length!=0) continue;
+				if (filter.length==0) continue;
+				entryvalue={
+					billdate:{value:vars.todate.format('Y-m-d')},
+					customer:{value:parent['$id'].value},
+					customername:{value:parent['name'].value},
+					subbill:{value:0},
+					tax:{value:0},
+					bill:{value:0},
+					collect:{value:0},
+					billtable:{value:[]},
+					collecttable:{value:[]}
+				};
+				/* append bill records */
+				for (var i2=0;i2<filter.length;i2++)
+				{
+					var student=filter[i];
+					var admissiondate=new Date(student['admissiondate'].value.dateformat());
+					var loafrom=new Date(student['loafrom'].value.dateformat());
+					var loato=new Date(student['loato'].value.dateformat());
+					/* check status */
+					if (student['status'].value!='通塾中') continue;
+					/* check admissiondate */
+					if (vars.todate<admissiondate) continue;
+					/* check leave of absence */
+					if (vars.todate>loafrom.calc('-1 day') && vars.todate<loato.calc('1 day')) continue;
+					updatevalue={
+						app:vars.config['student'],
+						id:student['$id'].value,
+						record:{}
+					};
+					/* ordinary lecture */
+					lectureindex=0;
+					lecturename=vars.lectures[lectureindex].name;
+					lecturekey='';
+					course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==student['coursecode'].value);})[0];
+					coursegrade=$.coursegrade(course,student['gradecode'].value);
+					irregularfees=[];
+					if (vars.fromdate<admissiondate.calc('1 day') && vars.todate>admissiondate.calc('-1 day'))
+					{
+						entryvalue.billtable.value.push({
+							value:{
+								breakdown:{value:'入塾金'},
+								billprice:{value:(filter.length>1)?vars.const['discountfee'].value:vars.const['entrancefee'].value},
+								taxsegment:{value:'課税'}
+							}
+						});
+						irregularfees.push(admissiondate);
+						addtextbookfee=true;
+					}
+					else addtextbookfee=(vars.const['textbookbillmonths'].value.indexOf((vars.fromdate.getMonth()+1).toString())>-1);
+					if (vars.fromdate<loato.calc('1 day') && vars.todate>loato.calc('-1 day')) irregularfees.push(loato);
+					entryvalue.billtable.value.push({
+						value:{
+							breakdown:{value:lecturename+'('+course['name'].value+')受講料　'+student['gradename'].value},
+							billprice:{value:coursegrade['fee'].value},
+							taxsegment:{value:'課税'}
+						}
+					});
+					for (var i3=0;i3<irregularfees.length;i3++)
+						entryvalue.billtable.value.push({
+							value:{
+								breakdown:{value:lecturename+'('+course['name'].value+')日割り受講料　'+student['gradename'].value},
+								billprice:{value:functions.createirregularfee(student,irregularfees[i3],coursegrade)},
+								taxsegment:{value:'課税'}
+							}
+						});
+					if (addtextbookfee)
+						entryvalue.billtable.value.push({
+							value:{
+								breakdown:{value:lecturename+'教材費'},
+								billprice:{value:vars.const['textbookfee'].value},
+								taxsegment:{value:'課税'}
+							}
+						});
+					/* short term lecture */
+					for (var i3=1;i3<4;i3++)
+					{
+						lectureindex=i3;
+						lecturename=vars.lectures[lectureindex].name;
+						lecturekey='shortterm'+lectureindex.toString();
+						for (var i4=0;i4<student[lecturekey+'table'].value.length;i4++)
+						{
+							var row=student[lecturekey+'table'].value[i4].value;
+							if (row[lecturekey+'code'].value.length!=0 && row[lecturekey+'bill'].value=='0')
+							{
+								course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==row[lecturekey+'code'].value);})[0];
+								coursegrade=$.coursegrade(course,student['gradecode'].value);
+								entryvalue.billtable.value.push({
+									value:{
+										breakdown:{value:lecturename+'('+course['name'].value+')受講料　'+student['gradename'].value},
+										billprice:{value:coursegrade['fee'].value},
+										taxsegment:{value:'課税'}
+									}
+								});
+								if (row[lecturekey+'over'].value!='0')
+									entryvalue.billtable.value.push({
+										value:{
+											breakdown:{value:lecturename+'('+course['name'].value+')追加受講料　'+student['gradename'].value},
+											billprice:{value:(parseFloat(coursegrade['overfee'].value)*parseFloat(row[lecturekey+'over'].value)).toString()},
+											taxsegment:{value:'課税'}
+										}
+									});
+								if (course['textbookfee'].value!='0')
+									entryvalue.billtable.value.push({
+										value:{
+											breakdown:{value:lecturename+'教材費'},
+											billprice:{value:course['textbookfee'].value},
+											taxsegment:{value:'課税'}
+										}
+									});
+							}
+						}
+						updatevalue.record[lecturekey+'table']={value:functions.converttablerecords(student[lecturekey+'table'].value)};
+					}
+					/* season lecture */
+					for (var i3=1;i3<4;i3++)
+					{
+						lectureindex=i3;
+						lecturename=vars.lectures[lectureindex+3].name;
+						lecturekey='season'+lectureindex.toString();
+						if (student[lecturekey+'code'].value.length!=0 && student[lecturekey+'bill'].value=='0')
+						{
+							course=$.grep(vars.apps[vars.lectures[lectureindex+3].code],function(item,index){return (item['code'].value==student[lecturekey+'code'].value);})[0];
+							coursegrade=$.coursegrade(course,student['gradecode'].value);
+							entryvalue.billtable.value.push({
+								value:{
+									breakdown:{value:lecturename+'('+course['name'].value+')受講料　'+student['gradename'].value},
+									billprice:{value:coursegrade['fee'].value},
+									taxsegment:{value:'課税'}
+								}
+							});
+							if (course['textbookfee'].value!='0')
+								entryvalue.billtable.value.push({
+									value:{
+										breakdown:{value:lecturename+'教材費'},
+										billprice:{value:course['textbookfee'].value},
+										taxsegment:{value:'課税'}
+									}
+								});
+						}
+						updatevalue.record[lecturekey+'bill']={value:'1'};
+					}
+					/* morning lecture */
+					lectureindex=7;
+					lecturename=vars.lectures[lectureindex].name;
+					lecturekey='morning';
+					course=vars.apps[vars.lectures[lectureindex].code][vars.apps[vars.lectures[lectureindex].code].length-1];
+					if (course['gradecode'].value==student['gradecode'].value)
+						switch (student[lecturekey+'bulkbill'].value)
+						{
+							case '0':
+								for (var i3=0;i3<student[lecturekey+'table'].value.length;i3++)
+								{
+									var row=student[lecturekey+'table'].value[i3].value;
+									if (row[lecturekey+'code'].value.length!=0 && row[lecturekey+'bill'].value=='0')
+									{
+										$.each(course['coursetable'].value,function(index){
+											var courserow=course['coursetable'].value[index].value;
+											if (course['coursetable'].value[index]['id']==row[lecturekey+'code'].value)
+												entryvalue.billtable.value.push({
+													value:{
+														breakdown:{value:lecturename+'('+courserow['name'].value+')受講料'},
+														billprice:{value:courserow['fee'].value},
+														taxsegment:{value:'課税'}
+													}
+												});
+										});
+									}
+								}
+								updatevalue.record[lecturekey+'table']={value:functions.converttablerecords(student[lecturekey+'table'].value)};
+								break;
+							case '1':
+								entryvalue.billtable.value.push({
+									value:{
+										breakdown:{value:lecturename+'受講料一括払い'},
+										billprice:{value:course['bulkfee'].value},
+										taxsegment:{value:'課税'}
+									}
+								});
+								updatevalue.record[lecturekey+'bulkbill']={value:'2'};
+								break;
+						}
+					/* night lecture */
+					lectureindex=8;
+					lecturename=vars.lectures[lectureindex].name;
+					lecturekey='night';
+					course=vars.apps[vars.lectures[lectureindex].code][vars.apps[vars.lectures[lectureindex].code].length-1];
+					if (course['gradecode'].value==student['gradecode'].value)
+						switch (student[lecturekey+'bulkbill'].value)
+						{
+							case '0':
+								var billtimes=0;
+								var row={};
+								for (var i3=0;i3<student[lecturekey+'table'].value.length;i3++)
+								{
+									row=student[lecturekey+'table'].value[i3].value;
+									if (row[lecturekey+'billmonth'].value.length!=0) billtimes++;
+								}
+								if (billtimes<parseInt(course['splittimes'].value))
+								{
+									entryvalue.billtable.value.push({
+										value:{
+											breakdown:{value:lecturename+'受講料分割払い'},
+											billprice:{value:course['fee'].value},
+											taxsegment:{value:'課税'}
+										}
+									});
+									row={};
+									row[lecturekey+'billmonth']={value:vars.fromdate.format('Y-m')};
+									row[lecturekey+'bill']={value:'1'};
+									student[lecturekey+'table'].value.push({value:row})
+								}
+								updatevalue.record[lecturekey+'table']={value:functions.converttablerecords(student[lecturekey+'table'].value)};
+								break;
+							case '1':
+								entryvalue.billtable.value.push({
+									value:{
+										breakdown:{value:lecturename+'受講料一括払い'},
+										billprice:{value:course['bulkfee'].value},
+										taxsegment:{value:'課税'}
+									}
+								});
+								updatevalue.record[lecturekey+'bulkbill']={value:'2'};
+								break;
+						}
+					/* individually lecture */
+					lectureindex=9;
+					lecturename=vars.lectures[lectureindex].name;
+					lecturekey='individual';
+					course=vars.apps[vars.lectures[lectureindex].code][vars.apps[vars.lectures[lectureindex].code].length-1];
+					if (course['gradecode'].value==student['gradecode'].value && student[lecturekey+'bill'].value=='0')
+					{
+						entryvalue.billtable.value.push({
+							value:{
+								breakdown:{value:lecturename+'受講料'},
+								billprice:{value:course['fee'].value},
+								taxsegment:{value:'課税'}
+							}
+						});
+						updatevalue.record[lecturekey+'bill']={value:'1'};
+					}
+					updatevalues.push(updatevalue);
+				}
+				/* calculate tax */
+				if (entryvalue.billtable.value.length!=0)
+				{
+					var able=0;
+					var free=0;
+					var price=0;
+					var totax=false;
+					for (var i2=0;i2<entryvalue.billtable.value.length;i2++)
+					{
+						var row=entryvalue.billtable.value[i2].value;
+						if (row.taxsegment.value=='課税') able+=parseFloat('0'+row.billprice.value.replace(/,/g,''));
+						else free+=parseFloat('0'+row.billprice.value.replace(/,/g,''));
+					}
+					var taxround='';
+					switch (vars.const['taxround'].value)
+					{
+						case '1':
+							taxround='floor';
+							break;
+						case '2':
+							taxround='ceil';
+							break;
+						case '3':
+							taxround='round';
+							break;
+					}
+					var calc=$.calculatetax({
+						able:able,
+						free:free,
+						isoutsidetax:(vars.const['taxshift'].value=='0'),
+						taxround:taxround,
+						taxrate:vars.taxrate
+					});
+					entryvalue.subbill.value=calc.able-calc.tax+calc.free;
+					entryvalue.tax.value=calc.tax;
+					entryvalues.push(entryvalue);
+				}
+			}
+			/* entry invoice */
+			$.entryinvoices(entryvalues,vars.progress,function(){
+				/* update students */
+				functions.updatestudents(updatevalues,function(){
+					/* reload view */
+					functions.load();
+				});
+			});
+		},
+		/* create irregular fee */
+		createirregularfee:function(student,from,coursegrade){
+			var day=from;
+			var fee=0;
+			var times=0;
+			var week=['日','月','火','水','木','金','土'];
+			fee=parseFloat(coursegrade['fee'].value)/(parseFloat(coursegrade['times'].value)*4);
+			for (var i=from.getDate();i<vars.todate.getDate()+1;i++)
+			{
+				for (var i2=0;i2<student['coursetable'].value.length;i2++)
+				{
+					var row=student['coursetable'].value[i2].value;
+					if (week.indexOf(row['courseweek'].value)==day.getDay()) times++;
+				}
+				day=day.calc('1 day');
+			}
+			switch (vars.const['taxround'].value)
+			{
+				case '1':
+					fee=Math.floor(fee*times);
+					break;
+				case '2':
+					fee=Math.ceil(fee*times);
+					break;
+				case '3':
+					fee=Math.round(fee*times);
+					break;
+			}
+			return fee.toString();
+		},
+		/* reload view */
+		load:function(){
+			/* after apprecords acquisition,rebuild view */
+			vars.apps[kintone.app.getId()]=null;
+			vars.offset[kintone.app.getId()]=0;
+			functions.loaddatas(kintone.app.getId(),function(){
+				var records=vars.apps[kintone.app.getId()];
+				/* initialize table */
+				vars.table.clearrows();
+				/* insert row */
+				for (var i=0;i<records.length;i++)
+					vars.table.insertrow(null,function(row){
+						$.each(row.find('td'),function(){
+							var code=$(this).attr('class');
+							if (!code) return true;
+							if (!(code in records[i])) return true;
+							switch (code)
+							{
+								case 'subbill':
+								case 'tax':
+								case 'bill':
+								case 'collect':
+								case 'remaining':
+									$(this).css({'text-align':'right'}).text(parseInt('0'+$.fieldvalue(records[i][code])).format()+'円');
+									break;
+								default:
+									$(this).text($.fieldvalue(records[i][code]));
+									break;
+							}
+						});
+						$.each(records[i],function(key,values){
+							if (values!=null)
+								if (values.value!=null)
+									row.find('td').last().append($('<input type="hidden">').attr('id',key).val(values.value));
+						});
+					});
+			});
+		},
 		/* reload datas */
 		loaddatas:function(appkey,callback){
-			var query='';
+			var query=kintone.app.getQueryCondition();
 			var body={
 				app:appkey,
 				query:'',
 				fields:vars.fields
 			};
-			query+='date>"'+new Date().calc('-1 day').format('Y-m-d')+'"';
-			query+=' limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
+			query+=((query.length!=0)?' and ':'');
+			query+='billdate>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and billdate<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
+			query+=' order by billdate asc,customername asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
@@ -53,647 +459,12 @@ jQuery.noConflict();
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
-			},
-			function(error){
+			},function(error){
 				swal('Error!',error.message,'error');
 			});
 		},
-		/* convert table records for update */
-		converttablerecords:function(rows,values){
-			var res=[];
-			var row={};
-			for (var i=0;i<values.length;i++)
-			{
-				row={value:{}};
-				$.each(values[i],function(key,values){
-					row.value[key]={value:values};
-				});
-				rows.push(row);
-			}
-			for (var i=0;i<rows.length;i++)
-			{
-				row={value:{}};
-				$.each(rows[i].value,function(key,values){
-					row.value[key]={value:values.value};
-				});
-				res.push(row);
-			}
-			return res;
-		},
-		/* create schedule */
-		createschedule:function(){
-			var error=false;
-			var index=0;
-			var course=null;
-			var grade=null;
-			var row=null;
-			var dates=[];
-			var checktime=new Date();
-			var entryvalues=[];
-			var updatevalues=[];
-			if ($('#lecturelist').val().length==0)
-			{
-				swal('Error!','講座を選択して下さい。','error');
-				return;
-			}
-			else index=parseInt($('#lecturelist').val());
-			if ($('#courselist').is(':visible') && $('#courselist').val().length==0)
-			{
-				swal('Error!',(($.minilecindex()==index)?'講座':'コース')+'を選択して下さい。','error');
-				return;
-			}
-			if (vars.attendants.find('.list').find('p:visible').length==0)
-			{
-				swal('Error!','受講予定者を選択して下さい。','error');
-				return;
-			}
-			switch (index)
-			{
-				case 1:
-				case 2:
-				case 3:
-					/* get course */
-					for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
-					{
-						if (vars.apps[vars.lecturekeys[index]][i]['code'].value==$('#courselist').val())
-						{
-							course=vars.apps[vars.lecturekeys[index]][i];
-							break;
-						}
-					}
-					if (course==null)
-					{
-						swal('Error!','コース指定を確認して下さい。','error');
-						return;
-					}
-					/* get date and time */
-					vars.calendar.show({
-						activedates:[],
-						buttons:{
-							ok:function(selection){
-								/* close calendar */
-								vars.calendar.hide();
-								if (selection.length!=course['times'].value)
-								{
-									swal('Error!','受講回数は'+course['times'].value.toString()+'回です。','error');
-									return;
-								}
-								vars.termselect.show({
-									fromhour:parseInt(vars.const['starthour'].value),
-									tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course['hours'].value)),
-									dates:selection,
-									buttons:{
-										ok:function(selection){
-											/* close termselect */
-											vars.termselect.hide();
-											/* create values */
-											$.each(vars.attendants.find('.list').find('p:visible'),function(){
-												/* filtering by grade */
-												if ($.coursegrade(course,$('#grade',$(this)).val())==null) return true;
-												for (var i=0;i<selection.length;i++)
-													entryvalues.push({
-														studentcode:{value:$(this).attr('id')},
-														studentname:{value:$('#name',$(this)).text()},
-														appcode:{value:vars.lecturekeys[index]},
-														appname:{value:vars.lectures[vars.lecturekeys[index]].name},
-														coursecode:{value:course['code'].value},
-														coursename:{value:course['name'].value},
-														date:{value:selection[i].date},
-														starttime:{value:selection[i].starttime},
-														hours:{value:course['hours'].value},
-														baserecordid:{value:null},
-														transfered:{value:0},
-														transfertimes:{value:0},
-														transferpending:{value:0},
-														transferlimit:{value:new Date(selection[i].date).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
-													});
-											});
-											/* entry attendants */
-											$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
-												/* update students */
-												$.each(resp,function(key,values){
-													var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
-														return (item['$id'].value==key);
-													});
-													var updatevalue={
-														app:vars.config['student'],
-														id:key,
-														record:{}
-													};
-													var courses=Object.keys(values);
-													var fieldcode='';
-													if (filter.length==0) return true;
-													switch (index)
-													{
-														case 1:
-															fieldcode='shortterm1';
-															break;
-														case 2:
-															fieldcode='shortterm2';
-															break;
-														case 3:
-															fieldcode='shortterm3';
-															break;
-													}
-													row={};
-													row[fieldcode+'code']=courses[0];
-													row[fieldcode+'id']=values[courses[0]].id.join(',');
-													row[fieldcode+'bill']=values[courses[0]].bill;
-													updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(filter[0][fieldcode+'table'].value,[row])};
-													updatevalues.push(updatevalue);
-												});
-												functions.updatestudents(updatevalues,message);
-											});
-										},
-										cancel:function(){
-											/* close termselect */
-											vars.termselect.hide();
-										}
-									}
-								});
-							},
-							cancel:function(){
-								/* close calendar */
-								vars.calendar.hide();
-							}
-						}
-					});
-					break;
-				case 4:
-				case 5:
-				case 6:
-					/* get course */
-					for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
-					{
-						if (vars.apps[vars.lecturekeys[index]][i]['code'].value==$('#courselist').val())
-						{
-							course=vars.apps[vars.lecturekeys[index]][i];
-							break;
-						}
-					}
-					if (course==null)
-					{
-						swal('Error!','コース指定を確認して下さい。','error');
-						return;
-					}
-					/* create values */
-					$.each(vars.attendants.find('.list').find('p:visible'),function(){
-						/* filtering by grade */
-						grade=$.coursegrade(course,$('#grade',$(this)).val());
-						if (grade==null) return true;
-						dates=grade['dates'].value.split(',');
-						if (dates.length!=grade['times'].value)
-						{
-							swal('Error!','受講回数と受講日の日数が合っていません。','error');
-							error=true;
-							return false;
-						}
-						for (var i=0;i<dates.length;i++)
-							entryvalues.push({
-								studentcode:{value:$(this).attr('id')},
-								studentname:{value:$('#name',$(this)).text()},
-								appcode:{value:vars.lecturekeys[index]},
-								appname:{value:vars.lectures[vars.lecturekeys[index]].name},
-								coursecode:{value:course['code'].value},
-								coursename:{value:course['name'].value},
-								date:{value:dates[i]},
-								starttime:{value:grade['starttime'].value},
-								hours:{value:grade['hours'].value},
-								baserecordid:{value:null},
-								transfered:{value:0},
-								transfertimes:{value:0},
-								transferpending:{value:0},
-								transferlimit:{value:new Date(dates[i]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
-							});
-					});
-					/* entry attendants */
-					if (error) return;
-					$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
-						/* update students */
-						$.each(resp,function(key,values){
-							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
-								return (item['$id'].value==key);
-							});
-							var updatevalue={
-								app:vars.config['student'],
-								id:key,
-								record:{}
-							};
-							var courses=Object.keys(values);
-							var fieldcode='';
-							if (filter.length==0) return true;
-							switch (index)
-							{
-								case 4:
-									fieldcode='season1';
-									break;
-								case 5:
-									fieldcode='season2';
-									break;
-								case 6:
-									fieldcode='season3';
-									break;
-							}
-							updatevalue.record[fieldcode+'code']={value:courses[0]};
-							updatevalue.record[fieldcode+'id']={value:values[courses[0]].id.join(',')};
-							updatevalue.record[fieldcode+'bill']={value:values[courses[0]].bill};
-							updatevalues.push(updatevalue);
-						});
-						functions.updatestudents(updatevalues,message);
-					});
-					break;
-				case 7:
-					/* get course */
-					for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
-					{
-						if (vars.apps[vars.lecturekeys[index]][i]['$id'].value==$('#courselist').val())
-						{
-							course=vars.apps[vars.lecturekeys[index]][i];
-							break;
-						}
-					}
-					if (course==null)
-					{
-						swal('Error!','コース指定を確認して下さい。','error');
-						return;
-					}
-					/* create values */
-					$.each(vars.attendants.find('.list').find('p:visible'),function(){
-						/* filtering by grade */
-						if (parseInt($('#grade',$(this)).val())<parseInt('0'+course['gradefromcode'].value) || parseInt($('#grade',$(this)).val())>parseInt('0'+course['gradetocode'].value)) return true;
-						entryvalues.push({
-							studentcode:{value:$(this).attr('id')},
-							studentname:{value:$('#name',$(this)).text()},
-							appcode:{value:vars.lecturekeys[index]},
-							appname:{value:vars.lectures[vars.lecturekeys[index]].name},
-							coursecode:{value:course['$id'].value},
-							coursename:{value:course['name'].value},
-							date:{value:new Date(course['date'].value.dateformat()).format('Y-m-d')},
-							starttime:{value:course['starttime'].value},
-							hours:{value:course['hours'].value},
-							baserecordid:{value:null},
-							transfered:{value:0},
-							transfertimes:{value:0},
-							transferpending:{value:0},
-							transferlimit:{value:new Date(course['date'].value.dateformat()).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
-						});
-					});
-					/* entry attendants */
-					if (error) return;
-					$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
-						swal({
-							title:'登録完了',
-							text:'スケジュール作成完了'+message,
-							type:'success'
-						});
-					});
-					break;
-				case 8:
-					/* get course */
-					if (vars.apps[vars.lecturekeys[index]].length==0)
-					{
-						swal('Error!','朝練を登録して下さい。','error');
-						return;
-					}
-					else course=vars.apps[vars.lecturekeys[index]][vars.apps[vars.lecturekeys[index]].length-1];
-					var datasource=[];
-					var selected=[];
-					for (var i=0;i<course['coursetable'].value.length;i++)
-					{
-						row=course['coursetable'].value[i];
-						datasource.push({
-							text:row.value['name'].value,
-							value:row.id
-						});
-						selected.push(row.id);
-					}
-					vars.courseselect.show({
-						datasource:datasource,
-						buttons:{
-							ok:function(selection){
-								/* close the courseselect */
-								vars.courseselect.hide();
-								if (selection.length==0) return;
-								/* create values */
-								$.each(vars.attendants.find('.list').find('p:visible'),function(){
-									/* filtering by grade */
-									if (course['gradecode'].value!=$('#grade',$(this)).val()) return true;
-									for (var i=0;i<course['coursetable'].value.length;i++)
-									{
-										row=course['coursetable'].value[i];
-										if (!(row.id in selection)) continue;
-										dates=row.value['dates'].value.split(',');
-										if (dates.length!=row.value['times'].value)
-										{
-											swal('Error!','受講回数と受講日の日数が合っていません。','error');
-											error=true;
-											return false;
-										}
-										for (var i2=0;i2<dates.length;i2++)
-											entryvalues.push({
-												studentcode:{value:$(this).attr('id')},
-												studentname:{value:$('#name',$(this)).text()},
-												appcode:{value:vars.lecturekeys[index]},
-												appname:{value:vars.lectures[vars.lecturekeys[index]].name},
-												coursecode:{value:row.id},
-												coursename:{value:row.value['name'].value},
-												date:{value:dates[i2]},
-												starttime:{value:row.value['starttime'].value},
-												hours:{value:row.value['hours'].value},
-												baserecordid:{value:null},
-												transfered:{value:0},
-												transfertimes:{value:0},
-												transferpending:{value:0},
-												transferlimit:{value:new Date(dates[i2]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
-											});
-									}
-								});
-								/* entry attendants */
-								if (error) return;
-								$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
-									/* update students */
-									$.each(resp,function(key,values){
-										var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
-											return (item['$id'].value==key);
-										});
-										var updatevalue={
-											app:vars.config['student'],
-											id:key,
-											record:{}
-										};
-										var courses=Object.keys(values);
-										var fieldcode='morning';
-										var rows=[];
-										if (filter.length==0) return true;
-										for (var i=0;i<courses.length;i++)
-										{
-											row={};
-											row[fieldcode+'code']=courses[i];
-											row[fieldcode+'id']=values[courses[i]].id.join(',');
-											row[fieldcode+'bill']=values[courses[i]].bill;
-											rows.push(row);
-										}
-										updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(filter[0][fieldcode+'table'].value,rows)};
-										updatevalue.record[fieldcode+'bulkbill']={value:(selection.length==datasource.length)?1:0};
-										updatevalues.push(updatevalue);
-									});
-									functions.updatestudents(updatevalues,message);
-								});
-							},
-							cancel:function(){
-								/* close the courseselect */
-								vars.courseselect.hide();
-							}
-						},
-						selected:selected
-					});
-					break;
-				case 9:
-					/* get course */
-					if (vars.apps[vars.lecturekeys[index]].length==0)
-					{
-						swal('Error!','夜練を登録して下さい。','error');
-						return;
-					}
-					else course=vars.apps[vars.lecturekeys[index]][vars.apps[vars.lecturekeys[index]].length-1];
-					/* create values */
-					$.each(vars.attendants.find('.list').find('p:visible'),function(){
-						/* filtering by grade */
-						if (course['gradecode'].value!=$('#grade',$(this)).val()) return true;
-						dates=course['dates'].value.split(',');
-						if (dates.length!=course['times'].value)
-						{
-							swal('Error!','受講回数と受講日の日数が合っていません。','error');
-							error=true;
-							return false;
-						}
-						for (var i=0;i<dates.length;i++)
-							entryvalues.push({
-								studentcode:{value:$(this).attr('id')},
-								studentname:{value:$('#name',$(this)).text()},
-								appcode:{value:vars.lecturekeys[index]},
-								appname:{value:vars.lectures[vars.lecturekeys[index]].name},
-								coursecode:{value:''},
-								coursename:{value:''},
-								date:{value:dates[i]},
-								starttime:{value:course['starttime'].value},
-								hours:{value:course['hours'].value},
-								baserecordid:{value:null},
-								transfered:{value:0},
-								transfertimes:{value:0},
-								transferpending:{value:0},
-								transferlimit:{value:new Date(dates[i]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
-							});
-					});
-					/* entry attendants */
-					if (error) return;
-					$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
-						/* update students */
-						$.each(resp,function(key,values){
-							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
-								return (item['$id'].value==key);
-							});
-							var updatevalue={
-								app:vars.config['student'],
-								id:key,
-								record:{}
-							};
-							var courses=Object.keys(values);
-							var fieldcode='night';
-							if (filter.length==0) return true;
-							updatevalue.record[fieldcode+'id']={value:values[courses[0]].id.join(',')};
-							updatevalues.push(updatevalue);
-						});
-						functions.updatestudents(updatevalues,message);
-					});
-					break;
-				case 10:
-					/* get course */
-					if (vars.apps[vars.lecturekeys[index]].length==0)
-					{
-						swal('Error!','学校独自検査対策講座を登録して下さい。','error');
-						return;
-					}
-					else course=vars.apps[vars.lecturekeys[index]][vars.apps[vars.lecturekeys[index]].length-1];
-					/* create values */
-					$.each(vars.attendants.find('.list').find('p:visible'),function(){
-						/* filtering by grade */
-						if (course['gradecode'].value!=$('#grade',$(this)).val()) return true;
-						for (var i=0;i<course['subjecttable'].value.length;i++)
-						{
-							row=course['subjecttable'].value[i];
-							dates=row.value['dates'].value.split(',');
-							if (dates.length!=row.value['times'].value)
-							{
-								swal('Error!','受講回数と受講日の日数が合っていません。','error');
-								error=true;
-								return false;
-							}
-							for (var i2=0;i2<dates.length;i2++)
-								entryvalues.push({
-									studentcode:{value:$(this).attr('id')},
-									studentname:{value:$('#name',$(this)).text()},
-									appcode:{value:vars.lecturekeys[index]},
-									appname:{value:vars.lectures[vars.lecturekeys[index]].name},
-									coursecode:{value:row.value['subjectcode'].value},
-									coursename:{value:row.value['subjectname'].value},
-									date:{value:dates[i2]},
-									starttime:{value:row.value['starttime'].value},
-									hours:{value:row.value['hours'].value},
-									baserecordid:{value:null},
-									transfered:{value:0},
-									transfertimes:{value:0},
-									transferpending:{value:0},
-									transferlimit:{value:new Date(dates[i2]).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
-								});
-						}
-					});
-					/* entry attendants */
-					if (error) return;
-					$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
-						/* update students */
-						$.each(resp,function(key,values){
-							var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
-								return (item['$id'].value==key);
-							});
-							var updatevalue={
-								app:vars.config['student'],
-								id:key,
-								record:{}
-							};
-							var courses=Object.keys(values);
-							var fieldcode='individual';
-							var id=[];
-							if (filter.length==0) return true;
-							for (var i=0;i<courses.length;i++) Array.prototype.push.apply(id,values[courses[i]].id);
-							updatevalue.record[fieldcode+'id']={value:id.join(',')};
-							updatevalues.push(updatevalue);
-						});
-						functions.updatestudents(updatevalues,message);
-					});
-					break;
-				case 11:
-				case 12:
-					var fieldcode='';
-					switch (index)
-					{
-						case 11:
-							fieldcode='plus';
-							break;
-						case 12:
-							fieldcode='interview';
-							break;
-					}
-					index=10;
-					/* get course */
-					if (vars.apps[vars.lecturekeys[index]].length==0)
-					{
-						swal('Error!','学校独自検査対策講座を登録して下さい。','error');
-						return;
-					}
-					else course=vars.apps[vars.lecturekeys[index]][vars.apps[vars.lecturekeys[index]].length-1];
-					/* get date and time */
-					vars.calendar.show({
-						activedates:[],
-						buttons:{
-							ok:function(selection){
-								/* close calendar */
-								vars.calendar.hide();
-								if (selection.length!=course[fieldcode+'times'].value)
-								{
-									swal('Error!','受講回数は'+course[fieldcode+'times'].value.toString()+'回です。','error');
-									return;
-								}
-								vars.termselect.show({
-									fromhour:parseInt(vars.const['starthour'].value),
-									tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course[fieldcode+'hours'].value)),
-									dates:selection,
-									buttons:{
-										ok:function(selection){
-											/* close termselect */
-											vars.termselect.hide();
-											/* create values */
-											$.each(vars.attendants.find('.list').find('p:visible'),function(){
-												/* filtering by grade */
-												if (course['gradecode'].value!=$('#grade',$(this)).val()) return true;
-												for (var i=0;i<selection.length;i++)
-													entryvalues.push({
-														studentcode:{value:$(this).attr('id')},
-														studentname:{value:$('#name',$(this)).text()},
-														appcode:{value:vars.lecturekeys[index]},
-														appname:{value:vars.lectures[vars.lecturekeys[index]].name},
-														coursecode:{value:'-1'},
-														coursename:{value:$('#lecturelist').find('option:selected').html().replace(/(&nbsp;|学校独自検査対策講座)/g,'')},
-														date:{value:selection[i].date},
-														starttime:{value:selection[i].starttime},
-														hours:{value:course[fieldcode+'hours'].value},
-														baserecordid:{value:null},
-														transfered:{value:0},
-														transfertimes:{value:0},
-														transferpending:{value:0},
-														transferlimit:{value:new Date(selection[i].date).calc(vars.const['transferlimit'].value+' month').format('Y-m-d')}
-													});
-											});
-											/* entry attendants */
-											$.entryattendants(entryvalues,vars.progress,vars.apps[kintone.app.getId()],function(resp,message){
-												/* update students */
-												$.each(resp,function(key,values){
-													var filter=$.grep(vars.apps[vars.config['student']],function(item,index){
-														return (item['$id'].value==key);
-													});
-													var updatevalue={
-														app:vars.config['student'],
-														id:key,
-														record:{}
-													};
-													var courses=Object.keys(values);
-													if (filter.length==0) return true;
-													updatevalue.record['individual'+fieldcode+'id']={value:values[courses[0]].id.join(',')};
-													updatevalues.push(updatevalue);
-												});
-												functions.updatestudents(updatevalues,message);
-											});
-										},
-										cancel:function(){
-											/* close termselect */
-											vars.termselect.hide();
-										}
-									}
-								});
-							},
-							cancel:function(){
-								/* close calendar */
-								vars.calendar.hide();
-							}
-						}
-					});
-					break;
-			}
-		},
-		/* search students */
-		searchstudents:function(){
-			for (var i=0;i<vars.apps[vars.config['student']].length;i++)
-			{
-				var student=vars.apps[vars.config['student']][i];
-				var exists=0;
-				if ($('#gradelist').val().length==0) exists++;
-				else
-				{
-					if (student['gradecode'].value==$('#gradelist').val()) exists++;
-				}
-				if ($('#keywords').val().length==0) exists++;
-				else
-				{
-					if (student['name'].value.match(new RegExp($('#keywords').val(),'g'))) exists++;
-					if (student['phonetic'].value.match(new RegExp($('#keywords').val(),'g'))) exists++;
-					if (student['parentname'].value.match(new RegExp($('#keywords').val(),'g'))) exists++;
-				}
-				if (exists>1) $('#'+student['$id'].value.toString(),vars.students.find('.list')).show();
-				else $('#'+student['$id'].value.toString(),vars.students.find('.list')).hide();
-			}
-		},
 		/* update students */
-		updatestudents:function(values,message){
+		updatestudents:function(values,callback){
 			var error=false;
 			var counter=0;
 			vars.progress.find('.message').text('生徒情報更新中');
@@ -712,9 +483,11 @@ jQuery.noConflict();
 					{
 						vars.progress.hide();
 						swal({
-							title:'登録完了',
-							text:'スケジュール作成完了'+message,
+							title:'作成完了',
+							text:'請求書作成しました。',
 							type:'success'
+						},function(){
+							if (callback!=null) callback();
 						});
 					}
 				},function(error){
@@ -726,37 +499,31 @@ jQuery.noConflict();
 		}
 	};
 	/*---------------------------------------------------------------
+	 mouse events
+	---------------------------------------------------------------*/
+	$(window).on('mousemove',function(e){
+		/* move balloon */
+		$('div.invoice-balloon').css({
+		  'left':e.clientX,
+		  'top':e.clientY
+		});
+	});
+	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
 		/* check viewid */
-		if (event.viewId!=vars.config.scheduling) return;
+		if (event.viewId!=vars.config.createinvoice) return;
 		/* initialize valiable */
 		var container=$('div#invoice-container');
-		var parts={
-			button:$('<button class="kintoneplugin-button-dialog-ok invoice">'),
-			input:$('<div class="kintoneplugin-input-outer invoice">'),
-			item:$('<p class="invoice-scheduling-item">'),
-			select:$('<div class="kintoneplugin-select-outer invoice">')
-		};
+		var feed=$('<div class="invoice-headermenucontents">');
+		var month=$('<span id="month" class="customview-span">');
+		var prev=$('<button id="prev" class="customview-button prev-button">');
+		var next=$('<button id="next" class="customview-button next-button">');
 		var splash=$('<div id="splash">');
-		vars.attendants=$('<div class="invoice-scheduling-container">');
 		vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
-		vars.students=$('<div class="invoice-scheduling-container">');
-		parts.input.append($('<input type="text" class="kintoneplugin-input-text">'));
-		parts.input.append($('<button>'));
-		parts.item.append($('<span id="name">'));
-		parts.item.append($('<input type="hidden" id="grade">'));
-		parts.item.append(
-			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">')
-			.on('click',function(){$(this).closest('p').hide()})
-		);
-		parts.select.append(
-			$('<div class="kintoneplugin-select">')
-			.append($('<select>'))
-		);
 		splash.append(
 			$('<p>')
 			.append($('<span>').text('now loading'))
@@ -767,30 +534,116 @@ jQuery.noConflict();
 			.append($('<span class="dot progress5">').text('.'))
 		);
 		/* append elements */
-		container.empty();
-		container.append(vars.students);
-		container.append(vars.attendants);
+		feed.append(prev);
+		feed.append(month);
+		feed.append(next);
+		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok searchstudentbutton">')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(
+			$('<div class="invoice-headermenucontents">').css({'display':'none'})
+			.append($('<span class="customview-span searchstudentname">').css({'padding':'0px 5px 0px 15px'}))
+			.append($('<button class="customview-button close-button clearstudentbutton">').css({'margin-right':'15px'}))
+			.append($('<input type="hidden" class="searchstudent">'))
+			[0]
+		);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok createinvoicebutton">')[0]);
 		$('body').append(vars.progress);
 		$('body').append(splash);
+		$('.searchstudentbutton')
+		.text('生徒選択')
+		.on('click',function(e){
+			vars.studentselect.show({
+				buttons:{
+					cancel:function(){
+						/* close the reference box */
+						vars.studentselect.hide();
+					}
+				},
+				callback:function(row){
+					/* close the reference box */
+					vars.studentselect.hide();
+					$('.searchstudent').val(row.find('#\\$id').val());
+					$('.searchstudentname').text(row.find('#name').val());
+					$('.searchstudentname').closest('div').show();
+					/* reload view */
+					functions.load();
+				}
+			});
+		});
+		$('.clearstudentbutton')
+		.on('click',function(e){
+			$('.searchstudent').val('');
+			$('.searchstudentname').text('');
+			$('.searchstudentname').closest('div').hide();
+			/* reload view */
+			functions.load();
+		});
+		$('.createinvoicebutton')
+		.text('請求書作成')
+		.on('click',function(e){functions.createinvoice();});
+		/* fixed header */
+		var headeractions=$('div.contents-actionmenu-gaia');
+		var headerspace=$(kintone.app.getHeaderSpaceElement());
+		headeractions.parent().css({'position':'relative'});
+		headerspace.parent().css({'position':'relative'});
+		$(window).on('load resize scroll',function(e){
+			headeractions.css({
+				'left':$(window).scrollLeft().toString()+'px',
+				'position':'absolute',
+				'top':'0px',
+				'width':$(window).width().toString()+'px'
+			});
+			headerspace.css({
+				'left':$(window).scrollLeft().toString()+'px',
+				'position':'absolute',
+				'top':headeractions.outerHeight(false)+'px',
+				'width':$(window).width().toString()+'px'
+			});
+			container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
+		});
+		/* setup date value */
+		vars.fromdate=vars.fromdate.calc('first-of-month');
+		vars.todate=vars.fromdate.calc('1 month').calc('-1 day');
+		month.text(vars.fromdate.format('Y-m'));
+		/* day feed button */
+		$.each([prev,next],function(){
+			$(this).on('click',function(){
+				var months=($(this).attr('id')=='next')?1:-1;
+				vars.fromdate=vars.fromdate.calc(months+' month');
+				vars.todate=vars.fromdate.calc('1 month').calc('-1 day');
+				month.text(vars.fromdate.format('Y-m'));
+				/* calculate reate of tax */
+				vars.taxrate=functions.calculatetaxrate();
+				/* reload view */
+				functions.load();
+			});
+		});
 		/* setup lectures value */
 		vars.lectures=JSON.parse(vars.config['lecture']);
-		vars.lecturekeys=Object.keys(vars.lectures);
 		/* check app fields */
 		var counter=0;
 		var param=[];
-		$.each(vars.lectures,function(key,values){
+		for (var i=0;i<vars.lectures.length;i++)
 			param.push({
-				app:key,
-				appname:values.name,
+				app:vars.lectures[i].code,
+				appname:vars.lectures[i].name,
 				limit:limit,
 				offset:0,
 				records:[],
 				isstudent:false
 			});
-		});
 		param.push({
 			app:vars.config['grade'],
 			appname:'学年',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
+		param.push({
+			app:vars.config['parent'],
+			appname:'保護者',
 			limit:limit,
 			offset:0,
 			records:[],
@@ -812,144 +665,99 @@ jQuery.noConflict();
 			records:[],
 			isstudent:false
 		});
+		param.push({
+			app:vars.config['tax'],
+			appname:'消費税',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
 		$.loadapps(counter,param,splash,function(){
 			splash.addClass('hide');
 			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
 			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
 			else vars.const=vars.apps[vars.config['const']][0];
-			/* day pickup */
-			vars.calendar=$('body').calendar({
-				multi:true,
-				span:2
-			});
-			/* create termselect */
-			vars.termselect=$('body').termselect({
-				issingle:true,
-				buttons:{
-					ok:{
-						text:'OK'
-					},
-					cancel:{
-						text:'Cancel'
+			/* calculate reate of tax */
+			vars.taxrate=functions.calculatetaxrate();
+			/* create studentselect box */
+			vars.studentselect=$('body').referer({
+				datasource:$.grep(vars.apps[vars.config['student']],function(item,index){
+					return (item['status'].value=='通塾中');
+				}),
+				displaytext:['gradename','name'],
+				buttons:[
+					{
+						id:'cancel',
+						text:'キャンセル'
 					}
-				}
-			});
-			/* create courseselect */
-			vars.courseselect=$('body').multiselect({
-				buttons:{
-					ok:{
-						text:'OK'
-					},
-					cancel:{
-						text:'Cancel'
+				],
+				searches:[
+					{
+						id:'gradecode',
+						class:'referer-select',
+						label:'学年',
+						type:'select',
+						param:{app:vars.config['grade']},
+						value:'code',
+						text:'name',
+						callback:function(row){
+							vars.studentselect.search();
+						}
 					}
-				}
+				]
 			});
+			vars.studentselect.searchblock.find('select').closest('label').css({'width':'100%'});
+			vars.studentselect.searchblock.find('button').hide();
+			container.empty();
 			/* get fields of app */
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 				vars.fields=['$id'];
 				$.each(resp.properties,function(key,values){
 					vars.fields.push(values.code);
 				});
-				if (!$.checkreservefield(resp.properties)) return;
-				/* reload datas */
-				vars.apps[kintone.app.getId()]=null;
-				vars.offset[kintone.app.getId()]=0;
-				functions.loaddatas(kintone.app.getId(),function(){
-					/* setup grades */
-					var gradecontainer=parts.select.clone(true);
-					var gradelist=gradecontainer.find('select').attr('id','gradelist');
-					gradelist.empty().append($('<option>').attr('value','').html('&nbsp;学年選択&nbsp;'));
-					for (var i=0;i<vars.apps[vars.config['grade']].length;i++)
-					{
-						var grade=vars.apps[vars.config['grade']][i];
-						gradelist.append($('<option>').attr('value',grade['code'].value).html('&nbsp;'+grade['name'].value+'&nbsp;'));
-					}
-					gradelist.on('change',function(){functions.searchstudents();});
-					vars.students.append(gradecontainer);
-					/* setup keywords */
-					var keywordcontainer=parts.input.clone(true);
-					keywordcontainer.find('input').attr('id','keywords').attr('placeholder','氏名・カナ・保護者名で検索');
-					keywordcontainer.find('button').on('click',function(){functions.searchstudents();});
-					vars.students.append(keywordcontainer);
-					vars.students.append(
-						parts.button.clone(true)
-						.text('受講予定者一覧にコピー')
-						.on('click',function(){
-							$.each(vars.students.find('.list').find('p:visible'),function(){
-								$('#'+$(this).attr('id'),vars.attendants.find('.list')).show();
-							});
-						})
-					);
-					/* setup lectures */
-					var lecturecontainer=parts.select.clone(true);
-					var lecturelist=lecturecontainer.find('select').attr('id','lecturelist');
-					var coursecontainer=parts.select.clone(true);
-					var courselist=coursecontainer.find('select').attr('id','courselist');
-					lecturelist.empty().append($('<option>').attr('value','').html('&nbsp;講座選択&nbsp;'));
-					for (var i=1;i<vars.lecturekeys.length;i++) lecturelist.append($('<option>').attr('value',i.toString()).html('&nbsp;'+vars.lectures[vars.lecturekeys[i]].name+'&nbsp;'));
-					lecturelist.append($('<option>').attr('value',(vars.lecturekeys.length).toString()).html('&nbsp;学校独自検査対策講座追加授業&nbsp;'));
-					lecturelist.append($('<option>').attr('value',(vars.lecturekeys.length+1).toString()).html('&nbsp;学校独自検査対策講座面接&nbsp;'));
-					lecturelist.on('change',function(){
-						/* setup courses */
-						if ($(this).val().length==0)
-						{
-							courselist.empty().append($('<option>').attr('value','').text(''));
-							coursecontainer.hide();
-						}
-						else
-						{
-							var index=parseInt($(this).val());
-							if (index<vars.lecturekeys.length-3)
-							{
-								if ($.minilecindex()==index)
-								{
-									courselist.empty().append($('<option>').attr('value','').html('&nbsp;講座選択&nbsp;'));
-									for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
-									{
-										var course=vars.apps[vars.lecturekeys[index]][i];
-										if (course['lecturetype'].value=='有料') continue;
-										courselist.append($('<option>').attr('value',course['$id'].value).html('&nbsp;'+course['name'].value+'&nbsp;'));
-									}
-								}
-								else
-								{
-									courselist.empty().append($('<option>').attr('value','').html('&nbsp;コース選択&nbsp;'));
-									for (var i=0;i<vars.apps[vars.lecturekeys[index]].length;i++)
-									{
-										var course=vars.apps[vars.lecturekeys[index]][i];
-										courselist.append($('<option>').attr('value',course['code'].value).html('&nbsp;'+course['name'].value+'&nbsp;'));
-									}
-								}
-								coursecontainer.show();
-								return;
-							}
-							courselist.empty().append($('<option>').attr('value','').text(''));
-							coursecontainer.hide();
-						}
-					});
-					vars.attendants.append(lecturecontainer);
-					vars.attendants.append(coursecontainer.hide());
-					vars.attendants.append(
-						parts.button.clone(true)
-						.text('スケジュール作成')
-						.on('click',function(){functions.createschedule();})
-					);
-					/* setup students */
-					vars.attendants.append($('<p class="invoice-scheduling-title">').text('受講予定者一覧'));
-					vars.attendants.append($('<div class="invoice-scheduling-list list">'));
-					vars.students.append($('<p class="invoice-scheduling-title">').text('検索結果一覧'));
-					vars.students.append($('<div class="invoice-scheduling-list list">'));
-					for (var i=0;i<vars.apps[vars.config['student']].length;i++)
-					{
-						var student=vars.apps[vars.config['student']][i];
-						var item=parts.item.clone(true).attr('id',student['$id'].value.toString());
-						$('#name',item).text(student['name'].value);
-						$('#grade',item).val(student['gradecode'].value);
-						vars.attendants.find('.list').append(item.clone(true).hide());
-						vars.students.find('.list').append(item.clone(true));
-					}
+				if (!$.checkinvoicefield(resp.properties)) return;
+				/* create table */
+				var head=$('<tr>');
+				var template=$('<tr>');
+				var columns=[
+					'billdate',
+					'customername',
+					'subbill',
+					'tax',
+					'bill',
+					'collect',
+					'remaining'
+				];
+				for (var i=0;i<columns.length;i++)
+				{
+					head.append($('<th>').text(resp.properties[columns[i]].label));
+					template.append($('<td class="'+resp.properties[columns[i]].code+'">'));
+				}
+				head.append($('<th>'));
+				template.append(
+					$('<td>')
+					.append(
+						$('<span>')
+						.append(
+							$('<button class="customview-button edit-button">').on('click',function(){
+								var cell=$(this).closest('td');
+								var index=cell.find('#\\$id').val();
+								if (index.length!=0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
+							})
+						)
+						.append($('<input type="hidden" value="">'))
+					)
+				);
+				vars.table=$('<table id="invoice" class="customview-table invoice-create">').mergetable({
+					container:container,
+					head:head,
+					template:template,
+					merge:false,
+					mergeclass:'invoice-merge'
 				});
+				/* reload view */
+				functions.load();
 			},
 			function(error){
 				splash.addClass('hide');

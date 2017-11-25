@@ -40,19 +40,16 @@ jQuery.noConflict();
 			switch (values.type)
 			{
 				case 'CALC':
-				case 'CREATOR':
 				case 'DATE':
 				case 'DATETIME':
 				case 'DROP_DOWN':
 				case 'GROUP_SELECT':
 				case 'LINK':
-				case 'MODIFIER':
 				case 'NUMBER':
 				case 'ORGANIZATION_SELECT':
 				case 'RADIO_BUTTON':
 				case 'RECORD_NUMBER':
 				case 'SINGLE_LINE_TEXT':
-				case 'STATUS_ASSIGNEE':
 				case 'TIME':
 				case 'USER_SELECT':
 					$('select#display').append($('<option>').attr('value',values.code).text(values.label));
@@ -64,6 +61,10 @@ jQuery.noConflict();
 							$('select#todate').append($('<option>').attr('value',values.code).text(values.label));
 							break;
 					}
+					break;
+				case 'CREATOR':
+				case 'MODIFIER':
+					$('select#display').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 			}
 		});

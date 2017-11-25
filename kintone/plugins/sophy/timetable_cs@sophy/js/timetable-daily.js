@@ -419,7 +419,7 @@ jQuery.noConflict();
 		if ('date' in queries) vars.date=new Date(queries['date'].dateformat());
 		/* initialize valiable */
 		var container=$('div#timetable-container').css({'padding-bottom':'100px'});
-		var feed=$('<div class="timetable-dayfeed">');
+		var feed=$('<div class="timetable-headermenucontents">');
 		var date=$('<span id="date" class="customview-span">');
 		var button=$('<button id="datepick" class="customview-button calendar-button">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');

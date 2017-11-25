@@ -132,6 +132,40 @@ div#splash p span.dot.progress5{
 		transform:translateY(0);
 	}
 }
+div.invoice-headermenucontents{
+  display:inline-block;
+  line-height:30px;
+  padding-top:9px;
+}
+div.invoice-headermenucontents *{
+  vertical-align:top;
+}
+/* individual style (create) */
+table.invoice-create{
+  background-color:#FFFFFF;
+  table-layout:fixed;
+  width:100%;
+}
+table.invoice-create tbody tr td{
+  cursor:pointer;
+  line-height:30px;
+  padding:0px 5px;
+  position:relative;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+table.invoice-create tbody tr td:last-of-type span{
+  display:block;
+  height:30px;
+  margin:0px;
+  padding:0px;
+  position:relative;
+  width:30px;
+}
+table.invoice-create tbody tr td:last-of-type span img{
+  height:30px;
+  width:30px;
+}
 select.referer-select{
 	box-sizing:border-box;
 	border:none;

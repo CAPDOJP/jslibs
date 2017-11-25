@@ -80,9 +80,9 @@ jQuery.extend({
 			var student=studentrecords[i];
 			var course=$.grep(lecturerecords,function(item,index){return (item['code'].value==student['coursecode'].value);})[0];
 			var coursegrade=$.coursegrade(course,student['gradecode'].value);
-			/* check leave of absence */
-			if (day<new Date(student['admissiondate'].value.dateformat())) continue;
 			/* check admissiondate */
+			if (day<new Date(student['admissiondate'].value.dateformat())) continue;
+			/* check leave of absence */
 			if (day>new Date(student['loafrom'].value.dateformat()).calc('-1 day') && day<new Date(student['loato'].value.dateformat()).calc('1 day')) continue;
 			/* check week schedule */
 			for (var i2=0;i2<student['coursetable'].value.length;i2++)
@@ -604,12 +604,15 @@ jQuery.extend({
 				if (!('coursestarttime' in fieldinfos)) error='通常講座来塾時間';
 				if (!('shortterm1code' in fieldinfos)) error='短期講座コースコード';
 				if (!('shortterm1id' in fieldinfos)) error='短期講座ID';
+				if (!('shortterm1over' in fieldinfos)) error='短期講座追加時間';
 				if (!('shortterm1bill' in fieldinfos)) error='短期講座請求済';
 				if (!('shortterm2code' in fieldinfos)) error='テスト対策講座コースコード';
 				if (!('shortterm2id' in fieldinfos)) error='テスト対策講座ID';
+				if (!('shortterm2over' in fieldinfos)) error='テスト対策講座追加時間';
 				if (!('shortterm2bill' in fieldinfos)) error='テスト対策講座請求済';
 				if (!('shortterm3code' in fieldinfos)) error='英検対策講座コースコード';
 				if (!('shortterm3id' in fieldinfos)) error='英検対策講座ID';
+				if (!('shortterm3over' in fieldinfos)) error='英検対策講座追加時間';
 				if (!('shortterm3bill' in fieldinfos)) error='英検対策講座請求済';
 				if (!('season1code' in fieldinfos)) error='春季特別講座コースコード';
 				if (!('season1id' in fieldinfos)) error='春季特別講座ID';
@@ -644,6 +647,9 @@ jQuery.extend({
 				if (!('starthour' in fieldinfos)) error='始業時間';
 				if (!('endhour' in fieldinfos)) error='終業時間';
 				if (!('transferlimit' in fieldinfos)) error='振替期限';
+				if (!('entrancefee' in fieldinfos)) error='入塾費';
+				if (!('discountfee' in fieldinfos)) error='兄弟割引';
+				if (!('textbookfee' in fieldinfos)) error='通常講座教材費';
 				if (!('textbookbillmonths' in fieldinfos)) error='通常講座教材費請求月';
 				if (!('taxshift' in fieldinfos)) error='税転嫁';
 				if (!('taxround' in fieldinfos)) error='税端数';

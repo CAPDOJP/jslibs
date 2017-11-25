@@ -21,6 +21,7 @@ jQuery.noConflict();
 		courseselect:null,
 		students:null,
 		termselect:null,
+		termselectsingle:null,
 		apps:{},
 		lectures:{},
 		config:{},
@@ -146,6 +147,22 @@ jQuery.noConflict();
 										ok:function(selection){
 											/* close termselect */
 											vars.termselect.hide();
+											var endhour=new Date((new Date().format('Y-m-d')+'T'+('0'+vars.const['endhour'].value).slice(-2)+':00:00+09:00').dateformat());
+											var overhours=0;
+											for (var i=0;i<selection.length;i++)
+											{
+												if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
+												{
+													swal('Error!','受講終了時間が終業時刻を超えています。','error');
+													return;
+												}
+												if (parseFloat(selection[i].hours)<parseFloat(course['hours'].value))
+												{
+													swal('Error!','受講時間がコース指定時間を下回っています。','error');
+													return;
+												}
+												else overhours+=parseFloat(selection[i].hours)-parseFloat(course['hours'].value);
+											}
 											/* create values */
 											$.each(vars.attendants.find('.list').find('p:visible'),function(){
 												/* filtering by grade */
@@ -160,7 +177,7 @@ jQuery.noConflict();
 														coursename:{value:course['name'].value},
 														date:{value:selection[i].date},
 														starttime:{value:selection[i].starttime},
-														hours:{value:course['hours'].value},
+														hours:{value:selection[i].hours},
 														baserecordid:{value:null},
 														transfered:{value:0},
 														transfertimes:{value:0},
@@ -198,6 +215,7 @@ jQuery.noConflict();
 													row={};
 													row[fieldcode+'code']=courses[0];
 													row[fieldcode+'id']=values[courses[0]].id.join(',');
+													row[fieldcode+'over']=overhours;
 													row[fieldcode+'bill']=values[courses[0]].bill;
 													updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(filter[0][fieldcode+'table'].value,[row])};
 													updatevalues.push(updatevalue);
@@ -604,14 +622,14 @@ jQuery.noConflict();
 									swal('Error!','受講回数は'+course[fieldcode+'times'].value.toString()+'回です。','error');
 									return;
 								}
-								vars.termselect.show({
+								vars.termselectsingle.show({
 									fromhour:parseInt(vars.const['starthour'].value),
 									tohour:parseInt(vars.const['endhour'].value)-Math.ceil(parseFloat(course[fieldcode+'hours'].value)),
 									dates:selection,
 									buttons:{
 										ok:function(selection){
-											/* close termselect */
-											vars.termselect.hide();
+											/* close termselectsingle */
+											vars.termselectsingle.hide();
 											/* create values */
 											$.each(vars.attendants.find('.list').find('p:visible'),function(){
 												/* filtering by grade */
@@ -655,8 +673,8 @@ jQuery.noConflict();
 											});
 										},
 										cancel:function(){
-											/* close termselect */
-											vars.termselect.hide();
+											/* close termselectsingle */
+											vars.termselectsingle.hide();
 										}
 									}
 								});
@@ -824,6 +842,16 @@ jQuery.noConflict();
 			});
 			/* create termselect */
 			vars.termselect=$('body').termselect({
+				buttons:{
+					ok:{
+						text:'OK'
+					},
+					cancel:{
+						text:'Cancel'
+					}
+				}
+			});
+			vars.termselectsingle=$('body').termselect({
 				issingle:true,
 				buttons:{
 					ok:{

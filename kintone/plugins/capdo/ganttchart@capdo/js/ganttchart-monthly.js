@@ -43,17 +43,17 @@ jQuery.noConflict();
 	var limit=500;
 	var functions={
 		/* rebuild view */
-		build:function(filter,heads,colorindex){
+		build:function(filter,headlabels,headvalues,colorindex){
 			var color=vars.colors[colorindex%vars.colors.length];
 			/* insert row */
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
 				var inner='';
-				for (var i=0;i<heads.length;i++)
+				for (var i=0;i<headlabels.length;i++)
 				{
 					inner='';
-					inner+='<p class="customview-p">'+heads[i]+'</p>';
-					inner+='<input type="hidden" id="segment" value="'+heads[i]+'" />';
+					inner+='<p class="customview-p">'+headlabels[i]+'</p>';
+					inner+='<input type="hidden" id="segment" value="'+headvalues[i]+'" />';
 					baserow.find('td').eq(i).html(inner);
 				}
 				if (filter.length!=0)
@@ -123,13 +123,18 @@ jQuery.noConflict();
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
-				var heads=[];
+				var heads={};
 				/* create rowheads */
 				$.each(records,function(index){
-					var head='';
-					for (var i=0;i<vars.segments.length;i++) head+=$.fieldvalue(records[index][vars.segments[i]])+',';
-					head=head.replace(/,$/g,'');
-					if (heads.indexOf(head)<0) heads.push(head);
+					var key='';
+					var value=[];
+					for (var i=0;i<vars.segments.length;i++)
+					{
+						key+=$.fieldvalue(records[index][vars.segments[i]])+',';
+						value.push(functions.fieldvalue(records[index][vars.segments[i]]));
+					}
+					key=key.replace(/,$/g,'');
+					if (!(key in heads)) heads[key]=value;
 				});
 				/* create table */
 				var container=$('div#ganttchart-container').empty();
@@ -224,26 +229,27 @@ jQuery.noConflict();
 						}
 					}
 				});
-				if (heads.length!=0)
+				if (Object.keys(heads).length!=0)
 				{
 					/* place the segment data */
-					for (var i=0;i<heads.length;i++)
-					{
-						var head=heads[i].split(',');
+					var colorindex=0;
+					$.each(heads,function(key,values){
+						var keys=key.split(',');
 						var filter=$.grep(records,function(item,index){
 							var exists=0;
-							for (var i2=0;i2<vars.segments.length;i2++) if ($.fieldvalue(item[vars.segments[i2]])==head[i2]) exists++;
+							for (var i2=0;i2<vars.segments.length;i2++) if ($.fieldvalue(item[vars.segments[i2]])==keys[i2]) exists++;
 							return exists==vars.segments.length;
 						});
 						/* rebuild view */
-						functions.build(filter,head,i);
-					}
+						functions.build(filter,keys,values,colorindex);
+						colorindex++;
+					});
 				}
 				else
 				{
 					var filter=$.grep(records,function(item,index){return true;});
 					/* rebuild view */
-					functions.build(filter,0);
+					functions.build(filter,'',[],0);
 				}
 				/* merge row */
 				var rowspans=[];
@@ -334,6 +340,32 @@ jQuery.noConflict();
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
 			},function(error){});
+		},
+		/* exchange recoed values */
+		fieldvalue:function(field){
+			var value=null;
+			switch (field.type.toUpperCase())
+			{
+				case 'GROUP_SELECT':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					if (field.value.length!=0)
+					{
+						value='[';
+						$.each(field.value,function(index){
+							value+='{&quot;code&quot;:&quot;'+field.value[index].code+'&quot;},';
+						});
+						value=value.replace(/,$/g,'');
+						value+=']';
+					}
+					else value='';
+					break;
+				default:
+					if (field.value.length!=0) value=field.value;
+					else value='';
+					break;
+			}
+			return value;
 		}
 	};
 	/*---------------------------------------------------------------
@@ -476,8 +508,31 @@ jQuery.noConflict();
 		for (var i=0;i<vars.segments.length;i++)
 			if (vars.segments[i] in queries)
 			{
-				event.record[vars.segments[i]].value=queries[vars.segments[i]];
-				event.record[vars.segments[i]].lookup=true;
+				/* check field type */
+				switch (event.record[vars.segments[i]].type)
+				{
+					case 'CALC':
+					case 'RECORD_NUMBER':
+					case 'STATUS_ASSIGNEE':
+						break;
+					case 'DATE':
+					case 'DATETIME':
+					case 'DROP_DOWN':
+					case 'LINK':
+					case 'NUMBER':
+					case 'RADIO_BUTTON':
+					case 'SINGLE_LINE_TEXT':
+					case 'TIME':
+						event.record[vars.segments[i]].value=queries[vars.segments[i]];
+						event.record[vars.segments[i]].lookup=true;
+						break;
+					case 'GROUP_SELECT':
+					case 'ORGANIZATION_SELECT':
+					case 'USER_SELECT':
+						event.record[vars.segments[i]].value=JSON.parse(queries[vars.segments[i]]);
+						event.record[vars.segments[i]].lookup=true;
+						break;
+				}
 			}
 		return event;
 	});

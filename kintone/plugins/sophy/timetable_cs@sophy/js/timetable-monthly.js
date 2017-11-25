@@ -380,7 +380,7 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.monthtimetable) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container').css({'padding-bottom':'100px'});
-		var feed=$('<div class="timetable-dayfeed">');
+		var feed=$('<div class="timetable-headermenucontents">');
 		var month=$('<span id="month" class="customview-span">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');

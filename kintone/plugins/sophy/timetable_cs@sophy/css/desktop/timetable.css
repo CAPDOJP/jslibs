@@ -146,12 +146,12 @@ div.timetable-balloon{
 div.timetable-balloon-show{
   display:block;
 }
-div.timetable-dayfeed{
+div.timetable-headermenucontents{
   display:inline-block;
   line-height:30px;
   padding-top:9px;
 }
-div.timetable-dayfeed *{
+div.timetable-headermenucontents *{
   vertical-align:top;
 }
 div.timetable-graphlegend{

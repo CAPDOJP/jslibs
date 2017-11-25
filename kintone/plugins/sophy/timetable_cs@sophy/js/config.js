@@ -176,7 +176,7 @@ jQuery.noConflict();
 				swal('Error!','講座色を選択して下さい。','error');
 				error=true;
 			}
-			lectures[$('select#lecturekey',row).val().toString()]={color:$('input#color',row).val(),name:row.find('span.lecturename').text()};
+			lectures[$('select#lecturekey',row).val().toString()]={color:$('input#color',row).val(),name:$('span.lecturename',row).text()};
 		}
 	    if (error) return;
 		if ($('select#scale').val()=='')
