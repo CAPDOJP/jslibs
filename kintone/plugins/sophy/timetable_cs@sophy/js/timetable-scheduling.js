@@ -137,6 +137,8 @@ jQuery.noConflict();
 								if (selection.length!=course['times'].value)
 								{
 									swal('Error!','受講回数は'+course['times'].value.toString()+'回です。','error');
+									/* redisplay calendar */
+									vars.calendar.unhide();
 									return;
 								}
 								vars.termselect.show({
@@ -154,11 +156,15 @@ jQuery.noConflict();
 												if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
 												{
 													swal('Error!','受講終了時間が終業時刻を超えています。','error');
+													/* redisplay termselect */
+													vars.termselect.unhide();
 													return;
 												}
 												if (parseFloat(selection[i].hours)<parseFloat(course['hours'].value))
 												{
 													swal('Error!','受講時間がコース指定時間を下回っています。','error');
+													/* redisplay termselect */
+													vars.termselect.unhide();
 													return;
 												}
 												else overhours+=parseFloat(selection[i].hours)-parseFloat(course['hours'].value);
@@ -620,6 +626,8 @@ jQuery.noConflict();
 								if (selection.length!=course[fieldcode+'times'].value)
 								{
 									swal('Error!','受講回数は'+course[fieldcode+'times'].value.toString()+'回です。','error');
+									/* redisplay calendar */
+									vars.calendar.unhide();
 									return;
 								}
 								vars.termselectsingle.show({

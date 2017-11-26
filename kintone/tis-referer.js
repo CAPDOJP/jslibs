@@ -407,6 +407,10 @@ Referer.prototype={
 	/* hide referer */
 	hide:function(){
 		this.cover.hide();
+	},
+	/* redisplay referer */
+	unhide:function(){
+		this.cover.show();
 	}
 };
 jQuery.fn.referer=function(options){
@@ -702,6 +706,10 @@ FileSelect.prototype={
 	/* hide referer */
 	hide:function(){
 		this.cover.hide();
+	},
+	/* redisplay referer */
+	unhide:function(){
+		this.cover.show();
 	}
 };
 jQuery.fn.fileselect=function(options){
@@ -891,6 +899,10 @@ MultiSelect.prototype={
 	/* hide referer */
 	hide:function(){
 		this.cover.hide();
+	},
+	/* redisplay referer */
+	unhide:function(){
+		this.cover.show();
 	}
 };
 jQuery.fn.multiselect=function(options){
@@ -1205,6 +1217,10 @@ TermSelect.prototype={
 	/* hide calendar */
 	hide:function(){
 		this.cover.hide();
+	},
+	/* redisplay referer */
+	unhide:function(){
+		this.cover.show();
 	}
 };
 jQuery.fn.termselect=function(options){
@@ -1902,6 +1918,10 @@ FieldsForm.prototype={
 	/* hide form */
 	hide:function(){
 		this.cover.hide();
+	},
+	/* redisplay referer */
+	unhide:function(){
+		this.cover.show();
 	}
 };
 jQuery.fn.fieldsform=function(options){

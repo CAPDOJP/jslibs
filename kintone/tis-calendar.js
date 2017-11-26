@@ -401,6 +401,10 @@ Calendar.prototype={
 	/* hide calendar */
 	hide:function(){
 		this.cover.hide();
+	},
+	/* redisplay referer */
+	unhide:function(){
+		this.cover.show();
 	}
 };
 jQuery.fn.calendar=function(options){
