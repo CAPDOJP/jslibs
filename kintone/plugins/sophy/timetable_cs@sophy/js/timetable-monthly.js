@@ -85,18 +85,26 @@ jQuery.noConflict();
 														{
 															if (new Date((new Date().format('Y-m-d')+'T'+selection[i].endtime+':00+09:00').dateformat())>endhour)
 															{
-																swal('Error!','受講終了時間が終業時刻を超えています。','error');
-																/* redisplay termselect */
-																vars.termselect.unhide();
+																swal({
+																	title:'Error!',
+																	text:'受講終了時間が終業時刻を超えています。',
+																	type:'error'
+																},function(){
+																	vars.termselect.unhide();
+																});
 																return;
 															}
 															hours+=selection[i].hours;
 														}
 														if (hours!=parseFloat($('#hours',cell).val()))
 														{
-															swal('Error!','振替前と振替後の時間が合いません。','error');
-															/* redisplay termselect */
-															vars.termselect.unhide();
+															swal({
+																title:'Error!',
+																text:'振替前と振替後の時間が合いません。',
+																type:'error'
+															},function(){
+																vars.termselect.unhide();
+															});
 															return;
 														}
 														/* entry transfers */
@@ -200,18 +208,26 @@ jQuery.noConflict();
 														{
 															if (new Date((new Date().format('Y-m-d')+'T'+selection[i2].endtime+':00+09:00').dateformat())>endhour)
 															{
-																swal('Error!','受講終了時間が終業時刻を超えています。','error');
-																/* redisplay termselect */
-																vars.termselect.unhide();
+																swal({
+																	title:'Error!',
+																	text:'受講終了時間が終業時刻を超えています。',
+																	type:'error'
+																},function(){
+																	vars.termselect.unhide();
+																});
 																return;
 															}
 															hours+=selection[i2].hours;
 														}
 														if (hours+parseFloat(course[0]['hours'].value)!=parseFloat($('#hours',cell).val()))
 														{
-															swal('Error!','振替前と振替後の時間が合いません。','error');
-															/* redisplay termselect */
-															vars.termselect.unhide();
+															swal({
+																title:'Error!',
+																text:'振替前と振替後の時間が合いません。',
+																type:'error'
+															},function(){
+																vars.termselect.unhide();
+															});
 															return;
 														}
 														/* entry transfers */

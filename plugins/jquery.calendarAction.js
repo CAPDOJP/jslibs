@@ -394,7 +394,8 @@ var TermSelect=function(options){
 		},
 		calendar:{
 			button:null,
-			container:null
+			container:null,
+			cover:null
 		}
 	},options);
 	var my=this;
@@ -488,7 +489,7 @@ var TermSelect=function(options){
 			},
 			selected:function(target,value){
 				$('.date',activerow).text(value);
-				options.calendar.container.closest('div.floating').hide();
+				options.calendar.cover.hide();
 			}
 		});
 		this.template.find('.date').css({'padding-left':'0.5em'}).closest('div').css({'padding-left':'2em'})
@@ -505,7 +506,7 @@ var TermSelect=function(options){
 			.on('click',function(){
 				activerow=$(this).closest('div');
 				options.calendar.container.calendarShow({target:($('.date',activerow).text().length!=0)?$('.date',activerow).text():null});
-				options.calendar.container.closest('div.floating').show();
+				options.calendar.cover.show();
 			})
 		);
 	}
