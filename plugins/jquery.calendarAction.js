@@ -505,7 +505,7 @@ var TermSelect=function(options){
 			})
 			.on('click',function(){
 				activerow=$(this).closest('div');
-				options.calendar.container.calendarShow({target:($('.date',activerow).text().length!=0)?$('.date',activerow).text():null});
+				options.calendar.container.calendarShow({target:($('.date',activerow).text().length!=0)?$('.date',activerow):null});
 				options.calendar.cover.show();
 			})
 		);
