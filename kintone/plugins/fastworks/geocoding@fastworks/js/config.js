@@ -27,8 +27,8 @@ jQuery.noConflict();
 			/* check field type */
 			switch (values.type)
 			{
-				case 'CHECK_BOX':
-					$('select#remove').append($('<option>').attr('value',values.code).text(values.label));
+				case 'RADIO_BUTTON':
+					$('select#action').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 				case 'DATE':
 					$('select#datespan').append($('<option>').attr('value',values.code).text(values.label));
@@ -75,7 +75,7 @@ jQuery.noConflict();
         	$('select#lng').val(config['lng']);
         	$('select#spacer').val(config['spacer']);
         	$('select#information').val(config['information']);
-        	$('select#remove').val(config['remove']);
+        	$('select#action').val(config['action']);
         	$('select#datespan').val(config['datespan']);
         	$('input#defaultcolor').val(config['defaultcolor']);
 			var add=false;
@@ -137,9 +137,9 @@ jQuery.noConflict();
 	    	swal('Error!','表示フィールドを選択して下さい。','error');
 	    	return;
 	    }
-	    if ($('select#remove').val()=='')
+	    if ($('select#action').val()=='')
 	    {
-	    	swal('Error!','一時撤去フィールドを選択して下さい。','error');
+	    	swal('Error!','ピン操作フィールドを選択して下さい。','error');
 	    	return;
 	    }
 	    if ($('select#datespan').val()=='')
@@ -195,7 +195,7 @@ jQuery.noConflict();
         config['lng']=$('select#lng').val();
         config['spacer']=$('select#spacer').val();
         config['information']=$('select#information').val();
-        config['remove']=$('select#remove').val();
+        config['action']=$('select#action').val();
         config['datespan']=$('select#datespan').val();
         config['defaultcolor']=$('input#defaultcolor').val();
 		config['datespancolors']=JSON.stringify(datespancolors);

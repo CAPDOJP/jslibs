@@ -67,6 +67,19 @@ var FieldsForm=function(options){
 			'width':'100%'
 		})
 	);
+	var datespan=div.clone(true).css({
+		'display':'inline-block',
+		'line-height':'40px',
+		'width':'100%'
+	})
+	.append($('<input type="hidden" class="receiver">'))
+	.append(
+		$('<span class="label">').css({
+			'box-sizing':'border-box',
+			'display':'inline-block',
+			'width':'100%'
+		})
+	);
 	var button=$('<button>').css({
 		'background-color':'transparent',
 		'border':'none',
@@ -82,16 +95,6 @@ var FieldsForm=function(options){
 		'vertical-align':'top',
 		'width':'auto'
 	});
-	var checkbox=$('<label>').css({
-		'box-sizing':'border-box',
-		'display':'inline-block',
-		'line-height':'40px',
-		'margin':'0px',
-		'padding':'0px',
-		'vertical-align':'top'
-	})
-	.append($('<input type="checkbox" class="receiver">'))
-	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 10px 0px 5px'}));
 	var label=$('<label>').css({
 		'box-sizing':'border-box',
 		'border-left':'5px solid #3498db',
@@ -101,6 +104,16 @@ var FieldsForm=function(options){
 		'padding':'0px',
 		'padding-left':'5px'
 	});
+	var radio=$('<label>').css({
+		'box-sizing':'border-box',
+		'display':'inline-block',
+		'line-height':'40px',
+		'margin':'0px',
+		'padding':'0px',
+		'vertical-align':'top'
+	})
+	.append($('<input type="radio" class="receiver">'))
+	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 10px 0px 5px'}));
 	var textline=$('<input type="text" class="receiver">').css({
 		'border':'1px solid #3498db',
 		'border-radius':'2px',
@@ -111,6 +124,14 @@ var FieldsForm=function(options){
 		'padding':'0px 5px',
 		'vertical-align':'top',
 		'width':'100%'
+	});
+	var title=$('<label>').css({
+		'box-sizing':'border-box',
+		'display':'block',
+		'font-size':'21px',
+		'line-height':'40px',
+		'margin':'5px 0px',
+		'padding':'0px'
 	});
 	/* append elements */
 	this.cover=div.clone(true).css({
@@ -172,22 +193,28 @@ var FieldsForm=function(options){
 		fieldcontainer.find('.title').text(fieldinfo.label);
 		switch (fieldinfo.type)
 		{
-			case 'CHECK_BOX':
+			case 'ADDRESS':
+				receiver=address.clone(true);
+				fieldcontainer.append(receiver);
+				break;
+			case 'DATESPAN':
+				receiver=datespan.clone(true);
+				fieldcontainer.append(receiver);
+				break;
+			case 'RADIO_BUTTON':
+				var checked=true;
 				fieldoptions=[fieldinfo.options.length];
 				$.each(fieldinfo.options,function(key,values){
 					fieldoptions[values.index]=values.label;
 				});
 				for (var i2=0;i2<fieldoptions.length;i2++)
 				{
-					receiver=checkbox.clone(true);
+					receiver=radio.clone(true);
 					$('.label',receiver).text(fieldoptions[i2]);
-					$('.receiver',receiver).attr('id',fieldoptions[i2]).val(fieldoptions[i2]);
+					$('.receiver',receiver).attr('id',fieldoptions[i2]).attr('name',fieldinfo.code).val(fieldoptions[i2]).prop('checked',checked);
 					fieldcontainer.append(receiver);
+					checked=false;
 				}
-				break;
-			case 'ADDRESS':
-				receiver=address.clone(true);
-				fieldcontainer.append(receiver);
 				break;
 			case 'SINGLE_LINE_TEXT':
 				receiver=textline.clone(true);
@@ -203,6 +230,7 @@ var FieldsForm=function(options){
 			.text(values.text)
 		);
 	});
+	this.container.append(title.clone(true).addClass('head'));
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
 	this.cover.append(this.container);
@@ -210,27 +238,6 @@ var FieldsForm=function(options){
 	/* adjust container height */
 	$(window).on('load resize',function(){
 		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
-	});
-	this.filebox=$('body').fileselect({
-		buttons:{
-			ok:{
-				text:'OK'
-			},
-			cancel:{
-				text:'キャンセル'
-			}
-		}
-	});
-	/* create selectbox */
-	this.selectbox=$('body').multiselect({
-		buttons:{
-			ok:{
-				text:'OK'
-			},
-			cancel:{
-				text:'キャンセル'
-			}
-		}
 	});
 };
 FieldsForm.prototype={
@@ -250,8 +257,8 @@ FieldsForm.prototype={
 			if (!$('#'+key).size()) return true;
 			switch (values.type)
 			{
-				case 'CHECK_BOX':
-					for (var i=0;i<values.value.length;i++) $('#'+values.value[i],$('#'+key)).prop('checked',true);
+				case 'RADIO_BUTTON':
+					$('#'+values.value,$('#'+key)).prop('checked',true);
 					break;
 				default:
 					$('.receiver',$('#'+key)).val(values.value);
@@ -275,5 +282,87 @@ jQuery.fn.fieldsform=function(options){
 	},options);
 	options.container=this;
 	return new FieldsForm(options);
+};
+var FieldsFormConfirm=function(options){
+	var options=$.extend({
+		container:null
+	},options);
+	/* create elements */
+	var my=this;
+	var button=$('<button>').css({
+		'background-color':'#3498db',
+		'border':'none',
+		'border-radius':'5px',
+		'box-sizing':'border-box',
+		'color':'#FFFFFF',
+		'cursor':'pointer',
+		'display':'inline-block',
+		'font-size':'13px',
+		'height':'auto',
+		'line-height':'30px',
+		'margin':'0px 3px 5px 3px',
+		'outline':'none',
+		'padding':'0px 1em',
+		'vertical-align':'top',
+		'width':'auto'
+	});
+	/* append elements */
+	this.container=$('<div>').css({
+		'background-color':'#FFFFFF',
+		'border-radius':'5px',
+		'bottom':'0px',
+		'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+		'box-sizing':'border-box',
+		'display':'none',
+		'left':'0px',
+		'margin':'5px',
+		'padding':'5px',
+		'position':'fixed',
+		'text-align':'center',
+		'vertical-align':'top',
+		'width':'calc(100% - 10px)',
+		'z-index':'999999'
+	});
+	this.container.append($('<p>').css({'line-height':'30px'}).text('ピンを登録しますか？'));
+	this.container.append(
+		$('<div>')
+		.append(
+			button.clone(true)
+			.attr('id','ok')
+			.text('登録する')
+		)
+		.append(
+			button.clone(true)
+			.attr('id','cancel')
+			.text('登録しない')
+		)
+	);
+	options.container.append(this.container);
+};
+FieldsFormConfirm.prototype={
+	/* display form */
+	show:function(okcallback,cancelcallback){
+		var my=this;
+		$('button#ok',this.container).off('click').on('click',function(){
+			if (okcallback!=null) okcallback();
+			my.hide();
+		});
+		$('button#cancel',this.container).off('click').on('click',function(){
+			if (cancelcallback!=null) cancelcallback();
+			my.hide();
+		});
+		this.container.show();
+	},
+	/* hide form */
+	hide:function(){
+		this.container.hide();
+	}
+};
+jQuery.fn.fieldsformconfirm=function(options){
+	var options=$.extend({
+		container:null
+	},options);
+	options.container=this;
+	return new FieldsFormConfirm(options);
 };
 })(jQuery);

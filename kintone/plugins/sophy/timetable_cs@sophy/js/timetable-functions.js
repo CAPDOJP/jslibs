@@ -587,7 +587,7 @@ jQuery.extend({
 				if (!('name' in fieldinfos)) error='氏名';
 				if (!('phonetic' in fieldinfos)) error='氏名かな';
 				if (!('mail' in fieldinfos)) error='メールアドレス';
-				if (!('pwd' in fieldinfos)) error='パスワード';
+				if (!('question' in fieldinfos)) error='秘密の質問';
 				if (!('birthday' in fieldinfos)) error='生年月日';
 				if (!('sex' in fieldinfos)) error='性別';
 				if (!('parentcode' in fieldinfos)) error='保護者番号';

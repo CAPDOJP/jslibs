@@ -20,11 +20,13 @@ jQuery.noConflict();
 		centerLocation:null,
 		chaselocation:null,
 		currentlocation:null,
+		currentmarker:null,
 		displayinfowindow:null,
 		displaypoi:null,
 		displaydatespan:null,
 		displaymap:null,
 		editor:null,
+		editorconfirm:null,
 		map:null,
 		splash:null,
 		viewlist:null,
@@ -186,123 +188,148 @@ jQuery.noConflict();
 						isreload,
 						function(results,latlng){
 							/* map click */
-							var address=results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
-							$('#'+vars.config['address'],vars.editor.contents).find('.label').hide();
-							$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val(address).show();
-							$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val('');
-							$('#'+vars.config['remove'],vars.editor.contents).hide();
-							$('#del',vars.editor.buttonblock).hide();
-							vars.editor.show({
-								type:'add',
-								buttons:{
-									ok:function(){
-										if ($('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().length==0)
-										{
-											alert($('#'+vars.config['address'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
-											return;
-										}
-										if ($('#'+vars.config['information'],vars.editor.contents).find('.receiver').val().length==0)
-										{
-											alert($('#'+vars.config['information'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
-											return;
-										}
-										var body={
-											app:vars.config['app'],
-											record:{}
-										};
-										body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().replace(/\r?\n/g,'')};
-										body.record[vars.config['lat']]={value:latlng.lat()};
-										body.record[vars.config['lng']]={value:latlng.lng()};
-										body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
-										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
-										kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-											var label='';
-											label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
-											label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
-											vars.markers.push({
-												id:resp.id,
-												address:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().replace(/\r?\n/g,''),
-												remove:0,
-												colors:vars.config['defaultcolor'],
-												fontsize:vars.config['markerfont'],
-												label:label,
-												lat:latlng.lat(),
-												lng:latlng.lng(),
-												size:vars.config['markersize'],
-												extensionindex:0
+							if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
+							vars.currentmarker=new google.maps.Marker({
+								map:vars.map.map,
+								position:latlng
+							});
+							vars.editorconfirm.show(function(){
+								var address=results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
+								$('.head',vars.editor.container).text('ピン登録');
+								$('#'+vars.config['datespan'],vars.editor.contents).find('.label').text('');
+								$('#'+vars.config['datespan'],vars.editor.contents).find('.receiver').val('');
+								$('#'+vars.config['datespan'],vars.editor.contents).hide();
+								$('#'+vars.config['address'],vars.editor.contents).find('.label').hide();
+								$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val(address).show();
+								$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val('');
+								$('#'+vars.config['action'],vars.editor.contents).hide();
+								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
+								vars.editor.show({
+									buttons:{
+										ok:function(){
+											if ($('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().length==0)
+											{
+												alert($('#'+vars.config['address'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
+												return;
+											}
+											if ($('#'+vars.config['information'],vars.editor.contents).find('.receiver').val().length==0)
+											{
+												alert($('#'+vars.config['information'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
+												return;
+											}
+											var body={
+												app:vars.config['app'],
+												record:{}
+											};
+											body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().replace(/\r?\n/g,'')};
+											body.record[vars.config['lat']]={value:latlng.lat()};
+											body.record[vars.config['lng']]={value:latlng.lng()};
+											body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
+											body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
+											kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+												var label='';
+												label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
+												label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
+												vars.markers.push({
+													index:resp.id,
+													id:resp.id,
+													address:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().replace(/\r?\n/g,''),
+													colors:vars.config['defaultcolor'],
+													fontsize:vars.config['markerfont'],
+													label:label,
+													lat:latlng.lat(),
+													lng:latlng.lng(),
+													size:vars.config['markersize'],
+													extensionindex:0,
+													datespan:new Date().format('Y-m-d'),
+													action:'更新'
+												});
+												functions.reloadmap(function(){vars.map.map.setCenter(latlng)});
+											},function(error){
+												alert(error.message);
 											});
-											functions.reloadmap(function(){vars.map.map.setCenter(latlng)});
-										},function(error){
-											alert(error.message);
-										});
-										/* close editor */
-										vars.editor.hide();
-									},
-									cancel:function(){
-										/* close editor */
-										vars.editor.hide();
+											/* close editor */
+											vars.editor.hide();
+										},
+										cancel:function(){
+											/* close editor */
+											vars.editor.hide();
+										}
 									}
-								}
+								});
+							},
+							function(){
+								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							});
 						},
 						function(target){
-							var index=target;
-							if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) index--;
+							var index=0;
+							for (var i=0;i<vars.markers.length;i++) if (vars.markers[i].index==target) index=i;
 							/* marker click */
 							if (!('id' in vars.markers[index])) return;
 							var center=vars.map.map.getCenter();
 							var latlng=vars.markers[index].lat+','+vars.markers[index].lng;
 							var zoom=(($(window).width()>1024)?14:21-Math.ceil($(window).width()/250));
 							var link='https://www.google.co.jp/maps?q='+latlng+'&z='+zoom.toString();
+							$('.head',vars.editor.container).text('ピン情報');
+							$('#'+vars.config['datespan'],vars.editor.contents).find('.label').text(vars.markers[index].datespan);
+							$('#'+vars.config['datespan'],vars.editor.contents).find('.receiver').val(vars.markers[index].datespan);
+							$('#'+vars.config['datespan'],vars.editor.contents).show();
 							$('#'+vars.config['address'],vars.editor.contents).find('.label').html('<a href="'+link+'" target="_blank">'+vars.markers[index].address+'</a>').show();
 							$('#'+vars.config['address'],vars.editor.contents).find('.receiver').hide();
 							$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
-							$('#'+vars.config['remove'],vars.editor.contents).find('.receiver').prop('checked',(vars.markers[index].remove!=0))
-							$('#'+vars.config['remove'],vars.editor.contents).show();
-							$('#del',vars.editor.buttonblock).show();
+							$('#'+vars.markers[index].action,$('#'+vars.config['action'])).prop('checked',true);
+							$('#'+vars.config['action'],vars.editor.contents).show();
 							vars.editor.show({
-								type:'upd',
 								buttons:{
 									ok:function(){
-										if ($('#'+vars.config['information'],vars.editor.contents).find('.receiver').val().length==0)
+										var action=$('[name='+vars.config['action']+']:checked',vars.editor.contents).val();
+										if (!confirm(action+'します。\nよろしいですか？')) return;
+										switch (action)
 										{
-											alert($('#'+vars.config['information'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
-											return;
+											case '更新':
+											case '一時削除':
+												if ($('#'+vars.config['information'],vars.editor.contents).find('.receiver').val().length==0)
+												{
+													alert($('#'+vars.config['information'],vars.editor.contents).find('.title').text()+'を入力して下さい。');
+													return;
+												}
+												var body={
+													app:vars.config['app'],
+													id:vars.markers[index].id,
+													record:{}
+												};
+												body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
+												body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
+												body.record[vars.config['action']]={value:action};
+												kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+													vars.markers[index].datespan=new Date().format('Y-m-d');
+													vars.markers[index].action=action;
+													vars.markers[index].label='';
+													vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
+													vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
+													functions.reloadmap(function(){vars.map.map.setCenter(center)});
+												},function(error){
+													alert(error.message);
+												});
+												/* close editor */
+												vars.editor.hide();
+												break;
+											case '削除':
+												var body={
+													app:vars.config['app'],
+													ids:[vars.markers[index].id]
+												};
+												kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
+													vars.markers.splice(index,1);
+													functions.reloadmap(function(){vars.map.map.setCenter(center)});
+												},function(error){
+													alert(error.message);
+												});
+												/* close editor */
+												vars.editor.hide();
+												break;
 										}
-										var body={
-											app:vars.config['app'],
-											id:vars.markers[index].id,
-											record:{}
-										};
-										body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
-										body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
-										if ($('#'+vars.config['remove'],vars.editor.contents).find('.receiver:checked').size()) body.record[vars.config['remove']]={value:['一時撤去']};
-										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-											vars.markers[index].remove=(($('#'+vars.config['remove'],vars.editor.contents).find('.receiver:checked').size())?1:0);
-											vars.markers[index].label='';
-											vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
-											vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
-											functions.reloadmap(function(){vars.map.map.setCenter(center)});
-										},function(error){
-											alert(error.message);
-										});
-										/* close editor */
-										vars.editor.hide();
-									},
-									del:function(){
-										if (!confirm('削除します。\nよろしいですか？')) return;
-										var body={
-											app:vars.config['app'],
-											ids:[vars.markers[index].id]
-										};
-										kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
-											vars.markers.splice(index,1);
-											functions.reloadmap(function(){vars.map.map.setCenter(center)});
-										},function(error){
-											alert(error.message);
-										});
-										/* close editor */
-										vars.editor.hide();
 									},
 									cancel:function(){
 										/* close editor */
@@ -350,7 +377,7 @@ jQuery.noConflict();
 						.append(span.clone(true).text('現在地を表示'));
 						vars.currentlocation.find('input[type=checkbox]').prop('checked',vars.ismobile);
 						/* create chaselocation checkbox */
-						vars.chaselocation=checkbox.clone(true)
+						vars.chaselocation=checkbox.clone(true).addClass('chaselocation')
 						.append($('<input type="checkbox" id="chaselocation">')
 							.on('change',function(e){
 								/* swtich view of menu */
@@ -368,9 +395,8 @@ jQuery.noConflict();
 									}
 							})
 						)
-						.append(span.clone(true).text('現在地を追跡'));
+						.append(span.clone(true).text('現在地を追跡（ドライブモード）'));
 						if (vars.config['chasemode']!='1') vars.chaselocation.hide();
-						if (!vars.ismobile) vars.chaselocation.hide();
 						/* create displayinfowindow checkbox */
 						vars.displayinfowindow=checkbox.clone(true)
 						.append($('<input type="checkbox" id="infowindow">')
@@ -536,24 +562,24 @@ jQuery.noConflict();
 							.prepend(vars.viewlist);
 						}
 						vars.fieldinfos[vars.config['address']].type='ADDRESS';
+						vars.fieldinfos[vars.config['datespan']].type='DATESPAN';
 						vars.editor=$('body').fieldsform({
 							buttons:{
 								ok:{
-									text:'OK'
-								},
-								del:{
-									text:'削除'
+									text:'登録'
 								},
 								cancel:{
 									text:'キャンセル'
 								}
 							},
 							fields:[
+								vars.fieldinfos[vars.config['datespan']],
 								vars.fieldinfos[vars.config['address']],
 								vars.fieldinfos[vars.config['information']],
-								vars.fieldinfos[vars.config['remove']]
+								vars.fieldinfos[vars.config['action']]
 							]
 						});
+						vars.editorconfirm=$('body').fieldsformconfirm();
 					}
 				}
 			},function(error){});
@@ -561,8 +587,9 @@ jQuery.noConflict();
 		/* marker load */
 		loadmarkers:function(){
 			var markers=[];
-			$.each(vars.apps[vars.config['app']],function(index,values){
-				var record=values
+			for (var i=0;i<vars.apps[vars.config['app']].length;i++)
+			{
+				var record=vars.apps[vars.config['app']][i];
 				var lat=parseFloat('0'+record[vars.config['lat']].value);
 				var lng=parseFloat('0'+record[vars.config['lng']].value);
 				var label='';
@@ -581,19 +608,21 @@ jQuery.noConflict();
 					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
 					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					markers.push({
+						index:record['$id'].value,
 						id:record['$id'].value,
 						address:record[vars.config['address']].value,
-						remove:record[vars.config['remove']].value.length,
 						colors:vars.config['defaultcolor'],
 						fontsize:vars.config['markerfont'],
 						label:label,
 						lat:lat,
 						lng:lng,
 						size:vars.config['markersize'],
-						extensionindex:datespan
+						extensionindex:datespan,
+						datespan:record[vars.config['datespan']].value,
+						action:(record[vars.config['action']].value)?record[vars.config['action']].value:'更新'
 					});
 				}
-			});
+			}
 			return markers;
 		},
 		/* swtich view of marker */
@@ -604,12 +633,12 @@ jQuery.noConflict();
 			var color='';
 			var colors=JSON.parse(vars.config['datespancolors']);
 			var markers=$.extend(true,[],vars.markers);
+			/* setup zindex */
 			if (isextensionindex)
 			{
-				/* setup zindex */
 				markers.sort(function(a,b){
-					if(parseFloat('0'+a.extensionindex)>parseFloat('0'+b.extensionindex)) return -1;
-					if(parseFloat('0'+a.extensionindex)<parseFloat('0'+b.extensionindex)) return 1;
+					if(parseFloat('0'+a.extensionindex)<parseFloat('0'+b.extensionindex)) return -1;
+					if(parseFloat('0'+a.extensionindex)>parseFloat('0'+b.extensionindex)) return 1;
 					return 0;
 				});
 			}
@@ -646,7 +675,7 @@ jQuery.noConflict();
 						isopeninfowindow:isopeninfowindow,
 						callback:function(){
 							vars.map.markers[0].setZIndex(1)
-							for (var i=1;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i+1);
+							for (var i=1;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
 							if (callback!==undefined) callback();
 						}
 					});
@@ -660,34 +689,8 @@ jQuery.noConflict();
 					isextensionindex:isextensionindex,
 					isopeninfowindow:isopeninfowindow,
 					callback:function(){
-						if (isextensionindex)
-						{
-							var latlng=null;
-							var olddate=new Date();
-							var oldid=Number.MAX_SAFE_INTEGER;
-							$.each(vars.apps[vars.config['app']],function(index,values){
-								var record=values
-								if (record[vars.config['datespan']].value!=null)
-								{
-									var checkdate=new Date(record[vars.config['datespan']].value.dateformat());
-									if (checkdate<olddate)
-									{
-										olddate=checkdate;
-										latlng=new google.maps.LatLng(parseFloat('0'+record[vars.config['lat']].value),parseFloat('0'+record[vars.config['lng']].value));
-									}
-									if (checkdate.format('Y-m-d')==olddate.format('Y-m-d'))
-									{
-										if (parseInt(record['$id'].value)<oldid)
-										{
-											oldid=parseInt(record['$id'].value);
-											latlng=new google.maps.LatLng(parseFloat('0'+record[vars.config['lat']].value),parseFloat('0'+record[vars.config['lng']].value));
-										}
-									}
-								}
-							});
-							if (latlng!=null) vars.map.map.setCenter(latlng);
-						}
-						for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(vars.map.markers.length-i);
+						for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
+						vars.map.map.setCenter(vars.map.markers[vars.map.markers.length-1].getPosition());
 						if (callback!==undefined) callback();
 					}
 				});
