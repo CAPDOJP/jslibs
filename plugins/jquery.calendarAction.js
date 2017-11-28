@@ -280,13 +280,13 @@ Date.prototype.DateCalc = function(pattern){
 	if (pattern.match(/^-?[0-9]+ year$/g)!=null)
 	{
 		year+=parseInt(pattern.match(/^-?[0-9]+/g));
-		return $(this).setYear(this.getFullYear()+parseInt(pattern.match(/^-?[0-9]+/g)));
+		return this.setYear(this.getFullYear()+parseInt(pattern.match(/^-?[0-9]+/g)));
 	}
 	//月加算
 	if (pattern.match(/^-?[0-9]+ month$/g)!=null)
 	{
 		month+=parseInt(pattern.match(/^-?[0-9]+/g));
-		return $(this).setMonth(this.getMonth()+parseInt(pattern.match(/^-?[0-9]+/g)));
+		return this.setMonth(this.getMonth()+parseInt(pattern.match(/^-?[0-9]+/g)));
 		//年末チェック
 		while (month<1) {year--;month+=12;}
 		while (month>12) {year++;month-=12;}
@@ -303,7 +303,7 @@ Date.prototype.DateCalc = function(pattern){
 	if (pattern.match(/^-?[0-9]+ day$/g)!=null)
 	{
 		day+=parseInt(pattern.match(/^-?[0-9]+/g));
-		return $(this).setDate(this.getDate()+parseInt(pattern.match(/^-?[0-9]+/g)));
+		return this.setDate(this.getDate()+parseInt(pattern.match(/^-?[0-9]+/g)));
 	}
 	//年初日
 	if (pattern.match(/^first-of-year$/g)!=null) {month=1;day=1};
