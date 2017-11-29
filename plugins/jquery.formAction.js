@@ -772,7 +772,7 @@ jQuery.fn.attach = function(json,index){
 		var container=$(this);
 		$.each(json,function(key,value){
 			//各項目に値設定
-			var id=key+index;
+			var id=key.replace('$','\\$')+index;
 			var data=(value==null)?'':value;
 			if (container.find('a#'+id).size()) container.find('a#'+id).prop('href',data);
 			if (container.find('input[type=text]#'+id).size()) container.find('input[type=text]#'+id).val(data);
