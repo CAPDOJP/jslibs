@@ -45,7 +45,7 @@ jQuery.fn.formAction = function(options){
 		var code=e.keyCode||e.which;
 		if ($(this).attr('id')!=null)
 		{
-			var buttonID=$(this).attr('id');
+			var buttonID=$(this).attr('id').replace('$','\\$');
 			if (buttonID.match(/submit[0-9a-z]*/g)!=null) return true;
 			if (buttonID.match(/search[0-9a-z]*/g)!=null) return true;
 		}
@@ -241,7 +241,7 @@ jQuery.fn.formAction = function(options){
 				target.loaditems('','');
 				//動的設定
 				var index='';
-				if (target.attr('id')!=null) index=target.attr('id').replace(/[^0-9]+/g,'');
+				if (target.attr('id')!=null) index=target.attr('id').replace('$','\\$').replace(/[^0-9]+/g,'');
 				if (values.parent.length!=0) form.on('change',values.parent+index,function(){target.loaditems($(this).val(),'',$.data(target[0],'options').callback);});
 				//イベント追加
 				if (values.callback!=null) form.on('change',key,function(){$.data(this,'options').callback($(this));});
@@ -349,8 +349,8 @@ jQuery.fn.addrow = function(options){
 			//ID修正
 			if (target.attr('id')!=null)
 			{
-				index=target.attr('id').replace(/[^0-9]+/g,'');
-				if (index!='') target.attr('id',target.attr('id').split(index).join((parseInt(index)+1).toString()));
+				index=target.attr('id').replace('$','\\$').replace(/[^0-9]+/g,'');
+				if (index!='') target.attr('id',target.attr('id').replace('$','\\$').split(index).join((parseInt(index)+1).toString()));
 			}
 			//個別対応
 			switch (target.prop('tagName').toLowerCase())
@@ -409,21 +409,21 @@ jQuery.fn.removerow = function(options){
 						var index='';
 						if (target.attr('id')!=null)
 						{
-							index=target.attr('id').replace(/[^0-9]+/g,'');
+							index=target.attr('id').replace('$','\\$').replace(/[^0-9]+/g,'');
 							if (index.length!=0) index=(parseInt(index)+1).toString();
 							switch (target.prop('tagName').toLowerCase())
 							{
 								case 'iframe':
 								case 'img':
-									target.attr('src',container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).attr('src'));
+									target.attr('src',container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).attr('src'));
 									break;
 								case 'label':
 								case 'span':
-									target.text(container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).text());
+									target.text(container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).text());
 									break;
 								case 'table':
 									//テーブル内要素のID指定は考慮しない
-									var fromtable=container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index);
+									var fromtable=container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index);
 									var totable=target;
 									var fromelements=null;
 									var toelements=null;
@@ -449,7 +449,7 @@ jQuery.fn.removerow = function(options){
 									});
 									break;
 								default:
-									target.val(container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).val());
+									target.val(container.children('tr').eq(i+1).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).val());
 									break;
 							}
 						}
@@ -484,20 +484,20 @@ jQuery.fn.moverow = function(options){
 					var index='';
 					if (target.attr('id')!=null)
 					{
-						index=target.attr('id').replace(/[^0-9]+/g,'');
+						index=target.attr('id').replace('$','\\$').replace(/[^0-9]+/g,'');
 						if (index.length!=0) index=(parseInt(index)+moveto).toString();
 						switch (target.prop('tagName').toLowerCase())
 						{
 							case 'iframe':
 							case 'img':
-								target.attr('src',container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).attr('src'));
+								target.attr('src',container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).attr('src'));
 								break;
 							case 'label':
 							case 'span':
-								target.text(container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).text());
+								target.text(container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).text());
 								break;
 							default:
-								target.val(container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).val());
+								target.val(container.children('tr').eq(options.row+moveto).find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).val());
 								break;
 						}
 					}
@@ -507,20 +507,20 @@ jQuery.fn.moverow = function(options){
 					var index='';
 					if (target.attr('id')!=null)
 					{
-						index=target.attr('id').replace(/[^0-9]+/g,'');
+						index=target.attr('id').replace('$','\\$').replace(/[^0-9]+/g,'');
 						if (index.length!=0) index=(parseInt(index)-moveto).toString();
 						switch (target.prop('tagName').toLowerCase())
 						{
 							case 'iframe':
 							case 'img':
-								target.attr('src',movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).attr('src'));
+								target.attr('src',movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).attr('src'));
 								break;
 							case 'label':
 							case 'span':
-								target.text(movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).text());
+								target.text(movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).text());
 								break;
 							default:
-								target.val(movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace(/[0-9]+/g,'')+index).val());
+								target.val(movefrom.find(target.prop('tagName').toLowerCase()+'#'+target.attr('id').replace('$','\\$').replace(/[0-9]+/g,'')+index).val());
 								break;
 						}
 					}
@@ -715,7 +715,7 @@ jQuery.fn.loaddatas = function(options){
 									var target=$(this);
 									if (target.attr('id')!=null)
 									{
-										counter=target.attr('id').replace(/[^0-9]+/g,'');
+										counter=target.attr('id').replace('$','\\$').replace(/[^0-9]+/g,'');
 										if (counter!='') return;
 									}
 								});
@@ -772,7 +772,7 @@ jQuery.fn.attach = function(json,index){
 		var container=$(this);
 		$.each(json,function(key,value){
 			//各項目に値設定
-			var id=key+index;
+			var id=key.replace('$','\\$')+index;
 			var data=(value==null)?'':value;
 			if (container.find('a#'+id).size()) container.find('a#'+id).prop('href',data);
 			if (container.find('input[type=text]#'+id).size()) container.find('input[type=text]#'+id).val(data);
@@ -1046,7 +1046,7 @@ jQuery.fn.senddatas = function(options){
 	//チェックボックスと同一idのhidden要素があるチェックボックスはその値をhidden要素に格納)
 	form.find('input[type=checkbox]').each(function(){
 		var _checkbox=$(this);
-		$(this).closest('form').find('input[type=hidden]#'+$(this).attr('id')).each(function(){
+		$(this).closest('form').find('input[type=hidden]#'+$(this).attr('id').replace('$','\\$')).each(function(){
 			$(this).val((_checkbox.prop('checked'))?'1':'0');
 		});
 	});
@@ -1061,7 +1061,7 @@ jQuery.fn.senddatas = function(options){
 	form.find('table').each(function(){
 		if ($(this).attr('id')!=null)
 		{
-			var containerID=$(this).attr('id');
+			var containerID=$(this).attr('id').replace('$','\\$');
 			//要素チェック
 			if ($(this).children('tbody')==null)
 			{
@@ -1804,7 +1804,7 @@ jQuery.fn.refererShow = function(target,table,rowindex,callback,query){
 	//クエリ生成
 	if (query==null) query='';
 	$.each(form.find('input[id^=keys]'),function(){
-		var keys=$(this).attr('id').replace('keys','');
+		var keys=$(this).attr('id').replace('$','\\$').replace('keys','');
 		if (!$('input#'+keys,$.data(form[0],'active'))) return;
 		query+='&keys['+keys+']='+$('input#'+keys,$.data(form[0],'active')).toVal();
 	});
@@ -1813,10 +1813,10 @@ jQuery.fn.refererShow = function(target,table,rowindex,callback,query){
 		append:false,
 		callback:function(json){
 			//データ格納変数初期化
-			$.data(form[0],'refererdatas',json.detail[form.attr('id')]);
+			$.data(form[0],'refererdatas',json.detail[form.attr('id').replace('$','\\$')]);
 			//明細表示判定
-			if (json.detail[form.attr('id')].length==0) $('table#'+form.attr('id')).hide();
-			else $('table#'+form.attr('id')).show();
+			if (json.detail[form.attr('id').replace('$','\\$')].length==0) $('table#'+form.attr('id').replace('$','\\$')).hide();
+			else $('table#'+form.attr('id').replace('$','\\$')).show();
 			if (callback!=null) callback(json);
 			form.parents('div').last().show();
 		}
