@@ -35,6 +35,7 @@ jQuery.fn.calendarAction = function(options){
 		line:2,
 		feedcolor:'#2b2b2b',
 		box:[],
+		maxwidth:'700px',
 		opening:'',
 		changed:null,
 		selected:null
@@ -60,7 +61,7 @@ jQuery.fn.calendarAction = function(options){
 		var calendar=$('<table>').css({
 			'box-sizing':'border-box',
 			'margin':'0px auto',
-			'max-width':'700px',
+			'max-width':options.maxwidth,
 			'position':'relative',
 			'text-align':'center',
 			'width':'100%',
@@ -143,6 +144,7 @@ jQuery.fn.calendarAction = function(options){
 				.css(options.box[index]));
 			});
 		}
+		calendar.find('th,td').css({'width':'calc(100% / 7)'});
 		target.append(calendar);
 		/*
 		*------------------------------------------------------------
