@@ -56,6 +56,22 @@ jQuery.fn.calendarAction = function(options){
 		* カレンダー設定
 		*------------------------------------------------------------
 		*/
+		var datedisplay=$('<span>').addClass('datedisplay').css({
+			'line-height':'50px',
+			'width':'calc(100% - 80px)'
+		});
+		var feed=$('<div>').css({
+			'border-top':'11.5px solid transparent',
+			'border-bottom':'11.5px solid transparent',
+			'display':'block',
+			'height':'0px',
+			'position':'absolute',
+			'top':'50%',
+			'width':'0px',
+			'-webkit-transform':'translate(0%,-50%)',
+			'-ms-transform':'translate(0%,-50%)',
+			'transform':'translate(0%,-50%)',
+		});
 		var header=$('<thead>');
 		var cells=$('<tbody>');
 		var calendar=$('<table>').css({
@@ -70,14 +86,12 @@ jQuery.fn.calendarAction = function(options){
 		.append(cells);
 		//ヘッダー(年月)
 		header.append($('<tr>'))
-		header.find('tr').last().append($('<td>'));
-		header.find('tr').last().append($('<td colspan="5">'));
-		header.find('tr').last().append($('<td>'));
-		header.find('tr').last().find('td').css({
-			'border':'none',
-			'cursor':'pointer',
-			'height':'50px'
-		});
+		header.find('tr').last().append($('<td colspan="7">').css({
+				'border':'none',
+				'cursor':'pointer',
+				'height':'50px'
+			})
+		);
 		//ヘッダー(曜日)
 		var week=['日','月','火','水','木','金','土'];
 		header.append($('<tr>'))
@@ -150,40 +164,34 @@ jQuery.fn.calendarAction = function(options){
 		* 移動ボタン設定
 		*------------------------------------------------------------
 		*/
-		header.find('tr').first().find('td').first().append($('<div>'))
-		.on('click',function(){
-			//月減算
-			$.data(target[0],'display',$.data(target[0],'display').DateCalc('-1 month').DateCalc('first-of-month'));
-			//カレンダー再表示
-			target.calendarShow();
-		});
-		header.find('tr').first().find('td').last().append($('<div>'))
-		.on('click',function(){
-			//月加算
-			$.data(target[0],'display',$.data(target[0],'display').DateCalc('1 month').DateCalc('first-of-month'));
-			//カレンダー再表示
-			target.calendarShow();
-		});
-		header.find('tr').first().find('td').find('div').css({
-			'border-top':'11.5px solid transparent',
-			'border-bottom':'11.5px solid transparent',
-			'display':'block',
-			'height':'0px',
-			'left':'50%',
-			'position':'absolute',
-			'top':'13.5px',
-			'width':'0px'
-		});
-		header.find('tr').first().find('td').first().find('div').css({
-			'border-left':'20px solid transparent',
-			'border-right':'20px solid '+options.feedcolor,
-			'margin-left':'-30px'
-		});
-		header.find('tr').first().find('td').last().find('div').css({
-			'border-left':'20px solid '+options.feedcolor,
-			'border-right':'20px solid transparent',
-			'margin-left':'-10px'
-		});
+
+		header.find('tr').first().find('td').append(
+			feed.clone(true).css({
+				'border-left':'20px solid transparent',
+				'border-right':'20px solid '+options.feedcolor,
+				'left':'10px'
+			})
+			.on('click',function(){
+				//月減算
+				$.data(target[0],'display',$.data(target[0],'display').DateCalc('-1 month').DateCalc('first-of-month'));
+				//カレンダー再表示
+				target.calendarShow();
+			})
+		);
+		header.find('tr').first().find('td').append(datedisplay);
+		header.find('tr').first().find('td').append(
+			feed.clone(true).css({
+				'border-left':'20px solid '+options.feedcolor,
+				'border-right':'20px solid transparent',
+				'right':'10px'
+			})
+			.on('click',function(){
+				//月加算
+				$.data(target[0],'display',$.data(target[0],'display').DateCalc('1 month').DateCalc('first-of-month'));
+				//カレンダー再表示
+				target.calendarShow();
+			})
+		);
 	});
 }
 /*
@@ -216,7 +224,7 @@ jQuery.fn.calendarShow = function(options){
 	*----------------------------------------------------------------
 	*/
 	//タイトル初期化
-	$(this).find('thead').find('tr').first().find('td').eq(1).text($.data(target[0],'display').DateFormat('Y-m'));
+	$('.datedisplay',target).text($.data(target[0],'display').DateFormat('Y-m'));
 	//日付初期化
 	$.data(target[0],'display',$.data(target[0],'display').DateCalc('first-of-month'));
 	//セル設定
