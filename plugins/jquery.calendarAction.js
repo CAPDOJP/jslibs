@@ -144,7 +144,6 @@ jQuery.fn.calendarAction = function(options){
 				.css(options.box[index]));
 			});
 		}
-		calendar.find('th,td').css({'width':'calc(100% / 7)'});
 		target.append(calendar);
 		/*
 		*------------------------------------------------------------
