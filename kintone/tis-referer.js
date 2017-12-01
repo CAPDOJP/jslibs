@@ -1913,7 +1913,7 @@ FieldsForm.prototype={
 		});
 		this.cover.show();
 		/* adjust container height */
-		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
+		this.contents.css({'height':(this.container.innerHeight()-this.buttonblock.outerHeight(true)).toString()+'px'});
 	},
 	/* hide form */
 	hide:function(){
