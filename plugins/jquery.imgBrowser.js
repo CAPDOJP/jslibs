@@ -54,6 +54,7 @@ jQuery.fn.imgBrowser = function(options){
 			'box-sizing':'border-box',
 			'display':'table-cell',
 			'height':'100%',
+			'padding':'1em 0px',
 			'position':'relative',
 			'vertical-align':'middle',
 			'white-space':'nowrap'
