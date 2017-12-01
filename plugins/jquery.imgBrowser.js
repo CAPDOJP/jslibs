@@ -46,7 +46,7 @@ jQuery.fn.imgBrowser = function(options){
 		var container=$('<div>').css({
 			'box-sizing':'border-box',
 			'display':'table',
-			'height':'100%',
+			'height':'calc(100% - 3em)',
 			'margin':'0px auto',
 			'position':'relative'
 		});
