@@ -1760,7 +1760,7 @@ var FieldsForm=function(options){
 	options.container.append(this.cover);
 	/* adjust container height */
 	$(window).on('load resize',function(){
-		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+		my.contents.css({'height':(my.container.innerHeight()-my.buttonblock.outerHeight(true)).toString()+'px'});
 	});
 	this.filebox=$('body').fileselect({
 		buttons:{
