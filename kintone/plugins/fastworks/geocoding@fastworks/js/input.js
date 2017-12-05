@@ -183,6 +183,7 @@ var FieldsForm=function(options){
 		'width':'100%',
 		'z-index':'2'
 	});
+	this.title=title.clone(true);
 	this.fieldcontainer=div.clone(true).addClass('container').css({'padding':'5px','width':'100%'}).append(label.clone(true).addClass('title'));
 	for (var i=0;i<this.fields.length;i++)
 	{
@@ -230,14 +231,14 @@ var FieldsForm=function(options){
 			.text(values.text)
 		);
 	});
-	this.container.append(title.clone(true).addClass('head'));
+	this.container.append(this.title.addClass('head'));
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
 	this.cover.append(this.container);
 	options.container.append(this.cover);
 	/* adjust container height */
 	$(window).on('load resize',function(){
-		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
+		my.contents.css({'height':(my.container.innerHeight()-my.buttonblock.outerHeight(true)-my.title.outerHeight(true)).toString()+'px'});
 	});
 };
 FieldsForm.prototype={
@@ -267,7 +268,7 @@ FieldsForm.prototype={
 		});
 		this.cover.show();
 		/* adjust container height */
-		this.contents.css({'height':(this.container.height()-this.buttonblock.outerHeight(true)).toString()+'px'});
+		this.contents.css({'height':(this.container.innerHeight()-this.buttonblock.outerHeight(true)-this.title.outerHeight(true)).toString()+'px'});
 	},
 	/* hide form */
 	hide:function(){

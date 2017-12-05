@@ -533,6 +533,10 @@ jQuery.extend({
 				if (!('date' in fieldinfos)) error='受講日';
 				if (!('starttime' in fieldinfos)) error='受講開始時刻';
 				if (!('hours' in fieldinfos)) error='受講時間';
+				if (!('staffcode' in fieldinfos)) error='担当者';
+				if (!('staffname' in fieldinfos)) error='担当者名';
+				if (!('overview' in fieldinfos)) error='講座内容';
+				if (!('report' in fieldinfos)) error='実施報告';
 				break;
 			case '8':
 				/* 朝練 */

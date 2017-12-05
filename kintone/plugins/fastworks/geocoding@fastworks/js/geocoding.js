@@ -66,6 +66,11 @@ jQuery.noConflict();
 		]
 	};
 	var functions={
+		/* map centering */
+		centering:function(){
+			if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) vars.map.map.setCenter(vars.map.markers[0].getPosition());
+			else vars.map.map.setCenter(new google.maps.LatLng(vars.markers[vars.markers.length-1].lat,vars.markers[vars.markers.length-1].lng));
+		},
 		/* display map */
 		displaymap:function(options){
 			var options=$.extend({
@@ -121,7 +126,6 @@ jQuery.noConflict();
 		/* data load */
 		loaddatas:function(condition,callback){
 			var filters=((condition==null)?'':condition);
-			filters+=' order by $id asc';
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:vars.config['app'],query:filters+' limit '+limit.toString()+' offset '+vars.offset[vars.config['app']].toString()},function(resp){
 				if (vars.apps[vars.config['app']]==null) vars.apps[vars.config['app']]=resp.records;
 				else Array.prototype.push.apply(vars.apps[vars.config['app']],resp.records);
@@ -231,7 +235,6 @@ jQuery.noConflict();
 												label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
 												label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
 												vars.markers.push({
-													index:resp.id,
 													id:resp.id,
 													address:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().replace(/\r?\n/g,''),
 													colors:vars.config['defaultcolor'],
@@ -264,7 +267,7 @@ jQuery.noConflict();
 						},
 						function(target){
 							var index=0;
-							for (var i=0;i<vars.markers.length;i++) if (vars.markers[i].index==target) index=i;
+							for (var i=0;i<vars.markers.length;i++) if (vars.markers[i].id==target) index=i;
 							/* marker click */
 							if (!('id' in vars.markers[index])) return;
 							var center=vars.map.map.getCenter();
@@ -303,11 +306,16 @@ jQuery.noConflict();
 												body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
 												body.record[vars.config['action']]={value:action};
 												kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-													vars.markers[index].datespan=new Date().format('Y-m-d');
-													vars.markers[index].action=action;
-													vars.markers[index].label='';
-													vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
-													vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
+													if (vars.markers[index].action!=action) vars.markers.splice(index,1);
+													else
+													{
+														vars.markers[index].label='';
+														vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
+														vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
+														vars.markers[index].extensionindex=0;
+														vars.markers[index].datespan=new Date().format('Y-m-d');
+														vars.markers[index].action=action;
+													}
 													functions.reloadmap(function(){vars.map.map.setCenter(center)});
 												},function(error){
 													alert(error.message);
@@ -371,7 +379,12 @@ jQuery.noConflict();
 								}
 								if (!$(this).prop('checked')) vars.chaselocation.find('input[type=checkbox]').prop('checked',false);
 								/* swtich view of marker */
-								functions.reloadmap();
+								functions.reloadmap(function(){
+									functions.centering();
+								});
+								/* swtich view of editorconfirm */
+								vars.editorconfirm.hide();
+								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							})
 						)
 						.append(span.clone(true).text('現在地を表示'));
@@ -391,8 +404,13 @@ jQuery.noConflict();
 									{
 										vars.currentlocation.find('input[type=checkbox]').prop('checked',true);
 										/* swtich view of marker */
-										functions.reloadmap();
+										functions.reloadmap(function(){
+											vars.map.map.setCenter(vars.map.markers[0].getPosition());
+										});
 									}
+								/* swtich view of editorconfirm */
+								vars.editorconfirm.hide();
+								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							})
 						)
 						.append(span.clone(true).text('現在地を追跡（ドライブモード）'));
@@ -409,6 +427,9 @@ jQuery.noConflict();
 								}
 								if ($(this).prop('checked')) vars.map.openinfowindow();
 								else vars.map.closeinfowindow();
+								/* swtich view of editorconfirm */
+								vars.editorconfirm.hide();
+								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							})
 						)
 						.append(span.clone(true).text('情報ウインドウを表示'));
@@ -425,6 +446,9 @@ jQuery.noConflict();
 								}
 								/* swtich view of marker */
 								functions.reloadmap();
+								/* swtich view of editorconfirm */
+								vars.editorconfirm.hide();
+								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							})
 						)
 						.append(span.clone(true).text('経過日数を表示'));
@@ -442,6 +466,9 @@ jQuery.noConflict();
 								/* swtich view of poi */
 								if ($(this).prop('checked')) vars.map.map.setOptions({styles:vars.styles.show});
 								else vars.map.map.setOptions({styles:vars.styles.hide});
+								/* swtich view of editorconfirm */
+								vars.editorconfirm.hide();
+								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							})
 						)
 						.append(span.clone(true).text('施設を表示'));
@@ -449,7 +476,10 @@ jQuery.noConflict();
 						vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
 						.text('地図を表示')
 						.on('click',function(e){
-							functions.reloadmap(function(){vars.isdisplaymap=true;});
+							functions.reloadmap(function(){
+								vars.isdisplaymap=true;
+								functions.centering();
+							});
 						});
 						vars.map.buttonblock
 						.prepend(
@@ -461,6 +491,9 @@ jQuery.noConflict();
 							.on('click',function(){
 								if (vars.ismobile) $('div.customview-navi').show();
 								else $('div.customview-navi').addClass('show');
+								/* swtich view of editorconfirm */
+								vars.editorconfirm.hide();
+								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							})
 						)
 						.prepend(
@@ -475,6 +508,9 @@ jQuery.noConflict();
 											.on('click',function(){
 												if (vars.ismobile) $('div.customview-navi').hide();
 												else $('div.customview-navi').removeClass('show');
+												/* swtich view of editorconfirm */
+												vars.editorconfirm.hide();
+												if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 											})
 										)
 								)
@@ -488,7 +524,11 @@ jQuery.noConflict();
 								)
 							)
 						)
-						.find('#mapclose').on('click',function(){vars.isdisplaymap=false;});
+						.find('#mapclose').on('click',function(){
+							vars.isdisplaymap=false;
+							vars.editorconfirm.hide();
+							if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
+						});
 						if (vars.ismobile)
 						{
 							$('button.customview-menu').css({
@@ -608,7 +648,6 @@ jQuery.noConflict();
 					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
 					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					markers.push({
-						index:record['$id'].value,
 						id:record['$id'].value,
 						address:record[vars.config['address']].value,
 						colors:vars.config['defaultcolor'],
@@ -623,6 +662,11 @@ jQuery.noConflict();
 					});
 				}
 			}
+			markers.sort(function(a,b){
+				if(new Date(a.datespan.dateformat())<new Date(b.datespan.dateformat())) return -1;
+				if(new Date(a.datespan.dateformat())>new Date(b.datespan.dateformat())) return 1;
+				return 0;
+			});
 			return markers;
 		},
 		/* swtich view of marker */
@@ -674,8 +718,7 @@ jQuery.noConflict();
 						isextensionindex:isextensionindex,
 						isopeninfowindow:isopeninfowindow,
 						callback:function(){
-							vars.map.markers[0].setZIndex(1)
-							for (var i=1;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
+							for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
 							if (callback!==undefined) callback();
 						}
 					});
@@ -690,7 +733,6 @@ jQuery.noConflict();
 					isopeninfowindow:isopeninfowindow,
 					callback:function(){
 						for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
-						vars.map.map.setCenter(vars.map.markers[vars.map.markers.length-1].getPosition());
 						if (callback!==undefined) callback();
 					}
 				});
@@ -784,7 +826,12 @@ jQuery.noConflict();
 						if(parseInt(a.index)>parseInt(b.index)) return 1;
 						return 0;
 					});
-					for (var i=0;i<views.length;i++) vars.viewlist.append($('<option>').attr('id',views[i].id).text(views[i].name).val(views[i].filterCond));
+					for (var i=0;i<views.length;i++)
+					{
+						var sort=(views[i].sort)?views[i].sort:'';
+						if (sort.length!=0) sort=' order by '+sort.replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,'');
+						vars.viewlist.append($('<option>').attr('id',views[i].id).text(views[i].name).val(views[i].filterCond+sort));
+					}
 					vars.viewlist.on('change',function(){
 						if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
 						vars.isdisplaymap=false;
@@ -793,6 +840,7 @@ jQuery.noConflict();
 						functions.loaddatas($(this).val(),function(){
 							functions.reloadmap(function(){
 								vars.isdisplaymap=true;
+								functions.centering();
 								$('div.customview-navi').hide();
 							});
 						});
@@ -801,12 +849,13 @@ jQuery.noConflict();
 					functions.loaddatas(vars.viewlist.val(),function(){
 						functions.reloadmap(function(){
 							vars.isdisplaymap=true;
+							functions.centering();
 							if (vars.splash!=null) vars.splash.hide();
 						});
 					});
 				},function(error){if (vars.splash!=null) vars.splash.hide();});
 			}
-			else functions.loaddatas(kintone.app.getQueryCondition());
+			else functions.loaddatas(kintone.app.getQuery().replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,''));
 		},function(error){if (vars.splash!=null) vars.splash.hide();});
 		return event;
 	});
