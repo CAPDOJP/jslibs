@@ -152,6 +152,11 @@ jQuery.noConflict();
 	    	swal('Error!','緯度表示フィールドと経度表示フィールドは異なるフィールドを選択して下さい。','error');
 	    	return;
 	    }
+	    if (!$('input#defaultcolor').val())
+	    {
+	    	swal('Error!','マーカー規定色を選択して下さい。','error');
+	    	return;
+	    }
 	    if ($('input#defaultcolor').val()=='')
 	    {
 	    	swal('Error!','マーカー規定色を選択して下さい。','error');

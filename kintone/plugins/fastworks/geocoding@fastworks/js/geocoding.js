@@ -665,7 +665,8 @@ jQuery.noConflict();
 			markers.sort(function(a,b){
 				if(new Date(a.datespan.dateformat())<new Date(b.datespan.dateformat())) return -1;
 				if(new Date(a.datespan.dateformat())>new Date(b.datespan.dateformat())) return 1;
-				return 0;
+				if(parseInt(a.id)<parseInt(b.id)) return -1;
+				return 1;
 			});
 			return markers;
 		},
@@ -683,7 +684,8 @@ jQuery.noConflict();
 				markers.sort(function(a,b){
 					if(parseFloat('0'+a.extensionindex)<parseFloat('0'+b.extensionindex)) return -1;
 					if(parseFloat('0'+a.extensionindex)>parseFloat('0'+b.extensionindex)) return 1;
-					return 0;
+					if(parseInt(a.id)<parseInt(b.id)) return -1;
+					return 1;
 				});
 			}
 			for (var i=0;i<markers.length;i++)

@@ -1126,7 +1126,7 @@ var TermSelect=function(options){
 			})
 			.on('click',function(){
 				activerow=$(this).closest('div');
-				my.calendar.show({activedate:new Date($('.date',$(this).closest('div')).text())});
+				my.calendar.show({activedate:new Date($('.date',$(this).closest('div')).text().dateformat())});
 			})
 		);
 	}
@@ -1475,7 +1475,7 @@ var FieldsForm=function(options){
 							target.closest('.container').find('.receiver').val(value);
 						}
 					});
-					calendar.show({activedate:new Date(target.closest('.container').find('.label').text())});
+					calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
 				});
 				fieldcontainer.append(receiver);
 				break;
@@ -1491,7 +1491,7 @@ var FieldsForm=function(options){
 							target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
 						}
 					});
-					calendar.show({activedate:new Date(target.closest('.container').find('.label').text())});
+					calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
 				});
 				$('.receiverhour',receiver).on('change',function(){
 					$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
@@ -1862,14 +1862,14 @@ FieldsForm.prototype={
 				case 'DATE':
 					if (!values.value) return true;
 					if (values.value.length==0) return true;
-					$('.label',$('#'+key)).text(values.value.dateformat());
-					$('.receiver',$('#'+key)).val(values.value.dateformat());
+					$('.label',$('#'+key)).text(values.value);
+					$('.receiver',$('#'+key)).val(values.value);
 					break;
 				case 'DATETIME':
 					if (!values.value) return true;
 					if (values.value.length==0) return true;
 					$('.label',$('#'+key)).text(new Date(values.value.dateformat()).format('Y-m-d'));
-					$('.receiver',$('#'+key)).val(values.value.dateformat());
+					$('.receiver',$('#'+key)).val(values.value);
 					$('.receiverhour',$('#'+key)).val(new Date(values.value.dateformat()).format('H'));
 					$('.receiverminute',$('#'+key)).val(new Date(values.value.dateformat()).format('i'));
 					break;
