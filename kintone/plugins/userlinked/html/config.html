@@ -1,0 +1,95 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">設定対象</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="segment">
+					<option value="1">ユーザー</option>
+					<option value="2">組織</option>
+					<option value="3">グループ</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="settings">
+			<thead>
+				<tr>
+					<th>名称</th>
+					<th>初期表示一覧</th>
+					<th>必須入力フィールド</th>
+					<th>自動入力フィールド</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="caption">
+						<span id="targetname"></span>
+						<input type="hidden" id="target">
+					</td>
+					<td class="view">
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="view">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<table class="inner requires">
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="requirefield">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+					<td>
+						<table class="inner autos">
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="autofield">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="autovalue">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="kintoneplugin-caution">*自動入力フィールドに文字列(1行)フィールドを指定した場合は、ログインユーザー名・組織名・グループ名が自動挿入されます。</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

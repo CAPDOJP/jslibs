@@ -220,8 +220,11 @@ jQuery.noConflict();
 					functions.displaymap({
 						address:event.changes.field.value,
 						callback:function(json){
-							$('body').fields(vars.config['lat'])[0].val(json.results[0].geometry.location.lat);
-							$('body').fields(vars.config['lng'])[0].val(json.results[0].geometry.location.lng);
+							var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+							record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
+							record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
+							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
+							else kintone.app.record.set(record);
 						}
 					});
 				}

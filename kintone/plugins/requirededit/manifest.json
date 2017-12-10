@@ -1,0 +1,43 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone フィールド必須入力情報一括編集プラグイン",
+        "en":"kintone Required-Setup plug-in",
+        "zh":"kintone フィールド必須入力情報一括編集プラグイン"
+    },
+    "description":{
+        "ja":"フィールドの必須入力設定を一括編集するプラグインです。",
+        "en":"This plug-in will bulk edits the required input setting of the field",
+        "zh":"フィールドの必須入力設定を一括編集するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/requirededit.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css"
+        ]
+    }
+}
