@@ -199,7 +199,7 @@ jQuery.noConflict();
 			button.clone(true)
 			.text('OK')
 			.on('click',function(e){
-				$.each($('.fields',this.contents),function(index){
+				$.each($('.fields',my.contents),function(index){
 					var row=$(this);
 					my.fieldinfos[row.attr('id')].label=$('.name',row).val();
 					my.fieldinfos[row.attr('id')].code=$('.code',row).val();
@@ -239,19 +239,20 @@ jQuery.noConflict();
 			var options=$.extend({
 				fieldinfos:{}
 			},options);
+			var my=this;
 			/* clear fields */
 			this.contents.empty();
 			/* initialize property */
 			this.fieldinfos=options.fieldinfos;
 			/* append fields */
 			$.each(this.fieldinfos,function(key,values){
-				var row=this.template.clone(true).attr('id',values.code);
+				var row=my.template.clone(true).attr('id',values.code);
 				$('.name',row).val(values.label);
 				$('.code',row).val(values.code);
 				$('.receiver',$('required',row)).prop('checked',values.required);
 				if ('unique' in values) $('.receiver',$('.unique',row)).prop('checked',values.unique);
 				else $('.unique',row).hide();
-				this.contents.append(row);
+				my.contents.append(row);
 			});
 			this.cover.show();
 			/* adjust container height */
