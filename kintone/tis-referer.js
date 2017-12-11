@@ -1857,7 +1857,7 @@ FieldsForm.prototype={
 			{
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
-					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\\\''),$('#'+key)).prop('checked',true);
+					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\''),$('#'+key)).prop('checked',true);
 					break;
 				case 'DATE':
 					if (!values.value) return true;
@@ -1891,7 +1891,7 @@ FieldsForm.prototype={
 					$('.receiver',$('#'+key)).val(receiver.join(','));
 					break;
 				case 'RADIO_BUTTON':
-					$('#'+values.value.replace(/'/g,'\\\\\''),$('#'+key)).prop('checked',true);
+					$('#'+values.value.replace(/'/g,'\\\''),$('#'+key)).prop('checked',true);
 					break;
 				case 'TIME':
 					if (!values.value) return true;
