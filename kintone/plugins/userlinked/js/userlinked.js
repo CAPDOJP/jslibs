@@ -84,7 +84,8 @@ jQuery.noConflict();
 		functions.checklogin(function(resp){
 			vars.setting=resp;
 			/* check viewid */
-			if (vars.setting.view.length!=0 && vars.setting.view!=event.viewId && $.queries.length==0)
+			console.log($.queries());
+			if (vars.setting.view.length!=0 && vars.setting.view!=event.viewId && Object.keys($.queries()).length==0)
 				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?view='+vars.setting.view;
 		});
 		return event;
