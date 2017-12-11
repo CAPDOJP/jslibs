@@ -1858,7 +1858,7 @@ FieldsForm.prototype={
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
 					for (var i=0;i<values.value.length;i++)
-						if (values.value.match(/'/g)) $("#"+values.value[i],$('#'+key)).prop('checked',true);
+						if (values.value[i].match(/'/g)) $("#"+values.value[i],$('#'+key)).prop('checked',true);
 						else $('#'+values.value[i],$('#'+key)).prop('checked',true);
 					break;
 				case 'DATE':
