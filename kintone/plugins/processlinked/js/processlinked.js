@@ -145,6 +145,7 @@ jQuery.noConflict();
 					}
 					else resolve(event);
 				}
+				else resolve(event);
 			},function(error){});
 		});
 	});

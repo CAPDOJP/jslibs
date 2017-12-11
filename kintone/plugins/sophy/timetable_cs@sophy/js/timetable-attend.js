@@ -116,7 +116,6 @@ jQuery.noConflict();
 			.on('click',function(){
 				var cell=$(this).closest('td');
 				$.entryhistory(vars.config['history'],0,cell,function(record){
-					vars.apps[vars.config['history']].push(record);
 					$('.lecture',cell).addClass('textonly').empty().append($('<span>').text('出席'));
 				});
 			})
@@ -128,7 +127,6 @@ jQuery.noConflict();
 			.on('click',function(){
 				var cell=$(this).closest('td');
 				$.entryhistory(vars.config['history'],1,cell,function(record){
-					vars.apps[vars.config['history']].push(record);
 					$('.lecture',cell).empty().addClass('textonly').append($('<span>').text('欠席'));
 				});
 			})
@@ -157,15 +155,21 @@ jQuery.noConflict();
 			);
 			if (history.length!=0)
 			{
-				if (history[0]['absence'].value=='0') $('.lecture',cell).addClass('textonly').append($('<span>').text('出席'));
-				else $('.lecture',cell).addClass('textonly').append($('<span>').text('欠席'));
+				switch (history[0]['absence'].value)
+				{
+					case '0':
+						$('.lecture',cell).addClass('textonly').append($('<span>').text('出席'));
+						break;
+					case '1':
+						$('.lecture',cell).addClass('textonly').append($('<span>').text('欠席'));
+						break;
+					case '2':
+						$('.lecture',cell).append($('<span>').addClass('button green').append(green))
+						cell.append($('<input type="hidden">').attr('id','historyid').val(history[0]['$id'].value));
+						break;
+				}
 			}
-			else
-			{
-				$('.lecture',cell)
-				.append($('<span>').addClass('button').append(green))
-				.append($('<span>').addClass('button').append(red));
-			}
+			else $('.lecture',cell).append($('<span>').addClass('button red').append(red));
 			/* append balloon */
 			var balloon=$('<div class="timetable-balloon">');
 			var inner='';
@@ -192,73 +196,77 @@ jQuery.noConflict();
 			vars.apps[kintone.app.getId()]=null;
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
-				var records=vars.apps[kintone.app.getId()];
-				var heads=[];
-				/* append recoed of schedule */
-				if (vars.date>new Date().calc('-1 day'))
-					Array.prototype.push.apply(records,$.createschedule(
-						vars.apps[vars.config['student']],
-						vars.apps[vars.lecturekeys[0]],
-						records,
-						vars.lecturekeys[0],
-						vars.lectures[vars.lecturekeys[0]].name,
-						vars.week,
-						vars.date,
-						vars.const['transferlimit'].value
-					));
-				/* sort */
-				records.sort(function(a,b){
-					if(a['starttime'].value<b['starttime'].value) return -1;
-					if(a['starttime'].value>b['starttime'].value) return 1;
-					return 0;
-				});
-				/* clear balloon */
-				$('div.timetable-balloon').remove();
-				/* create rowheads */
-				$.each(records,function(index){
-					if ($.inArray(records[index]['studentcode'].value,heads)<0) heads.push(records[index]['studentcode'].value);
-				});
-				/* initialize table */
-				vars.table.clearrows();
-				/* place the segment data */
-				for (var i=0;i<heads.length;i++)
-				{
-					var filter=$.grep(records,function(item,index){
-						var exists=0;
-						if (item['studentcode'].value==heads[i]) exists++;
-						if (item['transfered'].value==0) exists++;
-						if (item['transferpending'].value==0) exists++;
-						return exists==3;
+				vars.apps[vars.config['history']]=null;
+				vars.offset[vars.config['history']]=0;
+				functions.loaddatas(vars.config['history'],function(){
+					var records=vars.apps[kintone.app.getId()];
+					var heads=[];
+					/* append recoed of schedule */
+					if (vars.date>new Date().calc('-1 day'))
+						Array.prototype.push.apply(records,$.createschedule(
+							vars.apps[vars.config['student']],
+							vars.apps[vars.lecturekeys[0]],
+							records,
+							vars.lecturekeys[0],
+							vars.lectures[vars.lecturekeys[0]].name,
+							vars.week,
+							vars.date,
+							vars.const['transferlimit'].value
+						));
+					/* sort */
+					records.sort(function(a,b){
+						if(a['starttime'].value<b['starttime'].value) return -1;
+						if(a['starttime'].value>b['starttime'].value) return 1;
+						return 0;
 					});
-					/* rebuild view */
-					functions.build(filter);
-				}
-				/* merge row */
-				var rowspans={cache:'',index:-1,span:0};
-				$.each(vars.table.contents.find('tr'),function(index){
-					var row=vars.table.contents.find('tr').eq(index);
-					var cell=row.find('td').eq(0);
-					if (rowspans.cache!=cell.find('p').text())
+					/* clear balloon */
+					$('div.timetable-balloon').remove();
+					/* create rowheads */
+					$.each(records,function(index){
+						if ($.inArray(records[index]['studentcode'].value,heads)<0) heads.push(records[index]['studentcode'].value);
+					});
+					/* initialize table */
+					vars.table.clearrows();
+					/* place the segment data */
+					for (var i=0;i<heads.length;i++)
 					{
-						if (rowspans.index!=-1)
-						{
-							vars.table.contents.find('tr').eq(rowspans.index).find('td').eq(0).attr('rowspan',rowspans.span);
-							for (var i=rowspans[i].index+1;i<index;i++) vars.table.contents.find('tr').eq(i).find('td').eq(0).hide();
-						}
-						rowspans.cache=cell.find('p').text();
-						rowspans.index=index;
-						rowspans.span=0;
+						var filter=$.grep(records,function(item,index){
+							var exists=0;
+							if (item['studentcode'].value==heads[i]) exists++;
+							if (item['transfered'].value==0) exists++;
+							if (item['transferpending'].value==0) exists++;
+							return exists==3;
+						});
+						/* rebuild view */
+						functions.build(filter);
 					}
-					rowspans.span++;
+					/* merge row */
+					var rowspans={cache:'',index:-1,span:0};
+					$.each(vars.table.contents.find('tr'),function(index){
+						var row=vars.table.contents.find('tr').eq(index);
+						var cell=row.find('td').eq(0);
+						if (rowspans.cache!=cell.find('p').text())
+						{
+							if (rowspans.index!=-1)
+							{
+								vars.table.contents.find('tr').eq(rowspans.index).find('td').eq(0).attr('rowspan',rowspans.span);
+								for (var i=rowspans[i].index+1;i<index;i++) vars.table.contents.find('tr').eq(i).find('td').eq(0).hide();
+							}
+							rowspans.cache=cell.find('p').text();
+							rowspans.index=index;
+							rowspans.span=0;
+						}
+						rowspans.span++;
+					});
+					var index=vars.table.contents.find('tr').length-1;
+					var row=vars.table.contents.find('tr').last();
+					var cell=row.find('td').eq(0);
+					if (rowspans.cache==cell.find('p').text() && rowspans.index!=index)
+					{
+						vars.table.contents.find('tr').eq(rowspans.index).find('td').eq(0).attr('rowspan',rowspans.span);
+						for (var i=rowspans.index+1;i<index+1;i++) vars.table.contents.find('tr').eq(i).find('td').eq(0).hide();
+					}
 				});
-				var index=vars.table.contents.find('tr').length-1;
-				var row=vars.table.contents.find('tr').last();
-				var cell=row.find('td').eq(0);
-				if (rowspans.cache==cell.find('p').text() && rowspans.index!=index)
-				{
-					vars.table.contents.find('tr').eq(rowspans.index).find('td').eq(0).attr('rowspan',rowspans.span);
-					for (var i=rowspans.index+1;i<index+1;i++) vars.table.contents.find('tr').eq(i).find('td').eq(0).hide();
-				}
 			});
 		},
 		/* reload datas */
@@ -266,8 +274,7 @@ jQuery.noConflict();
 			var query=kintone.app.getQueryCondition();
 			var body={
 				app:appkey,
-				query:'',
-				fields:vars.fields
+				query:''
 			};
 			query+=((query.length!=0)?' and ':'');
 			query+='date="'+vars.date.format('Y-m-d')+'"';
@@ -411,14 +418,6 @@ jQuery.noConflict();
 		param.push({
 			app:vars.config['const'],
 			appname:'基本情報',
-			limit:limit,
-			offset:0,
-			records:[],
-			isstudent:false
-		});
-		param.push({
-			app:vars.config['history'],
-			appname:'受講履歴',
 			limit:limit,
 			offset:0,
 			records:[],

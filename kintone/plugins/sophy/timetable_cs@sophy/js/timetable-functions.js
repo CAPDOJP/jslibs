@@ -194,27 +194,47 @@ jQuery.extend({
 		}
 	},
 	entryhistory:function(appcode,absence,cell,callback){
-		var body={
-			app:appcode,
-			record:{
-				studentcode:{value:$('#studentcode',cell).val()},
-				studentname:{value:$('#studentname',cell).val()},
-				appcode:{value:$('#appcode',cell).val()},
-				appname:{value:$('#appname',cell).val()},
-				coursecode:{value:$('#coursecode',cell).val()},
-				coursename:{value:$('#coursename',cell).val()},
-				date:{value:new Date($('#date',cell).val().dateformat()).format('Y-m-d')},
-				starttime:{value:$('#starttime',cell).val()},
-				hours:{value:$('#hours',cell).val()},
-				absence:{value:absence.toString()},
-				reporttable:{value:[]}
-			}
-		};
-		kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-			if (callback!=null) callback(body.record);
-		},function(error){
-			swal('Error!',error.message,'error');
-		});
+		if (absence=='1')
+		{
+			var body={
+				app:appcode,
+				record:{
+					studentcode:{value:$('#studentcode',cell).val()},
+					studentname:{value:$('#studentname',cell).val()},
+					appcode:{value:$('#appcode',cell).val()},
+					appname:{value:$('#appname',cell).val()},
+					coursecode:{value:$('#coursecode',cell).val()},
+					coursename:{value:$('#coursename',cell).val()},
+					date:{value:new Date($('#date',cell).val().dateformat()).format('Y-m-d')},
+					starttime:{value:$('#starttime',cell).val()},
+					hours:{value:$('#hours',cell).val()},
+					lookback:{value:''},
+					motivation:{value:[]},
+					absence:{value:absence.toString()},
+					reporttable:{value:[]}
+				}
+			};
+			kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+				if (callback!=null) callback(body.record);
+			},function(error){
+				swal('Error!',error.message,'error');
+			});
+		}
+		else
+		{
+			var body={
+				app:appcode,
+				id:$('#historyid',cell).val(),
+				record:{
+					absence:{value:absence.toString()}
+				}
+			};
+			kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+				if (callback!=null) callback(body.record);
+			},function(error){
+				swal('Error!',error.message,'error');
+			});
+		}
 	},
 	entryminilec:function(lecturecode,lecturename,course,cell,terms,progress,entries,callback){
 		if ((function(values,entries){
@@ -657,20 +677,6 @@ jQuery.extend({
 				if (!('textbookbillmonths' in fieldinfos)) error='通常講座教材費請求月';
 				if (!('taxshift' in fieldinfos)) error='税転嫁';
 				if (!('taxround' in fieldinfos)) error='税端数';
-				break;
-			case '14':
-				/* 受講履歴 */
-				if (!('studentcode' in fieldinfos)) error='生徒番号';
-				if (!('studentname' in fieldinfos)) error='生徒名';
-				if (!('appcode' in fieldinfos)) error='講座アプリコード';
-				if (!('appname' in fieldinfos)) error='講座アプリ名';
-				if (!('coursecode' in fieldinfos)) error='講座コースコード';
-				if (!('coursename' in fieldinfos)) error='講座コース名';
-				if (!('date' in fieldinfos)) error='受講日';
-				if (!('starttime' in fieldinfos)) error='受講開始時刻';
-				if (!('hours' in fieldinfos)) error='受講時間';
-				if (!('absence' in fieldinfos)) error='欠席';
-				if (!('reporttable' in properties)) error='レポート記入テーブル';
 				break;
 		}
 		if (error.length!=0)

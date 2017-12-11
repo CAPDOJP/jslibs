@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "requirededit -config.js-"
+* jQuery-Plugin "bulksettings -config.js-"
 * Version: 3.0
 * Copyright (c) 2017 TIS
 *

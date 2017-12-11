@@ -23,7 +23,7 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "js/sweetalert.min.js",
-            "js/requirededit.js"
+            "js/bulksettings.js"
         ],
         "css":[
             "css/loading.css",

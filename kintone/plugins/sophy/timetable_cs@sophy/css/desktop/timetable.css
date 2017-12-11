@@ -377,10 +377,10 @@ table.timetable-attend tbody tr td{
   position:relative;
   vertical-align:top;
 }
-table.timetable-attend tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(1):after{
+table.timetable-attend tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span.green:after{
   content:'出席';
 }
-table.timetable-attend tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span:nth-of-type(2):after{
+table.timetable-attend tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span.red:after{
   content:'欠席';
 }
 /* individual style (scheduling) */
