@@ -544,27 +544,45 @@ jQuery.fn.editortable = function(options){
 			callback:null,
 			aftercallback:null
 		},
-		callback:null
+		callback:null,
+		messagewindow:null
 	},options);
 	return $(this).each(function(){
 		var table=$(this);
+		var deleterow=function(row){
+			var rows=table.children('tbody').children('tr');
+			if (options.delete.callback!=null) options.delete.callback(row);
+			table.removerow({row:rows.index(row),resetoptions:options.resetoptions});
+			if (options.delete.aftercallback!=null) options.delete.aftercallback();
+			rows=table.children('tbody').children('tr');
+			if (!rows.last().isEmpty()) table.addrow(options);
+			if (options.callback!=null) options.callback(rows.last());
+		};
 		//要素チェック
 		if (table.children('tbody')==null)
 		{
-			alert('tableにはtbody要素を追加して下さい。');
+			if (options.messagewindow) options.messagewindow.messageShow('エラー','tableにはtbody要素を追加して下さい。');
+			else alert('tableにはtbody要素を追加して下さい。');
 			return;
 		}
 		if (options.delete.button.length!=0)
 			table.on('click',options.delete.button,function(){
-				if (!options.delete.silent) if (!confirm('削除します。\nよろしいですか？')) return;
-				var my=$(this).closest('table');
 				var row=$(this).closest('tr');
-				var rows=my.children('tbody').children('tr');
-				if (options.delete.callback!=null) options.delete.callback(row);
-				my.removerow({row:rows.index(row),resetoptions:options.resetoptions});
-				if (options.delete.aftercallback!=null) options.delete.aftercallback();
-				if (!my.children('tbody').children('tr').last().isEmpty()) my.addrow(options);
-				if (options.callback!=null) options.callback(my.children('tbody').children('tr').last());
+				if (options.messagewindow)
+				{
+					if (!options.delete.silent)
+					{
+						options.messagewindow.messageShow('確認','削除します。よろしいですか？',function(){
+							deleterow(row);
+						});
+					}
+					else deleterow(row);
+				}
+				else
+				{
+					if (!options.delete.silent) if (!confirm('削除します。\nよろしいですか？')) return;
+					deleterow(row);
+				}
 			});
 		table.on('keyup','input,select,textarea',function(){
 			var my=$(this).closest('table');
