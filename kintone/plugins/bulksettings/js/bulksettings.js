@@ -172,6 +172,7 @@ jQuery.noConflict();
 				var fieldinfo=($.data(row[0],'tablecode').length!=0)?my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')]:my.fieldinfos[row.attr('id')];
 				var values={};
 				values[fieldinfo.code]={value:fieldinfo.defaultValue};
+				console.log(fieldinfo.defaultValue);
 				inputform.show({
 					buttons:{
 						ok:function(){
@@ -180,6 +181,7 @@ jQuery.noConflict();
 							var contents=$('#'+fieldinfo.code,inputform.contents);
 							var receivevalue=$('.receiver',contents).val();
 							var receivevalues=[];
+							console.log(receivevalue);
 							switch (fieldinfo.type)
 							{
 								case 'CHECK_BOX':
@@ -191,12 +193,11 @@ jQuery.noConflict();
 								case 'ORGANIZATION_SELECT':
 								case 'USER_SELECT':
 									var codes=receivevalue.split(',');
-									var names=$('.label',contents).text().split(',');
-									for (var i=0;i<values.length;i++) receivevalues.push({code:codes[i],name:names[i]});
+									for (var i=0;i<values.length;i++) receivevalues.push({code:codes[i],type:fieldinfo.type});
 									fieldinfo.defaultValue=receivevalues;
 									break;
 								case 'RADIO_BUTTON':
-									receivevalue=$('[name='+fieldinfo.code+']:checked').val();
+									receivevalue=$('[name='+fieldinfo.code+']:checked',contents).val();
 									fieldinfo.defaultValue=receivevalue;
 									break;
 								default:
@@ -225,18 +226,26 @@ jQuery.noConflict();
 			'text-align':'center',
 			'vertical-align':'top'
 		});
-		var textline=$('<input type="text" class="receiver">').css({
-			'border':'1px solid #3498db',
-			'border-radius':'2px',
-			'box-sizing':'border-box',
-			'display':'lnline-block',
-			'height':'30px',
-			'line-height':'30px',
-			'margin':'0px 10px 0px 0px',
+		var textline=div.clone(true).css({
+			'display':'inline-block',
 			'padding':'0px 5px',
 			'vertical-align':'top',
-			'width':'calc(50% - 210px)'
-		});
+			'width':'calc(50% - 200px)'
+		})
+		.append(
+			$('<input type="text" class="receiver">').css({
+				'border':'1px solid #3498db',
+				'border-radius':'2px',
+				'box-sizing':'border-box',
+				'display':'lnline-block',
+				'height':'30px',
+				'line-height':'30px',
+				'margin':'0px',
+				'padding':'0px 5px',
+				'vertical-align':'top',
+				'width':'100%'
+			})
+		);
 		/* append elements */
 		this.cover=div.clone(true).css({
 			'background-color':'rgba(0,0,0,0.5)',
@@ -287,8 +296,7 @@ jQuery.noConflict();
 			'width':'100%',
 			'z-index':'2'
 		});
-		this.template=div.clone(true).addClass('fields').css({'border-bottom':'1px dotted #3498db','padding':'5px','width':'100%'});
-		this.template
+		this.template=div.clone(true).addClass('fields').css({'border-bottom':'1px dotted #3498db','padding':'5px','width':'100%'})
 		.append(textline.clone(true).addClass('label'))
 		.append(textline.clone(true).addClass('code'))
 		.append(checkbox.clone(true).addClass('required'))
@@ -297,8 +305,8 @@ jQuery.noConflict();
 		$('.label',$('.required',this.template)).text('必須項目');
 		$('.label',$('.unique',this.template)).text('重複禁止');
 		this.title=$('<p>')
-		.append(span.clone(true).css({'padding-right':'10px','width':'calc(50% - 200px)'}).text('フィールド名'))
-		.append(span.clone(true).css({'padding-right':'10px','width':'calc(50% - 200px)'}).text('フィールドコード'))
+		.append(span.clone(true).css({'width':'calc(50% - 200px)'}).text('フィールド名'))
+		.append(span.clone(true).css({'width':'calc(50% - 200px)'}).text('フィールドコード'))
 		.append(span.clone(true).css({'width':'100px'}).text('必須'))
 		.append(span.clone(true).css({'width':'100px'}).text('重複'))
 		.append(span.clone(true).css({'width':'200px'}).text('初期値'));
@@ -309,8 +317,8 @@ jQuery.noConflict();
 				$.each($('.fields',my.contents),function(index){
 					var row=$(this);
 					var fieldinfo=($.data(row[0],'tablecode').length!=0)?my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')]:my.fieldinfos[row.attr('id')];
-					fieldinfo.label=$('.receiver.label',row).val();
-					fieldinfo.code=$('.receiver.code',row).val();
+					fieldinfo.label=$('.receiver',$('.label',row)).val();
+					fieldinfo.code=$('.receiver',$('.code',row)).val();
 					fieldinfo.required=$('.receiver',$('.required',row)).prop('checked');
 					if ($('.unique',row).is(':visible')) fieldinfo.unique=$('.receiver',$('.unique',row)).prop('checked');
 				});
@@ -391,8 +399,8 @@ jQuery.noConflict();
 					{
 						var row=my.template.clone(true).attr('id',values.code);
 						$.data(row[0],'tablecode',tablecode);
-						$('.receiver.label',row).val(values.label);
-						$('.receiver.code',row).val(values.code);
+						$('.receiver',$('.label',row)).val(values.label);
+						$('.receiver',$('.code',row)).val(values.code);
 						$('.receiver',$('.required',row)).prop('checked',values.required);
 						if ('unique' in values) $('.receiver',$('.unique',row)).prop('checked',values.unique);
 						else $('.unique',row).css({'visibility':'hidden'});
