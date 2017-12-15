@@ -1,0 +1,40 @@
+/* individual style */
+table#facilitatorcomment tr.odd{
+	background-color:#FFFFFF;
+}
+table#facilitatorcomment tr.even{
+	background-color:#EFFAFE;
+}
+table#facilitatorcomment tr td,
+table#facilitatorcomment tr th{
+	padding:0px;
+	font-size:14px;
+	height:auto;
+	line-height:30px;
+	vertical-align:top;
+}
+table#facilitatorcomment tr td.adjust,
+table#facilitatorcomment tr th.adjust{
+	cursor:col-resize;
+}
+table#facilitatorcomment tr td div,
+table#facilitatorcomment tr th div{
+	box-sizing:border-box;
+    overflow:hidden;
+	padding:0px 3px;
+	text-overflow:'';
+	vertical-align:top;
+    white-space:nowrap;
+	width:100%;
+}
+table#facilitatorcomment tr td a,
+table#facilitatorcomment tr td span,
+table#facilitatorcomment tr td img{
+	display:block;
+}
+table#facilitatorcomment img.facilitatorcomment-thumbnail{
+	border:none;
+	cursor:pointer;
+	margin:3px 0px;
+	height:54px;
+}

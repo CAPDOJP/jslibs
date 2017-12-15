@@ -78,6 +78,11 @@
   padding: 3px 5px;
   position: relative;
 }
+.kintoneplugin-unit.color {
+  border-radius: 2px;
+  cursor: pointer;
+  width:100px;
+}
 
 /* テキストボックス */
 /*
@@ -457,55 +462,4 @@
   -webkit-transition: background-color 0s linear;
   -moz-transition: background-color 0s linear;
   transition: background-color 0s linear;
-}
-
-/* Custom */
-span.kintoneplugin-span{
-  display: inline-block;
-  line-height: 24px;
-  padding: 0px 5px;
-  vertical-align: top;
-}
-div.kintoneplugin-row table tr{
-  border-bottom:1px solid #d6d1cc;
-}
-div.kintoneplugin-row table tr td,
-div.kintoneplugin-row table tr th{
-  font-weight:normal;
-  padding:3px;
-  white-space:nowrap;
-}
-div.kintoneplugin-row table tr th{
-  text-align:center;
-}
-div.kintoneplugin-row table tbody tr:nth-of-type(even){
-  background-color:#fffcf2;
-}
-div.kintoneplugin-row table tbody tr td{
-  line-height:1;
-  padding:3px;
-  vertical-align:top;
-  white-space:nowrap;
-}
-div.kintoneplugin-row table tbody tr td div.buttons{
-  display:inline-block;
-  margin:0px;
-  padding:0px 3px;
-  vertical-align:top;
-}
-div.kintoneplugin-row table tbody tr td div.buttons img{
-  cursor:pointer;
-  display:block;
-  margin:0px 3px;
-  padding:0px;
-  width:24px;
-}
-div.kintoneplugin-row table tbody tr td div.kintoneplugin-select-outer{
-  margin:2px 0px;
-}
-div.kintoneplugin-row table.fields{
-  margin-left:25px;
-}
-div.kintoneplugin-row table.fields tbody tr:last-of-type{
-  border-bottom:none;
 }

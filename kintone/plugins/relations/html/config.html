@@ -1,78 +1,89 @@
 <div class="block">
-	<div class="relations">
-		<div class="kintoneplugin-label">基準フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">関連付けの基準となるルックアップフィールドを選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="basefield">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-		<table>
+	<div class="kintoneplugin-row">
+		<table class="relations">
 			<tbody>
-				<tr>
+				<tr class="relation">
 					<td>
-						<button type="button" id="addrelation" class="kintoneplugin-button-normal" title="表示フィールドを追加">+</button>
-						<button type="button" id="removerelation" class="kintoneplugin-button-normal kintoneplugin-button-hide" title="削除">x</button>
-					</td>
-					<td>
-						<div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
-						<div class="kintoneplugin-desc">関連付けたフィールドを表示するフィールドを選択して下さい。</div>
+						<div class="kintoneplugin-label">基準フィールド<span class="kintoneplugin-require">*</span></div>
+						<div class="kintoneplugin-desc">関連付けの基準となるルックアップフィールドを選択して下さい。</div>
 						<div class="kintoneplugin-select-outer">
 							<div class="kintoneplugin-select">
-								<select id="relationfield">
+								<select id="basefield">
 									<option value=""></option>
 								</select>
 							</div>
 						</div>
-					</td>
-					<td>
-						<div class="kintoneplugin-label">関連付けるアプリ<span class="kintoneplugin-require">*</span></div>
-						<div class="kintoneplugin-desc">表示フィールドへ表示するアプリとフィールドを選択して下さい。</div>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="relationapp">
-									<option value=""></option>
-								</select>
-							</div>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addbase" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delbase" alt="x" title="削除">
 						</div>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="relationappfield">
-									<option value=""></option>
-								</select>
-							</div>
-						</div>
-						<div class="kintoneplugin-label">フィールドの関連付け<span class="kintoneplugin-require">*</span></div>
-						<div class="kintoneplugin-desc">基準フィールドのアプリフィールド = 表示フィールドのアプリフィールド</div>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="basecode">
-									<option value=""></option>
-								</select>
-							</div>
-						</div>
-						<span class="kintoneplugin-span">=</span>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="relationcode">
-									<option value=""></option>
-								</select>
-							</div>
-						</div>
-					</td>
-					<td>
-						<div class="kintoneplugin-label">上書き</div>
-						<span class="kintoneplugin-input-checkbox-item">
-							<label><input type="checkbox" id="rewrite" value="0">値がある場合は上書きしない</label>
-						</span>
+						<table class="fields">
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
+										<div class="kintoneplugin-desc">関連付けたフィールドを表示するフィールドを選択して下さい。</div>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="relationfield">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+										<div class="buttons">
+											<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addrelation" alt="+" title="追加">
+											<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delrelation" alt="x" title="削除">
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-label">関連付けるアプリ<span class="kintoneplugin-require">*</span></div>
+										<div class="kintoneplugin-desc">表示フィールドへ表示するアプリとフィールドを選択して下さい。</div>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="relationapp">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="relationappfield">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+										<div class="kintoneplugin-label">フィールドの関連付け<span class="kintoneplugin-require">*</span></div>
+										<div class="kintoneplugin-desc">基準フィールドのアプリフィールド = 表示フィールドのアプリフィールド</div>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="basecode">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+										<span class="kintoneplugin-span">=</span>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="relationcode">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-label">上書き</div>
+										<span class="kintoneplugin-input-checkbox-item">
+											<label><input type="checkbox" id="rewrite" value="0">値がある場合は上書きしない</label>
+										</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="kintoneplugin-caution">指定したいフィールドがリストにない場合は、フォーム設定に該当フィールドが配置されているか確認して下さい。</div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<button type="button" id="addbase" class="kintoneplugin-button-normal" title="基準フィールドを追加">+</button>
-		<button type="button" id="removebase" class="kintoneplugin-button-normal kintoneplugin-button-hide" title="削除">x</button>
 	</div>
 </div>
 <div class="block">

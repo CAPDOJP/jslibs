@@ -139,81 +139,6 @@ jQuery.noConflict();
 		})
 		.append($('<input type="checkbox" class="receiver">'))
 		.append($('<span class="label">').css({'color':'#3498db','padding':'0px 10px 0px 5px'}));
-		var referer=div.clone(true).css({
-			'display':'inline-block',
-			'height':'30px',
-			'line-height':'30px',
-			'width':'200px'
-		})
-		.append(
-			$('<span class="label">').css({
-				'box-sizing':'border-box',
-				'display':'inline-block',
-				'overflow':'hidden',
-				'padding-left':'35px',
-				'text-overflow':'ellipsis',
-				'white-space':'nowrap',
-				'width':'100%'
-			})
-		)
-		.append(
-			button.clone(true).addClass('button').css({
-				'left':'0px',
-				'margin':'0px',
-				'padding':'0px',
-				'position':'absolute',
-				'top':'0px',
-				'width':'30px'
-			})
-			.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png">').css({'width':'100%'}))
-			.on('click',function(){
-				var row=$(this).closest('.fields');
-				var inputform=$.data(row[0],'inputform');
-				var fieldinfo=($.data(row[0],'tablecode').length!=0)?my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')]:my.fieldinfos[row.attr('id')];
-				var values={};
-				values[fieldinfo.code]={value:fieldinfo.defaultValue};
-				inputform.show({
-					buttons:{
-						ok:function(){
-							/* close inputform */
-							inputform.hide();
-							var contents=$('#'+fieldinfo.code,inputform.contents);
-							var receivevalue=$('.receiver',contents).val();
-							var receivevalues=[];
-							switch (fieldinfo.type)
-							{
-								case 'CHECK_BOX':
-								case 'MULTI_SELECT':
-									$.each($('.receiver:checked',contents),function(){receivevalues.push($(this).val());});
-									fieldinfo.defaultValue=receivevalues;
-									break;
-								case 'GROUP_SELECT':
-								case 'ORGANIZATION_SELECT':
-								case 'USER_SELECT':
-									var codes=receivevalue.split(',');
-									var names=$('.label',contents).text().split(',');
-									for (var i=0;i<values.length;i++) receivevalues.push({code:codes[i],name:names[i]});
-									fieldinfo.defaultValue=receivevalues;
-									break;
-								case 'RADIO_BUTTON':
-									receivevalue=$('[name='+fieldinfo.code+']:checked',contents).val();
-									fieldinfo.defaultValue=receivevalue;
-									break;
-								default:
-									fieldinfo.defaultValue=receivevalue;
-									break;
-							}
-							$('.label',$('.defaultValue',row)).text(my.formatvalue(row,fieldinfo));
-						},
-						cancel:function(){
-							/* close inputform */
-							inputform.hide();
-						}
-					},
-					values:values
-				});
-			})
-		);
 		var span=$('<span>').css({
 			'border-bottom':'1px solid #3498db',
 			'box-sizing':'border-box',
@@ -235,7 +160,7 @@ jQuery.noConflict();
 			'margin':'0px 10px 0px 0px',
 			'padding':'0px 5px',
 			'vertical-align':'top',
-			'width':'calc(50% - 210px)'
+			'width':'calc(50% - 110px)'
 		});
 		/* append elements */
 		this.cover=div.clone(true).css({
@@ -262,7 +187,7 @@ jQuery.noConflict();
 			'right':'0',
 			'text-align':'center',
 			'top':'0',
-			'width':'800px'
+			'width':'600px'
 		});
 		this.contents=div.clone(true).css({
 			'height':'100%',
@@ -293,26 +218,26 @@ jQuery.noConflict();
 		.append(textline.clone(true).addClass('code'))
 		.append(checkbox.clone(true).addClass('required'))
 		.append(checkbox.clone(true).addClass('unique'))
-		.append(referer.clone(true).addClass('defaultValue'))
 		$('.label',$('.required',this.template)).text('必須項目');
 		$('.label',$('.unique',this.template)).text('重複禁止');
 		this.title=$('<p>')
-		.append(span.clone(true).css({'padding-right':'10px','width':'calc(50% - 200px)'}).text('フィールド名'))
-		.append(span.clone(true).css({'padding-right':'10px','width':'calc(50% - 200px)'}).text('フィールドコード'))
+		.append(span.clone(true).css({'padding-right':'10px','width':'calc(50% - 100px)'}).text('フィールド名'))
+		.append(span.clone(true).css({'padding-right':'10px','width':'calc(50% - 100px)'}).text('フィールドコード'))
 		.append(span.clone(true).css({'width':'100px'}).text('必須'))
-		.append(span.clone(true).css({'width':'100px'}).text('重複'))
-		.append(span.clone(true).css({'width':'200px'}).text('初期値'));
+		.append(span.clone(true).css({'width':'100px'}).text('重複'));
 		my.buttonblock.append(
 			button.clone(true)
 			.text('OK')
 			.on('click',function(e){
 				$.each($('.fields',my.contents),function(index){
 					var row=$(this);
-					var fieldinfo=($.data(row[0],'tablecode').length!=0)?my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')]:my.fieldinfos[row.attr('id')];
-					fieldinfo.label=$('.receiver.label',row).val();
-					fieldinfo.code=$('.receiver.code',row).val();
-					fieldinfo.required=$('.receiver',$('.required',row)).prop('checked');
-					if ($('.unique',row).is(':visible')) fieldinfo.unique=$('.receiver',$('.unique',row)).prop('checked');
+					var target=null;
+					if ($.data(row[0],'tablecode').length!=0) target=my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')];
+					else target=my.fieldinfos[row.attr('id')];
+					target.label=$('.receiver.label',row).val();
+					target.code=$('.receiver.code',row).val();
+					target.required=$('.receiver',$('.required',row)).prop('checked');
+					if ($('.unique',row).is(':visible')) target.unique=$('.receiver',$('.unique',row)).prop('checked');
 				});
 				kintone.api(kintone.api.url('/k/v1/preview/app/form/fields',true),'PUT',{app:kintone.app.getId(),properties:my.fieldinfos},function(resp){
 					kintone.api(kintone.api.url('/k/v1/preview/app/deploy',true),'POST',{apps:[{app:kintone.app.getId()}]},function(resp){
@@ -380,7 +305,6 @@ jQuery.noConflict();
 		});
 	};
 	settingform.prototype={
-		/* append rows */
 		appendrows:function(fieldinfos,tablecode){
 			var my=this;
 			$.each(fieldinfos,function(key,values){
@@ -395,54 +319,11 @@ jQuery.noConflict();
 						$('.receiver.code',row).val(values.code);
 						$('.receiver',$('.required',row)).prop('checked',values.required);
 						if ('unique' in values) $('.receiver',$('.unique',row)).prop('checked',values.unique);
-						else $('.unique',row).css({'visibility':'hidden'});
-						if ('defaultValue' in values)
-						{
-							$.data(row[0],'inputform',$('body').fieldsform({
-								buttons:{
-									ok:{
-										text:'OK'
-									},
-									cancel:{
-										text:'キャンセル'
-									}
-								},
-								fields:[values]
-							}));
-							$('.label',$('.defaultValue',row)).text(my.formatvalue(row,values));
-						}
-						else $('.defaultValue',row).css({'visibility':'hidden'});
+						else $('.unique',row).hide();
 						my.contents.append(row);
 					}
 				}
 			});
-		},
-		/* format display value */
-		formatvalue:function(row,fieldinfo){
-			var res='';
-			switch (fieldinfo.type)
-			{
-				case 'CHECK_BOX':
-				case 'MULTI_SELECT':
-					res=fieldinfo.defaultValue.join(',');
-					break;
-				case 'DATETIME':
-					if (fieldinfo.defaultValue.length!=0) res=new Date(fieldinfo.defaultValue.dateformat()).format('Y-m-d H:i');
-					break;
-				case 'GROUP_SELECT':
-				case 'ORGANIZATION_SELECT':
-				case 'USER_SELECT':
-					var text=[];
-					$.each(fieldinfo.defaultValue,function(index){
-						text.push(fieldinfo.defaultValue[index].name);
-					});
-					res=text.join(',');
-					break;
-				default:
-					res=fieldinfo.defaultValue;
-					break;
-			}
-			return res;
 		},
 		/* display form */
 		show:function(options){
@@ -476,13 +357,45 @@ jQuery.noConflict();
 	 kintone events
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
-		/* load fieldinfos */
-		functions.loadfieldinfos('list');
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					/* load fieldinfos */
+					functions.loadfieldinfos('list');
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 		return event;
 	});
 	kintone.events.on(events.show,function(event){
-		/* load fieldinfos */
-		functions.loadfieldinfos('show');
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					/* load fieldinfos */
+					functions.loadfieldinfos('show');
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

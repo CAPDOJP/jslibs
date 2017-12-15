@@ -1851,32 +1851,33 @@ FieldsForm.prototype={
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values();});
 		});
 		$.each(options.values,function(key,values){
+			var fieldcontainer=($('#'+key,my.contents).size())?$('#'+key,my.contents):null;
 			if (key.match(/^\$/g)) return true;
-			if (!$('#'+key).size()) return true;
+			if (fieldcontainer==null) return true;
 			switch (values.type)
 			{
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
-					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\''),$('#'+key)).prop('checked',true);
+					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'DATE':
 					if (!values.value) return true;
 					if (values.value.length==0) return true;
-					$('.label',$('#'+key)).text(values.value);
-					$('.receiver',$('#'+key)).val(values.value);
+					$('.label',fieldcontainer).text(values.value);
+					$('.receiver',fieldcontainer).val(values.value);
 					break;
 				case 'DATETIME':
 					if (!values.value) return true;
 					if (values.value.length==0) return true;
-					$('.label',$('#'+key)).text(new Date(values.value.dateformat()).format('Y-m-d'));
-					$('.receiver',$('#'+key)).val(values.value);
-					$('.receiverhour',$('#'+key)).val(new Date(values.value.dateformat()).format('H'));
-					$('.receiverminute',$('#'+key)).val(new Date(values.value.dateformat()).format('i'));
+					$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
+					$('.receiver',fieldcontainer).val(values.value);
+					$('.receiverhour',fieldcontainer).val(new Date(values.value.dateformat()).format('H'));
+					$('.receiverminute',fieldcontainer).val(new Date(values.value.dateformat()).format('i'));
 					break;
 				case 'FILE':
 					var files=my.filevalue(values.value);
-					$('.label',$('#'+key)).text(files.names);
-					$('.receiver',$('#'+key)).val(files.values);
+					$('.label',fieldcontainer).text(files.names);
+					$('.receiver',fieldcontainer).val(files.values);
 					break;
 				case 'GROUP_SELECT':
 				case 'ORGANIZATION_SELECT':
@@ -1887,27 +1888,27 @@ FieldsForm.prototype={
 						label.push(values.value[index].name);
 						receiver.push(values.value[index].code);
 					});
-					$('.label',$('#'+key)).text(label.join(','));
-					$('.receiver',$('#'+key)).val(receiver.join(','));
+					$('.label',fieldcontainer).text(label.join(','));
+					$('.receiver',fieldcontainer).val(receiver.join(','));
 					break;
 				case 'RADIO_BUTTON':
-					$('#'+values.value.replace(/'/g,'\\\''),$('#'+key)).prop('checked',true);
+					$('#'+values.value.replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'TIME':
 					if (!values.value) return true;
 					if (values.value.length==0) return true;
-					$('.receiver',$('#'+key)).val(values.value);
-					$('.receiverhour',$('#'+key)).val(('0'+values.value.split(':')[0]).slice(-2));
-					$('.receiverminute',$('#'+key)).val(('0'+values.value.split(':')[1]).slice(-2));
+					$('.receiver',fieldcontainer).val(values.value);
+					$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));
+					$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
 					break;
 				default:
-					if ($('.label',$('#'+key)).size())
+					if ($('.label',fieldcontainer).size())
 					{
 						for (var i=0;i<my.apps[key];i++)
-							if (my.apps[key][i][$('.key',$('#'+key)).val()].value==values.value)
-								$('.label',$('#'+key)).text(my.apps[key][i][$('.picker',$('#'+key)).val()].value);
+							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==values.value)
+								$('.label',fieldcontainer).text(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
 					}
-					$('.receiver',$('#'+key)).val(values.value);
+					$('.receiver',fieldcontainer).val(values.value);
 					break;
 			}
 		});

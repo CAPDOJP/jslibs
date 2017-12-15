@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone 関連フィールドデータ一括取得プラグイン",
-        "en":"kintone Relations plug-in",
-        "zh":"kintone 関連フィールドデータ一括取得プラグイン"
+        "ja":"kintone ファシリテーターコメント入力プラグイン",
+        "en":"kintone Facilitators Comment plug-in",
+        "zh":"kintone ファシリテーターコメント入力プラグイン"
     },
     "description":{
-        "ja":"ルックアップフィールドの値を元に関連するデータを別フィールドへ表示するプラグインです。",
-        "en":"This plug-in to display data related to the basis of the value of the lookup field to another field",
-        "zh":"ルックアップフィールドの値を元に関連するデータを別フィールドへ表示するプラグインです。"
+        "ja":"ファシリテーターがコメントを入力するプラグインです。",
+        "en":"This plug-in where the facilitator inputs a comment",
+        "zh":"ファシリテーターがコメントを入力するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -22,7 +22,14 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "js/relations.js"
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "js/sweetalert.min.js",
+            "js/facilitatorcomment.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/desktop/common.css",
+            "css/desktop/facilitatorcomment.css"
         ]
     },
     "config":{
