@@ -435,6 +435,7 @@ jQuery.noConflict();
 					res=fieldinfo.defaultValue.join(',');
 					break;
 				case 'DATETIME':
+					fieldinfo.defaultValue=fieldinfo.defaultValue.replace(/.000Z$/g,'Z');
 					if (fieldinfo.defaultValue.length!=0) res=new Date(fieldinfo.defaultValue.dateformat()).format('Y-m-d H:i');
 					break;
 				case 'GROUP_SELECT':
@@ -445,6 +446,10 @@ jQuery.noConflict();
 						text.push(fieldinfo.defaultValue[index].name);
 					});
 					res=text.join(',');
+					break;
+				case 'TIME':
+					fieldinfo.defaultValue=fieldinfo.defaultValue.replace(/.000$/g,'');
+					res=fieldinfo.defaultValue;
 					break;
 				default:
 					res=fieldinfo.defaultValue;
