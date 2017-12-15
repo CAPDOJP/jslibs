@@ -1851,9 +1851,9 @@ FieldsForm.prototype={
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){if (values!=null) values();});
 		});
 		$.each(options.values,function(key,values){
-			var fieldcontainer=($('#'+key,my.contents).size())?$('#'+key,my.contents):null;
 			if (key.match(/^\$/g)) return true;
-			if (fieldcontainer==null) return true;
+			if (!$('#'+key,my.contents).size()) return true;
+			var fieldcontainer=$('#'+key,my.contents);
 			switch (values.type)
 			{
 				case 'CHECK_BOX':

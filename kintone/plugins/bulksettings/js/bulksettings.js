@@ -196,7 +196,7 @@ jQuery.noConflict();
 									fieldinfo.defaultValue=receivevalues;
 									break;
 								case 'RADIO_BUTTON':
-									receivevalue=$('[name='+fieldinfo.code+']:checked',contents).val();
+									receivevalue=$('[name='+fieldinfo.code+']:checked').val();
 									fieldinfo.defaultValue=receivevalue;
 									break;
 								default:
