@@ -305,7 +305,8 @@ jQuery.noConflict();
 								case 'ORGANIZATION_SELECT':
 								case 'USER_SELECT':
 									var codes=receivevalue.split(',');
-									for (var i=0;i<codes.length;i++) receivevalues.push({code:codes[i],type:fieldinfo.type.replace('_SELECT','')});
+									for (var i=0;i<codes.length;i++)
+										if (codes[i].length!=0) receivevalues.push({code:codes[i],type:fieldinfo.type.replace('_SELECT','')});
 									fieldinfo.defaultValue=receivevalues;
 									break;
 								case 'RADIO_BUTTON':
