@@ -1253,11 +1253,17 @@ var FieldsForm=function(options){
 	var options=$.extend({
 		container:null,
 		buttons:[],
-		fields:[]
+		fields:[],
+		callback:{
+			group:null,
+			organization:null,
+			user:null
+		}
 	},options);
 	/* property */
 	this.buttons=options.buttons;
 	this.fields=options.fields;
+	this.callback=options.callback;
 	/* create elements */
 	var my=this;
 	var div=$('<div>').css({
@@ -1548,6 +1554,7 @@ var FieldsForm=function(options){
 						$.each(records,function(index,values){
 							my.groupsource.push({value:values.code,text:values.name});
 						});
+						if (my.callback.group) my.callback.group();
 					});
 				}
 				receiver=referer.clone(true);
@@ -1656,6 +1663,7 @@ var FieldsForm=function(options){
 						$.each(records,function(index,values){
 							my.organizationsource.push({value:values.code,text:values.name});
 						});
+						if (my.callback.organization) my.callback.organization();
 					});
 				}
 				receiver=referer.clone(true);
@@ -1720,6 +1728,7 @@ var FieldsForm=function(options){
 						$.each(records,function(index,values){
 							my.usersource.push({value:values.code,text:values.name});
 						});
+						if (my.callback.user) my.callback.user();
 					});
 				}
 				receiver=referer.clone(true);

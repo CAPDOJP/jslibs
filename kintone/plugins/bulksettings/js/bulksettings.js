@@ -57,6 +57,7 @@ jQuery.noConflict();
 			return codes;
 		},
 		loadfieldinfos:function(type){
+			if ($('.settingform',$('body')).size()) return;
 			vars.fieldinfos={};
 			/* get layout */
 			kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
@@ -92,18 +93,50 @@ jQuery.noConflict();
 							'vertical-align':'top',
 							'width':'48px'
 						})
-						.on('click',function(e){vars.settings.show({fieldinfos:vars.fieldinfos})});
+						.on('click',function(e){vars.settings.show()});
 						if (type=='list') kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 						else $('.gaia-argoui-app-edit-buttons').append(button);
 					}
-					if (!$('.settingform',$('body')).size()) vars.settings=new settingform();
+					vars.settings=new settingform({fieldinfos:vars.fieldinfos});
 				},function(error){});
 			},function(error){});
 		}
 	};
-	var settingform=function(){
+	var settingform=function(options){
+		var options=$.extend({
+			fieldinfos:{}
+		},options);
 		/* property */
-		this.fieldinfos={};
+		this.fieldinfos=options.fieldinfos;
+		this.cells={
+			label:{
+				caption:'フィールド名',
+				control:'textline'
+			},
+			code:{
+				caption:'フィールドコード',
+				control:'textline'
+			},
+			required:{
+				caption:'必須',
+				control:'checkbox',
+				label:'必須項目'
+			},
+			unique:{
+				caption:'重複',
+				control:'checkbox',
+				label:'重複禁止'
+			},
+			defaultValue:{
+				caption:'初期値',
+				control:'referer'
+			}
+		};
+		this.inputforms={};
+		this.size={
+			checkbox:100,
+			referer:200
+		};
 		/* create elements */
 		var my=this;
 		var div=$('<div>').css({
@@ -133,17 +166,17 @@ jQuery.noConflict();
 			'display':'inline-block',
 			'line-height':'30px',
 			'margin':'0px',
-			'padding':'0px',
+			'padding':'0px 5px',
 			'vertical-align':'top',
-			'width':'100px'
+			'width':this.size.checkbox.toString()+'px'
 		})
 		.append($('<input type="checkbox" class="receiver">'))
-		.append($('<span class="label">').css({'color':'#3498db','padding':'0px 10px 0px 5px'}));
+		.append($('<span class="label">').css({'color':'#3498db','padding':'0px 5px'}));
 		var referer=div.clone(true).css({
 			'display':'inline-block',
 			'height':'30px',
 			'line-height':'30px',
-			'width':'200px'
+			'width':this.size.referer.toString()+'px'
 		})
 		.append(
 			$('<span class="label">').css({
@@ -168,20 +201,17 @@ jQuery.noConflict();
 			.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png">').css({'width':'100%'}))
 			.on('click',function(){
 				var row=$(this).closest('.fields');
-				var inputform=$.data(row[0],'inputform');
 				var fieldinfo=($.data(row[0],'tablecode').length!=0)?my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')]:my.fieldinfos[row.attr('id')];
 				var values={};
-				values[fieldinfo.code]={value:fieldinfo.defaultValue};
-				console.log(fieldinfo.defaultValue);
-				inputform.show({
+				values[fieldinfo.code]={type:fieldinfo.type,value:fieldinfo.defaultValue};
+				my.inputforms[fieldinfo.code].show({
 					buttons:{
 						ok:function(){
 							/* close inputform */
-							inputform.hide();
-							var contents=$('#'+fieldinfo.code,inputform.contents);
+							my.inputforms[fieldinfo.code].hide();
+							var contents=$('#'+fieldinfo.code,my.inputforms[fieldinfo.code].contents);
 							var receivevalue=$('.receiver',contents).val();
 							var receivevalues=[];
-							console.log(receivevalue);
 							switch (fieldinfo.type)
 							{
 								case 'CHECK_BOX':
@@ -193,7 +223,13 @@ jQuery.noConflict();
 								case 'ORGANIZATION_SELECT':
 								case 'USER_SELECT':
 									var codes=receivevalue.split(',');
-									for (var i=0;i<values.length;i++) receivevalues.push({code:codes[i],type:fieldinfo.type});
+									var names=$('.label',contents).text();
+									for (var i=0;i<codes.length;i++)
+										receivevalues.push({
+											code:codes[i],
+											name:names[i],
+											type:fieldinfo.type.replace('_SELECT','')
+										});
 									fieldinfo.defaultValue=receivevalues;
 									break;
 								case 'RADIO_BUTTON':
@@ -208,29 +244,18 @@ jQuery.noConflict();
 						},
 						cancel:function(){
 							/* close inputform */
-							inputform.hide();
+							my.inputforms[fieldinfo.code].hide();
 						}
 					},
 					values:values
 				});
 			})
 		);
-		var span=$('<span>').css({
-			'border-bottom':'1px solid #3498db',
-			'box-sizing':'border-box',
-			'color':'#3498db',
-			'display':'inline-block',
-			'line-height':'30px',
-			'margin':'0px',
-			'padding':'0px',
-			'text-align':'center',
-			'vertical-align':'top'
-		});
 		var textline=div.clone(true).css({
 			'display':'inline-block',
 			'padding':'0px 5px',
 			'vertical-align':'top',
-			'width':'calc(50% - 200px)'
+			'width':'calc(50% - '+((this.size.checkbox*2+this.size.referer)/2).toString()+'px)'
 		})
 		.append(
 			$('<input type="text" class="receiver">').css({
@@ -255,7 +280,7 @@ jQuery.noConflict();
 			'position':'fixed',
 			'top':'0px',
 			'width':'100%',
-			'z-index':'999999'
+			'z-index':'888888'
 		});
 		this.container=div.clone(true).css({
 			'background-color':'#FFFFFF',
@@ -296,31 +321,74 @@ jQuery.noConflict();
 			'width':'100%',
 			'z-index':'2'
 		});
-		this.template=div.clone(true).addClass('fields').css({'border-bottom':'1px dotted #3498db','padding':'5px','width':'100%'})
-		.append(textline.clone(true).addClass('label'))
-		.append(textline.clone(true).addClass('code'))
-		.append(checkbox.clone(true).addClass('required'))
-		.append(checkbox.clone(true).addClass('unique'))
-		.append(referer.clone(true).addClass('defaultValue'))
-		$('.label',$('.required',this.template)).text('必須項目');
-		$('.label',$('.unique',this.template)).text('重複禁止');
-		this.title=$('<p>')
-		.append(span.clone(true).css({'width':'calc(50% - 200px)'}).text('フィールド名'))
-		.append(span.clone(true).css({'width':'calc(50% - 200px)'}).text('フィールドコード'))
-		.append(span.clone(true).css({'width':'100px'}).text('必須'))
-		.append(span.clone(true).css({'width':'100px'}).text('重複'))
-		.append(span.clone(true).css({'width':'200px'}).text('初期値'));
-		my.buttonblock.append(
+		/* append captions */
+		this.captions=$('<p>').css({'border-bottom':'1px solid #3498db','margin':'0px','padding':'0px','width':'100%'});
+		$.each(this.cells,function(key,values){
+			var cell=$('<span>').css({
+				'box-sizing':'border-box',
+				'color':'#3498db',
+				'display':'inline-block',
+				'line-height':'30px',
+				'margin':'0px',
+				'padding':'0px',
+				'text-align':'center',
+				'vertical-align':'top'
+			});
+			switch (values.control)
+			{
+				case 'textline':
+					cell.css({'width':'calc(50% - '+((my.size.checkbox*2+my.size.referer)/2).toString()+'px)'}).text(values.caption);
+					break;
+				case 'checkbox':
+					cell.css({'width':my.size.checkbox.toString()+'px'}).text(values.caption);
+					break;
+				case 'referer':
+					cell.css({'width':my.size.referer.toString()+'px'}).text(values.caption);
+					break;
+			}
+			my.captions.append(cell);
+		});
+		this.contents.append(this.captions);
+		/* append fields */
+		this.template=div.clone(true).addClass('fields').css({'border-bottom':'1px dotted #3498db','padding':'5px 0px','width':'100%'})
+		$.each(this.cells,function(key,values){
+			var cell=null;
+			switch (values.control)
+			{
+				case 'textline':
+					cell=textline.clone(true).addClass(key);
+					break;
+				case 'checkbox':
+					cell=checkbox.clone(true).addClass(key);
+					$('.label',cell).text(values.label);
+					break;
+				case 'referer':
+					cell=referer.clone(true).addClass(key);
+					break;
+			}
+			my.template.append(cell);
+		});
+		this.appendrows(this.fieldinfos,'');
+		/* append buttons */
+		this.buttonblock
+		.append(
 			button.clone(true)
 			.text('OK')
 			.on('click',function(e){
 				$.each($('.fields',my.contents),function(index){
 					var row=$(this);
 					var fieldinfo=($.data(row[0],'tablecode').length!=0)?my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')]:my.fieldinfos[row.attr('id')];
-					fieldinfo.label=$('.receiver',$('.label',row)).val();
-					fieldinfo.code=$('.receiver',$('.code',row)).val();
-					fieldinfo.required=$('.receiver',$('.required',row)).prop('checked');
-					if ($('.unique',row).is(':visible')) fieldinfo.unique=$('.receiver',$('.unique',row)).prop('checked');
+					$.each(my.cells,function(key,values){
+						switch (values.control)
+						{
+							case 'textline':
+								fieldinfo[key]=$('.receiver',$('.'+key,row)).val();
+								break;
+							case 'checkbox':
+								if ($('.'+key,row).is(':visible')) fieldinfo[key]=$('.receiver',$('.'+key,row)).prop('checked');
+								break;
+						}
+					});
 				});
 				kintone.api(kintone.api.url('/k/v1/preview/app/form/fields',true),'PUT',{app:kintone.app.getId(),properties:my.fieldinfos},function(resp){
 					kintone.api(kintone.api.url('/k/v1/preview/app/deploy',true),'POST',{apps:[{app:kintone.app.getId()}]},function(resp){
@@ -372,8 +440,8 @@ jQuery.noConflict();
 					swal('Error!',error.message,'error');
 				});
 			})
-		);
-		my.buttonblock.append(
+		)
+		.append(
 			button.clone(true)
 			.text('キャンセル')
 			.on('click',function(e){my.hide();})
@@ -395,31 +463,41 @@ jQuery.noConflict();
 				if (values.type=='SUBTABLE') my.appendrows(values.fields,key);
 				else
 				{
-					if ('required' in values)
+					var fieldinfo=values;
+					if ('required' in fieldinfo)
 					{
-						var row=my.template.clone(true).attr('id',values.code);
+						var row=my.template.clone(true).attr('id',fieldinfo.code);
 						$.data(row[0],'tablecode',tablecode);
-						$('.receiver',$('.label',row)).val(values.label);
-						$('.receiver',$('.code',row)).val(values.code);
-						$('.receiver',$('.required',row)).prop('checked',values.required);
-						if ('unique' in values) $('.receiver',$('.unique',row)).prop('checked',values.unique);
-						else $('.unique',row).css({'visibility':'hidden'});
-						if ('defaultValue' in values)
-						{
-							$.data(row[0],'inputform',$('body').fieldsform({
-								buttons:{
-									ok:{
-										text:'OK'
-									},
-									cancel:{
-										text:'キャンセル'
+						$.each(my.cells,function(key,values){
+							switch (values.control)
+							{
+								case 'textline':
+									$('.receiver',$('.'+key,row)).val(fieldinfo[key]);
+									break;
+								case 'checkbox':
+									if (key in fieldinfo) $('.receiver',$('.'+key,row)).prop('checked',fieldinfo[key]);
+									else $('.'+key,row).css({'visibility':'hidden'});
+									break;
+								case 'referer':
+									if (key in fieldinfo)
+									{
+										my.inputforms[fieldinfo.code]=$('body').fieldsform({
+											buttons:{
+												ok:{
+													text:'OK'
+												},
+												cancel:{
+													text:'キャンセル'
+												}
+											},
+											fields:[fieldinfo]
+										});
+										$('.label',$('.'+key,row)).text(my.formatvalue(row,fieldinfo));
 									}
-								},
-								fields:[values]
-							}));
-							$('.label',$('.defaultValue',row)).text(my.formatvalue(row,values));
-						}
-						else $('.defaultValue',row).css({'visibility':'hidden'});
+									else $('.'+key,row).css({'visibility':'hidden'});
+									break;
+							}
+						});
 						my.contents.append(row);
 					}
 				}
@@ -435,7 +513,7 @@ jQuery.noConflict();
 					res=fieldinfo.defaultValue.join(',');
 					break;
 				case 'DATETIME':
-					fieldinfo.defaultValue=fieldinfo.defaultValue.replace(/.000Z$/g,'Z');
+					fieldinfo.defaultValue=fieldinfo.defaultValue.replace(/\.000Z$/g,'Z');
 					if (fieldinfo.defaultValue.length!=0) res=new Date(fieldinfo.defaultValue.dateformat()).format('Y-m-d H:i');
 					break;
 				case 'GROUP_SELECT':
@@ -448,7 +526,7 @@ jQuery.noConflict();
 					res=text.join(',');
 					break;
 				case 'TIME':
-					fieldinfo.defaultValue=fieldinfo.defaultValue.replace(/.000$/g,'');
+					fieldinfo.defaultValue=fieldinfo.defaultValue.replace(/:00.000$/g,'');
 					res=fieldinfo.defaultValue;
 					break;
 				default:
@@ -458,16 +536,7 @@ jQuery.noConflict();
 			return res;
 		},
 		/* display form */
-		show:function(options){
-			var options=$.extend({
-				fieldinfos:{}
-			},options);
-			/* clear fields */
-			this.contents.empty().append(this.title);
-			/* initialize property */
-			this.fieldinfos=options.fieldinfos;
-			/* append fields */
-			this.appendrows(this.fieldinfos,'');
+		show:function(){
 			/* display form */
 			this.cover.show();
 			/* adjust container height */

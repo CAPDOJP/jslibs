@@ -188,10 +188,9 @@ jQuery.noConflict();
 		if (!vars.config) return false;
 		/* get query strings */
 		var queries=$.queries();
-		if (Object.keys(queries).length!=0) vars.istransit=true;
-		if (vars.config['address'] in queries) event.record[vars.config['address']].value=queries[vars.config['address']];
-		if (vars.config['lat'] in queries) event.record[vars.config['lat']].value=queries[vars.config['lat']];
-		if (vars.config['lng'] in queries) event.record[vars.config['lng']].value=queries[vars.config['lng']];
+		if (vars.config['address'] in queries) {event.record[vars.config['address']].value=queries[vars.config['address']];vars.istransit=true;}
+		if (vars.config['lat'] in queries) {event.record[vars.config['lat']].value=queries[vars.config['lat']];vars.istransit=true;}
+		if (vars.config['lng'] in queries) {event.record[vars.config['lng']].value=queries[vars.config['lng']];vars.istransit=true;}
 		/* hide elements  */
 		kintone.app.record.setFieldShown(vars.config['lat'],false);
 		kintone.app.record.setFieldShown(vars.config['lng'],false);
