@@ -204,6 +204,35 @@ jQuery.noConflict();
 				var fieldinfo=($.data(row[0],'tablecode').length!=0)?my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')]:my.fieldinfos[row.attr('id')];
 				var values={};
 				values[fieldinfo.code]={type:fieldinfo.type,value:fieldinfo.defaultValue};
+				switch (fieldinfo.type)
+				{
+					case 'GROUP_SELECT':
+					case 'ORGANIZATION_SELECT':
+					case 'USER_SELECT':
+						var source=[];
+						var text=[];
+						switch (fieldinfo.type)
+						{
+							case 'GROUP_SELECT':
+								source=my.inputforms[fieldinfo.code].groupsource;
+								break;
+							case 'ORGANIZATION_SELECT':
+								source=my.inputforms[fieldinfo.code].organizationsource;
+								break;
+							case 'USER_SELECT':
+								source=my.inputforms[fieldinfo.code].usersource;
+								break;
+						}
+						$.each(values[fieldinfo.code].value,function(index){
+							var values=values[fieldinfo.code].value[index];
+							var texts=$.grep(source,function(item,index){
+								return item.value==values.code;
+							});
+							if (texts.length!=0) values['name']=texts[0].text;
+						});
+						res=text.join(',');
+						break;
+				}
 				my.inputforms[fieldinfo.code].show({
 					buttons:{
 						ok:function(){
@@ -223,13 +252,7 @@ jQuery.noConflict();
 								case 'ORGANIZATION_SELECT':
 								case 'USER_SELECT':
 									var codes=receivevalue.split(',');
-									var names=$('.label',contents).text();
-									for (var i=0;i<codes.length;i++)
-										receivevalues.push({
-											code:codes[i],
-											name:names[i],
-											type:fieldinfo.type.replace('_SELECT','')
-										});
+									for (var i=0;i<codes.length;i++) receivevalues.push({code:codes[i],type:fieldinfo.type.replace('_SELECT','')});
 									fieldinfo.defaultValue=receivevalues;
 									break;
 								case 'RADIO_BUTTON':
@@ -490,9 +513,23 @@ jQuery.noConflict();
 													text:'キャンセル'
 												}
 											},
-											fields:[fieldinfo]
+											fields:[fieldinfo],
+											callback:{
+												group:function(){$('.label',$('.'+key,row)).text(my.formatvalue(row,fieldinfo))},
+												organization:function(){$('.label',$('.'+key,row)).text(my.formatvalue(row,fieldinfo))},
+												user:function(){$('.label',$('.'+key,row)).text(my.formatvalue(row,fieldinfo))}
+											}
 										});
-										$('.label',$('.'+key,row)).text(my.formatvalue(row,fieldinfo));
+										switch (fieldinfo.type)
+										{
+											case 'GROUP_SELECT':
+											case 'ORGANIZATION_SELECT':
+											case 'USER_SELECT':
+												break;
+											default:
+												$('.label',$('.'+key,row)).text(my.formatvalue(row,fieldinfo));
+												break;
+										}
 									}
 									else $('.'+key,row).css({'visibility':'hidden'});
 									break;
@@ -519,9 +556,26 @@ jQuery.noConflict();
 				case 'GROUP_SELECT':
 				case 'ORGANIZATION_SELECT':
 				case 'USER_SELECT':
+					var source=[];
 					var text=[];
+					switch (fieldinfo.type)
+					{
+						case 'GROUP_SELECT':
+							source=this.inputforms[fieldinfo.code].groupsource;
+							break;
+						case 'ORGANIZATION_SELECT':
+							source=this.inputforms[fieldinfo.code].organizationsource;
+							break;
+						case 'USER_SELECT':
+							source=this.inputforms[fieldinfo.code].usersource;
+							break;
+					}
 					$.each(fieldinfo.defaultValue,function(index){
-						text.push(fieldinfo.defaultValue[index].name);
+						var values=fieldinfo.defaultValue[index];
+						var texts=$.grep(source,function(item,index){
+							return item.value==values.code;
+						});
+						if (texts.length!=0) text.push(texts[0].text);
 					});
 					res=text.join(',');
 					break;
