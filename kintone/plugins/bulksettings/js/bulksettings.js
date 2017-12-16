@@ -15,8 +15,10 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
+		bulks:null,
 		settings:null,
-		fieldinfos:{}
+		bulkinfos:{},
+		settinginfos:{}
 	};
 	var events={
 		lists:[
@@ -58,7 +60,8 @@ jQuery.noConflict();
 		},
 		loadfieldinfos:function(type){
 			if ($('.settingform',$('body')).size()) return;
-			vars.fieldinfos={};
+			vars.bulkinfos={};
+			vars.settinginfos={};
 			/* get layout */
 			kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
 				var sorted=functions.fieldsort(resp.layout);
@@ -69,23 +72,39 @@ jQuery.noConflict();
 						var fieldcode=sorted[index];
 						if (fieldcode.code in fieldinfos)
 						{
-							if (fieldinfos[fieldcode.code].type=='SUBTABLE')
+							var fieldinfo=fieldinfos[fieldcode.code];
+							if (fieldinfo.type=='SUBTABLE')
 							{
-								vars.fieldinfos[fieldcode.code]=$.extend(true,{},fieldinfos[fieldcode.code]);
-								vars.fieldinfos[fieldcode.code].fields={};
+								vars.settinginfos[fieldcode.code]=$.extend(true,{},fieldinfo);
+								vars.settinginfos[fieldcode.code].fields={};
 								for (var i=0;i<fieldcode.cells.length;i++)
-									vars.fieldinfos[fieldcode.code].fields[fieldcode.cells[i]]=fieldinfos[fieldcode.code].fields[fieldcode.cells[i]];
+								{
+									var cellinfo=$.extend(true,{},fieldinfo.fields[fieldcode.cells[i]]);
+									vars.settinginfos[fieldcode.code].fields[fieldcode.cells[i]]=cellinfo;
+									/* check defaultValue */
+									if ('defaultValue' in cellinfo)
+									{
+										vars.bulkinfos[fieldcode.cells[i]]=cellinfo;
+										vars.bulkinfos[fieldcode.cells[i]]['tablecode']=fieldcode.code;
+									}
+								}
 							}
 							else
 							{
 								/* check required */
-								if ('required' in fieldinfos[fieldcode.code]) vars.fieldinfos[fieldcode.code]=fieldinfos[fieldcode.code];
+								if ('required' in fieldinfo) vars.settinginfos[fieldcode.code]=$.extend(true,{},fieldinfo);
+								/* check defaultValue */
+								if ('defaultValue' in fieldinfo)
+								{
+									vars.bulkinfos[fieldcode.code]=$.extend(true,{},fieldinfo);
+									vars.bulkinfos[fieldcode.code]['tablecode']='';
+								}
 							}
 						}
 					});
 					if (!$('.settingbutton',$('body')).size())
 					{
-						var button=$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/function.svg" class="settingbutton" alt="フィールド編集" title="フィールド編集" />').css({
+						var button=$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/function.svg" class="settingbutton" alt="フィールド情報編集" title="フィールド情報編集" />').css({
 							'cursor':'pointer',
 							'display':'inline-block',
 							'height':'48px',
@@ -97,7 +116,55 @@ jQuery.noConflict();
 						if (type=='list') kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 						else $('.gaia-argoui-app-edit-buttons').append(button);
 					}
-					vars.settings=new settingform({fieldinfos:vars.fieldinfos});
+					if (!$('.bulkbutton',$('body')).size())
+					{
+						var button=$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.svg" class="bulkbutton" alt="フィールド一括更新" title="フィールド一括更新" />').css({
+							'cursor':'pointer',
+							'display':'inline-block',
+							'height':'48px',
+							'margin':'0px 12px',
+							'vertical-align':'top',
+							'width':'48px'
+						})
+						.on('click',function(e){
+							var datasource=[];
+							$.each(vars.bulkinfos,function(key,values){
+								datasource.push({
+									text:values.label,
+									value:key
+								});
+							});
+							vars.bulks.show({
+								datasource:datasource,
+								buttons:{
+									ok:function(selection){
+										/* close the bulks */
+										vars.bulks.hide();
+										for (var i=0;i<selection.length;i++)
+										{
+
+										}
+									},
+									cancel:function(){
+										/* close the bulks */
+										vars.bulks.hide();
+									}
+								}
+							});
+						});
+						if (type=='list') kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
+					}
+					vars.bulks=$('body').multiselect({
+						buttons:{
+							ok:{
+								text:'OK'
+							},
+							cancel:{
+								text:'キャンセル'
+							}
+						}
+					});
+					vars.settings=new settingform({fieldinfos:vars.settinginfos});
 				},function(error){});
 			},function(error){});
 		}
@@ -209,28 +276,14 @@ jQuery.noConflict();
 					case 'GROUP_SELECT':
 					case 'ORGANIZATION_SELECT':
 					case 'USER_SELECT':
-						var source=[];
-						var text=[];
-						switch (fieldinfo.type)
-						{
-							case 'GROUP_SELECT':
-								source=my.inputforms[fieldinfo.code].groupsource;
-								break;
-							case 'ORGANIZATION_SELECT':
-								source=my.inputforms[fieldinfo.code].organizationsource;
-								break;
-							case 'USER_SELECT':
-								source=my.inputforms[fieldinfo.code].usersource;
-								break;
-						}
+						var source=my.loadsource(fieldinfo);
 						$.each(values[fieldinfo.code].value,function(index){
-							var values=values[fieldinfo.code].value[index];
+							var search=values[fieldinfo.code].value[index];
 							var texts=$.grep(source,function(item,index){
-								return item.value==values.code;
+								return item.value==search.code;
 							});
-							if (texts.length!=0) values['name']=texts[0].text;
+							if (texts.length!=0) search['name']=texts[0].text;
 						});
-						res=text.join(',');
 						break;
 				}
 				my.inputforms[fieldinfo.code].show({
@@ -556,24 +609,12 @@ jQuery.noConflict();
 				case 'GROUP_SELECT':
 				case 'ORGANIZATION_SELECT':
 				case 'USER_SELECT':
-					var source=[];
+					var source=this.loadsource(fieldinfo);
 					var text=[];
-					switch (fieldinfo.type)
-					{
-						case 'GROUP_SELECT':
-							source=this.inputforms[fieldinfo.code].groupsource;
-							break;
-						case 'ORGANIZATION_SELECT':
-							source=this.inputforms[fieldinfo.code].organizationsource;
-							break;
-						case 'USER_SELECT':
-							source=this.inputforms[fieldinfo.code].usersource;
-							break;
-					}
 					$.each(fieldinfo.defaultValue,function(index){
-						var values=fieldinfo.defaultValue[index];
+						var search=fieldinfo.defaultValue[index];
 						var texts=$.grep(source,function(item,index){
-							return item.value==values.code;
+							return item.value==search.code;
 						});
 						if (texts.length!=0) text.push(texts[0].text);
 					});
@@ -588,6 +629,23 @@ jQuery.noConflict();
 					break;
 			}
 			return res;
+		},
+		/* load group organization user source */
+		loadsource:function(fieldinfo){
+			var source=[];
+			switch (fieldinfo.type)
+			{
+				case 'GROUP_SELECT':
+					source=this.inputforms[fieldinfo.code].groupsource;
+					break;
+				case 'ORGANIZATION_SELECT':
+					source=this.inputforms[fieldinfo.code].organizationsource;
+					break;
+				case 'USER_SELECT':
+					source=this.inputforms[fieldinfo.code].usersource;
+					break;
+			}
+			return source;
 		},
 		/* display form */
 		show:function(){
