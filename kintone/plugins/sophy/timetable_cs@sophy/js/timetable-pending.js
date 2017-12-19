@@ -108,10 +108,10 @@ jQuery.noConflict();
 			.append($('<span class="dot progress5">').text('.'))
 		);
 		/* append elements */
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok searchstudentbutton">')[0]);
+		if ($('.custom-elements').size()) $('.custom-elements').remove();
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok searchstudentbutton">').addClass('custom-elements')[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(
-			$('<div class="timetable-headermenucontents">').css({'display':'none'})
+			$('<div class="timetable-headermenucontents">').css({'display':'none'}).addClass('custom-elements')
 			.append($('<span class="customview-span searchstudentname">').css({'padding':'0px 5px 0px 15px'}))
 			.append($('<button class="customview-button close-button clearstudentbutton">'))
 			.append($('<input type="hidden" class="searchstudent">'))

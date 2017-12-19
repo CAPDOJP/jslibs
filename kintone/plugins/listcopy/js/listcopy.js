@@ -261,11 +261,11 @@ jQuery.noConflict();
 			$('body').append(vars.progress);
 		}
 		/* create button */
-		vars.copybutton=$('<button class="kintoneplugin-button-dialog-ok">')
+		vars.copybutton=$('<button class="kintoneplugin-button-dialog-ok copybutton">')
 		.text(vars.config.buttonlabel)
 		.on('click',function(e){functions.copy();});
 		/* append elements */
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+		if ($('.copybutton').size()) $('.copybutton').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.copybutton[0]);
 	});
 })(jQuery,kintone.$PLUGIN_ID);

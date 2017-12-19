@@ -357,7 +357,7 @@ jQuery.noConflict();
 					feed.append(toprev);
 					feed.append(todate);
 					feed.append(tonext);
-					kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+					if ($('.ganttchart-dayfeed').size()) $('.ganttchart-dayfeed').remove();
 					kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 					$('body').append(vars.guidefrom).append(vars.guideto);
 					/* fixed header */

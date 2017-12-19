@@ -326,7 +326,7 @@ jQuery.noConflict();
 		feed.append(todate);
 		feed.append(tobutton);
 		feed.append(tonext);
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+		if ($('.timetable-dayfeed').size()) $('.timetable-dayfeed').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');

@@ -177,11 +177,10 @@ jQuery.noConflict();
 			window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
 		});
 		/* append elements */
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+		if ($('.customview-checkbox').size()) $('.customview-checkbox').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.infowindow[0]);
-		kintone.app.getHeaderSpaceElement().innerHTML='';
-		kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
+		if (!isreload) kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
 		return event;
 	});
 	kintone.events.on(events.show,function(event){

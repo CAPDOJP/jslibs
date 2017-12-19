@@ -294,9 +294,9 @@ jQuery.noConflict();
 		feed.append(toprev);
 		feed.append(todate);
 		feed.append(tonext);
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
-		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(dragenabled[0]);
+		if ($('.custom-elements').size()) $('.custom-elements').remove();
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(dragenabled.addClass('custom-elements')[0]);
 		$('body').append(vars.guidefrom).append(vars.guideto);
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');

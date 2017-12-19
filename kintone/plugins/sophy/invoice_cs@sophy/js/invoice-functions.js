@@ -266,6 +266,7 @@ jQuery.extend({
 				if (!('address2' in fieldinfos)) error='住所2';
 				if (!('tel' in fieldinfos)) error='電話番号';
 				if (!('mobile' in fieldinfos)) error='電話番号(携帯)';
+				if (!('collecttrading' in fieldinfos)) error='支払方法';
 				if (!('bankname' in fieldinfos)) error='銀行名';
 				if (!('bankcode' in fieldinfos)) error='支店名';
 				if (!('branchname' in fieldinfos)) error='銀行コード';
@@ -369,10 +370,11 @@ jQuery.extend({
 		if (!('subbill' in fieldinfos)) error='小計';
 		if (!('tax' in fieldinfos)) error='消費税';
 		if (!('bill' in fieldinfos)) error='請求金額';
-		if (!('collect' in fieldinfos)) error='入金計';
+		if (!('collectdate' in fieldinfos)) error='入金日';
+		if (!('collecttrading' in fieldinfos)) error='入金方法';
+		if (!('collect' in fieldinfos)) error='入金金額';
 		if (!('remaining' in fieldinfos)) error='請求残';
 		if (!('billtable' in properties)) error='請求テーブル';
-		if (!('collecttable' in properties)) error='入金テーブル';
 		if (error.length!=0)
 		{
 			swal('Error!','請求アプリ内に'+error+'フィールドが見つかりません。','error');

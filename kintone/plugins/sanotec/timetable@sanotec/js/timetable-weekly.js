@@ -241,7 +241,7 @@ jQuery.noConflict();
 		feed.append(week);
 		feed.append(button);
 		feed.append(next);
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+		if ($('.timetable-dayfeed').size()) $('.timetable-dayfeed').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
 		vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);

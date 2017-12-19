@@ -32,6 +32,24 @@ jQuery.noConflict();
 		]
 	};
 	var functions={
+		fieldmapping:function(fieldinfos){
+			var mappings=[];
+			$.each(fieldinfos,function(key,values){
+				switch (values.type)
+				{
+					case 'SUBTABLE':
+						$.merge(mappings,functions.fieldmapping(values.fields));
+						break;
+					default:
+						if (values.lookup)
+							$.each(values.lookup.fieldMappings,function(index,values){
+								mappings.push(values.field);
+							});
+						break;
+				}
+			});
+			return mappings;
+		},
 		fieldsort:function(layout){
 			var codes=[];
 			$.each(layout,function(index,values){
@@ -58,6 +76,24 @@ jQuery.noConflict();
 			});
 			return codes;
 		},
+		formatvalue:function(fieldinfo){
+			var res=null;
+			switch (fieldinfo.type)
+			{
+				case 'GROUP_SELECT':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					res=[];
+					$.each(fieldinfo.defaultValue,function(index){
+						res.push({code:fieldinfo.defaultValue[index].code});
+					});
+					break;
+				default:
+					res=fieldinfo.defaultValue;
+					break;
+			}
+			return res;
+		},
 		loadfieldinfos:function(type){
 			if ($('.settingform',$('body')).size()) return;
 			vars.bulkinfos={};
@@ -68,6 +104,7 @@ jQuery.noConflict();
 				/* get fieldinfo */
 				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 					var fieldinfos=resp.properties;
+					var mappings=functions.fieldmapping(resp.properties);
 					$.each(sorted,function(index){
 						var fieldcode=sorted[index];
 						if (fieldcode.code in fieldinfos)
@@ -80,9 +117,11 @@ jQuery.noConflict();
 								for (var i=0;i<fieldcode.cells.length;i++)
 								{
 									var cellinfo=$.extend(true,{},fieldinfo.fields[fieldcode.cells[i]]);
+									var ismapping=(!($.inArray(fieldcode.cells[i],mappings)<0));
 									vars.settinginfos[fieldcode.code].fields[fieldcode.cells[i]]=cellinfo;
+									vars.settinginfos[fieldcode.code].fields[fieldcode.cells[i]]['ismapping']=ismapping;
 									/* check defaultValue */
-									if ('defaultValue' in cellinfo)
+									if (('defaultValue' in cellinfo) && !ismapping)
 									{
 										vars.bulkinfos[fieldcode.cells[i]]=cellinfo;
 										vars.bulkinfos[fieldcode.cells[i]]['tablecode']=fieldcode.code;
@@ -91,10 +130,15 @@ jQuery.noConflict();
 							}
 							else
 							{
+								var ismapping=(!($.inArray(fieldinfo.code,mappings)<0));
 								/* check required */
-								if ('required' in fieldinfo) vars.settinginfos[fieldcode.code]=$.extend(true,{},fieldinfo);
+								if ('required' in fieldinfo)
+								{
+									vars.settinginfos[fieldcode.code]=$.extend(true,{},fieldinfo);
+									vars.settinginfos[fieldcode.code]['ismapping']=ismapping;
+								}
 								/* check defaultValue */
-								if ('defaultValue' in fieldinfo)
+								if (('defaultValue' in fieldinfo) && !ismapping)
 								{
 									vars.bulkinfos[fieldcode.code]=$.extend(true,{},fieldinfo);
 									vars.bulkinfos[fieldcode.code]['tablecode']='';
@@ -140,10 +184,80 @@ jQuery.noConflict();
 									ok:function(selection){
 										/* close the bulks */
 										vars.bulks.hide();
-										for (var i=0;i<selection.length;i++)
-										{
-
-										}
+										if (Object.keys(selection).length==0) return;
+										var labels=[];
+										$.each(selection,function(key,values){
+											labels.push(vars.bulkinfos[key].label);
+										});
+										swal({
+											title:'確認',
+											text:'表示レコード内の'+labels.join('・')+'を各フィールドの初期値で更新します。\n宜しいですか?',
+											type:'warning',
+											showCancelButton:true,
+											confirmButtonText:'OK',
+											cancelButtonText:"キャンセル"
+										},
+										function(){
+											functions.showloading();
+											kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:kintone.app.getId(),query:kintone.app.getQuery()},function(resp){
+												var body={
+													app:kintone.app.getId(),
+													records:[]
+												};
+												for (var i=0;i<resp.records.length;i++)
+												{
+													var record={};
+													$.each(resp.records[i],function(key,values){
+														switch (values.type)
+														{
+															case 'CALC':
+															case 'CATEGORY':
+															case 'CREATED_TIME':
+															case 'CREATOR':
+															case 'MODIFIER':
+															case 'RECORD_NUMBER':
+															case 'STATUS':
+															case 'STATUS_ASSIGNEE':
+															case 'UPDATED_TIME':
+																break;
+															default:
+																record[key]=values;
+																break;
+														}
+													});
+													$.each(selection,function(key,values){
+														if (vars.bulkinfos[key]['tablecode'].length!=0)
+														{
+															var tablecode=vars.bulkinfos[key]['tablecode'];
+															for (var i2=0;i2<record[tablecode].value.length;i2++)
+															{
+																var cells=record[tablecode].value[i2].value;
+																cells[key].value=functions.formatvalue(vars.settinginfos[tablecode].fields[key]);
+															}
+														}
+														else record[key].value=functions.formatvalue(vars.settinginfos[key]);
+													});
+													body.records.push({
+														id:record['$id'].value,
+														record:record
+													});
+												}
+												kintone.api(kintone.api.url('/k/v1/records',true),'PUT',body,function(resp){
+													functions.hideloading();
+													swal({
+														title:'更新完了',
+														text:'更新完了',
+														type:'success'
+													},function(){location.reload(true);});
+												},function(error){
+													functions.hideloading();
+													swal('Error!',error.message,'error');
+												});
+											},function(error){
+												functions.hideloading();
+												swal('Error!',error.message,'error');
+											});
+										});
 									},
 									cancel:function(){
 										/* close the bulks */
@@ -167,6 +281,13 @@ jQuery.noConflict();
 					vars.settings=new settingform({fieldinfos:vars.settinginfos});
 				},function(error){});
 			},function(error){});
+		},
+		showloading:function(){
+			if (!$('div#loading').size()) $('body').append($('<div id="loading">'));
+			$('div#loading').show();
+		},
+		hideloading:function(){
+			$('div#loading').hide();
 		}
 	};
 	var settingform=function(options){
@@ -251,13 +372,14 @@ jQuery.noConflict();
 				'display':'inline-block',
 				'overflow':'hidden',
 				'padding-left':'35px',
+				'padding-right':'35px',
 				'text-overflow':'ellipsis',
 				'white-space':'nowrap',
 				'width':'100%'
 			})
 		)
 		.append(
-			button.clone(true).addClass('button').css({
+			button.clone(true).addClass('referer').css({
 				'left':'0px',
 				'margin':'0px',
 				'padding':'0px',
@@ -326,6 +448,37 @@ jQuery.noConflict();
 					},
 					values:values
 				});
+			})
+		)
+		.append(
+			button.clone(true).addClass('clear').css({
+				'margin':'0px',
+				'padding':'0px',
+				'position':'absolute',
+				'right':'0px',
+				'top':'0px',
+				'width':'30px'
+			})
+			.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png">').css({'width':'100%'}))
+			.on('click',function(){
+				var row=$(this).closest('.fields');
+				var fieldinfo=($.data(row[0],'tablecode').length!=0)?my.fieldinfos[$.data(row[0],'tablecode')].fields[row.attr('id')]:my.fieldinfos[row.attr('id')];
+				switch (fieldinfo.type)
+				{
+					case 'CHECK_BOX':
+					case 'MULTI_SELECT':
+						fieldinfo.defaultValue=[];
+						break;
+					case 'GROUP_SELECT':
+					case 'ORGANIZATION_SELECT':
+					case 'USER_SELECT':
+						fieldinfo.defaultValue=[];
+						break;
+					default:
+						fieldinfo.defaultValue='';
+						break;
+				}
+				$('.label',$('.defaultValue',row)).text('');
 			})
 		);
 		var textline=div.clone(true).css({
@@ -478,7 +631,7 @@ jQuery.noConflict();
 											waitprocess();
 											break;
 										case 'SUCCESS':
-											my.hideloading();
+											functions.hideloading();
 											my.hide();
 											swal({
 												title:'更新完了',
@@ -487,12 +640,12 @@ jQuery.noConflict();
 											},function(){location.reload(true);});
 											break;
 										case 'FAIL':
-											my.hideloading();
+											functions.hideloading();
 											my.hide();
 											swal('Error!','フォーム設定の更新に失敗しました。\nアプリの設定画面を開いてエラー内容を確認して下さい。','error');
 											break;
 										case 'CANCEL':
-											my.hideloading();
+											functions.hideloading();
 											my.hide();
 											swal('Error!','フォーム設定の更新がキャンセルされました。','error');
 											break;
@@ -504,7 +657,7 @@ jQuery.noConflict();
 								});
 							},500);
 						};
-						my.showloading();
+						functions.showloading();
 						waitprocess();
 					},
 					function(error){
@@ -556,7 +709,7 @@ jQuery.noConflict();
 									else $('.'+key,row).css({'visibility':'hidden'});
 									break;
 								case 'referer':
-									if (key in fieldinfo)
+									if ((key in fieldinfo) && !fieldinfo.ismapping)
 									{
 										my.inputforms[fieldinfo.code]=$('body').fieldsform({
 											buttons:{
@@ -584,6 +737,7 @@ jQuery.noConflict();
 												$('.label',$('.'+key,row)).text(my.formatvalue(row,fieldinfo));
 												break;
 										}
+										if (fieldinfo.type=='RADIO_BUTTON') $('.clear',$('.'+key,row)).hide();
 									}
 									else $('.'+key,row).css({'visibility':'hidden'});
 									break;
@@ -658,13 +812,6 @@ jQuery.noConflict();
 		/* hide form */
 		hide:function(){
 			this.cover.hide();
-		},
-		showloading:function(){
-			if (!$('div#loading').size()) $('body').append($('<div id="loading">'));
-			$('div#loading').show();
-		},
-		hideloading:function(){
-			$('div#loading').hide();
 		}
 	};
 	/*---------------------------------------------------------------

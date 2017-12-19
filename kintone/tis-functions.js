@@ -291,7 +291,11 @@ jQuery.extend({
 				else value='';
 				break;
 			default:
-				if (field.value.length!=0) value=field.value;
+				if (field.value)
+				{
+					if (field.value.length!=0) value=field.value;
+					else value='';
+				}
 				else value='';
 				break;
 		}

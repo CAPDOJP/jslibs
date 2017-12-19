@@ -409,7 +409,7 @@ jQuery.noConflict();
 							ok:function(selection){
 								/* close the courseselect */
 								vars.courseselect.hide();
-								if (selection.length==0) return;
+								if (Object.keys(selection).length==0) return;
 								/* create values */
 								$.each(vars.attendants.find('.list').find('p:visible'),function(){
 									/* filtering by grade */
@@ -470,7 +470,7 @@ jQuery.noConflict();
 											rows.push(row);
 										}
 										updatevalue.record[fieldcode+'table']={value:functions.converttablerecords(filter[0][fieldcode+'table'].value,rows)};
-										updatevalue.record[fieldcode+'bulkbill']={value:(selection.length==datasource.length)?1:0};
+										updatevalue.record[fieldcode+'bulkbill']={value:(Object.keys(selection).length==datasource.length)?1:0};
 										updatevalues.push(updatevalue);
 									});
 									functions.updatestudents(updatevalues,message);

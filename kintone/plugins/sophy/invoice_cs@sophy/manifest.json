@@ -25,6 +25,7 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "https://rawgit.com/polygonplanet/encoding.js/master/encoding.js",
             "js/sweetalert.min.js",
             "js/invoice-create.js",
             "js/invoice-functions.js"

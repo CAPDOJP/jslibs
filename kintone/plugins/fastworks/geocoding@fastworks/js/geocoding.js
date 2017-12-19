@@ -164,7 +164,7 @@ jQuery.noConflict();
 							/* append elements */
 							if (!vars.ismobile)
 							{
-								kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+								if ($('.displaymap').size()) $('.displaymap').remove();
 								kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
 							}
 							if (callback!=null) callback();
@@ -473,7 +473,7 @@ jQuery.noConflict();
 						)
 						.append(span.clone(true).text('施設を表示'));
 						/* create display map button */
-						vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok">')
+						vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok displaymap">')
 						.text('地図を表示')
 						.on('click',function(e){
 							functions.reloadmap(function(){

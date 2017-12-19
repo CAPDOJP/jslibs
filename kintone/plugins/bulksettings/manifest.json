@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone フィールド必須入力情報一括編集プラグイン",
-        "en":"kintone Required-Setup plug-in",
-        "zh":"kintone フィールド必須入力情報一括編集プラグイン"
+        "ja":"kintone フィールド情報/データ一括更新プラグイン",
+        "en":"kintone Bulk-Settings plug-in",
+        "zh":"kintone フィールド情報/データ一括更新プラグイン"
     },
     "description":{
-        "ja":"フィールドの必須入力設定を一括編集するプラグインです。",
-        "en":"This plug-in will bulk edits the required input setting of the field",
-        "zh":"フィールドの必須入力設定を一括編集するプラグインです。"
+        "ja":"フィールド各種設定の一括編集/レコードの一括更新を行うプラグインです。",
+        "en":"This plug-in will collectively edits various settings / batch update of records",
+        "zh":"フィールド各種設定の一括編集/レコードの一括更新を行うプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{

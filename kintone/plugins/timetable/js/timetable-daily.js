@@ -322,7 +322,7 @@ jQuery.noConflict();
 		feed.append(date);
 		feed.append(button);
 		feed.append(next);
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+		if ($('.timetable-dayfeed').size()) $('.timetable-dayfeed').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		$('body').append(guidefrom).append(guideto);
 		/* fixed header */

@@ -180,7 +180,7 @@ jQuery.noConflict();
 		feed.append(prev);
 		feed.append(month);
 		feed.append(next);
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+		if ($('.timetable-dayfeed').size()) $('.timetable-dayfeed').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
 		vars.fromdate=vars.fromdate.calc('first-of-month');

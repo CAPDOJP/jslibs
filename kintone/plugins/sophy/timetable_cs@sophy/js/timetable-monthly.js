@@ -424,7 +424,7 @@ jQuery.noConflict();
 		feed.append(prev);
 		feed.append(month);
 		feed.append(next);
-		kintone.app.getHeaderMenuSpaceElement().innerHTML='';
+		if ($('.timetable-headermenucontents').size()) $('.timetable-headermenucontents').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		$('body').append(vars.progress);
 		$('body').append(splash);
