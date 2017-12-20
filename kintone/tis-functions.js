@@ -233,6 +233,36 @@ jQuery.extend({
 		for (var i=0;i<taxdatas.length;i++) if (new Date(taxdatas[i].startdate.dateformat())<date) rate=parseFloat(taxdatas[i].rate);
 		return rate;
 	},
+	downloadtext:function(values,character,filename){
+		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}
+		var a=document.createElement('a');
+		var url=window.URL || window.webkitURL;
+		var strtoarray=function(str){
+			var arr=[];
+			for (var i=0;i<str.length;i++)
+				arr.push(str.charCodeAt(i));
+			return arr;
+		};
+		var array=strtoarray(values.replace(/\n$/g,''));
+		var blob=new Blob([new Uint8Array(Encoding.convert(array,character,Encoding.detect(array)))],{'type':'text/plain'});
+		a.href=url.createObjectURL(blob);
+		a.download=filename;
+		a.target='_blank';
+		a.click();
+	},
+	uploadtext:function(file,character,success,error){
+		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}
+		var reader=null;
+		reader=new FileReader();
+		reader.readAsArrayBuffer(file);
+		reader.onabort=function(event){error();};
+		reader.onerror=function(event){error();};
+		reader.onload=function(event){
+			var array=new Uint8Array(event.target.result);
+			var records=Encoding.codeToString(Encoding.convert(array,character,Encoding.detect(array)));
+			success(records);
+		}
+	},
 	fieldparallelize:function(properties){
 		var tablecode='';
 		var fields={};

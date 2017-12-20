@@ -18,9 +18,9 @@ jQuery.noConflict();
 		fromdate:new Date(),
 		todate:new Date(),
 		taxrate:0,
+		taxround:'',
 		progress:null,
 		table:null,
-		studentselect:null,
 		apps:{},
 		config:{},
 		offset:{},
@@ -93,13 +93,12 @@ jQuery.noConflict();
 					bill:{value:0},
 					collectdate:{value:''},
 					collecttrading:{value:parent['collecttrading'].value},
-					collect:{value:0},
 					billtable:{value:[]}
 				};
 				/* append bill records */
 				for (var i2=0;i2<filter.length;i2++)
 				{
-					var student=filter[i];
+					var student=filter[i2];
 					var admissiondate=new Date(student['admissiondate'].value.dateformat());
 					var loafrom=new Date(student['loafrom'].value.dateformat());
 					var loato=new Date(student['loato'].value.dateformat());
@@ -374,24 +373,11 @@ jQuery.noConflict();
 						if (row.taxsegment.value=='課税') able+=parseFloat('0'+row.billprice.value.replace(/,/g,''));
 						else free+=parseFloat('0'+row.billprice.value.replace(/,/g,''));
 					}
-					var taxround='';
-					switch (vars.const['taxround'].value)
-					{
-						case '1':
-							taxround='floor';
-							break;
-						case '2':
-							taxround='ceil';
-							break;
-						case '3':
-							taxround='round';
-							break;
-					}
 					var calc=$.calculatetax({
 						able:able,
 						free:free,
 						isoutsidetax:(vars.const['taxshift'].value=='0'),
-						taxround:taxround,
+						taxround:vars.taxround,
 						taxrate:vars.taxrate
 					});
 					entryvalue.subbill.value=calc.able-calc.tax+calc.free;
@@ -440,11 +426,8 @@ jQuery.noConflict();
 		},
 		/* create journalizing file */
 		createjournalizing:function(){
-			var a=document.createElement('a');
-			var advances='';
-			var sales='';
-			var taxround='';
-			var url=window.URL || window.webkitURL;
+			var advancedatas='';
+			var saledatas='';
 			var months={
 				this:vars.fromdate.calc('1 month').calc('-1 day'),
 				next:vars.fromdate.calc('2 month').calc('-1 day')
@@ -455,56 +438,39 @@ jQuery.noConflict();
 				nss:{lecture:0,textbook:0,admission:0},
 				post:{lecture:0,textbook:0,admission:0}
 			};
-			var strtoarray=function(str){
-				var arr=[];
-				for (var i=0;i<str.length;i++)
-					arr.push(str.charCodeAt(i));
-				return arr;
-			};
 			var writeline=function(thismonth,nextmonth,price,debit,assistance,credit,department){
-				var write=''
+				var datas=''
 				var calc=$.calculatetax({
 					able:price,
 					free:0,
 					isoutsidetax:(vars.const['taxshift'].value=='0'),
-					taxround:taxround,
+					taxround:vars.taxround,
 					taxrate:vars.taxrate
 				});
-				write+='"2000",,"","'+thismonth.format('Y-m-d').replace(/-/g,'\/')+'",';
-				write+='"'+debit+'","'+assistance+'","","対象外",'+price.toString()+',0,';
-				write+='"'+credit+'","","'+department+'","課税売上内五'+(vars.taxrate*100).toString()+'%",'+price.toString()+','+calc.tax.toString()+',';
-				write+='"'+(nextmonth.getMonth()+1).toString()+'月分授業料",';
-				write+='"","",0,"","","0","0","no"\n';
-				return write;
+				datas+='"2000",,"","'+thismonth.format('Y-m-d').replace(/-/g,'\/')+'",';
+				datas+='"'+debit+'","'+assistance+'","","対象外",'+calc.able.toString()+',0,';
+				datas+='"'+credit+'","","'+department+'","課税売上内五'+(vars.taxrate*100).toString()+'%",'+calc.able.toString()+','+calc.tax.toString()+',';
+				datas+='"'+(nextmonth.getMonth()+1).toString()+'月分授業料",';
+				datas+='"","",0,"","","0","0","no"\n';
+				return datas;
 			};
-			switch (vars.const['taxround'].value)
-			{
-				case '1':
-					taxround='floor';
-					break;
-				case '2':
-					taxround='ceil';
-					break;
-				case '3':
-					taxround='round';
-					break;
-			}
 			for (var i=0;i<vars.apps[kintone.app.getId()].length;i++)
 			{
 				var record=vars.apps[kintone.app.getId()][i];
 				var summary={};
-				if (record['remaining'].value!=0) continue;
+				if (!record['collectdate'].value) continue;
+				if (record['collectdate'].value.length==0) continue;
 				switch (record['collecttrading'].value)
 				{
 					case '現金':
-						if (new Date(record['billdate'].value.dateformat()).format('Y-m')==new Date(record['collectdate'].value.dateformat()).format('Y-m')) summaries.precash;
-						else summaries.cash
+						if (new Date(record['billdate'].value.dateformat()).format('Y-m')==new Date(record['collectdate'].value.dateformat()).format('Y-m')) summary=summaries.precash;
+						else summary=summaries.cash;
 						break;
 					case 'NSS':
-						if (record['remaining'].value==0) summary=summaries.nss;
+						summary=summaries.nss;
 						break;
 					case 'ゆうちょ':
-						if (record['remaining'].value==0) summary=summaries.post;
+						summary=summaries.post;
 						break;
 				}
 				for (var i2=0;i2<record['billtable'].value.length;i2++)
@@ -526,40 +492,106 @@ jQuery.noConflict();
 			}
 			if (summaries.cash.lecture+summaries.cash.textbook+summaries.cash.admission!=0)
 			{
-				if (summaries.cash.lecture!=0) sales+=writeline(months.next,months.next,summaries.cash.lecture,'現金','','授業料','学習塾長岡');
-				if (summaries.cash.textbook!=0) sales+=writeline(months.next,months.next,summaries.cash.textbook,'現金','','教材費収入','学習塾長岡');
-				if (summaries.cash.admission!=0) sales+=writeline(months.next,months.next,summaries.cash.admission,'現金','','入室金','学習塾長岡');
+				if (summaries.cash.lecture!=0) saledatas+=writeline(months.next,months.next,summaries.cash.lecture,'現金','','授業料','学習塾長岡');
+				if (summaries.cash.textbook!=0) saledatas+=writeline(months.next,months.next,summaries.cash.textbook,'現金','','教材費収入','学習塾長岡');
+				if (summaries.cash.admission!=0) saledatas+=writeline(months.next,months.next,summaries.cash.admission,'現金','','入室金','学習塾長岡');
 			}
 			if (summaries.precash.lecture+summaries.precash.textbook+summaries.precash.admission!=0)
 			{
-				if (summaries.precash.lecture!=0) sales+=writeline(months.next,months.next,summaries.precash.lecture,'前受金','','授業料','学習塾長岡');
-				if (summaries.precash.textbook!=0) sales+=writeline(months.next,months.next,summaries.precash.textbook,'前受金','','教材費収入','学習塾長岡');
-				if (summaries.precash.admission!=0) sales+=writeline(months.next,months.next,summaries.precash.admission,'前受金','','入室金','学習塾長岡');
-				advances+=writeline(months.this,months.next,summaries.precash.lecture+summaries.precash.textbook+summaries.precash.admission,'現金','','前受金','');
+				if (summaries.precash.lecture!=0) saledatas+=writeline(months.next,months.next,summaries.precash.lecture,'前受金','','授業料','学習塾長岡');
+				if (summaries.precash.textbook!=0) saledatas+=writeline(months.next,months.next,summaries.precash.textbook,'前受金','','教材費収入','学習塾長岡');
+				if (summaries.precash.admission!=0) saledatas+=writeline(months.next,months.next,summaries.precash.admission,'前受金','','入室金','学習塾長岡');
+				advancedatas+=writeline(months.this,months.next,summaries.precash.lecture+summaries.precash.textbook+summaries.precash.admission,'現金','','前受金','');
 			}
 			if (summaries.nss.lecture+summaries.nss.textbook+summaries.nss.admission!=0)
 			{
-				if (summaries.nss.lecture!=0) sales+=writeline(months.next,months.next,summaries.nss.lecture,'普通預金','北越銀行','授業料','学習塾長岡');
-				if (summaries.nss.textbook!=0) sales+=writeline(months.next,months.next,summaries.nss.textbook,'普通預金','北越銀行','教材費収入','学習塾長岡');
-				if (summaries.nss.admission!=0) sales+=writeline(months.next,months.next,summaries.nss.admission,'普通預金','北越銀行','入室金','学習塾長岡');
+				if (summaries.nss.lecture!=0) saledatas+=writeline(months.next,months.next,summaries.nss.lecture,'普通預金','北越銀行','授業料','学習塾長岡');
+				if (summaries.nss.textbook!=0) saledatas+=writeline(months.next,months.next,summaries.nss.textbook,'普通預金','北越銀行','教材費収入','学習塾長岡');
+				if (summaries.nss.admission!=0) saledatas+=writeline(months.next,months.next,summaries.nss.admission,'普通預金','北越銀行','入室金','学習塾長岡');
 			}
 			if (summaries.post.lecture+summaries.post.textbook+summaries.post.admission!=0)
 			{
-				if (summaries.post.lecture!=0) sales+=writeline(months.next,months.next,summaries.post.lecture,'前受金','','授業料','学習塾長岡');
-				if (summaries.post.textbook!=0) sales+=writeline(months.next,months.next,summaries.post.textbook,'前受金','','教材費収入','学習塾長岡');
-				if (summaries.post.admission!=0) sales+=writeline(months.next,months.next,summaries.post.admission,'前受金','','入室金','学習塾長岡');
-				advances+=writeline(months.this,months.next,summaries.post.lecture+summaries.post.textbook+summaries.post.admission,'郵便貯金','','前受金','');
+				if (summaries.post.lecture!=0) saledatas+=writeline(months.next,months.next,summaries.post.lecture,'前受金','','授業料','学習塾長岡');
+				if (summaries.post.textbook!=0) saledatas+=writeline(months.next,months.next,summaries.post.textbook,'前受金','','教材費収入','学習塾長岡');
+				if (summaries.post.admission!=0) saledatas+=writeline(months.next,months.next,summaries.post.admission,'前受金','','入室金','学習塾長岡');
+				advancedatas+=writeline(months.this,months.next,summaries.post.lecture+summaries.post.textbook+summaries.post.admission,'郵便貯金','','前受金','');
 			}
-			var advancesarray=new Uint8Array(Encoding.convert(strtoarray(advances.replace(/\n$/g,'')),'SJIS','UNICODE'));
-			var blob=new Blob([advancesarray],{'type':'text/plain'});
+			functions.download(advancedatas,'advances'+months.this.format('Y-m')+'.txt');
+			functions.download(saledatas,'sales'+months.next.format('Y-m')+'.txt');
+		},
+		/* create nss file */
+		createnss:function(){
+			var nssdatas='';
+			for (var i=0;i<vars.apps[kintone.app.getId()].length;i++)
+			{
+				var record=vars.apps[kintone.app.getId()][i];
+				var summary={lecture:0,textbook:0,admission:0};
+				if (record['collecttrading'].value!='NSS') continue;
+				for (var i2=0;i2<record['billtable'].value.length;i2++)
+				{
+					var row=record['billtable'].value[i2].value;
+					switch (row['billsegment'].value)
+					{
+						case '授業料':
+							summary.lecture+=parseInt(row['billprice'].value);
+							break;
+						case '教材費収入':
+							summary.textbook+=parseInt(row['billprice'].value);
+							break;
+						case '入室金':
+							summary.admission+=parseInt(row['billprice'].value);
+							break;
+					}
+				}
+				if (summary.lecture+summary.textbook+summary.admission!=0)
+				{
+					var calc=null;
+					var parent=$.grep(vars.apps[vars.config['parent']],function(item,index){
+						return (item['$id'].value==record['customer'].value);
+					})[0];
+					nssdatas+=parent['nsscode'].value+',';
+					calc=$.calculatetax({
+						able:summary.lecture,
+						free:0,
+						isoutsidetax:(vars.const['taxshift'].value=='0'),
+						taxround:vars.taxround,
+						taxrate:vars.taxrate
+					});
+					nssdatas+=calc.able.toString()+',';
+					calc=$.calculatetax({
+						able:summary.textbook,
+						free:0,
+						isoutsidetax:(vars.const['taxshift'].value=='0'),
+						taxround:vars.taxround,
+						taxrate:vars.taxrate
+					});
+					nssdatas+=calc.able.toString()+',';
+					calc=$.calculatetax({
+						able:summary.admission,
+						free:0,
+						isoutsidetax:(vars.const['taxshift'].value=='0'),
+						taxround:vars.taxround,
+						taxrate:vars.taxrate
+					});
+					nssdatas+=calc.able.toString()+',';
+					nssdatas+='0,0\n';
+				}
+			}
+			functions.download(nssdatas,'nss.txt');
+		},
+		/* download file */
+		download:function(datas,filename){
+			var a=document.createElement('a');
+			var url=window.URL || window.webkitURL;
+			var strtoarray=function(str){
+				var arr=[];
+				for (var i=0;i<str.length;i++)
+					arr.push(str.charCodeAt(i));
+				return arr;
+			};
+			var blob=new Blob([new Uint8Array(Encoding.convert(strtoarray(datas.replace(/\n$/g,'')),'SJIS','UNICODE'))],{'type':'text/plain'});
 			a.href=url.createObjectURL(blob);
-			a.download='advances'+month.format('Y-m')+'.txt';
-			a.target='_blank';
-			a.click();
-			var salesarray=new Uint8Array(Encoding.convert(strtoarray(sales.replace(/\n$/g,'')),'SJIS','UNICODE'));
-			var blob=new Blob([salesarray],{'type':'text/plain'});
-			a.href=url.createObjectURL(blob);
-			a.download='sales'+month.format('Y-m')+'.txt';
+			a.download=filename;
 			a.target='_blank';
 			a.click();
 		},
@@ -582,12 +614,10 @@ jQuery.noConflict();
 							switch (code)
 							{
 								case 'bill':
-								case 'remaining':
 								case 'subbill':
 								case 'tax':
 									$(this).css({'text-align':'right'}).text(parseInt('0'+$.fieldvalue(records[i][code])).format()+'円');
 									break;
-								case 'collect':
 								case 'collectdate':
 									$('input',$(this)).val($.fieldvalue(records[i][code]));
 									break;
@@ -628,6 +658,83 @@ jQuery.noConflict();
 			},function(error){
 				swal('Error!',error.message,'error');
 			});
+		},
+		/* update nss records */
+		updatenss:function(){
+			var error=false;
+			var counter=0;
+			var reader=null;
+			var target=$('.nssfile');
+			var entryvalues=[];
+			if (target[0].files.length==0) return;
+			vars.progress.find('.message').text('入金情報更新中');
+			vars.progress.find('.progressbar').find('.progresscell').width(0);
+			vars.progress.show();
+			reader=new FileReader();
+			reader.readAsArrayBuffer(target[0].files[0]);
+			reader.onabort=function(event){vars.progress.hide();};
+			reader.onerror=function(event){vars.progress.hide();};
+			reader.onload=function(event){
+				var records=Encoding.codeToString(Encoding.convert(new Uint8Array(event.target.result),'UNICODE','SJIS')).split('\n');
+				for (var i=0;i<records.length;i++)
+				{
+					if (records[i].length==0) continue;
+					var record=records[i].split(',');
+					var parent=$.grep(vars.apps[vars.config['parent']],function(item,index){
+						return (item['nsscode'].value==record[6].replace(/"/g,'') && vars.fromdate.format('Y-m')==new Date(record[0].replace(/"/g,'')).format('Y-m'));
+					});
+					if (parent.length!=0)
+					{
+						var record=$.grep(vars.apps[kintone.app.getId()],function(item,index){
+							return (item['customer'].value==parent[0]['$id'].value);
+						});
+						if (record.length!=0)
+							entryvalues.push({
+								app:kintone.app.getId(),
+								id:record[0]['$id'].value,
+								record:{
+									collectdate:{value:new Date().format('Y-m-d')},
+									collecttrading:{value:'NSS'}
+								}
+							});
+					}
+				}
+				if (entryvalues.length!=0)
+				{
+					for (var i=0;i<entryvalues.length;i++)
+					{
+						if (error) return;
+						kintone.api(kintone.api.url('/k/v1/record',true),'PUT',entryvalues[i],function(resp){
+							counter++;
+							if (counter<entryvalues.length)
+							{
+								vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/entryvalues.length));
+							}
+							else
+							{
+								vars.progress.hide();
+								swal({
+									title:'更新完了',
+									text:'入金情報を更新しました。',
+									type:'success'
+								},function(){
+									/* reload view */
+									functions.load();
+								});
+							}
+						},function(error){
+							vars.progress.hide();
+							swal('Error!',error.message,'error');
+							error=true;
+						});
+					}
+				}
+				else
+				{
+					vars.progress.hide();
+					swal('Error!','読み込まれた入金データに該当する請求書が見つかりませんでした。','error');
+				}
+			}
 		},
 		/* update students */
 		updatestudents:function(values,callback){
@@ -705,53 +812,27 @@ jQuery.noConflict();
 		feed.append(next);
 		if ($('.custom-elements').size()) $('.custom-elements').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok searchstudentbutton">').addClass('custom-elements')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(
-			$('<div class="invoice-headermenucontents">').css({'display':'none'}).addClass('custom-elements')
-			.append($('<span class="customview-span searchstudentname">').css({'padding':'0px 5px 0px 15px'}))
-			.append($('<button class="customview-button close-button clearstudentbutton">').css({'margin-right':'15px'}))
-			.append($('<input type="hidden" class="searchstudent">'))
-			[0]
-		);
 		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok createinvoicebutton">').addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok createnssbutton">').addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok updatenssbutton">').addClass('custom-elements')[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok createjournalizingbutton">').addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(
+			$('<input type="file" class="nssfile">').addClass('custom-elements').on('change',function(){functions.updatenss();}).hide()[0]
+		);
 		$('body').append(vars.progress);
 		$('body').append(splash);
-		$('.searchstudentbutton')
-		.text('生徒選択')
-		.on('click',function(e){
-			vars.studentselect.show({
-				buttons:{
-					cancel:function(){
-						/* close the reference box */
-						vars.studentselect.hide();
-					}
-				},
-				callback:function(row){
-					/* close the reference box */
-					vars.studentselect.hide();
-					$('.searchstudent').val(row.find('#\\$id').val());
-					$('.searchstudentname').text(row.find('#name').val());
-					$('.searchstudentname').closest('div').show();
-					/* reload view */
-					functions.load();
-				}
-			});
-		});
-		$('.clearstudentbutton')
-		.on('click',function(e){
-			$('.searchstudent').val('');
-			$('.searchstudentname').text('');
-			$('.searchstudentname').closest('div').hide();
-			/* reload view */
-			functions.load();
-		});
 		$('.createinvoicebutton')
 		.text('請求書作成')
 		.on('click',function(e){functions.createinvoice();});
+		$('.createnssbutton')
+		.text('NSSデータ書出')
+		.on('click',function(e){functions.createnss();});
+		$('.updatenssbutton')
+		.text('NSSデータ読込')
+		.on('click',function(e){$('.nssfile').trigger('click');});
 		$('.createjournalizingbutton')
 		.text('仕訳作成')
-		.on('click',function(e){$.createjournalizing();});
+		.on('click',function(e){functions.createjournalizing();});
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
 		var headerspace=$(kintone.app.getHeaderSpaceElement());
@@ -850,35 +931,19 @@ jQuery.noConflict();
 			else vars.const=vars.apps[vars.config['const']][0];
 			/* calculate reate of tax */
 			vars.taxrate=functions.calculatetaxrate();
-			/* create studentselect box */
-			vars.studentselect=$('body').referer({
-				datasource:$.grep(vars.apps[vars.config['student']],function(item,index){
-					return (item['status'].value=='通塾中');
-				}),
-				displaytext:['gradename','name'],
-				buttons:[
-					{
-						id:'cancel',
-						text:'キャンセル'
-					}
-				],
-				searches:[
-					{
-						id:'gradecode',
-						class:'referer-select',
-						label:'学年',
-						type:'select',
-						param:{app:vars.config['grade']},
-						value:'code',
-						text:'name',
-						callback:function(row){
-							vars.studentselect.search();
-						}
-					}
-				]
-			});
-			vars.studentselect.searchblock.find('select').closest('label').css({'width':'100%'});
-			vars.studentselect.searchblock.find('button').hide();
+			/* calculate round of tax */
+			switch (vars.const['taxround'].value)
+			{
+				case '1':
+					vars.taxround='floor';
+					break;
+				case '2':
+					vars.taxround='ceil';
+					break;
+				case '3':
+					vars.taxround='round';
+					break;
+			}
 			container.empty();
 			/* get fields of app */
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
@@ -897,9 +962,7 @@ jQuery.noConflict();
 					'tax',
 					'bill',
 					'collectdate',
-					'collecttrading',
-					'collect',
-					'remaining'
+					'collecttrading'
 				];
 				for (var i=0;i<columns.length;i++)
 				{
@@ -910,52 +973,43 @@ jQuery.noConflict();
 					head.append($('<th>').text(fieldinfo.label));
 					switch (columns[i])
 					{
-						case 'collect':
-							cell=$('<input type="text" id="'+fieldinfo.code+'" class="right">').css({'padding-right':'35px','width':'100%'})
-							.on('change',function(){
-								var body={
-									app:kintone.app.getId(),
-									id:$('#\\$id',$(this).closest('tr')).val(),
-									record:{collect:{value:$(this).val()}}
-								};
-								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){},function(error){
-									swal('Error!',error.message,'error');
-								});
-							});
-							unit=$('<span>').css({
-								'margin':'0px',
-								'padding':'0px',
-								'position':'absolute',
-								'right':'0px',
-								'text-align':'center',
-								'top':'0px',
-								'width':'30px'
-							}).text('円');
-							template.append($('<td class="'+fieldinfo.code+'">').append(cell).append(unit));
-							break;
 						case 'collectdate':
-							cell=$('<input type="text" id="'+fieldinfo.code+'" class="center">').css({'width':'100%'})
+							cell=$('<input type="text" id="'+fieldinfo.code+'" class="center" placeholder="ex) '+(new Date().format('Y-m-d'))+'">').css({'width':'100%'})
 							.on('change',function(){
+								var id=$('#\\$id',$(this).closest('tr')).val();
+								var value=$(this).val();
 								var body={
 									app:kintone.app.getId(),
-									id:$('#\\$id',$(this).closest('tr')).val(),
-									record:{collectdate:{value:$(this).val()}}
+									id:id,
+									record:{collectdate:{value:value}}
 								};
-								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){},function(error){
+								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+									var filter=$.grep(vars.apps[kintone.app.getId()],function(item,index){
+										return (item['$id'].value==id);
+									});
+									if (filter.length!=0) filter[0]['collectdate'].value=value;
+								},function(error){
 									swal('Error!',error.message,'error');
 								});
 							});
-							template.append($('<td class="'+fieldinfo.code+'">').css({'width':'125px'}).append(cell));
+							template.append($('<td class="'+fieldinfo.code+'">').css({'padding':'0px','width':'125px'}).append(cell));
 							break;
 						case 'collecttrading':
 							cell=$('<select id="'+fieldinfo.code+'">').css({'width':'100%'})
 							.on('change',function(){
+								var id=$('#\\$id',$(this).closest('tr')).val();
+								var value=$(this).val();
 								var body={
 									app:kintone.app.getId(),
-									id:$('#\\$id',$(this).closest('tr')).val(),
-									record:{collecttrading:{value:$(this).val()}}
+									id:id,
+									record:{collecttrading:{value:value}}
 								};
-								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){},function(error){
+								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+									var filter=$.grep(vars.apps[kintone.app.getId()],function(item,index){
+										return (item['$id'].value==id);
+									});
+									if (filter.length!=0) filter[0]['collecttrading'].value=value;
+								},function(error){
 									swal('Error!',error.message,'error');
 								});
 							});
@@ -967,7 +1021,7 @@ jQuery.noConflict();
 							$.each(datasource,function(index){
 								cell.append($('<option>').attr('value',datasource[index].label).text(datasource[index].label));
 							});
-							template.append($('<td class="'+fieldinfo.code+'">').append(cell));
+							template.append($('<td class="'+fieldinfo.code+'">').css({'padding':'0px'}).append(cell));
 							break;
 						default:
 							template.append($('<td class="'+fieldinfo.code+'">'));
