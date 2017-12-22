@@ -519,7 +519,7 @@ var layerController = function(options){
 				{
 					my.redraw();
 					/* イベント発火 */
-					var event=new $.Event('layertextchange',{layer:my,value:e.value.replace('\r\n','\n').split('\n')[0]});
+					var event=new $.Event('layertextchange',{layer:my,value:e.value.replace(/\r\n/g,'\n').split('\n')[0]});
 					my.artboard.trigger(event);
 				}
 				else
@@ -955,7 +955,7 @@ layerController.prototype={
 				my.context.textAlign=this.text.style.align;
 				my.context.textBaseline='middle';
 				/* 描画 */
-				var values=this.text.value.replace('\r\n','\n').split('\n');
+				var values=this.text.value.replace(/\r\n/g,'\n').split('\n');
 				for (var i=0;i<values.length;i++)
 				{
 					my.context.fillText(values[i],left,top);

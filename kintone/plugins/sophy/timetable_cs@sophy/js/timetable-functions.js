@@ -422,9 +422,9 @@ jQuery.extend({
 			'短期講座',
 			'テスト対策講座',
 			'英検対策講座',
-			'春季特別講座',
-			'夏季特別講座',
-			'冬季特別講座',
+			'春期特別講座',
+			'夏期特別講座',
+			'冬期特別講座',
 			'ミニレク',
 			'朝練',
 			'夜練',
@@ -495,7 +495,7 @@ jQuery.extend({
 				if (!('gradetable' in properties)) error='学年テーブル';
 				break;
 			case '4':
-				/* 春季特別講座 */
+				/* 春期特別講座 */
 				if (!('code' in fieldinfos)) error='コースコード';
 				if (!('name' in fieldinfos)) error='コース名';
 				if (!('textbookfee' in fieldinfos)) error='教材費';
@@ -511,7 +511,7 @@ jQuery.extend({
 				if (!('gradetable' in properties)) error='学年テーブル';
 				break;
 			case '5':
-				/* 夏季特別講座 */
+				/* 夏期特別講座 */
 				if (!('code' in fieldinfos)) error='コースコード';
 				if (!('name' in fieldinfos)) error='コース名';
 				if (!('textbookfee' in fieldinfos)) error='教材費';
@@ -527,7 +527,7 @@ jQuery.extend({
 				if (!('gradetable' in properties)) error='学年テーブル';
 				break;
 			case '6':
-				/* 冬季特別講座 */
+				/* 冬期特別講座 */
 				if (!('code' in fieldinfos)) error='コースコード';
 				if (!('name' in fieldinfos)) error='コース名';
 				if (!('textbookfee' in fieldinfos)) error='教材費';
@@ -638,15 +638,15 @@ jQuery.extend({
 				if (!('shortterm3id' in fieldinfos)) error='英検対策講座ID';
 				if (!('shortterm3over' in fieldinfos)) error='英検対策講座追加時間';
 				if (!('shortterm3bill' in fieldinfos)) error='英検対策講座請求済';
-				if (!('season1code' in fieldinfos)) error='春季特別講座コースコード';
-				if (!('season1id' in fieldinfos)) error='春季特別講座ID';
-				if (!('season1bill' in fieldinfos)) error='春季特別講座請求済';
-				if (!('season2code' in fieldinfos)) error='夏季特別講座コースコード';
-				if (!('season2id' in fieldinfos)) error='夏季特別講座ID';
-				if (!('season2bill' in fieldinfos)) error='夏季特別講座請求済';
-				if (!('season3code' in fieldinfos)) error='冬季特別講座コースコード';
-				if (!('season3id' in fieldinfos)) error='冬季特別講座ID';
-				if (!('season3bill' in fieldinfos)) error='冬季特別講座請求済';
+				if (!('season1code' in fieldinfos)) error='春期特別講座コースコード';
+				if (!('season1id' in fieldinfos)) error='春期特別講座ID';
+				if (!('season1bill' in fieldinfos)) error='春期特別講座請求済';
+				if (!('season2code' in fieldinfos)) error='夏期特別講座コースコード';
+				if (!('season2id' in fieldinfos)) error='夏期特別講座ID';
+				if (!('season2bill' in fieldinfos)) error='夏期特別講座請求済';
+				if (!('season3code' in fieldinfos)) error='冬期特別講座コースコード';
+				if (!('season3id' in fieldinfos)) error='冬期特別講座ID';
+				if (!('season3bill' in fieldinfos)) error='冬期特別講座請求済';
 				if (!('morningbulkbill' in fieldinfos)) error='朝練一括支払';
 				if (!('morningcode' in fieldinfos)) error='朝練コード';
 				if (!('morningid' in fieldinfos)) error='朝練ID';
@@ -668,6 +668,8 @@ jQuery.extend({
 				break;
 			case '13':
 				/* 基本情報 */
+				if (!('tel' in fieldinfos)) error='代表電話番号';
+				if (!('mail' in fieldinfos)) error='代表メールアドレス';
 				if (!('starthour' in fieldinfos)) error='始業時間';
 				if (!('endhour' in fieldinfos)) error='終業時間';
 				if (!('transferlimit' in fieldinfos)) error='振替期限';

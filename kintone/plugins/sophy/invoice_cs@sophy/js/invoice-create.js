@@ -424,10 +424,12 @@ jQuery.noConflict();
 			}
 			return fee.toString();
 		},
-		/* create journalizing file */
-		createjournalizing:function(){
-			var advancedatas='';
-			var saledatas='';
+		/* download journalizing file */
+		downloadjournalizing:function(){
+			var entryvalues={
+				advances:'',
+				sales:''
+			};
 			var months={
 				this:vars.fromdate.calc('1 month').calc('-1 day'),
 				next:vars.fromdate.calc('2 month').calc('-1 day')
@@ -492,36 +494,36 @@ jQuery.noConflict();
 			}
 			if (summaries.cash.lecture+summaries.cash.textbook+summaries.cash.admission!=0)
 			{
-				if (summaries.cash.lecture!=0) saledatas+=writeline(months.next,months.next,summaries.cash.lecture,'現金','','授業料','学習塾長岡');
-				if (summaries.cash.textbook!=0) saledatas+=writeline(months.next,months.next,summaries.cash.textbook,'現金','','教材費収入','学習塾長岡');
-				if (summaries.cash.admission!=0) saledatas+=writeline(months.next,months.next,summaries.cash.admission,'現金','','入室金','学習塾長岡');
+				if (summaries.cash.lecture!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.cash.lecture,'現金','','授業料','学習塾長岡');
+				if (summaries.cash.textbook!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.cash.textbook,'現金','','教材費収入','学習塾長岡');
+				if (summaries.cash.admission!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.cash.admission,'現金','','入室金','学習塾長岡');
 			}
 			if (summaries.precash.lecture+summaries.precash.textbook+summaries.precash.admission!=0)
 			{
-				if (summaries.precash.lecture!=0) saledatas+=writeline(months.next,months.next,summaries.precash.lecture,'前受金','','授業料','学習塾長岡');
-				if (summaries.precash.textbook!=0) saledatas+=writeline(months.next,months.next,summaries.precash.textbook,'前受金','','教材費収入','学習塾長岡');
-				if (summaries.precash.admission!=0) saledatas+=writeline(months.next,months.next,summaries.precash.admission,'前受金','','入室金','学習塾長岡');
-				advancedatas+=writeline(months.this,months.next,summaries.precash.lecture+summaries.precash.textbook+summaries.precash.admission,'現金','','前受金','');
+				if (summaries.precash.lecture!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.precash.lecture,'前受金','','授業料','学習塾長岡');
+				if (summaries.precash.textbook!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.precash.textbook,'前受金','','教材費収入','学習塾長岡');
+				if (summaries.precash.admission!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.precash.admission,'前受金','','入室金','学習塾長岡');
+				entryvalues.advances+=writeline(months.this,months.next,summaries.precash.lecture+summaries.precash.textbook+summaries.precash.admission,'現金','','前受金','');
 			}
 			if (summaries.nss.lecture+summaries.nss.textbook+summaries.nss.admission!=0)
 			{
-				if (summaries.nss.lecture!=0) saledatas+=writeline(months.next,months.next,summaries.nss.lecture,'普通預金','北越銀行','授業料','学習塾長岡');
-				if (summaries.nss.textbook!=0) saledatas+=writeline(months.next,months.next,summaries.nss.textbook,'普通預金','北越銀行','教材費収入','学習塾長岡');
-				if (summaries.nss.admission!=0) saledatas+=writeline(months.next,months.next,summaries.nss.admission,'普通預金','北越銀行','入室金','学習塾長岡');
+				if (summaries.nss.lecture!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.nss.lecture,'普通預金','北越銀行','授業料','学習塾長岡');
+				if (summaries.nss.textbook!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.nss.textbook,'普通預金','北越銀行','教材費収入','学習塾長岡');
+				if (summaries.nss.admission!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.nss.admission,'普通預金','北越銀行','入室金','学習塾長岡');
 			}
 			if (summaries.post.lecture+summaries.post.textbook+summaries.post.admission!=0)
 			{
-				if (summaries.post.lecture!=0) saledatas+=writeline(months.next,months.next,summaries.post.lecture,'前受金','','授業料','学習塾長岡');
-				if (summaries.post.textbook!=0) saledatas+=writeline(months.next,months.next,summaries.post.textbook,'前受金','','教材費収入','学習塾長岡');
-				if (summaries.post.admission!=0) saledatas+=writeline(months.next,months.next,summaries.post.admission,'前受金','','入室金','学習塾長岡');
-				advancedatas+=writeline(months.this,months.next,summaries.post.lecture+summaries.post.textbook+summaries.post.admission,'郵便貯金','','前受金','');
+				if (summaries.post.lecture!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.post.lecture,'前受金','','授業料','学習塾長岡');
+				if (summaries.post.textbook!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.post.textbook,'前受金','','教材費収入','学習塾長岡');
+				if (summaries.post.admission!=0) entryvalues.sales+=writeline(months.next,months.next,summaries.post.admission,'前受金','','入室金','学習塾長岡');
+				entryvalues.advances+=writeline(months.this,months.next,summaries.post.lecture+summaries.post.textbook+summaries.post.admission,'郵便貯金','','前受金','');
 			}
-			functions.download(advancedatas,'advances'+months.this.format('Y-m')+'.txt');
-			functions.download(saledatas,'sales'+months.next.format('Y-m')+'.txt');
+			$.downloadtext(entryvalues.advances,'SJIS','advances'+months.this.format('Y-m')+'.txt');
+			$.downloadtext(entryvalues.sales,'SJIS','sales'+months.next.format('Y-m')+'.txt');
 		},
-		/* create nss file */
-		createnss:function(){
-			var nssdatas='';
+		/* download nss file */
+		downloadnss:function(){
+			var entryvalue='';
 			for (var i=0;i<vars.apps[kintone.app.getId()].length;i++)
 			{
 				var record=vars.apps[kintone.app.getId()][i];
@@ -549,7 +551,7 @@ jQuery.noConflict();
 					var parent=$.grep(vars.apps[vars.config['parent']],function(item,index){
 						return (item['$id'].value==record['customer'].value);
 					})[0];
-					nssdatas+=parent['nsscode'].value+',';
+					entryvalue+=parent['nsscode'].value+',';
 					calc=$.calculatetax({
 						able:summary.lecture,
 						free:0,
@@ -557,7 +559,7 @@ jQuery.noConflict();
 						taxround:vars.taxround,
 						taxrate:vars.taxrate
 					});
-					nssdatas+=calc.able.toString()+',';
+					entryvalue+=calc.able.toString()+',';
 					calc=$.calculatetax({
 						able:summary.textbook,
 						free:0,
@@ -565,7 +567,7 @@ jQuery.noConflict();
 						taxround:vars.taxround,
 						taxrate:vars.taxrate
 					});
-					nssdatas+=calc.able.toString()+',';
+					entryvalue+=calc.able.toString()+',';
 					calc=$.calculatetax({
 						able:summary.admission,
 						free:0,
@@ -573,27 +575,11 @@ jQuery.noConflict();
 						taxround:vars.taxround,
 						taxrate:vars.taxrate
 					});
-					nssdatas+=calc.able.toString()+',';
-					nssdatas+='0,0\n';
+					entryvalue+=calc.able.toString()+',';
+					entryvalue+='0,0\n';
 				}
 			}
-			functions.download(nssdatas,'nss.txt');
-		},
-		/* download file */
-		download:function(datas,filename){
-			var a=document.createElement('a');
-			var url=window.URL || window.webkitURL;
-			var strtoarray=function(str){
-				var arr=[];
-				for (var i=0;i<str.length;i++)
-					arr.push(str.charCodeAt(i));
-				return arr;
-			};
-			var blob=new Blob([new Uint8Array(Encoding.convert(strtoarray(datas.replace(/\n$/g,'')),'SJIS','UNICODE'))],{'type':'text/plain'});
-			a.href=url.createObjectURL(blob);
-			a.download=filename;
-			a.target='_blank';
-			a.click();
+			$.downloadtext(entryvalue,'SJIS','nss.txt');
 		},
 		/* reload view */
 		load:function(){
@@ -659,23 +645,52 @@ jQuery.noConflict();
 				swal('Error!',error.message,'error');
 			});
 		},
-		/* update nss records */
-		updatenss:function(){
+		/* update students */
+		updatestudents:function(values,callback){
 			var error=false;
 			var counter=0;
-			var reader=null;
+			vars.progress.find('.message').text('生徒情報更新中');
+			vars.progress.find('.progressbar').find('.progresscell').width(0);
+			vars.progress.show();
+			for (var i=0;i<values.length;i++)
+			{
+				if (error) return;
+				kintone.api(kintone.api.url('/k/v1/record',true),'PUT',values[i],function(resp){
+					counter++;
+					if (counter<values.length)
+					{
+						vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/values.length));
+					}
+					else
+					{
+						vars.progress.hide();
+						swal({
+							title:'作成完了',
+							text:'請求書作成しました。',
+							type:'success'
+						},function(){
+							if (callback!=null) callback();
+						});
+					}
+				},function(error){
+					vars.progress.hide();
+					swal('Error!',error.message,'error');
+					error=true;
+				});
+			}
+		},
+		/* upload nss records */
+		uploadnss:function(){
+			var error=false;
+			var counter=0;
 			var target=$('.nssfile');
 			var entryvalues=[];
 			if (target[0].files.length==0) return;
 			vars.progress.find('.message').text('入金情報更新中');
 			vars.progress.find('.progressbar').find('.progresscell').width(0);
 			vars.progress.show();
-			reader=new FileReader();
-			reader.readAsArrayBuffer(target[0].files[0]);
-			reader.onabort=function(event){vars.progress.hide();};
-			reader.onerror=function(event){vars.progress.hide();};
-			reader.onload=function(event){
-				var records=Encoding.codeToString(Encoding.convert(new Uint8Array(event.target.result),'UNICODE','SJIS')).split('\n');
+			$.uploadtext(target[0].files[0],'UNICODE',function(records){
+				records=records.split('\n');
 				for (var i=0;i<records.length;i++)
 				{
 					if (records[i].length==0) continue;
@@ -734,41 +749,8 @@ jQuery.noConflict();
 					vars.progress.hide();
 					swal('Error!','読み込まれた入金データに該当する請求書が見つかりませんでした。','error');
 				}
-			}
-		},
-		/* update students */
-		updatestudents:function(values,callback){
-			var error=false;
-			var counter=0;
-			vars.progress.find('.message').text('生徒情報更新中');
-			vars.progress.find('.progressbar').find('.progresscell').width(0);
-			vars.progress.show();
-			for (var i=0;i<values.length;i++)
-			{
-				if (error) return;
-				kintone.api(kintone.api.url('/k/v1/record',true),'PUT',values[i],function(resp){
-					counter++;
-					if (counter<values.length)
-					{
-						vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/values.length));
-					}
-					else
-					{
-						vars.progress.hide();
-						swal({
-							title:'作成完了',
-							text:'請求書作成しました。',
-							type:'success'
-						},function(){
-							if (callback!=null) callback();
-						});
-					}
-				},function(error){
-					vars.progress.hide();
-					swal('Error!',error.message,'error');
-					error=true;
-				});
-			}
+			},
+			function(){vars.progress.hide();});
 		}
 	};
 	/*---------------------------------------------------------------
@@ -813,26 +795,26 @@ jQuery.noConflict();
 		if ($('.custom-elements').size()) $('.custom-elements').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements')[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok createinvoicebutton">').addClass('custom-elements')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok createnssbutton">').addClass('custom-elements')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok updatenssbutton">').addClass('custom-elements')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok createjournalizingbutton">').addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadjournalizingbutton">').addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadnssbutton">').addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok uploadnssbutton">').addClass('custom-elements')[0]);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(
-			$('<input type="file" class="nssfile">').addClass('custom-elements').on('change',function(){functions.updatenss();}).hide()[0]
+			$('<input type="file" class="nssfile">').addClass('custom-elements').on('change',function(){functions.uploadnss();}).hide()[0]
 		);
 		$('body').append(vars.progress);
 		$('body').append(splash);
 		$('.createinvoicebutton')
 		.text('請求書作成')
 		.on('click',function(e){functions.createinvoice();});
-		$('.createnssbutton')
+		$('.downloadjournalizingbutton')
+		.text('仕訳作成')
+		.on('click',function(e){functions.downloadjournalizing();});
+		$('.downloadnssbutton')
 		.text('NSSデータ書出')
-		.on('click',function(e){functions.createnss();});
-		$('.updatenssbutton')
+		.on('click',function(e){functions.downloadnss();});
+		$('.uploadnssbutton')
 		.text('NSSデータ読込')
 		.on('click',function(e){$('.nssfile').trigger('click');});
-		$('.createjournalizingbutton')
-		.text('仕訳作成')
-		.on('click',function(e){functions.createjournalizing();});
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
 		var headerspace=$(kintone.app.getHeaderSpaceElement());

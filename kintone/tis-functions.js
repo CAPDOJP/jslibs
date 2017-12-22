@@ -304,7 +304,7 @@ jQuery.extend({
 				else value='';
 				break;
 			case 'MULTI_LINE_TEXT':
-				if (field.value.length!=0) value=field.value.replace('\n','<br>');
+				if (field.value.length!=0) value=field.value.replace(/\n/g,'<br>');
 				else value='';
 				break;
 			case 'GROUP_SELECT':

@@ -282,7 +282,7 @@ jQuery.noConflict();
 						}
 						break;
 					case 'MULTI_LINE_TEXT':
-						if (values.length!=0) cell.html(values.replace('\n','<br>'));
+						if (values.length!=0) cell.html(values.replace(/\n/g,'<br>'));
 						break;
 					case 'NUMBER':
 						if (values.length!=0)
