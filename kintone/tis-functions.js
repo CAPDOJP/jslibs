@@ -481,16 +481,26 @@ jQuery.extend({
 * lookup field in mobile is disable
 * -------------------------------------------------------------------
 */
-jQuery.fn.fields=function(fieldcode){
+jQuery.fn.fields=function(fieldcode,isgroup){
 	var fields=[];
 	var target=$(this);
 	$.each(cybozu.data.page.FORM_DATA.schema.table.fieldList,function(key,values){
 		if (values.var==fieldcode)
 		{
-			$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
-				if ($(this).prop('tagName').toLowerCase()!='undefined')
-					if ($.inArray($(this),fields)==-1) fields.push($(this));
-			});
+			if (isgroup)
+			{
+				$.each(target.find('[class*='+key+']'),function(index){
+					if ($(this).prop('tagName').toLowerCase()!='undefined')
+						if ($.inArray($(this),fields)==-1) fields.push($(this));
+				});
+			}
+			else
+			{
+				$.each(target.find('[id*='+key+'],[name*='+key+']'),function(index){
+					if ($(this).prop('tagName').toLowerCase()!='undefined')
+						if ($.inArray($(this),fields)==-1) fields.push($(this));
+				});
+			}
 		}
 	});
 	if ('subTable' in cybozu.data.page.FORM_DATA.schema)
