@@ -43,7 +43,7 @@ var graphManager = function(options){
 	var options=$.extend({
 		canvas:null,
 		type:'line',
-		scale:{position:'left',width:0},
+		scale:{label:'',position:'left',width:0},
 		captions:[],
 		captionformat:null,
 		markers:[],
@@ -118,15 +118,15 @@ graphManager.prototype={
 		}
 		/* グラフ初期化 */
 		this.context.clearRect(0,0,this.graph.width(),this.graph.height());
-        this.style=getComputedStyle(this.graph[0]);
+		this.style=getComputedStyle(this.graph[0]);
 		switch(this.type)
 		{
 			case 'circle':
 				var from=0;
 				var to=0;
 				var radius=((this.graph.width()>this.graph.height())?this.graph.height()-padding.vertical:this.graph.width()-padding.holizontal)/2;
-                left=this.graph.width()/2;
-                top=this.graph.height()/2;
+				left=this.graph.width()/2;
+				top=this.graph.height()/2;
 				/* グラフ描画 */
 				$.each(this.values[0],function(index){
 					to=from+(my.values[0][index]/100*Math.PI*2);
@@ -142,12 +142,14 @@ graphManager.prototype={
 				var prev='';
 				var ratio=0;
 				var caption={height:0,width:0};
-                var plot={height:0,width:0};
+				var plot={height:0,width:0};
 				var scale={height:0,width:0,amount:0};
 				padding={left:10,right:15,top:15,bottom:5,holizontal:0,vertical:0,caption:10,scale:10};
-		        padding.holizontal=padding.left+padding.right+padding.scale;
-		        padding.vertical=padding.top+padding.bottom+padding.caption;
-                scale.amount=(this.maxvalue-this.minvalue)/(interval-1);
+				if (this.scale.label)
+					if (this.scale.label.length!=0) padding.top+=parseFloat(this.style.fontSize)*2;
+				padding.holizontal=padding.left+padding.right+padding.scale;
+				padding.vertical=padding.top+padding.bottom+padding.caption;
+				scale.amount=(this.maxvalue-this.minvalue)/(interval-1);
 				if (this.scale.width==0)
 				{
 					var scalecheck='';
@@ -161,8 +163,8 @@ graphManager.prototype={
 				}
 				else scale.width=this.scale.width;
 				scale.height=(this.graph.height()-parseFloat(this.style.fontSize)*2-padding.vertical)/(interval-1);
-                plot.height=this.graph.height()-parseFloat(this.style.fontSize)*2-padding.vertical;
-                plot.width=this.graph.width()-padding.holizontal-scale.width;
+				plot.height=this.graph.height()-parseFloat(this.style.fontSize)*2-padding.vertical;
+				plot.width=this.graph.width()-padding.holizontal-scale.width;
 				caption.height=parseFloat(this.style.fontSize)*2+padding.caption;
 				caption.width=plot.width/this.captions.length;
 				/* 描画設定 */
@@ -174,47 +176,61 @@ graphManager.prototype={
 				if (this.scale.position=='left')
 				{
 					/* 目盛描画 */
-	                left=scale.width+padding.left;
-	                top=padding.top;
+					left=scale.width+padding.left;
+					top=padding.top;
 					for (var i=0;i<interval;i++)
 					{
-	                    /* 補助線 */
-	                    this.line('holizontal',left+padding.scale,top,plot.width,1,this.style.color,((i==interval-1)?0:2));
-	                    /* 目盛 */
+						/* 補助線 */
+						this.line('holizontal',left+padding.scale,top,plot.width,1,this.style.color,((i==interval-1)?0:2));
+						/* 目盛 */
 						this.context.textAlign='right';
 						this.context.fillText(this.maxvalue-(scale.amount*i),left,top,scale.width);
 						top+=scale.height;
 					}
-	                /* 補助線 */
-	                this.line('vertical',left+padding.scale,padding.top,plot.height,1,this.style.color,0);
+					/* 補助線 */
+					this.line('vertical',left+padding.scale,padding.top,plot.height,1,this.style.color,0);
+					/* 目盛見出し描画 */
+					if (this.scale.label)
+						if (this.scale.label.length!=0)
+						{
+							this.context.textAlign='right';
+							this.context.fillText(this.scale.label,left,padding.top-(parseFloat(this.style.fontSize)*1.5),scale.width);
+						}
 				}
 				else
 				{
 					/* 目盛描画 */
-	                left=plot.width+padding.left+padding.scale;
-	                top=padding.top;
+					left=plot.width+padding.left+padding.scale;
+					top=padding.top;
 					for (var i=0;i<interval;i++)
 					{
-	                    /* 補助線 */
-	                    this.line('holizontal',padding.left,top,plot.width,1,this.style.color,((i==interval-1)?0:2));
-	                    /* 目盛 */
+						/* 補助線 */
+						this.line('holizontal',padding.left,top,plot.width,1,this.style.color,((i==interval-1)?0:2));
+						/* 目盛 */
 						this.context.textAlign='left';
 						this.context.fillText(this.maxvalue-(scale.amount*i),left,top,scale.width);
 						top+=scale.height;
 					}
-	                /* 補助線 */
-	                this.line('vertical',plot.width+padding.left,padding.top,plot.height,1,this.style.color,0);
+					/* 補助線 */
+					this.line('vertical',plot.width+padding.left,padding.top,plot.height,1,this.style.color,0);
+					/* 目盛見出し描画 */
+					if (this.scale.label)
+						if (this.scale.label.length!=0)
+						{
+							this.context.textAlign='left';
+							this.context.fillText(this.scale.label,left,padding.top-(parseFloat(this.style.fontSize)*1.5),scale.width);
+						}
 				}
-                /* 見出し描画 */
-                left=((this.scale.position=='left')?(scale.width+padding.scale):0)+(caption.width/2)+padding.left;
-                top=plot.height+(((caption.height/2)-(parseFloat(this.style.fontSize)*0.75))/2)+padding.top+padding.caption;
-                $.each(this.captions,function(index){
-                	var texts=((my.captionformat!=null)?my.captionformat(prev,my.captions[index]):my.captions[index]).split(/\r\n|\r|\n/);
-                    my.context.textAlign='center';
-                    for (var i=0;i<texts.length;i++) my.context.fillText(texts[i],left,top+(parseFloat(my.style.fontSize)*i),caption.width);
-                    left+=caption.width;
-                    prev=my.captions[index];
-                });
+				/* 見出し描画 */
+				left=((this.scale.position=='left')?(scale.width+padding.scale):0)+(caption.width/2)+padding.left;
+				top=plot.height+(((caption.height/2)-(parseFloat(this.style.fontSize)*0.75))/2)+padding.top+padding.caption;
+				$.each(this.captions,function(index){
+					var texts=((my.captionformat!=null)?my.captionformat(prev,my.captions[index]):my.captions[index]).split(/\r\n|\r|\n/);
+					my.context.textAlign='center';
+					for (var i=0;i<texts.length;i++) my.context.fillText(texts[i],left,top+(parseFloat(my.style.fontSize)*i),caption.width);
+					left+=caption.width;
+					prev=my.captions[index];
+				});
 				/* グラフ描画 */
 				$.each(this.values,function(index){
 					var values=my.values[index];
@@ -248,27 +264,27 @@ graphManager.prototype={
 				break;
 		}
 	},
-    /* 罫線 */
-    line:function(type,left,top,distance,width,color,dot){
-        var path=new Path2D();
-        path.moveTo(left,top);
-        switch (type)
-        {
-            case 'holizontal':
-                path.lineTo(left+distance,top);
-                break;
-            case 'vertical':
-                path.lineTo(left,top+distance);
-                break;
-        }
-        this.context.lineWidth=width;
-        this.context.strokeStyle=color;
-        if (dot!=0)
-        {
-            this.context.setLineDash([dot]);
-            this.context.lineDashOffset=dot;
-        }
-        else this.context.setLineDash([]);
-        this.context.stroke(path);
-    }
+	/* 罫線 */
+	line:function(type,left,top,distance,width,color,dot){
+		var path=new Path2D();
+		path.moveTo(left,top);
+		switch (type)
+		{
+			case 'holizontal':
+				path.lineTo(left+distance,top);
+				break;
+			case 'vertical':
+				path.lineTo(left,top+distance);
+				break;
+		}
+		this.context.lineWidth=width;
+		this.context.strokeStyle=color;
+		if (dot!=0)
+		{
+			this.context.setLineDash([dot]);
+			this.context.lineDashOffset=dot;
+		}
+		else this.context.setLineDash([]);
+		this.context.stroke(path);
+	}
 };

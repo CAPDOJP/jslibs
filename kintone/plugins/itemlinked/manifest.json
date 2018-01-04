@@ -1,0 +1,57 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 項目選択フィールド連動各種設定プラグイン",
+        "en":"kintone Item-linked plug-in",
+        "zh":"kintone 項目選択フィールド連動各種設定プラグイン"
+    },
+    "description":{
+        "ja":"ドロップダウン・ラジオボタンの値に基づき、各フィールドの値・必須入力設定やグループ開閉制御を行うプラグインです。",
+        "en":"This plug-in that controls the value of each field, required input setting and group opening / closing control based on the value of drop down and radio button",
+        "zh":"ドロップダウン・ラジオボタンの値に基づき、各フィールドの値・必須入力設定やグループ開閉制御を行うプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/itemlinked.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "mobile":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/itemlinked.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

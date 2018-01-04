@@ -1,0 +1,106 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">対象フィールド</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="trigger">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="items">
+			<thead>
+				<tr>
+					<th>選択値</th>
+					<th>必須入力フィールド</th>
+					<th>開閉グループフィールド</th>
+					<th>自動入力フィールド</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="caption">
+						<span class="itemname"></span>
+						<input type="hidden" id="item">
+					</td>
+					<td>
+						<table class="inner requires">
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="requirefield">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+					<td>
+						<table class="inner groups">
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="groupfield">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+					<td>
+						<table class="inner autos">
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="autofield">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="autovalue">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+										<div class="kintoneplugin-input-outer">
+											<input type="text" id="autovalue" class="kintoneplugin-input-text" value="" >
+										</div>
+									</td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="kintoneplugin-caution">*自動入力フィールドにチェックボックス・複数選択フィールドを指定した場合は、指定した値への切替ではなく、値の追加となります。</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

@@ -117,12 +117,18 @@ jQuery.noConflict();
 			if (event.type.match(/create/g)!=null)
 			{
 				var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+				var multi={};
 				for (var i=0;i<vars.setting.autos.length;i++)
 				{
 					var field=vars.setting.autos[i];
 					if (field.field in record.record)
 						switch (record.record[field.field].type)
 						{
+							case 'CHECK_BOX':
+							case 'MULTI_SELECT':
+								if (field.field in multi) multi[field.field].push(field.value);
+								else multi[field.field]=[field.value];
+								break;
 							case 'GROUP_SELECT':
 							case 'ORGANIZATION_SELECT':
 							case 'USER_SELECT':
@@ -139,6 +145,9 @@ jQuery.noConflict();
 								break;
 						}
 				}
+				$.each(multi,function(key,values){
+					record.record[key].value=values;
+				});
 				if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
 				else kintone.app.record.set(record);
 			}

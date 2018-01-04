@@ -121,8 +121,10 @@ jQuery.noConflict();
 						/* check field type */
 						switch (fieldinfo.type)
 						{
+							case 'CHECK_BOX':
 							case 'DROP_DOWN':
 							case 'GROUP_SELECT':
+							case 'MULTI_SELECT':
 							case 'ORGANIZATION_SELECT':
 							case 'RADIO_BUTTON':
 							case 'SINGLE_LINE_TEXT':
@@ -152,7 +154,7 @@ jQuery.noConflict();
 										if ($(this).val().length!=0)
 										{
 											fieldinfo=vars.fieldinfos[$(this).val()];
-											if ($.inArray(fieldinfo.type,['DROP_DOWN','RADIO_BUTTON'])>-1)
+											if ($.inArray(fieldinfo.type,['CHECK_BOX','DROP_DOWN','MULTI_SELECT','RADIO_BUTTON'])>-1)
 											{
 												options=[fieldinfo.options.length];
 												$.each(fieldinfo.options,function(key,values){
