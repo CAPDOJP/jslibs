@@ -372,7 +372,6 @@ jQuery.noConflict();
 								cancel:function(){
 									/* close inputform */
 									vars.inputform.hide();
-									swal('Error!','各項目を入力して下さい。','error');
 								}
 							},
 							values:values
