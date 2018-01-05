@@ -1911,7 +1911,7 @@ FieldsForm.prototype={
 					$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
 					break;
 				default:
-					if ($('.key',fieldcontainer).size())
+					if (key in my.apps)
 					{
 						for (var i=0;i<my.apps[key];i++)
 							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==values.value)
