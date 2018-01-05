@@ -289,16 +289,28 @@ jQuery.noConflict();
 				vars.rows=$('<tbody>');
 				vars.template=$('<tr>');
 				vars.fieldinfos=resp.properties;
+				/* create inputform */
+				var fields=[];
+				fields.push(vars.fieldinfos[vars.config.facilitator]);
+				fields.push(vars.fieldinfos[vars.config.facilitatorcomment]);
+				vars.inputform=$('body').fieldsform({
+					buttons:{
+						ok:{
+							text:'OK'
+						},
+						cancel:{
+							text:'キャンセル'
+						}
+					},
+					fields:fields
+				});
 				/* append button column */
 				vars.header.append($('<th>').text(''));
 				vars.template.append($('<td class="buttoncell">')
 					.append($('<button class="customview-button edit-button">').on('click',function(){
 						var row=$(this).closest('tr');
 						var index=row.find('td').first().find('input#id').val();
-						var fields=[];
 						var values={};
-						fields.push(vars.fieldinfos[vars.config.facilitator]);
-						fields.push(vars.fieldinfos[vars.config.facilitatorcomment]);
 						values[vars.config.facilitator]={
 							type:vars.fieldinfos[vars.config.facilitator].type,
 							value:row.find('td').first().find('input#'+vars.config.facilitator).val()
@@ -307,17 +319,6 @@ jQuery.noConflict();
 							type:vars.fieldinfos[vars.config.facilitatorcomment].type,
 							value:row.find('td').first().find('input#'+vars.config.facilitatorcomment).val()
 						};
-						vars.inputform=$('body').fieldsform({
-							buttons:{
-								ok:{
-									text:'OK'
-								},
-								cancel:{
-									text:'キャンセル'
-								}
-							},
-							fields:fields
-						});
 						vars.inputform.show({
 							buttons:{
 								ok:function(){

@@ -1912,6 +1912,7 @@ FieldsForm.prototype={
 					break;
 				default:
 					console.log(my.apps);
+					console.log(key);
 					if (key in my.apps)
 					{
 						for (var i=0;i<my.apps[key];i++)
