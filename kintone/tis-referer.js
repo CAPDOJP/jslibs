@@ -1911,17 +1911,11 @@ FieldsForm.prototype={
 					$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
 					break;
 				default:
-					if ($('.label',fieldcontainer).size())
+					if ($('.key',fieldcontainer).size())
 					{
 						for (var i=0;i<my.apps[key];i++)
-						{
-							console.log(my.apps[key][i][$('.key',fieldcontainer).val()].value);
 							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==values.value)
-							{
-								console.log(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
 								$('.label',fieldcontainer).text(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
-							}
-						}
 					}
 					$('.receiver',fieldcontainer).val(values.value);
 					break;
