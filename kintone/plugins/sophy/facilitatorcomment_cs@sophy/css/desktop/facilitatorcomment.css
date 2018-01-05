@@ -1,9 +1,11 @@
 /* individual style */
-table#facilitatorcomment tr.odd{
-	background-color:#FFFFFF;
+div.facilitatorcomment-dayfeed{
+  display:inline-block;
+  line-height:30px;
+  padding-top:9px;
 }
-table#facilitatorcomment tr.even{
-	background-color:#EFFAFE;
+div.facilitatorcomment-dayfeed *{
+  vertical-align:top;
 }
 table#facilitatorcomment tr td,
 table#facilitatorcomment tr th{
@@ -26,15 +28,4 @@ table#facilitatorcomment tr th div{
 	vertical-align:top;
     white-space:nowrap;
 	width:100%;
-}
-table#facilitatorcomment tr td a,
-table#facilitatorcomment tr td span,
-table#facilitatorcomment tr td img{
-	display:block;
-}
-table#facilitatorcomment img.facilitatorcomment-thumbnail{
-	border:none;
-	cursor:pointer;
-	margin:3px 0px;
-	height:54px;
 }
