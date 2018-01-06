@@ -553,14 +553,17 @@ TermSelect.prototype={
 					if ($('.date',row).text().length==0) return true;
 					starttime=$('.starthour',row).val()+':'+$('.startminute',row).val();
 					endtime=$('.endhour',row).val()+':'+$('.endminute',row).val();
-					if (parseInt(starttime)>parseInt(endtime))
+					if (!my.issingle)
 					{
-						starttime=$('.endhour',row).val()+':'+$('.endminute',row).val();
-						endtime=$('.starthour',row).val()+':'+$('.startminute',row).val();
+						if (parseInt(starttime)>parseInt(endtime))
+						{
+							starttime=$('.endhour',row).val()+':'+$('.endminute',row).val();
+							endtime=$('.starthour',row).val()+':'+$('.startminute',row).val();
+						}
+						times=0;
+						times+=new Date(($('.date',row).text()+' '+endtime+':00').replace(/-/g,'\/')).getTime();
+						times-=new Date(($('.date',row).text()+' '+starttime+':00').replace(/-/g,'\/')).getTime();
 					}
-					times=0;
-					times+=new Date(($('.date',row).text()+' '+endtime+':00').replace(/-/g,'\/')).getTime();
-					times-=new Date(($('.date',row).text()+' '+starttime+':00').replace(/-/g,'\/')).getTime();
 					datetimes.push({
 						date:$('.date',row).text(),
 						starttime:starttime,
