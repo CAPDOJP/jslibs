@@ -1157,6 +1157,8 @@ TermSelect.prototype={
 			fromhour:0,
 			tohour:23,
 			dates:[],
+			starttimes:[],
+			endtimes:[],
 			buttons:{}
 		},options);
 		var my=this;
@@ -1204,8 +1206,18 @@ TermSelect.prototype={
 		for (var i=0;i<options.dates.length;i++)
 		{
 			var row=this.template.clone(true);
-			$('.starthour',row).val($('.starthour',row).find('option').first().val());
-			$('.endhour',row).val($('.endhour',row).find('option').first().val());
+			if (options.starttimes.length>i)
+			{
+				$('.starthour',row).val(options.starttimes[i].split(':')[0]);
+				$('.startminute',row).val(options.starttimes[i].split(':')[1]);
+			}
+			else $('.starthour',row).val($('.starthour',row).find('option').first().val());
+			if (options.endtimes.length>i)
+			{
+				$('.endhour',row).val(options.endtimes[i].split(':')[0]);
+				$('.endminute',row).val(options.endtimes[i].split(':')[1]);
+			}
+			else $('.endhour',row).val($('.endhour',row).find('option').first().val());
 			$('.date',row).text(options.dates[i]);
 			this.contents.append(row);
 		}
