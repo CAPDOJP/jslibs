@@ -1882,7 +1882,9 @@ FieldsForm.prototype={
 			{
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
-					$('input',fieldcontainer).prop('checked',false);
+					$.each($('input[type=checkbox]',fieldcontainer),function(){
+						$(this).prop('checked',false);
+					});
 					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'DATE':
@@ -1927,7 +1929,6 @@ FieldsForm.prototype={
 					$('.receiver',fieldcontainer).val(receiver.join(','));
 					break;
 				case 'RADIO_BUTTON':
-					$('input',fieldcontainer).prop('checked',false);
 					$('#'+values.value.replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'TIME':
