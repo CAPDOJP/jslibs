@@ -292,10 +292,6 @@ jQuery.extend({
 				if (!('loafrom' in fieldinfos)) error='休塾入り';
 				if (!('loato' in fieldinfos)) error='休塾明け';
 				if (!('status' in fieldinfos)) error='ステータス';
-				if (!('coursecode' in fieldinfos)) error='通常講座コースコード';
-				if (!('coursename' in fieldinfos)) error='通常講座コース名';
-				if (!('courseweek' in fieldinfos)) error='通常講座来塾曜日';
-				if (!('coursestarttime' in fieldinfos)) error='通常講座来塾時間';
 				if (!('shortterm1code' in fieldinfos)) error='短期講座コースコード';
 				if (!('shortterm1id' in fieldinfos)) error='短期講座ID';
 				if (!('shortterm1over' in fieldinfos)) error='短期講座追加時間';

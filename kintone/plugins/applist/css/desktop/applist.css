@@ -1,0 +1,40 @@
+/* individual style (common) */
+div.group{
+	border:1px solid #e3e7e8;
+	border-radius:0.25em;
+	box-shadow:0px 0px 1px rgba(0,0,0,0.05);
+	display:inline-block;
+	margin:1.5em 0.5em 0.5em 0.5em;
+	padding:1em 0.5em 0.5em 0.5em;
+	position:relative;
+	text-align:center;
+	vertical-align:top;
+}
+div.group a{
+	display:block;
+	line-height:2em;
+	text-align:left;
+}
+div.group a *{
+	display:inline-block;
+	vertical-align:top;
+}
+div.group a img{
+	height:2em;
+}
+div.group a span{
+	padding:0px 0.5em;
+}
+div.group p.groupcaption{
+	background-color:#F5F5F5;
+	display:table;
+	line-height:2em;
+	margin:0px auto;
+	margin-top:-2em;
+	padding:0px 0.5em;
+	width:auto;
+}
+div.groupcontainer{
+	background-color:#F5F5F5;
+	padding:1em;
+}

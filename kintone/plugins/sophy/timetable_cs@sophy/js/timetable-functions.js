@@ -78,17 +78,28 @@ jQuery.extend({
 		for (var i=0;i<studentrecords.length;i++)
 		{
 			var student=studentrecords[i];
-			var course=$.grep(lecturerecords,function(item,index){return (item['code'].value==student['coursecode'].value);})[0];
+			var studentcourse=(function(){
+				var res=null;
+				for (var i=0;i<student['coursetable'].value.length;i++)
+				{
+					var row=student['coursetable'].value[i].value;
+					if (!row['courseenddate'].value) row['courseenddate'].value='9999-12-31';
+					if (row['courseenddate'].value.length==0) row['courseenddate'].value='9999-12-31';
+					if (day>new Date(row['coursestartdate'].value.dateformat()).calc('-1 day') && day<new Date(row['courseenddate'].value.dateformat()).calc('1 day')) res=row;
+				}
+				return res;
+			})();
+			if (studentcourse==null) continue;
+			var course=$.grep(lecturerecords,function(item,index){return (item['code'].value==studentcourse['coursecode'].value);})[0];
 			var coursegrade=$.coursegrade(course,student['gradecode'].value);
 			/* check admissiondate */
 			if (day<new Date(student['admissiondate'].value.dateformat())) continue;
 			/* check leave of absence */
 			if (day>new Date(student['loafrom'].value.dateformat()).calc('-1 day') && day<new Date(student['loato'].value.dateformat()).calc('1 day')) continue;
 			/* check week schedule */
-			for (var i2=0;i2<student['coursetable'].value.length;i2++)
+			for (var i2=0;i2<studentcourse['courseweek'].value.length;i2++)
 			{
-				var row=student['coursetable'].value[i2].value;
-				if (week.indexOf(row['courseweek'].value)==day.getDay())
+				if (week.indexOf(studentcourse['courseweek'].value[i2])==day.getDay())
 				{
 					var reserved=$.grep(checkrecords,function(item,index){
 						var exists=0;
@@ -106,7 +117,7 @@ jQuery.extend({
 							coursecode:{value:course['code'].value},
 							coursename:{value:course['name'].value},
 							date:{value:day.format('Y-m-d')},
-							starttime:{value:row['coursestarttime'].value},
+							starttime:{value:studentcourse['coursestarttime'].value.split(',')[i2]},
 							hours:{value:coursegrade['hours'].value},
 							baserecordid:{value:null},
 							transfered:{value:0},
@@ -622,10 +633,6 @@ jQuery.extend({
 				if (!('loafrom' in fieldinfos)) error='休塾入り';
 				if (!('loato' in fieldinfos)) error='休塾明け';
 				if (!('status' in fieldinfos)) error='ステータス';
-				if (!('coursecode' in fieldinfos)) error='通常講座コースコード';
-				if (!('coursename' in fieldinfos)) error='通常講座コース名';
-				if (!('courseweek' in fieldinfos)) error='通常講座来塾曜日';
-				if (!('coursestarttime' in fieldinfos)) error='通常講座来塾時間';
 				if (!('shortterm1code' in fieldinfos)) error='短期講座コースコード';
 				if (!('shortterm1id' in fieldinfos)) error='短期講座ID';
 				if (!('shortterm1over' in fieldinfos)) error='短期講座追加時間';

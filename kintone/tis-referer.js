@@ -1886,17 +1886,33 @@ FieldsForm.prototype={
 					break;
 				case 'DATE':
 					if (!values.value) return true;
-					if (values.value.length==0) return true;
-					$('.label',fieldcontainer).text(values.value);
-					$('.receiver',fieldcontainer).val(values.value);
+					if (values.value.length==0)
+					{
+						$('.label',fieldcontainer).text('');
+						$('.receiver',fieldcontainer).val('');
+					}
+					else
+					{
+						$('.label',fieldcontainer).text(values.value);
+						$('.receiver',fieldcontainer).val(values.value);
+					}
 					break;
 				case 'DATETIME':
 					if (!values.value) return true;
-					if (values.value.length==0) return true;
-					$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
-					$('.receiver',fieldcontainer).val(values.value);
-					$('.receiverhour',fieldcontainer).val(new Date(values.value.dateformat()).format('H'));
-					$('.receiverminute',fieldcontainer).val(new Date(values.value.dateformat()).format('i'));
+					if (values.value.length==0)
+					{
+						$('.label',fieldcontainer).text('');
+						$('.receiver',fieldcontainer).val('');
+						$('.receiverhour',fieldcontainer).val('00');
+						$('.receiverminute',fieldcontainer).val('00');
+					}
+					else
+					{
+						$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
+						$('.receiver',fieldcontainer).val(values.value);
+						$('.receiverhour',fieldcontainer).val(new Date(values.value.dateformat()).format('H'));
+						$('.receiverminute',fieldcontainer).val(new Date(values.value.dateformat()).format('i'));
+					}
 					break;
 				case 'FILE':
 					var files=my.filevalue(values.value);
@@ -1920,10 +1936,18 @@ FieldsForm.prototype={
 					break;
 				case 'TIME':
 					if (!values.value) return true;
-					if (values.value.length==0) return true;
-					$('.receiver',fieldcontainer).val(values.value);
-					$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));
-					$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
+					if (values.value.length==0)
+					{
+						$('.receiver',fieldcontainer).val('');
+						$('.receiverhour',fieldcontainer).val('00');
+						$('.receiverminute',fieldcontainer).val('00');
+					}
+					else
+					{
+						$('.receiver',fieldcontainer).val(values.value);
+						$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));
+						$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
+					}
 					break;
 				default:
 					if (key in my.apps)

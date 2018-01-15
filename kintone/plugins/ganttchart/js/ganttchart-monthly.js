@@ -151,7 +151,6 @@ jQuery.noConflict();
 				var spacer=$('<span class="spacer">');
 				var mergeexclude=[];
 				var columns={cache:vars.fromdate,index:vars.segmentkeys.length,span:0};
-				var weeks=vars.fromdate.getDay();
 				for (var i=0;i<vars.segmentkeys.length;i++)
 				{
 					head.eq(0).append($('<th class="ganttchart-cellhead">'));
@@ -171,7 +170,7 @@ jQuery.noConflict();
 					}
 					head.eq(0).append($('<th>').text(columns.cache.format('Y-m')));
 					head.eq(1).append($('<th>').append($('<span>').text(columns.cache.getDate())).append(spacer.clone(false)));
-					switch ((i-weeks)%7)
+					switch (columns.cache.getDay())
 					{
 						case 0:
 							template.append($('<td>').addClass("ganttchart-sunday"));

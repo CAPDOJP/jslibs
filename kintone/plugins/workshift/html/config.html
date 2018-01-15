@@ -1,0 +1,205 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">開始日時フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">開始日時を設定するフィールドを指定して下さい。【日時フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="fromtime">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">終了日時フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">終了日時を設定するフィールドを指定して下さい。【日時フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="totime">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">従業員フィールド【ルックアップ・ユーザー選択】<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">表示する従業員を部署や事業所等で切り替える必要がある場合は、該当するフィールド等を配属先に指定して下さい。</div>
+		<table class="employees">
+			<thead>
+				<tr>
+					<th>従業員フィールド</th>
+					<th>従業員名フィールド</th>
+					<th>従業員並び順</th>
+					<th>配属先</th>
+					<th>配属先並び順</th>
+				</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td>
+					<div class="kintoneplugin-select-outer">
+						<div class="kintoneplugin-select">
+							<select id="employee">
+								<option value=""></option>
+							</select>
+						</div>
+					</div>
+				</td>
+				<td>
+					<div class="kintoneplugin-select-outer">
+						<div class="kintoneplugin-select">
+							<select id="employeedisplay">
+								<option value=""></option>
+							</select>
+						</div>
+					</div>
+				</td>
+				<td>
+					<div class="kintoneplugin-select-outer">
+						<div class="kintoneplugin-select">
+							<select id="employeesort">
+								<option value="asc">昇順</option>
+								<option value="desc">降順</option>
+							</select>
+						</div>
+					</div>
+				</td>
+				<td>
+					<div class="kintoneplugin-select-outer">
+						<div class="kintoneplugin-select">
+							<select id="assignment">
+								<option value=""></option>
+							</select>
+						</div>
+					</div>
+				</td>
+				<td>
+					<div class="kintoneplugin-select-outer">
+						<div class="kintoneplugin-select">
+							<select id="assignmentsort">
+								<option value="asc">昇順</option>
+								<option value="desc">降順</option>
+							</select>
+						</div>
+					</div>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+		<div class="kintoneplugin-caution">*従業員フィールドにルックアップを指定した場合、配属先はルックアップに関連付けたアプリ内のフィールドのみになります。</div>
+		<div class="kintoneplugin-caution">*従業員フィールドにユーザー選択を指定した場合、配属先はCybozu共通の組織/グループのみになります。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">従業員色指定<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">従業員毎に表示する色分けを指定して下さい。 (最低1色は必須指定)</div>
+		<table class="employeecolors">
+			<tbody>
+				<tr>
+					<td>
+						<span id="employeecolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="employeecolor" value="">
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">目盛り間隔<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">シフト表の目盛り線の間隔を指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="scale">
+					<option value="2">30分間隔</option>
+					<option value="3">20分間隔</option>
+					<option value="4">15分間隔</option>
+					<option value="6">10分間隔</option>
+					<option value="12">5分間隔</option>
+					<option value="60">1分間隔</option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-alert">間隔を短く設定すると、目盛幅が均一にならない場合があります。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="scalefixed" value="0">目盛幅を固定する</label>
+		</div>
+		<span class="kintoneplugin-unit">目盛幅</span>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="scalefixedwidth" class="kintoneplugin-input-text" value="" >
+		</div>
+		<span class="kintoneplugin-unit">px</span>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">シフト設定開始時刻<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">シフト表示の開始時刻を指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="starthour">
+					<option value="0" selected="selected">0時</option>
+					<option value="1">1時</option>
+					<option value="2">2時</option>
+					<option value="3">3時</option>
+					<option value="4">4時</option>
+					<option value="5">5時</option>
+					<option value="6">6時</option>
+					<option value="7">7時</option>
+					<option value="8">8時</option>
+					<option value="9">9時</option>
+					<option value="10">10時</option>
+					<option value="11">11時</option>
+					<option value="12">12時</option>
+					<option value="13">13時</option>
+					<option value="14">14時</option>
+					<option value="15">15時</option>
+					<option value="16">16時</option>
+					<option value="17">17時</option>
+					<option value="18">18時</option>
+					<option value="19">19時</option>
+					<option value="20">20時</option>
+					<option value="21">21時</option>
+					<option value="22">22時</option>
+					<option value="23">23時</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">シフト設定終了時刻<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">シフト表示の終了時刻を選択して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="endhour">
+					<option value="0">0時</option>
+					<option value="1">1時</option>
+					<option value="2">2時</option>
+					<option value="3">3時</option>
+					<option value="4">4時</option>
+					<option value="5">5時</option>
+					<option value="6">6時</option>
+					<option value="7">7時</option>
+					<option value="8">8時</option>
+					<option value="9">9時</option>
+					<option value="10">10時</option>
+					<option value="11">11時</option>
+					<option value="12">12時</option>
+					<option value="13">13時</option>
+					<option value="14">14時</option>
+					<option value="15">15時</option>
+					<option value="16">16時</option>
+					<option value="17">17時</option>
+					<option value="18">18時</option>
+					<option value="19">19時</option>
+					<option value="20">20時</option>
+					<option value="21">21時</option>
+					<option value="22">22時</option>
+					<option value="23" selected="selected">23時</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

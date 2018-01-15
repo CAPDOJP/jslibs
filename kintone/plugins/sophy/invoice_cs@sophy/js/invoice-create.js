@@ -25,13 +25,18 @@ jQuery.noConflict();
 		config:{},
 		offset:{},
 		const:[],
+		displayrecords:[],
 		lectures:[],
 		fields:[]
 	};
 	var events={
 		lists:[
 			'app.record.index.show'
-		]
+		],
+		show:[
+			'app.record.create.show',
+			'app.record.edit.show'
+		],
 	};
 	var limit=500;
 	var functions={
@@ -68,7 +73,6 @@ jQuery.noConflict();
 			var entryvalue={};
 			var updatevalue={};
 			var entryvalues=[];
-			var irregularfees=[];
 			var updatevalues=[];
 			vars.progress.find('.message').text('請求書作成中');
 			vars.progress.find('.progressbar').find('.progresscell').width(0);
@@ -80,7 +84,7 @@ jQuery.noConflict();
 					return (item['parentcode'].value==parent['$id'].value);
 				});
 				/* check exclude */
-				if ($.grep(vars.apps[kintone.app.getId()],function(item,index){
+				if ($.grep(vars.displayrecords,function(item,index){
 					return (item['customer'].value==parent['$id'].value);
 				}).length!=0) continue;
 				if (filter.length==0) continue;
@@ -102,6 +106,13 @@ jQuery.noConflict();
 					var admissiondate=new Date(student['admissiondate'].value.dateformat());
 					var loafrom=new Date(student['loafrom'].value.dateformat());
 					var loato=new Date(student['loato'].value.dateformat());
+					var billfrom=null;
+					var billto=null;
+					var irregulardate=null;
+					var courses=[];
+					var precourses=[];
+					billfrom=vars.fromdate.calc('first-of-month').calc('1 month');
+					billto=billfrom.calc('1 month').calc('-1 day');
 					/* check status */
 					if (student['status'].value!='通塾中') continue;
 					/* check admissiondate */
@@ -117,9 +128,6 @@ jQuery.noConflict();
 					lectureindex=0;
 					lecturename=vars.lectures[lectureindex].name;
 					lecturekey='';
-					course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==student['coursecode'].value);})[0];
-					coursegrade=$.coursegrade(course,student['gradecode'].value);
-					irregularfees=[];
 					if (vars.fromdate<admissiondate.calc('1 day') && vars.todate>admissiondate.calc('-1 day'))
 					{
 						entryvalue.billtable.value.push({
@@ -131,30 +139,124 @@ jQuery.noConflict();
 								billsegment:{value:'入室金'}
 							}
 						});
-						irregularfees.push(admissiondate);
+						irregulardate=admissiondate;
 						addtextbookfee=true;
 					}
 					else addtextbookfee=(vars.const['textbookbillmonths'].value.indexOf((vars.fromdate.getMonth()+1).toString())>-1);
-					if (vars.fromdate<loato.calc('1 day') && vars.todate>loato.calc('-1 day')) irregularfees.push(loato);
-					entryvalue.billtable.value.push({
-						value:{
-							studentname:{value:student['name'].value},
-							breakdown:{value:lecturename+'('+course['name'].value+')受講料'},
-							billprice:{value:coursegrade['fee'].value},
-							taxsegment:{value:'課税'},
-							billsegment:{value:'授業料'}
+					if (vars.fromdate<loato.calc('1 day') && vars.todate>loato.calc('-1 day')) irregulardate=loato;
+					for (var i3=0;i3<student['coursetable'].value.length;i3++)
+					{
+						var exists=false;
+						var coursestartdate=null;
+						var courseenddate=null;
+						var row=student['coursetable'].value[i3].value;
+						if (!row['courseenddate'].value) row['courseenddate'].value='9999-12-30';;
+						if (row['courseenddate'].value.length==0) row['courseenddate'].value='9999-12-30';;
+						coursestartdate=new Date(row['coursestartdate'].value.dateformat());
+						courseenddate=new Date(row['courseenddate'].value.dateformat());
+						if (billfrom>coursestartdate.calc('-1 day') && billto<courseenddate.calc('1 day')) exists=true;
+						if (billfrom<coursestartdate.calc('1 day') && billto>coursestartdate.calc('-1 day')) exists=true;
+						if (billfrom<courseenddate.calc('1 day') && billto>courseenddate.calc('-1 day')) exists=true;
+						if (exists) courses.push(row);
+						exists=false;
+						if (vars.fromdate>coursestartdate.calc('-1 day') && vars.todate<courseenddate.calc('1 day')) exists=true;
+						if (vars.fromdate<coursestartdate.calc('1 day') && vars.todate>coursestartdate.calc('-1 day')) exists=true;
+						if (vars.fromdate<courseenddate.calc('1 day') && vars.todate>courseenddate.calc('-1 day')) exists=true;
+						if (exists) precourses.push(row);
+					}
+					if (courses.length!=1)
+					{
+						for (var i3=0;i3<courses.length;i3++)
+						{
+							var coursestartdate=null;
+							var courseenddate=null;
+							coursestartdate=new Date(courses[i3]['coursestartdate'].value.dateformat());
+							courseenddate=new Date(courses[i3]['courseenddate'].value.dateformat());
+							if (coursestartdate<billfrom) coursestartdate=billfrom;
+							if (courseenddate>billto) courseenddate=billto;
+							course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==courses[i3]['coursecode'].value);})[0];
+							coursegrade=$.coursegrade(course,student['gradecode'].value);
+							if (coursegrade!=null)
+								entryvalue.billtable.value.push({
+									value:{
+										studentname:{value:student['name'].value},
+										breakdown:{value:lecturename+'('+course['name'].value+')日割り受講料'},
+										billprice:{value:functions.createirregularfee(courses[i3],coursestartdate,courseenddate,coursegrade)},
+										taxsegment:{value:'課税'},
+										billsegment:{value:'授業料'}
+									}
+								});
 						}
-					});
-					for (var i3=0;i3<irregularfees.length;i3++)
-						entryvalue.billtable.value.push({
-							value:{
-								studentname:{value:student['name'].value},
-								breakdown:{value:lecturename+'('+course['name'].value+')日割り受講料'},
-								billprice:{value:functions.createirregularfee(student,irregularfees[i3],coursegrade)},
-								taxsegment:{value:'課税'},
-								billsegment:{value:'授業料'}
+					}
+					else
+					{
+						course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==courses[0]['coursecode'].value);})[0];
+						coursegrade=$.coursegrade(course,student['gradecode'].value);
+						if (coursegrade!=null)
+							entryvalue.billtable.value.push({
+								value:{
+									studentname:{value:student['name'].value},
+									breakdown:{value:lecturename+'('+course['name'].value+')受講料'},
+									billprice:{value:coursegrade['fee'].value},
+									taxsegment:{value:'課税'},
+									billsegment:{value:'授業料'}
+								}
+							});
+					}
+					if (precourses.length!=1)
+					{
+						var prefee=0;
+						if (irregulardate==null) irregulardate=vars.fromdate;
+						for (var i3=0;i3<precourses.length;i3++)
+						{
+							var coursestartdate=null;
+							var courseenddate=null;
+							coursestartdate=new Date(precourses[i3]['coursestartdate'].value.dateformat());
+							courseenddate=new Date(precourses[i3]['courseenddate'].value.dateformat());
+							if (coursestartdate<irregulardate) coursestartdate=irregulardate;
+							if (courseenddate>vars.todate) courseenddate=vars.todate;
+							course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==precourses[i3]['coursecode'].value);})[0];
+							coursegrade=$.coursegrade(course,student['gradecode'].value);
+							if (coursegrade!=null) prefee+=parseInt(functions.createirregularfee(precourses[i3],coursestartdate,courseenddate,coursegrade));
+						}
+						for (var i3=0;i3<vars.apps[kintone.app.getId()].length;i3++)
+						{
+							if (vars.apps[kintone.app.getId()][i3]['billdate'].value==vars.fromdate.calc('-1 day').format('Y-m-d') &&
+								vars.apps[kintone.app.getId()][i3]['customer'].value==parent['$id'].value)
+							{
+								var rows=vars.apps[kintone.app.getId()][i3]['billtable'].value;
+								for (var i4=0;i4<rows.length;i4++)
+								{
+									var row=rows[i4].value;
+									if (row['studentname'].value==student['name'].value && row['breakdown'].value.match(/^通常講座.*受講料$/g))
+										prefee-=parseInt(row['billprice'].value);
+								}
 							}
-						});
+						}
+						if (prefee!=0)
+							entryvalue.billtable.value.push({
+								value:{
+									studentname:{value:student['name'].value},
+									breakdown:{value:(vars.fromdate.calc('-1 month').getMonth()+1).toString()+'月分受講料過不足金'},
+									billprice:{value:prefee.toString()},
+									taxsegment:{value:'課税'},
+									billsegment:{value:'授業料'}
+								}
+							});
+					}
+					else
+					{
+						if (irregulardate!=null)
+							entryvalue.billtable.value.push({
+								value:{
+									studentname:{value:student['name'].value},
+									breakdown:{value:lecturename+'('+course['name'].value+')日割り受講料'},
+									billprice:{value:functions.createirregularfee(courses[0],irregulardate,vars.todate,coursegrade)},
+									taxsegment:{value:'課税'},
+									billsegment:{value:'授業料'}
+								}
+							});
+					}
 					if (addtextbookfee)
 						entryvalue.billtable.value.push({
 							value:{
@@ -178,6 +280,7 @@ jQuery.noConflict();
 							{
 								course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==row[lecturekey+'code'].value);})[0];
 								coursegrade=$.coursegrade(course,student['gradecode'].value);
+								if (coursegrade==null) continue;
 								entryvalue.billtable.value.push({
 									value:{
 										studentname:{value:student['name'].value},
@@ -222,6 +325,7 @@ jQuery.noConflict();
 						{
 							course=$.grep(vars.apps[vars.lectures[lectureindex+3].code],function(item,index){return (item['code'].value==student[lecturekey+'code'].value);})[0];
 							coursegrade=$.coursegrade(course,student['gradecode'].value);
+							if (coursegrade==null) continue;
 							entryvalue.billtable.value.push({
 								value:{
 									studentname:{value:student['name'].value},
@@ -395,19 +499,16 @@ jQuery.noConflict();
 			});
 		},
 		/* create irregular fee */
-		createirregularfee:function(student,from,coursegrade){
+		createirregularfee:function(studentcourse,from,to,coursegrade){
 			var day=from;
 			var fee=0;
 			var times=0;
 			var week=['日','月','火','水','木','金','土'];
 			fee=parseFloat(coursegrade['fee'].value)/(parseFloat(coursegrade['times'].value)*4);
-			for (var i=from.getDate();i<vars.todate.getDate()+1;i++)
+			for (var i=from.getDate();i<to.getDate()+1;i++)
 			{
-				for (var i2=0;i2<student['coursetable'].value.length;i2++)
-				{
-					var row=student['coursetable'].value[i2].value;
-					if (week.indexOf(row['courseweek'].value)==day.getDay()) times++;
-				}
+				for (var i2=0;i2<studentcourse['courseweek'].value.length;i2++)
+					if (week.indexOf(studentcourse['courseweek'].value[i2])==day.getDay()) times++;
 				day=day.calc('1 day');
 			}
 			switch (vars.const['taxround'].value)
@@ -456,9 +557,9 @@ jQuery.noConflict();
 				datas+='"","",0,"","","0","0","no"\n';
 				return datas;
 			};
-			for (var i=0;i<vars.apps[kintone.app.getId()].length;i++)
+			for (var i=0;i<vars.displayrecords.length;i++)
 			{
-				var record=vars.apps[kintone.app.getId()][i];
+				var record=vars.displayrecords[i];
 				var summary={};
 				if (!record['collectdate'].value) continue;
 				if (record['collectdate'].value.length==0) continue;
@@ -524,9 +625,9 @@ jQuery.noConflict();
 		/* download nss file */
 		downloadnss:function(){
 			var entryvalue='';
-			for (var i=0;i<vars.apps[kintone.app.getId()].length;i++)
+			for (var i=0;i<vars.displayrecords.length;i++)
 			{
-				var record=vars.apps[kintone.app.getId()][i];
+				var record=vars.displayrecords[i];
 				var summary={lecture:0,textbook:0,admission:0};
 				if (record['collecttrading'].value!='NSS') continue;
 				for (var i2=0;i2<record['billtable'].value.length;i2++)
@@ -587,35 +688,37 @@ jQuery.noConflict();
 			vars.apps[kintone.app.getId()]=null;
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
-				var records=vars.apps[kintone.app.getId()];
+				vars.displayrecords=$.grep(vars.apps[kintone.app.getId()],function(item,index){
+					return item['billdate'].value==vars.todate.format('Y-m-d');
+				});
 				/* initialize table */
 				vars.table.clearrows();
 				/* insert row */
-				for (var i=0;i<records.length;i++)
+				for (var i=0;i<vars.displayrecords.length;i++)
 					vars.table.insertrow(null,function(row){
 						$.each(row.find('td'),function(){
 							var code=$(this).attr('class');
 							if (!code) return true;
-							if (!(code in records[i])) return true;
+							if (!(code in vars.displayrecords[i])) return true;
 							switch (code)
 							{
 								case 'bill':
 								case 'subbill':
 								case 'tax':
-									$(this).css({'text-align':'right'}).text(parseInt('0'+$.fieldvalue(records[i][code])).format()+'円');
+									$(this).css({'text-align':'right'}).text(parseInt('0'+$.fieldvalue(vars.displayrecords[i][code])).format()+'円');
 									break;
 								case 'collectdate':
-									$('input',$(this)).val($.fieldvalue(records[i][code]));
+									$('input',$(this)).val($.fieldvalue(vars.displayrecords[i][code]));
 									break;
 								case 'collecttrading':
-									$('select',$(this)).val($.fieldvalue(records[i][code]));
+									$('select',$(this)).val($.fieldvalue(vars.displayrecords[i][code]));
 									break;
 								default:
-									$(this).text($.fieldvalue(records[i][code]));
+									$(this).text($.fieldvalue(vars.displayrecords[i][code]));
 									break;
 							}
 						});
-						$.each(records[i],function(key,values){
+						$.each(vars.displayrecords[i],function(key,values){
 							if (values!=null)
 								if (values.value!=null)
 									row.find('td').last().append($('<input type="hidden">').attr('id',key).val(values.value));
@@ -632,7 +735,7 @@ jQuery.noConflict();
 				fields:vars.fields
 			};
 			query+=((query.length!=0)?' and ':'');
-			query+='billdate>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and billdate<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
+			query+='billdate>"'+vars.fromdate.calc('-1 month').calc('-1 day').format('Y-m-d')+'" and billdate<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
 			query+=' order by billdate asc,customername asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -700,7 +803,7 @@ jQuery.noConflict();
 					});
 					if (parent.length!=0)
 					{
-						var record=$.grep(vars.apps[kintone.app.getId()],function(item,index){
+						var record=$.grep(vars.displayrecords,function(item,index){
 							return (item['customer'].value==parent[0]['$id'].value);
 						});
 						if (record.length!=0)
@@ -966,7 +1069,7 @@ jQuery.noConflict();
 									record:{collectdate:{value:value}}
 								};
 								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-									var filter=$.grep(vars.apps[kintone.app.getId()],function(item,index){
+									var filter=$.grep(vars.displayrecords,function(item,index){
 										return (item['$id'].value==id);
 									});
 									if (filter.length!=0) filter[0]['collectdate'].value=value;
@@ -987,7 +1090,7 @@ jQuery.noConflict();
 									record:{collecttrading:{value:value}}
 								};
 								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-									var filter=$.grep(vars.apps[kintone.app.getId()],function(item,index){
+									var filter=$.grep(vars.displayrecords,function(item,index){
 										return (item['$id'].value==id);
 									});
 									if (filter.length!=0) filter[0]['collecttrading'].value=value;
@@ -1041,5 +1144,9 @@ jQuery.noConflict();
 			});
 		});
 		return;
+	});
+	kintone.events.on(events.show,function(event){
+		event.record['billdate']['disabled']=true;
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

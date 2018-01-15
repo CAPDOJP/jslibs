@@ -14,8 +14,7 @@ jQuery.noConflict();
 	var vars={
 		colortable:null,
 		segmenttable:null,
-		appIds:{},
-		appFields:{},
+		fieldinfos:{},
 		colors:[
 			'#FA8273',
 			'#FFF07D',
@@ -37,7 +36,8 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 		var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		$.each(resp.properties,function(key,values){
+		vars.fieldinfos=resp.properties;
+		$.each(vars.fieldinfos,function(key,values){
 			/* check field type */
 			switch (values.type)
 			{
@@ -53,12 +53,7 @@ jQuery.noConflict();
 				case 'SINGLE_LINE_TEXT':
 				case 'TIME':
 					$('select#display').append($('<option>').attr('value',values.code).text(values.label));
-					if (values.lookup)
-					{
-						$('select#segment').append($('<option>').attr('value',values.code).text(values.label));
-						vars.appIds[values.code]=values.lookup.relatedApp.app;
-						vars.appFields[values.code]=values.lookup.relatedKeyField;
-					}
+					if (values.lookup) $('select#segment').append($('<option>').attr('value',values.code).text(values.label));
 					switch (values.type)
 					{
 						case 'DROP_DOWN':
@@ -99,9 +94,9 @@ jQuery.noConflict();
 					list.html('<option value=""></option>');
 					if ($(this).val().length!=0)
 					{
-						if ($(this).val() in vars.appIds)
+						if (vars.fieldinfos[$(this).val()].lookup)
 						{
-							kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.appIds[$(this).val()]},function(resp){
+							kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.fieldinfos[$(this).val()].lookup.relatedApp.app},function(resp){
 								/* setup field lists */
 								$.each(resp.properties,function(key,values){
 									switch (values.type)
@@ -202,7 +197,7 @@ jQuery.noConflict();
 			if (key.length!=0)
 			{
 				segments[key]={display:'',app:'',field:'',sort:''};
-				if (key in vars.appIds)
+				if (vars.fieldinfos[key].lookup)
 				{
 					if ($('select#segmentdisplay',row).val()=='')
 					{
@@ -212,8 +207,8 @@ jQuery.noConflict();
 					else
 					{
 						segments[key].display=$('select#segmentdisplay',row).val();
-						segments[key].app=vars.appIds[key];
-						segments[key].field=vars.appFields[key];
+						segments[key].app=vars.fieldinfos[key].lookup.relatedApp.app;
+						segments[key].field=vars.fieldinfos[key].lookup.relatedKeyField;
 						segments[key].sort=$('select#segmentsort',row).val();
 					}
 				}
