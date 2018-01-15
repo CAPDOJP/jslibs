@@ -114,22 +114,54 @@ jQuery.noConflict();
 								for (var i=0;i<fieldcode.cells.length;i++)
 								{
 									var cellinfo=$.extend(true,{},fieldinfo.fields[fieldcode.cells[i]]);
-									if (cellinfo.type!='FILE' && cellinfo.type!='RADIO_BUTTON')
-										if ($.inArray(fieldcode.cells[i],mappings)<0)
-										{
-											cellinfo['tablecode']=fieldcode.code;
-											vars.bulkinfos.push(cellinfo);
-										}
+									switch (cellinfo.type)
+									{
+										case 'CALC':
+										case 'CATEGORY':
+										case 'CREATED_TIME':
+										case 'CREATOR':
+										case 'FILE':
+										case 'MODIFIER':
+										case 'RADIO_BUTTON':
+										case 'RECORD_NUMBER':
+										case 'STATUS':
+										case 'STATUS_ASSIGNEE':
+										case 'UPDATED_TIME':
+											break;
+										default:
+											if ($.inArray(fieldcode.cells[i],mappings)<0)
+											{
+												cellinfo['tablecode']=fieldcode.code;
+												vars.bulkinfos.push(cellinfo);
+											}
+											break;
+									}
 								}
 							}
 							else
 							{
-								if (fieldinfo.type!='FILE' && fieldinfo.type!='RADIO_BUTTON')
-									if ($.inArray(fieldinfo.code,mappings)<0)
-									{
-										fieldinfo['tablecode']='';
-										vars.bulkinfos.push($.extend(true,{},fieldinfo));
-									}
+								switch (fieldinfo.type)
+								{
+									case 'CALC':
+									case 'CATEGORY':
+									case 'CREATED_TIME':
+									case 'CREATOR':
+									case 'FILE':
+									case 'MODIFIER':
+									case 'RADIO_BUTTON':
+									case 'RECORD_NUMBER':
+									case 'STATUS':
+									case 'STATUS_ASSIGNEE':
+									case 'UPDATED_TIME':
+										break;
+									default:
+										if ($.inArray(fieldinfo.code,mappings)<0)
+										{
+											fieldinfo['tablecode']='';
+											vars.bulkinfos.push($.extend(true,{},fieldinfo));
+										}
+										break;
+								}
 							}
 						}
 					});
