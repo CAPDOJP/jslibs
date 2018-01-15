@@ -1882,26 +1882,32 @@ FieldsForm.prototype={
 			{
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
+					/* clear value */
 					$.each($('input[type=checkbox]',fieldcontainer),function(){
 						$(this).prop('checked',false);
 					});
+					/* initialize value */
 					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'DATE':
+					/* clear value */
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
 					if (!values.value) return true;
 					if (values.value.length==0) return true;
+					/* initialize value */
 					$('.label',fieldcontainer).text(values.value);
 					$('.receiver',fieldcontainer).val(values.value);
 					break;
 				case 'DATETIME':
+					/* clear value */
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
 					$('.receiverhour',fieldcontainer).val('00');
 					$('.receiverminute',fieldcontainer).val('00');
 					if (!values.value) return true;
 					if (values.value.length==0) return true;
+					/* initialize value */
 					$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
 					$('.receiver',fieldcontainer).val(values.value);
 					$('.receiverhour',fieldcontainer).val(new Date(values.value.dateformat()).format('H'));
@@ -1909,8 +1915,10 @@ FieldsForm.prototype={
 					break;
 				case 'FILE':
 					var files=my.filevalue(values.value);
+					/* clear value */
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
+					/* initialize value */
 					$('.label',fieldcontainer).text(files.names);
 					$('.receiver',fieldcontainer).val(files.values);
 					break;
@@ -1919,8 +1927,10 @@ FieldsForm.prototype={
 				case 'USER_SELECT':
 					var label=[];
 					var receiver=[];
+					/* clear value */
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
+					/* initialize value */
 					$.each(values.value,function(index){
 						label.push(values.value[index].name);
 						receiver.push(values.value[index].code);
@@ -1932,17 +1942,21 @@ FieldsForm.prototype={
 					$('#'+values.value.replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'TIME':
+					/* clear value */
 					$('.receiver',fieldcontainer).val('');
 					$('.receiverhour',fieldcontainer).val('00');
 					$('.receiverminute',fieldcontainer).val('00');
 					if (!values.value) return true;
 					if (values.value.length==0) return true;
+					/* initialize value */
 					$('.receiver',fieldcontainer).val(values.value);
 					$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));
 					$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
 					break;
 				default:
+					/* clear value */
 					$('.receiver',fieldcontainer).val('');
+					/* initialize value */
 					if (key in my.apps)
 					{
 						$('.label',fieldcontainer).text('');
