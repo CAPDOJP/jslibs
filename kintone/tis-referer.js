@@ -1882,40 +1882,33 @@ FieldsForm.prototype={
 			{
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
+					$('input',fieldcontainer).prop('checked',false);
 					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'DATE':
+					$('.label',fieldcontainer).text('');
+					$('.receiver',fieldcontainer).val('');
 					if (!values.value) return true;
-					if (values.value.length==0)
-					{
-						$('.label',fieldcontainer).text('');
-						$('.receiver',fieldcontainer).val('');
-					}
-					else
-					{
-						$('.label',fieldcontainer).text(values.value);
-						$('.receiver',fieldcontainer).val(values.value);
-					}
+					if (values.value.length==0) return true;
+					$('.label',fieldcontainer).text(values.value);
+					$('.receiver',fieldcontainer).val(values.value);
 					break;
 				case 'DATETIME':
+					$('.label',fieldcontainer).text('');
+					$('.receiver',fieldcontainer).val('');
+					$('.receiverhour',fieldcontainer).val('00');
+					$('.receiverminute',fieldcontainer).val('00');
 					if (!values.value) return true;
-					if (values.value.length==0)
-					{
-						$('.label',fieldcontainer).text('');
-						$('.receiver',fieldcontainer).val('');
-						$('.receiverhour',fieldcontainer).val('00');
-						$('.receiverminute',fieldcontainer).val('00');
-					}
-					else
-					{
-						$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
-						$('.receiver',fieldcontainer).val(values.value);
-						$('.receiverhour',fieldcontainer).val(new Date(values.value.dateformat()).format('H'));
-						$('.receiverminute',fieldcontainer).val(new Date(values.value.dateformat()).format('i'));
-					}
+					if (values.value.length==0) return true;
+					$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
+					$('.receiver',fieldcontainer).val(values.value);
+					$('.receiverhour',fieldcontainer).val(new Date(values.value.dateformat()).format('H'));
+					$('.receiverminute',fieldcontainer).val(new Date(values.value.dateformat()).format('i'));
 					break;
 				case 'FILE':
 					var files=my.filevalue(values.value);
+					$('.label',fieldcontainer).text('');
+					$('.receiver',fieldcontainer).val('');
 					$('.label',fieldcontainer).text(files.names);
 					$('.receiver',fieldcontainer).val(files.values);
 					break;
@@ -1924,6 +1917,8 @@ FieldsForm.prototype={
 				case 'USER_SELECT':
 					var label=[];
 					var receiver=[];
+					$('.label',fieldcontainer).text('');
+					$('.receiver',fieldcontainer).val('');
 					$.each(values.value,function(index){
 						label.push(values.value[index].name);
 						receiver.push(values.value[index].code);
@@ -1932,24 +1927,21 @@ FieldsForm.prototype={
 					$('.receiver',fieldcontainer).val(receiver.join(','));
 					break;
 				case 'RADIO_BUTTON':
+					$('input',fieldcontainer).prop('checked',false);
 					$('#'+values.value.replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'TIME':
+					$('.receiver',fieldcontainer).val('');
+					$('.receiverhour',fieldcontainer).val('00');
+					$('.receiverminute',fieldcontainer).val('00');
 					if (!values.value) return true;
-					if (values.value.length==0)
-					{
-						$('.receiver',fieldcontainer).val('');
-						$('.receiverhour',fieldcontainer).val('00');
-						$('.receiverminute',fieldcontainer).val('00');
-					}
-					else
-					{
-						$('.receiver',fieldcontainer).val(values.value);
-						$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));
-						$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
-					}
+					if (values.value.length==0) return true;
+					$('.receiver',fieldcontainer).val(values.value);
+					$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));
+					$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
 					break;
 				default:
+					$('.receiver',fieldcontainer).val('');
 					if (key in my.apps)
 					{
 						$('.label',fieldcontainer).text('');
