@@ -245,10 +245,14 @@ jQuery.extend({
 		};
 		var array=strtoarray(values.replace(/\n$/g,''));
 		var blob=new Blob([new Uint8Array(Encoding.convert(array,character,Encoding.detect(array)))],{'type':'text/plain'});
-		a.href=url.createObjectURL(blob);
-		a.download=filename;
+		a.setAttribute('href',url.createObjectURL(blob));
+		a.setAttribute('target','_blank');
+		a.setAttribute('download',filename);
+		a.style.display='none';
+		document.body.appendChild(a);
 		a.click();
-	},
+		document.body.removeChild(a);
+  	},
 	uploadtext:function(file,character,success,error){
 		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}
 		var reader=null;
