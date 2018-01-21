@@ -25,11 +25,11 @@ jQuery.noConflict();
 		]
 	};
 	var functions={
-		creategroup:function(caption){
-			return $('<div>').addClass('group').append($('<p>').addClass('groupcaption').text(caption));
+		createcategory:function(caption){
+			return $('<div>').addClass('category').append($('<p>').addClass('categorycaption').text(caption));
 		},
 		createlink:function(app){
-			return $('<a href="https://'+$(location).attr('host')+'/k/'+app.appId+'">').text(app.name);
+			return $('<a href="https://'+$(location).attr('host')+'/k/'+app.appId+'" target="_blank">').text(app.name);
 		},
 		loadapps:function(callback){
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
@@ -49,8 +49,8 @@ jQuery.noConflict();
 		/* check viewid */
 		if (event.viewId!=vars.config.applist) return;
 		/* initialize valiable */
-		var container=$('div#applist-container').addClass('groupcontainer').empty();
-		var groups=JSON.parse(vars.config['group']);
+		var container=$('div#applist-container').addClass('categorycontainer').empty();
+		var categories=JSON.parse(vars.config['category']);
 		functions.loadapps(function(){
 			var added=[];
 			/* sort */
@@ -60,28 +60,31 @@ jQuery.noConflict();
 				return 0;
 			});
 			/* append links */
-			for (var i=0;i<groups.length;i++)
+			for (var i=0;i<categories.length;i++)
 			{
-				var group=groups[i];
-				var filter=$.grep(vars.apps,function(item,index){
-					var exists=false;
-					for (var i2=0;i2<group.apps.length;i2++) if (item.appId==group.apps[i2]) {exists=true;break;}
-					return exists;
-				});
-				var contents=functions.creategroup(group.name);
-				if (filter.length!=0)
+				var category=categories[i];
+				var apps=[];
+				for (var i2=0;i2<category.apps.length;i2++)
 				{
-					for (var i2=0;i2<filter.length;i2++)
+					var filter=$.grep(vars.apps,function(item,index){
+						return item.appId==category.apps[i2];
+					});
+					if (filter.length!=0) Array.prototype.push.apply(apps,filter);
+				}
+				var contents=functions.createcategory(category.name);
+				if (apps.length!=0)
+				{
+					for (var i2=0;i2<apps.length;i2++)
 					{
-						contents.append(functions.createlink(filter[i2]));
-						added.push(filter[i2].appId);
+						contents.append(functions.createlink(apps[i2]));
+						added.push(apps[i2].appId);
 					}
 				}
 				container.append(contents);
 			}
 			if (vars.apps.length!=added.length)
 			{
-				var contents=functions.creategroup('その他');
+				var contents=functions.createcategory('その他');
 				for (var i=0;i<vars.apps.length;i++)
 					if (added.indexOf(vars.apps[i].appId)<0) contents.append(functions.createlink(vars.apps[i]));
 				container.append(contents);

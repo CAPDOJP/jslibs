@@ -1,5 +1,5 @@
 /* individual style (common) */
-div.group{
+div.category{
 	border:1px solid #e3e7e8;
 	border-radius:0.25em;
 	box-shadow:0px 0px 1px rgba(0,0,0,0.05);
@@ -10,22 +10,22 @@ div.group{
 	text-align:center;
 	vertical-align:top;
 }
-div.group a{
+div.category a{
 	display:block;
 	line-height:2em;
 	text-align:left;
 }
-div.group a *{
+div.category a *{
 	display:inline-block;
 	vertical-align:top;
 }
-div.group a img{
+div.category a img{
 	height:2em;
 }
-div.group a span{
+div.category a span{
 	padding:0px 0.5em;
 }
-div.group p.groupcaption{
+div.category p.categorycaption{
 	background-color:#F5F5F5;
 	display:table;
 	line-height:2em;
@@ -34,7 +34,7 @@ div.group p.groupcaption{
 	padding:0px 0.5em;
 	width:auto;
 }
-div.groupcontainer{
+div.categorycontainer{
 	background-color:#F5F5F5;
 	padding:1em;
 }

@@ -26,7 +26,10 @@ jQuery.noConflict();
 		exports:{
 			groups:[],
 			organizations:[],
-			users:[]
+			users:[],
+			grouploaded:false,
+			organizationloaded:false,
+			userloaded:false
 		},
 		apps:{},
 		config:{},
@@ -160,16 +163,18 @@ jQuery.noConflict();
 					break;
 				case 'GROUP_SELECT':
 					/* load group datas */
-					$.loadgroups(function(records){
-						records.sort(function(a,b){
-							if(a.id<b.id) return -1;
-							if(a.id>b.id) return 1;
-							return 0;
+					if (!vars.exports.grouploaded)
+						$.loadgroups(function(records){
+							records.sort(function(a,b){
+								if(a.id<b.id) return -1;
+								if(a.id>b.id) return 1;
+								return 0;
+							});
+							$.each(records,function(index,values){
+								vars.exports.groups.push({value:values.code,text:values.name});
+							});
 						});
-						$.each(records,function(index,values){
-							vars.exports.groups.push({value:values.code,text:values.name});
-						});
-					});
+					vars.exports.grouploaded=true;
 					classes='multiselectcell';
 					cell=$('<label>');
 					cell.append($('<span id="'+fieldinfo.code+'" class="customview-span">'));
@@ -230,16 +235,18 @@ jQuery.noConflict();
 					break;
 				case 'ORGANIZATION_SELECT':
 					/* load organization datas */
-					$.loadorganizations(function(records){
-						records.sort(function(a,b){
-							if(a.id<b.id) return -1;
-							if(a.id>b.id) return 1;
-							return 0;
+					if (!vars.exports.organizationloaded)
+						$.loadorganizations(function(records){
+							records.sort(function(a,b){
+								if(a.id<b.id) return -1;
+								if(a.id>b.id) return 1;
+								return 0;
+							});
+							$.each(records,function(index,values){
+								vars.exports.organizations.push({value:values.code,text:values.name});
+							});
 						});
-						$.each(records,function(index,values){
-							vars.exports.organizations.push({value:values.code,text:values.name});
-						});
-					});
+					vars.exports.organizationloaded=true;
 					classes='multiselectcell';
 					cell=$('<label>');
 					cell.append($('<span id="'+fieldinfo.code+'" class="customview-span">'));
@@ -275,16 +282,18 @@ jQuery.noConflict();
 					break;
 				case 'USER_SELECT':
 					/* load user datas */
-					$.loadusers(function(records){
-						records.sort(function(a,b){
-							if(a.id<b.id) return -1;
-							if(a.id>b.id) return 1;
-							return 0;
+					if (!vars.exports.userloaded)
+						$.loadusers(function(records){
+							records.sort(function(a,b){
+								if(a.id<b.id) return -1;
+								if(a.id>b.id) return 1;
+								return 0;
+							});
+							$.each(records,function(index,values){
+								vars.exports.users.push({value:values.code,text:values.name});
+							});
 						});
-						$.each(records,function(index,values){
-							vars.exports.users.push({value:values.code,text:values.name});
-						});
-					});
+					vars.exports.userloaded=true;
 					classes='multiselectcell';
 					cell=$('<label>');
 					cell.append($('<span id="'+fieldinfo.code+'" class="customview-span">'));

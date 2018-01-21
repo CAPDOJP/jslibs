@@ -1,27 +1,27 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">グループ設定</div>
-		<div class="kintoneplugin-desc">アプリをグループ毎に表示する必要がある場合は、グループ名の入力・該当するアプリの登録を行って下さい。</div>
+		<div class="kintoneplugin-label">カテゴリー設定</div>
+		<div class="kintoneplugin-desc">カテゴリー名の入力とカテゴリーに属するアプリの登録を行って下さい。</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<table class="groups">
+		<table class="categories">
 			<thead>
 				<tr>
-					<th>グループ名</th>
+					<th>カテゴリー名</th>
 					<th></th>
 					<th></th>
-					<th>グループ内アプリ</th>
+					<th>カテゴリー内アプリ</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
 					<td class="single">
 						<div class="kintoneplugin-input-outer">
-							<input type="text" id="group" class="kintoneplugin-input-text" value="" >
+							<input type="text" id="category" class="kintoneplugin-input-text" value="" >
 						</div>
 					</td>
-					<td class="button single"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addgroup" alt="+" title="追加"></td>
-					<td class="button single"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delgroup" alt="x" title="削除"></td>
+					<td class="button single"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addcategory" alt="+" title="追加"></td>
+					<td class="button single"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delcategory" alt="x" title="削除"></td>
 					<td class="nest">
 						<table class="apps">
 							<tbody>
@@ -44,6 +44,8 @@
 				</tr>
 			</tbody>
 		</table>
+		<div class="kintoneplugin-caution">*アプリの並び順はカテゴリー内アプリの設定順となります。</div>
+		<div class="kintoneplugin-caution">*設定したカテゴリーに属さない全てのアプリは「その他」として一覧表示されます。</div>
 	</div>
 </div>
 <div class="block">

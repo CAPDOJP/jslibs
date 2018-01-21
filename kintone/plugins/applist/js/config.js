@@ -13,7 +13,7 @@ jQuery.noConflict();
 	"use strict";
 	var vars={
 		offset:0,
-		grouptable:null,
+		categorytable:null,
 		apptable:[]
 	};
 	var VIEW_NAME=['アプリ一覧'];
@@ -36,9 +36,9 @@ jQuery.noConflict();
 	functions.loadapps(function(){
 		var config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		/* initialize valiable */
-		vars.grouptable=$('.groups').adjustabletable({
-			add:'img.addgroup',
-			del:'img.delgroup',
+		vars.categorytable=$('.categories').adjustabletable({
+			add:'img.addcategory',
+			del:'img.delcategory',
 			addcallback:function(row){
 				vars.apptable.push(
 					$('.apps',row).adjustabletable({
@@ -49,27 +49,27 @@ jQuery.noConflict();
 			}
 		});
 		var addapps=false;
-		var addgroups=false;
+		var addcategories=false;
 		var rowapps=null;
-		var rowgroups=null;
-		var groups=[];
+		var rowcategories=null;
+		var categories=[];
 		if (Object.keys(config).length!==0)
 		{
-			groups=JSON.parse(config['group']);
-			for (var i=0;i<groups.length;i++)
+			categories=JSON.parse(config['category']);
+			for (var i=0;i<categories.length;i++)
 			{
-				var group=groups[i];
-				if (addgroups) vars.grouptable.addrow();
-				else addgroups=true;
-				rowgroups=vars.grouptable.rows.last();
-				$('input#group',rowgroups).val(group.name);
+				var category=categories[i];
+				if (addcategories) vars.categorytable.addrow();
+				else addcategories=true;
+				rowcategories=vars.categorytable.rows.last();
+				$('input#category',rowcategories).val(category.name);
 				addapps=false;
-				for (var i2=0;i2<group.apps.length;i2++)
+				for (var i2=0;i2<category.apps.length;i2++)
 				{
 					if (addapps) vars.apptable[i].addrow();
 					else addapps=true;
 					rowapps=vars.apptable[i].rows.eq(i2);
-					$('select#app',rowapps).val(group.apps[i2]);
+					$('select#app',rowapps).val(category.apps[i2]);
 				}
 			}
 		}
@@ -81,10 +81,10 @@ jQuery.noConflict();
 		var row=null;
 		var apps=[];
 		var config=[];
-		var groups=[];
+		var categories=[];
 		/* check values */
-		for (var i=0;i<vars.grouptable.rows.length;i++)
-			if ($('input#group',vars.grouptable.rows[i]).val()!='')
+		for (var i=0;i<vars.categorytable.rows.length;i++)
+			if ($('input#category',vars.categorytable.rows[i]).val()!='')
 			{
 				apps=[];
 				for (var i2=0;i2<vars.apptable[i].rows.length;i2++)
@@ -95,16 +95,16 @@ jQuery.noConflict();
 				}
 				if (apps.length==0)
 				{
-					swal('Error!','グループ内アプリを指定して下さい。','error');
+					swal('Error!','カテゴリー内アプリを指定して下さい。','error');
 					return;
 				}
-				groups.push({
-					name:$('input#group',vars.grouptable.rows[i]).val(),
+				categories.push({
+					name:$('input#category',vars.categorytable.rows[i]).val(),
 					apps:apps
 				});
 			}
 		/* setup config */
-		config['group']=JSON.stringify(groups);
+		config['category']=JSON.stringify(categories);
 		/* get view lists */
 		kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
 			var req=$.extend(true,{},resp);

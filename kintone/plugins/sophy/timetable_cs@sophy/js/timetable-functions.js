@@ -152,7 +152,9 @@ jQuery.extend({
 					if (item['date'].value==values.date.value) exists++;
 					if (item['starttime'].value==values.starttime.value) exists++;
 					if (item['hours'].value==values.hours.value) exists++;
-					return exists==7;
+					if (item['transfered'].value==0) exists++;
+					if (item['transferpending'].value==0) exists++;
+					return exists==9;
 				}).length!=0;
 			})(values[i],entries))
 			{
@@ -257,7 +259,9 @@ jQuery.extend({
 				if (item['date'].value==values['date'].value) exists++;
 				if (item['starttime'].value==values['starttime'].value) exists++;
 				if (item['hours'].value==values['hours'].value) exists++;
-				return exists==6;
+				if (item['transfered'].value==0) exists++;
+				if (item['transferpending'].value==0) exists++;
+				return exists==8;
 			}).length!=0;
 		})(course,entries))
 		{
@@ -620,7 +624,7 @@ jQuery.extend({
 			case '12':
 				/* 生徒情報 */
 				if (!('name' in fieldinfos)) error='氏名';
-				if (!('phonetic' in fieldinfos)) error='氏名かな';
+				if (!('phonetic' in fieldinfos)) error='氏名���な';
 				if (!('mail' in fieldinfos)) error='メールアドレス';
 				if (!('question' in fieldinfos)) error='秘密の質問';
 				if (!('birthday' in fieldinfos)) error='生年月日';
