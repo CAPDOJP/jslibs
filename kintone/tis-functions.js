@@ -247,7 +247,6 @@ jQuery.extend({
 		var blob=new Blob([new Uint8Array(Encoding.convert(array,character,Encoding.detect(array)))],{'type':'text/plain'});
 		a.href=url.createObjectURL(blob);
 		a.download=filename;
-		a.target='_blank';
 		a.click();
 	},
 	uploadtext:function(file,character,success,error){
