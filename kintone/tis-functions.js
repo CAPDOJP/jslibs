@@ -235,7 +235,6 @@ jQuery.extend({
 	},
 	downloadtext:function(values,character,filename){
 		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}
-		console.log('a');
 		var a=document.createElement('a');
 		var url=window.URL || window.webkitURL;
 		var strtoarray=function(str){
@@ -244,15 +243,12 @@ jQuery.extend({
 				arr.push(str.charCodeAt(i));
 			return arr;
 		};
-		console.log('b');
 		var array=strtoarray(values.replace(/\n$/g,''));
 		var blob=new Blob([new Uint8Array(Encoding.convert(array,character,Encoding.detect(array)))],{'type':'text/plain'});
-		console.log('c');
 		a.href=url.createObjectURL(blob);
 		a.download=filename;
 		a.target='_blank';
 		a.click();
-		console.log('d');
 	},
 	uploadtext:function(file,character,success,error){
 		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}
