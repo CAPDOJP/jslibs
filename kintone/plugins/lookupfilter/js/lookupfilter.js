@@ -132,6 +132,7 @@ jQuery.noConflict();
 						var option=$.fieldvalue(filter[i2][segments[i]]);
 						if ($.inArray(option,options)<0) options.push(option);
 					}
+					options.sort();
 					list.empty().append($('<option>').attr('value','').text(''));
 					for (var i2=0;i2<options.length;i2++) list.append($('<option>').attr('value',options[i2]).html('&nbsp;'+options[i2]+'&nbsp;'));
 					listcover.show();
@@ -147,6 +148,11 @@ jQuery.noConflict();
 					var exists=0;
 					$.each(conditions,function(key,values){if (item[key].value==values) exists++;});
 					return exists==Object.keys(conditions).length;
+				});
+				filter.sort(function(a,b){
+					if($.fieldvalue(a[vars.lookups[fieldcode].display])<$.fieldvalue(b[vars.lookups[fieldcode].display])) return -1;
+					if($.fieldvalue(a[vars.lookups[fieldcode].display])>$.fieldvalue(b[vars.lookups[fieldcode].display])) return 1;
+					return 0;
 				});
 				for (var i=0;i<filter.length;i++)
 				{
