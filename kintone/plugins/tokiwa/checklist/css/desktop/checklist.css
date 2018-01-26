@@ -42,20 +42,27 @@ div#progress div.progresscell{
 }
 table#checklist tr td,
 table#checklist tr th{
-	padding:0px;
-	font-size:14px;
-	height:auto;
-	line-height:30px;
-	vertical-align:top;
+  padding:0px;
+  font-size:14px;
+  height:auto;
+  line-height:20px;
+  padding:3px;
+  vertical-align:top;
+  white-space:nowrap;
 }
-table#checklist tr td.adjust,
-table#checklist tr th.adjust{
-	cursor:col-resize;
+table#checklist tr td.fixed,
+table#checklist tr th.fixed{
+  background-color:#FFFFFF;
+  left:0;
+  padding:0px;
+  position:-webkit-sticky;
+  position:sticky;
+  z-index:2;
 }
-table#checklist tr td div,
-table#checklist tr th div{
-	box-sizing:border-box;
-	padding:0px 3px;
-	vertical-align:top;
-	width:100%;
+table#checklist tr td.fixed p,
+table#checklist tr th.fixed p{
+  border-right:1px solid #C9C9C9;
+  margin:0px;
+  padding:3px;
+  white-space:nowrap;
 }

@@ -844,7 +844,7 @@ layerController.prototype={
 			if (x>rect.width) return false;
 			if (y<0) return false;
 			if (y>rect.height) return false;
-			if (this.context.getImageData(x,y,1,1).data[3]!=0) return true;
+			if (this.context.getImageData(x/(this.zoom/100),y/(this.zoom/100),1,1).data[3]!=0) return true;
 			else return false;
 		}
 	},

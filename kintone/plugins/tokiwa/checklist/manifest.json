@@ -30,6 +30,7 @@
             "css/sweetalert.css",
             "css/51-modern-default.css",
             "css/desktop/common.css",
+            "css/desktop/loading.css",
             "css/desktop/checklist.css"
         ]
     },

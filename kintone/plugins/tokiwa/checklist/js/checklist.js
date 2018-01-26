@@ -26,7 +26,6 @@ jQuery.noConflict();
 		],
 		checklist:[],
 		container:null,
-		progress:null,
 		table:null,
 		header:null,
 		rows:null,
@@ -42,7 +41,8 @@ jQuery.noConflict();
 				position:0
 			}
 		},
-		containers:[]
+		containers:[],
+		layout:[]
 	};
 	var events={
 		show:[
@@ -54,13 +54,8 @@ jQuery.noConflict();
 		/* download nss file */
 		download:function(){
 			var downloadvalue='';
-			$.each(vars.rows.find('tr'),function(index){
-				var row=$(this);
-				downloadvalue+=$('.question',row).html()+',';
-				downloadvalue+=$('.answer',row).html();
-				downloadvalue+='\n';
-			});
-			$.downloadtext(downloadvalue,'SJIS','checklist.csv');
+			$.each($('tr',vars.rows),function(index){downloadvalue+=$('td',$(this)).first().text()+'\n';});
+			$.downloadtext(downloadvalue,'SJIS','checklistlabel.txt');
 		},
 		/* upload nss records */
 		upload:function(){
@@ -69,145 +64,120 @@ jQuery.noConflict();
 			var target=$('.file');
 			var checkvalues=[];
 			if (target[0].files.length==0) return;
-			vars.progress.find('.message').text('データ登録中');
-			vars.progress.find('.progressbar').find('.progresscell').width(0);
-			vars.progress.show();
 			$.uploadtext(target[0].files[0],'UNICODE',function(records){
+				var labelindex=-1;
 				records=records.split('\n');
 				for (var i=0;i<records.length;i++)
 				{
 					if (records[i].length==0) continue;
-					var record=records[i].split(',');
-					var checkindex=i%vars.checklist.length;
-					var checkvalue={};
-					if (checkindex==0)
-					{
-						checkvalues.push({
-							app:kintone.app.getId(),
-							record:{}
-						});
-					}
-					checkvalue=checkvalues[checkvalues.length-1];
-					switch (vars.fieldinfos[vars.checklist[checkindex].answer].type)
-					{
-						case 'CHECK_BOX':
-						case 'MULTI_SELECT':
-							checkvalue.record[vars.checklist[checkindex].answer]={value:record[1].split('-')};
-							break;
-						default:
-							checkvalue.record[vars.checklist[checkindex].answer]={value:record[1]};
-							break;
-					}
-				}
-				if (checkvalues.length!=0)
-				{
-					for (var i=0;i<checkvalues.length;i++)
-					{
-						if (error) return;
-						kintone.api(kintone.api.url('/k/v1/record',true),'POST',checkvalues[i],function(resp){
-							counter++;
-							if (counter<checkvalues.length)
+					$.each(vars.layout,function(index,values){
+						if (labelindex<index)
+						{
+							switch (values.type)
 							{
-								vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/checkvalues.length));
+								case 'ROW':
+									if (values.fields.length==2)
+										if (values.fields[0].type=="LABEL" && $.inArray(values.fields[1].type,vars.answers)>-1)
+										{
+											values.fields[0].label=records[i].replace(/^"/g,'').replace(/"$/g,'');
+											labelindex=index;
+											return false;
+										}
+									break;
 							}
-							else
-							{
-								vars.progress.hide();
-								swal({
-									title:'登録完了',
-									text:'登録しました。',
-									type:'success'
-								},function(){
-									location.reload(true);
+						}
+					});
+				}
+				/* put layout */
+				kintone.api(kintone.api.url('/k/v1/preview/app/form/layout',true),'PUT',{app:kintone.app.getId(),layout:vars.layout},function(resp){
+					kintone.api(kintone.api.url('/k/v1/preview/app/deploy',true),'POST',{apps:[{app:kintone.app.getId()}]},function(resp){
+						var waitprocess=function(){
+							setTimeout(function(){
+								kintone.api(kintone.api.url('/k/v1/preview/app/deploy',true),'GET',{apps:[kintone.app.getId()]},function(resp){
+									switch (resp.apps[0].status)
+									{
+										case 'PROCESSING':
+											waitprocess();
+											break;
+										case 'SUCCESS':
+											functions.hideloading();
+											swal({
+												title:'登録完了',
+												text:'登録しました。',
+												type:'success'
+											},function(){
+												location.reload(true);
+											});
+											break;
+										case 'FAIL':
+											functions.hideloading();
+											my.hide();
+											swal('Error!','ラベルの更新に失敗しました。\nアプリの設定画面を開いてエラー内容を確認して下さい。','error');
+											break;
+										case 'CANCEL':
+											functions.hideloading();
+											my.hide();
+											swal('Error!','ラベルの更新がキャンセルされました。','error');
+											break;
+									}
+								},
+								function(error){
+									swal('Error!',error.message,'error');
 								});
-							}
-						},function(error){
-							vars.progress.hide();
-							swal('Error!',error.message,'error');
-							error=true;
-						});
-					}
-				}
-				else
-				{
-					vars.progress.hide();
-					swal('Error!','アップロードしたファイルに登録データが見つかりませんでした。','error');
-				}
+							},500);
+						};
+						functions.showloading();
+						waitprocess();
+					},
+					function(error){swal('Error!',error.message,'error');});
+				},function(error){swal('Error!',error.message,'error');});
 			},
-			function(){vars.progress.hide();});
+			function(){});
 		},
 		/* reload view */
 		load:function(records){
-			vars.rows.empty();
+			vars.table=$('<table id="checklist" class="customview-table">');
+			vars.header=$('<tr>');
+			vars.rows=$('<tbody>');
+			vars.template=$('<tr>');
+			/* create columns */
+			vars.header.append($('<th>').addClass('fixed').append($('<p>').text('チェック項目')));
+			vars.template.append($('<td>').addClass('fixed').append($('<p>')));
 			for (var i=0;i<records.length;i++)
 			{
-				var record=records[i];
-				for (var i2=0;i2<vars.checklist.length;i2++)
-				{
-					var row=vars.template.clone(true);
-					$('.question',row).html(vars.checklist[i2].question);
-					$('.answer',row).html($.fieldvalue(record[vars.checklist[i2].answer]));
-					$('#id',row).val(record['$id'].value);
-					vars.rows.append(row);
-				}
-				/* merge row */
-				vars.rows.find('tr').eq(i*vars.checklist.length).find('td').first().attr('rowspan',vars.checklist.length);
-				for (var i2=i*vars.checklist.length+1;i2<vars.rows.find('tr').length;i2++) vars.rows.find('tr').eq(i2).find('td').first().hide();
+				vars.header.append(
+					$('<th>')
+					.append($('<button class="customview-button edit-button">').on('click',function(){
+						var cell=$(this).closest('th');
+						var index=$('input#id',cell).val();
+						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index+'&mode=show';
+					}))
+					.append($('<input type="hidden" id="id" value="'+records[i]['$id'].value+'">'))
+				);
+				vars.template.append($('<td>'));
 			}
-			/* append fix containers */
-			$.each(vars.table.parents(),function(index){
-				var check=$(this).attr('style');
-				if (check)
-					if (check.indexOf(vars.table.width().toString()+'px')>-1) vars.containers.push($(this));
-			});
-			if (vars.containers.length==0) vars.containers.push(vars.container);
-			/* mouse events */
-			$(vars.table).on('mousemove','td,th',function(e){
-				if (vars.drag.capture) return;
-				var left=e.pageX-$(this).offset().left;
-				var hit=true;
-				if (left<$(this).outerWidth(false)-5) hit=false;
-				if (left>$(this).outerWidth(false)) hit=false;
-				if (hit) $(this).addClass('adjust');
-				else $(this).removeClass('adjust');
-			});
-			$(vars.table).on('mousedown','td,th',function(e){
-				if (!$(this).hasClass('adjust')) return;
-				vars.drag.capture=true;
-				vars.drag.keep.column=$(this).outerWidth(false);
-				vars.drag.keep.container=vars.containers[0].outerWidth(false);
-				vars.drag.keep.position=e.pageX;
-				/* setup resize column */
-				vars.drag.cells=[];
-				$.each($('td,th',vars.table),function(index){
-					if (e.pageX>$(this).offset().left && e.pageX<$(this).offset().left+$(this).outerWidth(false)) vars.drag.cells.push($(this));
-				});
-				e.stopPropagation();
-				e.preventDefault();
-			});
-			$(window).on('mousemove',function(e){
-				if (!vars.drag.capture) return;
-				var width=0;
-				width=vars.drag.keep.column+e.pageX-vars.drag.keep.position;
-				if (width<15) width=15;
-				/* resize column */
-				$.each(vars.drag.cells,function(index){
-					vars.drag.cells[index].css({'width':width.toString()+'px'});
-					vars.drag.cells[index].find('div').css({'width':width.toString()+'px'});
-				});
-				/* resize container */
-				$.each(vars.containers,function(index){
-					vars.containers[index].css({'width':(vars.drag.keep.container-vars.drag.keep.column+width).toString()+'px'});
-				});
-				e.stopPropagation();
-				e.preventDefault();
-			});
-			$(window).on('mouseup',function(e){
-				if (!vars.drag.capture) return;
-				vars.drag.capture=false;
-				e.stopPropagation();
-				e.preventDefault();
-			});
+			/* create rows */
+			vars.rows.empty();
+			for (var i=0;i<vars.checklist.length;i++)
+			{
+				var row=vars.template.clone(true);
+				var cells=$('td',row);
+				var heads=$('th',vars.header);
+				$('p',cells.first()).html(vars.checklist[i].question);
+				for (var i2=0;i2<records.length;i2++) cells.eq(i2+1).html($.fieldvalue(records[i2][vars.checklist[i].answer]).replace(/<br>/g,','));
+				vars.rows.append(row);
+			}
+			/* append elements */
+			vars.table.append($('<thead>').append(vars.header));
+			vars.table.append(vars.rows);
+			vars.container.empty().append(vars.table);
+		},
+		showloading:function(){
+			if (!$('div#loading').size()) $('body').append($('<div id="loading">'));
+			$('div#loading').show();
+		},
+		hideloading:function(){
+			$('div#loading').hide();
 		}
 	};
 	/*---------------------------------------------------------------
@@ -222,7 +192,8 @@ jQuery.noConflict();
 		{
 			/* get layout */
 			kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
-				$.each(resp.layout,function(index,values){
+				vars.layout=resp.layout;
+				$.each(vars.layout,function(index,values){
 					switch (values.type)
 					{
 						case 'ROW':
@@ -243,11 +214,6 @@ jQuery.noConflict();
 				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 					/* initialize valiable */
 					vars.container=$('div#checklist-container');
-					vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
-					vars.table=$('<table id="checklist" class="customview-table">');
-					vars.header=$('<tr>');
-					vars.rows=$('<tbody>');
-					vars.template=$('<tr>');
 					vars.fieldinfos=resp.properties;
 					/* append elements */
 					kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadbutton">')[0]);
@@ -256,31 +222,11 @@ jQuery.noConflict();
 						$('<input type="file" class="file">').on('change',function(){functions.upload();}).hide()[0]
 					);
 					$('.downloadbutton')
-					.text('データ書出')
+					.text('ラベルデータ書出')
 					.on('click',function(e){functions.download();});
 					$('.uploadbutton')
-					.text('データ読込')
+					.text('ラベルデータ読込')
 					.on('click',function(e){$('.file').trigger('click');});
-					$('body').append(vars.progress);
-					/* append button column */
-					vars.header.append($('<th>').text(''));
-					vars.template.append($('<td class="buttoncell">')
-						.append($('<button class="customview-button edit-button">').on('click',function(){
-							var row=$(this).closest('tr');
-							var index=row.find('td').first().find('input#id').val();
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index+'&mode=show';
-						}))
-						.append($('<input type="hidden" id="id" value="">'))
-					);
-					/* append columns */
-					vars.header.append($('<th>').append($('<div>').addClass('question').text('チェック項目')));
-					vars.header.append($('<th>').append($('<div>').addClass('answer').text('回答')));
-					vars.template.append($('<td>').append($('<div>').addClass('question')));
-					vars.template.append($('<td>').append($('<div>').addClass('answer')));
-					/* append elements */
-					vars.table.append($('<thead>').append(vars.header));
-					vars.table.append(vars.rows);
-					vars.container.empty().append(vars.table);
 					/* reload view */
 					functions.load(event.records)
 				},function(error){});

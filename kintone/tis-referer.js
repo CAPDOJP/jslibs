@@ -587,9 +587,13 @@ var FileSelect=function(options){
 				my.download(list.find('input#fileKey').val()).then(function(blob){
 					var url=window.URL || window.webkitURL;
 					var a=document.createElement('a');
-					a.href=url.createObjectURL(blob);
-					a.download=list.find('input#name').val();
+					a.setAttribute('href',url.createObjectURL(blob));
+					a.setAttribute('target','_blank');
+					a.setAttribute('download',list.find('input#name').val());
+					a.style.display='none';
+					document.body.appendChild(a);
 					a.click();
+					document.body.removeChild(a);
 				});
 				e.preventDefault();
 				e.stopPropagation();

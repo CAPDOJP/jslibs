@@ -202,9 +202,13 @@ jQuery.noConflict();
 												functions.download(values[index].fileKey).then(function(blob){
 													var url=window.URL || window.webkitURL;
 													var a=document.createElement('a');
-													a.href=url.createObjectURL(blob);
-													a.download=values[index].name;
+													a.setAttribute('href',url.createObjectURL(blob));
+													a.setAttribute('target','_blank');
+													a.setAttribute('download',values[index].name);
+													a.style.display='none';
+													document.body.appendChild(a);
 													a.click();
+													document.body.removeChild(a);
 												});
 												return false;
 											})

@@ -124,6 +124,7 @@ jQuery.noConflict();
 										case 'MODIFIER':
 										case 'RADIO_BUTTON':
 										case 'RECORD_NUMBER':
+										case 'REFERENCE_TABLE':
 										case 'STATUS':
 										case 'STATUS_ASSIGNEE':
 										case 'UPDATED_TIME':
@@ -150,6 +151,7 @@ jQuery.noConflict();
 									case 'MODIFIER':
 									case 'RADIO_BUTTON':
 									case 'RECORD_NUMBER':
+									case 'REFERENCE_TABLE':
 									case 'STATUS':
 									case 'STATUS_ASSIGNEE':
 									case 'UPDATED_TIME':
