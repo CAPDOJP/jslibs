@@ -29,7 +29,7 @@ jQuery.noConflict();
 			'#B473B4'
 		]
 	};
-	var VIEW_NAME=['シフト表','打刻・勤務状況確認'];
+	var VIEW_NAME=['シフト表','打刻・勤務状況確認','出勤簿'];
 	var functions={
 		fieldsort:function(layout){
 			var codes=[];
@@ -363,6 +363,7 @@ jQuery.noConflict();
 				/* setup config */
 				config['workshift']=resp.views[VIEW_NAME[0]].id;
 				config['works']=resp.views[VIEW_NAME[1]].id;
+				config['attendance']=resp.views[VIEW_NAME[2]].id;
 				/* save config */
 				kintone.plugin.app.setConfig(config);
 			},function(error){});

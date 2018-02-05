@@ -19,6 +19,7 @@ jQuery.noConflict();
 		todate:new Date(),
 		guidefrom:$('<div class="guidefrom">'),
 		guideto:$('<div class="guideto">'),
+		calendar:null,
 		datecalc:null,
 		legend:null,
 		table:null,

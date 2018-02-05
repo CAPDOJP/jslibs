@@ -193,3 +193,14 @@ table.works tbody tr td:nth-of-type(2){
   padding:0px;
   width:100px;
 }
+table.attendance tr td,
+table.attendance tr th{
+  font-size:14px;
+  height:auto;
+  line-height:30px;
+  padding:0px 3px;
+  vertical-align:top;
+}
+table.attendance tr td:nth-of-type(n+2){
+  text-align:right;
+}

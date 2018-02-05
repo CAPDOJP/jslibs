@@ -16,6 +16,7 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		date:new Date(),
+		calendar:null,
 		container:null,
 		table:null,
 		header:null,
