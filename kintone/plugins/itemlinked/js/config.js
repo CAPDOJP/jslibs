@@ -97,7 +97,15 @@ jQuery.noConflict();
 						case 'NUMBER':
 						case 'RADIO_BUTTON':
 						case 'SINGLE_LINE_TEXT':
-							if ($.inArray(fieldinfo.type,['DROP_DOWN','RADIO_BUTTON'])>-1) $('select#trigger').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							switch (fieldinfo.type)
+							{
+								case 'CHECK_BOX':
+								case 'DROP_DOWN':
+								case 'MULTI_SELECT':
+								case 'RADIO_BUTTON':
+									$('select#trigger').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
+							}
 							/* exclude lookup mappings */
 							if ($.inArray(fieldinfo.code,mappings)<0) $('select#autofield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 					}

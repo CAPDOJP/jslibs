@@ -39,41 +39,70 @@ jQuery.noConflict();
 		/* item check */
 		checkitem:function(event){
 			var field=null;
-			var trigger=event.record[vars.config['trigger']].value;
-			if (trigger in vars.items)
+			var triggers=[];
+			var opened=[];
+			switch (event.record[vars.config['trigger']].type)
 			{
-				for (var i=0;i<vars.items[trigger].autos.length;i++)
+				case 'CHECK_BOX':
+				case 'MULTI_SELECT':
+					triggers=event.record[vars.config['trigger']].value;
+					break;
+				case 'DROP_DOWN':
+				case 'RADIO_BUTTON':
+					triggers.push(event.record[vars.config['trigger']].value);
+					break;
+			}
+			for (var i=0;i<triggers.length;i++)
+				if (triggers[i] in vars.items)
 				{
-					field=vars.items[trigger].autos[i];
-					if (field.field in event.record)
+					for (var i2=0;i2<vars.items[triggers[i]].autos.length;i2++)
 					{
-						switch (event.record[field.field].type)
+						field=vars.items[triggers[i]].autos[i2];
+						if (field.field in event.record)
 						{
-							case 'CHECK_BOX':
-							case 'MULTI_SELECT':
-								if ($.inArray(field.value,event.record[field.field].value)<0) event.record[field.field].value.push(field.value);
-								break;
-							default:
-								event.record[field.field].value=field.value;
-								event.record[field.field].lookup=true;
-								break;
+							switch (event.record[field.field].type)
+							{
+								case 'CHECK_BOX':
+								case 'MULTI_SELECT':
+									if ($.inArray(field.value,event.record[field.field].value)<0) event.record[field.field].value.push(field.value);
+									break;
+								default:
+									event.record[field.field].value=field.value;
+									event.record[field.field].lookup=true;
+									break;
+							}
 						}
 					}
 				}
-				if (!(trigger in vars.groups))
+			$.each(vars.groups,function(key,values){
+				for (var i=0;i<values.length;i++)
 				{
-					vars.groups[trigger]=[];
-					for (var i=0;i<vars.items[trigger].groups.length;i++)
+					switch (event.record[vars.config['trigger']].type)
 					{
-						field=$('body').fields(vars.items[trigger].groups[i],true)[0];
-						vars.groups[trigger].push($('.group-label-gaia',field));
+						case 'CHECK_BOX':
+						case 'MULTI_SELECT':
+							if ($.inArray(key,triggers)>-1)
+							{
+								if (values[i].attr('aria-expanded')=='false') values[i].trigger('click');
+								opened.push(values[i][0]);
+							}
+							break;
+						case 'DROP_DOWN':
+						case 'RADIO_BUTTON':
+							if (key==triggers[0])
+							{
+								if (values[i].attr('aria-expanded')=='false') values[i].trigger('click');
+								opened.push(values[i][0]);
+							}
+							break;
 					}
 				}
-				$.each(vars.groups,function(key,values){
-					for (var i=0;i<values.length;i++)
-						if (values[i].attr('aria-expanded')==((key==trigger)?'false':'true')) values[i].trigger('click');
-				});
-			}
+			});
+			$.each(vars.groups,function(key,values){
+				for (var i=0;i<values.length;i++)
+					if ($.inArray(values[i][0],opened)==-1)
+						if (values[i].attr('aria-expanded')=='true') values[i].trigger('click');
+			});
 			return event;
 		}
 	};
@@ -94,6 +123,11 @@ jQuery.noConflict();
 		kintone.events.on(vars.events,function(event){
 			return functions.checkitem(event);
 		});
+		$.each(vars.items,function(key,values){
+			vars.groups[key]=[];
+			for (var i=0;i<values.groups.length;i++)
+				vars.groups[key].push($('.group-label-gaia',$('body').fields(values.groups[i],true)[0]));
+		});
 		return functions.checkitem(event);
 	});
 	kintone.events.on(events.save,function(event){
@@ -101,21 +135,36 @@ jQuery.noConflict();
 		if (!('trigger' in vars.config))  return event;
 		if (!('item' in vars.config))  return event;
 		var error='';
+		var triggers=[];
 		if (vars.config['trigger'] in event.record)
-			if (event.record[vars.config['trigger']].value in vars.items)
+		{
+			switch (event.record[vars.config['trigger']].type)
 			{
-				for (var i=0;i<vars.items[event.record[vars.config['trigger']].value].requires.length;i++)
-				{
-					var field=vars.items[event.record[vars.config['trigger']].value].requires[i];
-					if (field in event.record)
-					{
-						if (error.length==0 && !event.record[field].value) error='必須項目です。';
-						if (error.length==0 && event.record[field].value.length==0) error='必須項目です。';
-						if (error.length!=0) event.record[field].error=error;
-					}
-				}
-				if (error.length!=0) event.error='未入力項目があります。';
+				case 'CHECK_BOX':
+				case 'MULTI_SELECT':
+					triggers=event.record[vars.config['trigger']].value;
+					break;
+				case 'DROP_DOWN':
+				case 'RADIO_BUTTON':
+					triggers.push(event.record[vars.config['trigger']].value);
+					break;
 			}
+			for (var i=0;i<triggers.length;i++)
+				if (triggers[i] in vars.items)
+				{
+					for (var i2=0;i2<vars.items[triggers[i]].requires.length;i2++)
+					{
+						var field=vars.items[triggers[i]].requires[i2];
+						if (field in event.record)
+						{
+							if (error.length==0 && !event.record[field].value) error='必須項目です。';
+							if (error.length==0 && event.record[field].value.length==0) error='必須項目です。';
+							if (error.length!=0) event.record[field].error=error;
+						}
+					}
+					if (error.length!=0) event.error='未入力項目があります。';
+				}
+		}
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

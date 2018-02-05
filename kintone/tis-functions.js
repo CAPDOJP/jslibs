@@ -117,6 +117,9 @@ String.prototype.dateformat=function(){
 * pattern	:format pattern
 * -------------------------------------------------------------------
 */
+Number.prototype.comma = function(){
+	return Number(String(this).replace(',','')).toLocaleString();
+}
 Number.prototype.format = function(){
 	return String(this).replace(/(\d)(?=(\d\d\d)+(?!\d))/g,'$1,');
 }
