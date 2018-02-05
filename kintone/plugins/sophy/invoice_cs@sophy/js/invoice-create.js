@@ -1117,16 +1117,13 @@ jQuery.noConflict();
 				template.append(
 					$('<td>')
 					.append(
-						$('<span>')
-						.append(
-							$('<button class="customview-button edit-button">').on('click',function(){
-								var cell=$(this).closest('td');
-								var index=cell.find('#\\$id').val();
-								if (index.length!=0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
-							})
-						)
-						.append($('<input type="hidden" value="">'))
+						$('<button class="customview-button edit-button">').on('click',function(){
+							var cell=$(this).closest('td');
+							var index=cell.find('#\\$id').val();
+							if (index.length!=0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
+						})
 					)
+					.append($('<input type="hidden" value="">'))
 				);
 				vars.table=$('<table id="invoice" class="customview-table invoice-create">').mergetable({
 					container:container,

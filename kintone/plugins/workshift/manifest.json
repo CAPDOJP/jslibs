@@ -25,6 +25,8 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
             "js/sweetalert.min.js",
+            "js/functions.js",
+            "js/works.js",
             "js/workshift.js"
         ],
         "css":[

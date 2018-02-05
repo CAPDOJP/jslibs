@@ -2,6 +2,30 @@
 *.hide{
   display:none;
 }
+button.workpunch{
+  border:none;
+  box-sizing:border-box;
+  color:#fff;
+  cursor:pointer;
+  display:block;
+  height:28px;
+  line-height:28px;
+  margin:1px;
+  text-align:center;
+  width:calc(100% - 2px);
+}
+button.workpunch.start{
+  background-color:#3498db;
+}
+button.workpunch.start:hover{
+  background-color:#1d6fa5;
+}
+button.workpunch.end{
+  background-color:#ef5350;
+}
+button.workpunch.end:hover{
+  background-color:#b94047;
+}
 div.workshift-headermenucontents{
   display:inline-block;
   line-height:30px;
@@ -149,4 +173,23 @@ table.workshift tbody tr td.workshift-merge span.workshift-merge-span{
   padding:0px;
   vertical-align:middle;
   width:100%;
+}
+table.works tr td,
+table.works tr th{
+  font-size:14px;
+  height:auto;
+  line-height:30px;
+  padding:0px 3px;
+  vertical-align:top;
+}
+table.works tbody tr:hover{
+  background-color:#ffcdd2;
+}
+table.works tbody tr td:nth-of-type(1){
+  padding:0px;
+  width:36px;
+}
+table.works tbody tr td:nth-of-type(2){
+  padding:0px;
+  width:100px;
 }

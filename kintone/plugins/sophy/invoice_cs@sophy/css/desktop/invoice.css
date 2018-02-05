@@ -154,18 +154,6 @@ table.invoice-create tbody tr td{
   vertical-align:middle;
   white-space:nowrap;
 }
-table.invoice-create tbody tr td:last-of-type span{
-  display:block;
-  height:30px;
-  margin:0px;
-  padding:0px;
-  position:relative;
-  width:30px;
-}
-table.invoice-create tbody tr td:last-of-type span img{
-  height:30px;
-  width:30px;
-}
 select.referer-select{
 	box-sizing:border-box;
 	border:none;

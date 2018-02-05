@@ -67,7 +67,7 @@ jQuery.noConflict();
 			}
 			vars.fromdate=new Date((vars.fromdate.format('Y-m-d')+'T00:00:00+0900').dateformat());
 			vars.todate=new Date((vars.todate.format('Y-m-d')+'T23:59:59+0900').dateformat());
-			vars.datecalc=functions.datecalc(vars.fromdate,vars.todate);
+			vars.datecalc=$.datecalc(vars.fromdate,vars.todate);
 		},
 		/* rebuild view */
 		build:function(filter,heads,colorindex){
@@ -88,9 +88,9 @@ jQuery.noConflict();
 					for (var i=0;i<filter.length;i++)
 					{
 						/* create cell */
-						var datecalc=functions.datecalc(
-							new Date(filter[i][vars.config['fromtime']].value.dateformat()),
-							new Date(filter[i][vars.config['totime']].value.dateformat()),
+						var datecalc=$.datecalc(
+							new Date(filter[i][vars.config['shiftfromtime']].value.dateformat()),
+							new Date(filter[i][vars.config['shifttotime']].value.dateformat()),
 							new Date((vars.fromdate.format('Y-m-d')+'T00:00:00+0900').dateformat())
 						);
 						if (datecalc.to.hour<parseInt(vars.config['starthour'])) continue;
@@ -142,35 +142,6 @@ jQuery.noConflict();
 					}
 				}
 			});
-		},
-		/* calculate date values */
-		datecalc:function(from,to,base){
-			if (!base) base=from;
-			var fromdiff=from.getTime()-base.getTime();
-			var todiff=to.getTime()-base.getTime();
-			var basetime={
-				hour:base.getHours(),
-				minute:base.getMinutes()
-			};
-			var fromtime={
-				day:fromdiff/(1000*60*60*24),
-				hour:basetime.hour+Math.floor((basetime.minute+fromdiff/(1000*60))/60),
-				minute:(basetime.minute+fromdiff/(1000*60))%60
-			};
-			var totime={
-				day:todiff/(1000*60*60*24),
-				hour:basetime.hour+Math.floor((basetime.minute+todiff/(1000*60))/60),
-				minute:(basetime.minute+todiff/(1000*60))%60
-			};
-			var values={
-				diffhours:Math.ceil((to.getTime()-from.getTime())/(1000*60*60)),
-				diffminutes:Math.ceil((to.getTime()-from.getTime())/(1000*60)),
-				from:fromtime,
-				to:totime,
-				formatfrom:('0'+fromtime.hour).slice(-2)+':'+('0'+fromtime.minute).slice(-2),
-				formatto:('0'+totime.hour).slice(-2)+':'+('0'+totime.minute).slice(-2)
-			};
-			return values;
 		},
 		/* display calculate worktime */
 		displayworktime:function(){
@@ -343,8 +314,8 @@ jQuery.noConflict();
 									mergeinfo.record[vars.config['employee']]={value:$('input',rowcaption).val()};
 									break;
 							}
-							mergeinfo.record[vars.config['fromtime']]={value:mergeinfo.from.datetime};
-							mergeinfo.record[vars.config['totime']]={value:mergeinfo.to.datetime};
+							mergeinfo.record[vars.config['shiftfromtime']]={value:mergeinfo.from.datetime};
+							mergeinfo.record[vars.config['shifttotime']]={value:mergeinfo.to.datetime};
 							(function(mergeinfo,callback){
 								var body={
 									app:kintone.app.getId(),
@@ -366,9 +337,9 @@ jQuery.noConflict();
 									functions.mergeaftervalue(row,mergeinfo.from.index-mergeremain,mergeinfo.to.index-mergeremain,mergeinfo.record,color);
 									mergeremain+=parseInt(row.find('td').eq(mergeinfo.from.index-mergeremain).attr('colspan'))-1;
 									/* calculate worktime */
-									var datecalc=functions.datecalc(
-										new Date(mergeinfo.record[vars.config['fromtime']].value.dateformat()),
-										new Date(mergeinfo.record[vars.config['totime']].value.dateformat())
+									var datecalc=$.datecalc(
+										new Date(mergeinfo.record[vars.config['shiftfromtime']].value.dateformat()),
+										new Date(mergeinfo.record[vars.config['shifttotime']].value.dateformat())
 									);
 									vars.worktimes[vars.worktimekeys.indexOf($('input',rowcaption).val())].time+=datecalc.diffminutes;
 								}
@@ -411,9 +382,9 @@ jQuery.noConflict();
 										else unmergecell.removeClass('hide')
 									}
 									/* calculate worktime */
-									var datecalc=functions.datecalc(
-										new Date(record[vars.config['fromtime']].value.dateformat()),
-										new Date(record[vars.config['totime']].value.dateformat())
+									var datecalc=$.datecalc(
+										new Date(record[vars.config['shiftfromtime']].value.dateformat()),
+										new Date(record[vars.config['shifttotime']].value.dateformat())
 									);
 									vars.worktimes[vars.worktimekeys.indexOf($('input',rowcaption).val())].time-=datecalc.diffminutes;
 									/* display calculate worktime */
@@ -522,16 +493,16 @@ jQuery.noConflict();
 			query+=((query.length!=0)?' and ':'');
 			query+='(';
 			query+='(';
-			query+=vars.config['fromtime']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
-			query+=' and '+vars.config['fromtime']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
+			query+=vars.config['shiftfromtime']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
+			query+=' and '+vars.config['shiftfromtime']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
 			query+=')';
 			query+=' or ';
 			query+='(';
-			query+=vars.config['totime']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
-			query+=' and '+vars.config['totime']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
+			query+=vars.config['shifttotime']+'>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
+			query+=' and '+vars.config['shifttotime']+'<"'+vars.todate.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
 			query+=')';
 			query+=')';
-			sort=' order by '+vars.config['fromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
+			sort=' order by '+vars.config['shiftfromtime']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
@@ -540,92 +511,6 @@ jQuery.noConflict();
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
 				else callback();
 			},function(error){});
-		},
-		/* reload datas of employee */
-		loademployees:function(callback){
-			var counter=0;
-			var fieldinfo=vars.fieldinfos[vars.config['employee']];
-			switch (fieldinfo.type)
-			{
-				case 'USER_SELECT':
-					$.loadusers(function(records){
-						counter=records.length;
-						for (var i=0;i<records.length;i++)
-						{
-							var record={display:records[i].name,field:records[i].code,assignment:[]};
-							if (vars.config['assignment'].length!=0)
-							{
-								(function(record){
-									switch (vars.config['assignment'])
-									{
-										case '0':
-											kintone.api(kintone.api.url('/v1/user/organizations',true),'GET',{code:record.field},function(resp){
-												for (var i=0;i<resp.organizationTitles.length;i++) record.assignment.push(resp.organizationTitles[i].organization.code);
-												counter--;
-												if (counter==0) callback();
-											},function(error){});
-											break;
-										case '1':
-											kintone.api(kintone.api.url('/v1/user/groups',true),'GET',{code:record.field},function(resp){
-												for (var i=0;i<resp.groups.length;i++) record.assignment.push(resp.groups[i].code);
-												counter--;
-												if (counter==0) callback();
-											},function(error){});
-											break;
-									}
-								})(record);
-							}
-							vars.apps['employee'].push(record);
-						}
-						/* sort employee */
-						vars.apps['employee'].sort(function(a,b){
-							if(a.field<b.field) return (vars.config['employeesort']=='asc')?-1:1;
-							if(a.field>b.field) return (vars.config['employeesort']=='asc')?1:-1;
-							return 0;
-						});
-						if (vars.config['assignment'].length!=0)
-						{
-							switch (vars.config['assignment'])
-							{
-								case '0':
-									$.loadorganizations(function(records){
-										for (var i=0;i<records.length;i++) vars.apps['assignment'][records[i].code]=records[i].name;
-										if (counter==0) callback();
-									});
-									break;
-								case '1':
-									$.loadgroups(function(records){
-										for (var i=0;i<records.length;i++) vars.apps['assignment'][records[i].code]=records[i].name;
-										if (counter==0) callback();
-									});
-									break;
-							}
-						}
-						else callback();
-					});
-					break;
-				default:
-					var body={
-						app:fieldinfo.lookup.relatedApp.app,
-						query:'order by '+fieldinfo.lookup.relatedKeyField+' '+vars.config['employeesort']+' limit '+limit.toString()+' offset '+vars.offset['employee'].toString()
-					};
-					kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-						$.each(resp.records,function(index,values){
-							var record={display:values[vars.config['employeedisplay']].value,field:values[fieldinfo.lookup.relatedKeyField].value,assignment:[]};
-							if (vars.config['assignment'].length!=0)
-							{
-								var assignment=values[vars.config['assignment']].value;
-								record.assignment.push(assignment);
-								if (!(assignment in vars.apps['assignment'])) vars.apps['assignment'][assignment]=assignment;
-							}
-							vars.apps['employee'].push(record);
-						});
-						vars.offset['employee']+=limit;
-						if (resp.records.length==limit) functions.loademployees(callback);
-						else callback();
-					},function(error){});
-					break;
-			}
 		}
 	};
 	/*---------------------------------------------------------------
@@ -739,10 +624,7 @@ jQuery.noConflict();
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fieldinfos=resp.properties;
 			/* get datas of employee */
-			vars.apps['assignment']={};
-			vars.apps['employee']=[];
-			vars.offset['employee']=0;
-			functions.loademployees(function(){
+			$.loademployees(vars.config,vars.fieldinfos,vars.apps,vars.offset,function(){
 				if (vars.config['assignment'].length!=0)
 				{
 					/* sort assignment */

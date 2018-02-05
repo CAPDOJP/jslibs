@@ -29,7 +29,7 @@ jQuery.noConflict();
 			'#B473B4'
 		]
 	};
-	var VIEW_NAME=['シフト表'];
+	var VIEW_NAME=['シフト表','打刻・勤務状況確認'];
 	var functions={
 		fieldsort:function(layout){
 			var codes=[];
@@ -71,8 +71,10 @@ jQuery.noConflict();
 							if (fieldinfo.lookup) $('select#employee').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
 						case 'DATETIME':
-							$('select#fromtime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							$('select#totime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#shiftfromtime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#shifttotime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#workfromtime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#worktotime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
 						case 'USER_SELECT':
 							$('select#employee').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
@@ -171,8 +173,10 @@ jQuery.noConflict();
 			if (Object.keys(config).length!==0)
 			{
 				employeecolors=config['employeecolors'].split(',');
-				$('select#fromtime').val(config['fromtime']);
-				$('select#totime').val(config['totime']);
+				$('select#shiftfromtime').val(config['shiftfromtime']);
+				$('select#shifttotime').val(config['shifttotime']);
+				$('select#workfromtime').val(config['workfromtime']);
+				$('select#worktotime').val(config['worktotime']);
 				$('select#assignmentsort').val(config['assignmentsort']);
 				$('select#employee').val(config['employee']);
 				$('select#employeesort').val(config['employeesort']);
@@ -209,19 +213,54 @@ jQuery.noConflict();
 		var config=[];
 		var employeecolors=[];
 		/* check values */
-		if ($('select#fromtime').val()=='')
+		if ($('select#shiftfromtime').val()=='')
 		{
-			swal('Error!','開始日時フィールドを選択して下さい。','error');
+			swal('Error!','勤務開始予定日時フィールドを選択して下さい。','error');
 			return;
 		}
-		if ($('select#totime').val()=='')
+		if ($('select#shifttotime').val()=='')
 		{
-			swal('Error!','終了日時フィールドを選択して下さい。','error');
+			swal('Error!','勤務終了予定日時フィールドを選択して下さい。','error');
 			return;
 		}
-		if ($('select#fromtime').val()==$('select#totime').val())
+		if ($('select#shiftfromtime').val()==$('select#shifttotime').val())
 		{
-			swal('Error!','開始日時フィールドと終了日時フィールドは異なるフィールドを選択して下さい。','error');
+			swal('Error!','勤務開始予定日時フィールドと勤務終了予定日時フィールドは異なるフィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#workfromtime').val()=='')
+		{
+			swal('Error!','勤務開始日時フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#worktotime').val()=='')
+		{
+			swal('Error!','勤務終了日時フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#workfromtime').val()==$('select#worktotime').val())
+		{
+			swal('Error!','勤務開始日時フィールドと勤務終了日時フィールドは異なるフィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#shiftfromtime').val()==$('select#workfromtime').val())
+		{
+			swal('Error!','勤務開始予定日時フィールドと勤務開始日時フィールドは異なるフィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#shiftfromtime').val()==$('select#worktotime').val())
+		{
+			swal('Error!','勤務開始予定日時フィールドと勤務終了日時フィールドは異なるフィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#shifttotime').val()==$('select#workfromtime').val())
+		{
+			swal('Error!','勤務終了予定日時フィールドと勤務開始日時フィールドは異なるフィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#shifttotime').val()==$('select#worktotime').val())
+		{
+			swal('Error!','勤務終了予定日時フィールドと勤務終了日時フィールドは異なるフィールドを選択して下さい。','error');
 			return;
 		}
 		if ($('select#employee').val()=='')
@@ -281,8 +320,10 @@ jQuery.noConflict();
 			return;
 		}
 		/* setup config */
-		config['fromtime']=$('select#fromtime').val();
-		config['totime']=$('select#totime').val();
+		config['shiftfromtime']=$('select#shiftfromtime').val();
+		config['shifttotime']=$('select#shifttotime').val();
+		config['workfromtime']=$('select#workfromtime').val();
+		config['worktotime']=$('select#worktotime').val();
 		config['assignment']=$('select#assignment').val();
 		config['assignmentsort']=$('select#assignmentsort').val();
 		config['employee']=$('select#employee').val();
@@ -321,6 +362,7 @@ jQuery.noConflict();
 			kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'PUT',req,function(resp){
 				/* setup config */
 				config['workshift']=resp.views[VIEW_NAME[0]].id;
+				config['works']=resp.views[VIEW_NAME[1]].id;
 				/* save config */
 				kintone.plugin.app.setConfig(config);
 			},function(error){});

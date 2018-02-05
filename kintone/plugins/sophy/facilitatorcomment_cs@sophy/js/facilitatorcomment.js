@@ -50,7 +50,8 @@ jQuery.noConflict();
 			},
 			my:{
 				staffname:'ファシリテーター',
-				staffcomment:'コメント'
+				staffcomment:'コメント',
+				pending:'公開判定'
 			}
 		},
 		containers:[]
@@ -97,11 +98,16 @@ jQuery.noConflict();
 							if (comment.length!=0)
 							{
 								$.each(vars.fields.my,function(key,values){
-									if (key in comment[0]) $('.'+key,row).html(comment[0][key].value.replace(/\n/g,'<br>'));
+									if (key in comment[0])
+									{
+										if (!comment[0][key].value) comment[0][key].value='';
+										$('.'+key,row).html(comment[0][key].value.replace(/\n/g,'<br>'));
+									}
 								});
 								$('#id',row).val(comment[0]['$id'].value);
-								$('#staffcode',row).val(comment[0]['staffcode'].value);
-								$('#staffcomment',row).val(comment[0]['staffcomment'].value);
+								$('#'+vars.config.facilitator,row).val(comment[0][vars.config.facilitator].value);
+								$('#'+vars.config.facilitatorcomment,row).val(comment[0][vars.config.facilitatorcomment].value);
+								$('#'+vars.config.pending,row).val((comment[0][vars.config.pending].value)?comment[0][vars.config.pending].value:'非公開');
 							}
 							$('#studentcode',row).val(history['studentcode'].value);
 							$('#studentname',row).val(history['studentname'].value);
@@ -109,23 +115,24 @@ jQuery.noConflict();
 						}
 					}
 					/* merge row */
-					var mergecolumns=5;
+					var captioncolumns=Object.keys(vars.fields.my).length+1;
+					var mergecolumns=6;
 					var rowspans=[];
 					for (var i=0;i<mergecolumns;i++) rowspans.push({cache:'',index:-1,span:0});
 					$.each(vars.rows.find('tr'),function(index){
 						var row=vars.rows.find('tr').eq(index);
 						for (var i=0;i<mergecolumns;i++)
 						{
-							var cell=row.find('td').eq(i+3);
+							var cell=row.find('td').eq(i+captioncolumns);
 							if (rowspans[i].cache!=cell.find('div').text())
 							{
 								if (rowspans[i].index!=-1)
 								{
-									vars.rows.find('tr').eq(rowspans[i].index).find('td').eq(i+3).attr('rowspan',rowspans[i].span);
-									for (var i2=rowspans[i].index+1;i2<index;i2++) vars.rows.find('tr').eq(i2).find('td').eq(i+3).hide();
+									vars.rows.find('tr').eq(rowspans[i].index).find('td').eq(i+captioncolumns).attr('rowspan',rowspans[i].span);
+									for (var i2=rowspans[i].index+1;i2<index;i2++) vars.rows.find('tr').eq(i2).find('td').eq(i+captioncolumns).hide();
 									if (i==0)
 									{
-										for (var i2=0;i2<3;i2++)
+										for (var i2=0;i2<captioncolumns;i2++)
 										{
 											vars.rows.find('tr').eq(rowspans[i].index).find('td').eq(i2).attr('rowspan',rowspans[i].span);
 											for (var i3=rowspans[i].index+1;i3<index;i3++) vars.rows.find('tr').eq(i3).find('td').eq(i2).hide();
@@ -137,11 +144,11 @@ jQuery.noConflict();
 								rowspans[i].span=0;
 								for (var i2=i+1;i2<mergecolumns;i2++)
 								{
-									cell=row.find('td').eq(i2+3);
+									cell=row.find('td').eq(i2+captioncolumns);
 									if (rowspans[i2].index!=-1)
 									{
-										vars.rows.find('tr').eq(rowspans[i2].index).find('td').eq(i2+3).attr('rowspan',rowspans[i2].span);
-										for (var i3=rowspans[i2].index+1;i3<index;i3++) vars.rows.find('tr').eq(i3).find('td').eq(i2+3).hide();
+										vars.rows.find('tr').eq(rowspans[i2].index).find('td').eq(i2+captioncolumns).attr('rowspan',rowspans[i2].span);
+										for (var i3=rowspans[i2].index+1;i3<index;i3++) vars.rows.find('tr').eq(i3).find('td').eq(i2+captioncolumns).hide();
 									}
 									rowspans[i2].cache=cell.find('div').text();
 									rowspans[i2].index=index;
@@ -155,14 +162,14 @@ jQuery.noConflict();
 					var row=vars.rows.find('tr').last();
 					for (var i=0;i<mergecolumns;i++)
 					{
-						var cell=row.find('td').eq(i+3);
+						var cell=row.find('td').eq(i+captioncolumns);
 						if (rowspans[i].cache==cell.find('div').text() && rowspans[i].index!=index)
 						{
-							vars.rows.find('tr').eq(rowspans[i].index).find('td').eq(i+3).attr('rowspan',rowspans[i].span);
-							for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.rows.find('tr').eq(i2).find('td').eq(i+3).hide();
+							vars.rows.find('tr').eq(rowspans[i].index).find('td').eq(i+captioncolumns).attr('rowspan',rowspans[i].span);
+							for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.rows.find('tr').eq(i2).find('td').eq(i+captioncolumns).hide();
 							if (i==0)
 							{
-								for (var i2=0;i2<3;i2++)
+								for (var i2=0;i2<captioncolumns;i2++)
 								{
 									vars.rows.find('tr').eq(rowspans[i].index).find('td').eq(i2).attr('rowspan',rowspans[i].span);
 									for (var i3=rowspans[i].index+1;i3<index+1;i3++) vars.rows.find('tr').eq(i3).find('td').eq(i2).hide();
@@ -293,6 +300,7 @@ jQuery.noConflict();
 				var fields=[];
 				fields.push(vars.fieldinfos[vars.config.facilitator]);
 				fields.push(vars.fieldinfos[vars.config.facilitatorcomment]);
+				fields.push(vars.fieldinfos[vars.config.pending]);
 				vars.inputform=$('body').fieldsform({
 					buttons:{
 						ok:{
@@ -319,6 +327,10 @@ jQuery.noConflict();
 							type:vars.fieldinfos[vars.config.facilitatorcomment].type,
 							value:row.find('td').first().find('input#'+vars.config.facilitatorcomment).val()
 						};
+						values[vars.config.pending]={
+							type:vars.fieldinfos[vars.config.pending].type,
+							value:row.find('td').first().find('input#'+vars.config.pending).val()
+						};
 						vars.inputform.show({
 							buttons:{
 								ok:function(){
@@ -334,13 +346,27 @@ jQuery.noConflict();
 									{
 										var fieldinfo=fields[i];
 										var contents=$('#'+fieldinfo.code,vars.inputform.contents);
-										var receivevalue=contents.find('.receiver').val();
-										if (receivevalue.length==0)
+										var receivevalue='';
+										if (fieldinfo.code==vars.config.pending)
 										{
-											swal('Error!',contents.find('.title').text()+'を入力して下さい。','error');
-											return;
+											receivevalue=contents.find('[name='+fieldinfo.code+']:checked').val();
+											if (receivevalue.length==0)
+											{
+												swal('Error!',contents.find('.title').text()+'を選択して下さい','error');
+												return;
+											}
+											else record[fieldinfo.code]={value:receivevalue};
 										}
-										else record[fieldinfo.code]={value:receivevalue};
+										else
+										{
+											receivevalue=contents.find('.receiver').val();
+											if (receivevalue.length==0)
+											{
+												swal('Error!',contents.find('.title').text()+'を入力して下さい。','error');
+												return;
+											}
+											else record[fieldinfo.code]={value:receivevalue};
+										}
 									}
 									if (index.length==0)
 									{
@@ -383,6 +409,7 @@ jQuery.noConflict();
 					.append($('<input type="hidden" id="studentname" value="">'))
 					.append($('<input type="hidden" id="'+vars.config.facilitator+'" value="">'))
 					.append($('<input type="hidden" id="'+vars.config.facilitatorcomment+'" value="">'))
+					.append($('<input type="hidden" id="'+vars.config.pending+'" value="'+vars.fieldinfos[vars.config.pending].defaultValue+'">'))
 				);
 				/* append columns */
 				$.each(vars.fields.my,function(key,values){

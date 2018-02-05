@@ -496,12 +496,6 @@ div.kintoneplugin-row table tbody tr td.button img{
   padding:0px;
   width:100%;
 }
-div.kintoneplugin-row table tbody tr td.nest table tbody tr:last-of-type{
-  border-bottom:none;
-}
-div.kintoneplugin-row table tbody tr td.single{
-  line-height:34px;
-}
 div.kintoneplugin-row table tbody tr td div.kintoneplugin-select-outer{
   margin:2px 0px;
 }

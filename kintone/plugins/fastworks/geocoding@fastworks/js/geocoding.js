@@ -203,6 +203,9 @@ jQuery.noConflict();
 								$('#'+vars.config['datespan'],vars.editor.contents).find('.label').text('');
 								$('#'+vars.config['datespan'],vars.editor.contents).find('.receiver').val('');
 								$('#'+vars.config['datespan'],vars.editor.contents).hide();
+								$('#'+vars.config['modifier'],vars.editor.contents).find('.label').text('');
+								$('#'+vars.config['modifier'],vars.editor.contents).find('.receiver').val('');
+								$('#'+vars.config['modifier'],vars.editor.contents).hide();
 								$('#'+vars.config['address'],vars.editor.contents).find('.label').hide();
 								$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val(address).show();
 								$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val('');
@@ -245,6 +248,7 @@ jQuery.noConflict();
 													size:vars.config['markersize'],
 													extensionindex:0,
 													datespan:new Date().format('Y-m-d'),
+													modifier:kintone.getLoginUser(),
 													action:'更新'
 												});
 												functions.reloadmap(function(){vars.map.map.setCenter(latlng)});
@@ -278,6 +282,9 @@ jQuery.noConflict();
 							$('#'+vars.config['datespan'],vars.editor.contents).find('.label').text(vars.markers[index].datespan);
 							$('#'+vars.config['datespan'],vars.editor.contents).find('.receiver').val(vars.markers[index].datespan);
 							$('#'+vars.config['datespan'],vars.editor.contents).show();
+							$('#'+vars.config['modifier'],vars.editor.contents).find('.label').text(vars.markers[index].modifier.name);
+							$('#'+vars.config['modifier'],vars.editor.contents).find('.receiver').val(vars.markers[index].modifier.code);
+							$('#'+vars.config['modifier'],vars.editor.contents).show();
 							$('#'+vars.config['address'],vars.editor.contents).find('.label').html('<a href="'+link+'" target="_blank">'+vars.markers[index].address+'</a>').show();
 							$('#'+vars.config['address'],vars.editor.contents).find('.receiver').hide();
 							$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
@@ -314,6 +321,7 @@ jQuery.noConflict();
 														vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
 														vars.markers[index].extensionindex=0;
 														vars.markers[index].datespan=new Date().format('Y-m-d');
+														vars.markers[index].modifier=kintone.getLoginUser();
 														vars.markers[index].action=action;
 													}
 													functions.reloadmap(function(){vars.map.map.setCenter(center)});
@@ -433,7 +441,7 @@ jQuery.noConflict();
 							})
 						)
 						.append(span.clone(true).text('情報ウインドウを表示'));
-						if (vars.ismobile) vars.displayinfowindow.hide();
+						vars.displayinfowindow.hide();
 						/* create displaydatespan checkbox */
 						vars.displaydatespan=checkbox.clone(true)
 						.append($('<input type="checkbox" id="datespan">')
@@ -453,6 +461,7 @@ jQuery.noConflict();
 						)
 						.append(span.clone(true).text('経過日数を表示'));
 						if (vars.config["datespan"].length==0) vars.displaydatespan.css({'display':'none'});
+						else vars.displaydatespan.find('input[type=checkbox]').prop('checked',true);
 						/* create displaypoi checkbox */
 						vars.displaypoi=checkbox.clone(true)
 						.append($('<input type="checkbox" id="poi">')
@@ -603,6 +612,7 @@ jQuery.noConflict();
 						}
 						vars.fieldinfos[vars.config['address']].type='ADDRESS';
 						vars.fieldinfos[vars.config['datespan']].type='DATESPAN';
+						vars.fieldinfos[vars.config['modifier']].type='MODIFIER';
 						vars.editor=$('body').fieldsform({
 							buttons:{
 								ok:{
@@ -614,6 +624,7 @@ jQuery.noConflict();
 							},
 							fields:[
 								vars.fieldinfos[vars.config['datespan']],
+								vars.fieldinfos[vars.config['modifier']],
 								vars.fieldinfos[vars.config['address']],
 								vars.fieldinfos[vars.config['information']],
 								vars.fieldinfos[vars.config['action']]
@@ -658,6 +669,7 @@ jQuery.noConflict();
 						size:vars.config['markersize'],
 						extensionindex:datespan,
 						datespan:record[vars.config['datespan']].value,
+						modifier:record[vars.config['modifier']].value,
 						action:(record[vars.config['action']].value)?record[vars.config['action']].value:'更新'
 					});
 				}

@@ -362,7 +362,7 @@ Referer.prototype={
 						'cursor':'pointer',
 						'padding':'5px'
 					})
-					.text(filter[my.displaytext[index]].value)
+					.html(filter[my.displaytext[index]].value)
 				)
 				.on('click',function(){if (my.callback!=null) my.callback($(this));});
 			});
@@ -871,7 +871,7 @@ MultiSelect.prototype={
 					'cursor':'pointer',
 					'padding':'5px'
 				})
-				.append($('<span>').text(listtext))
+				.append($('<span>').html(listtext))
 				.append($('<input type="hidden" value="'+listvalue+'">'))
 				.on('click',function(){
 					if ($(this).find('input').val() in my.selection)
@@ -1484,7 +1484,7 @@ var FieldsForm=function(options){
 				for (var i2=0;i2<fieldoptions.length;i2++)
 				{
 					receiver=checkbox.clone(true);
-					$('.label',receiver).text(fieldoptions[i2]);
+					$('.label',receiver).html(fieldoptions[i2]);
 					$('.receiver',receiver).attr('id',fieldoptions[i2]).val(fieldoptions[i2]);
 					fieldcontainer.append(receiver);
 				}
@@ -1533,7 +1533,7 @@ var FieldsForm=function(options){
 				$.each(fieldinfo.options,function(key,values){
 					fieldoptions[values.index]=values.label;
 				});
-				for (var i2=0;i2<fieldoptions.length;i2++) receiver.append($('<option>').attr('value',fieldoptions[i2]).text(fieldoptions[i2]));
+				for (var i2=0;i2<fieldoptions.length;i2++) receiver.append($('<option>').attr('value',fieldoptions[i2]).html(fieldoptions[i2]));
 				fieldcontainer.append(receiver);
 				break;
 			case 'FILE':
@@ -1618,7 +1618,7 @@ var FieldsForm=function(options){
 								}
 							},
 							callback:function(row){
-								target.closest('.container').find('.label').text(row.find('#'+target.closest('.container').find('.picker').val()).val());
+								target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
 								target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
 								/* close the reference box */
 								my.referer[target.closest('.container').attr('id')].hide();
@@ -1653,7 +1653,7 @@ var FieldsForm=function(options){
 								}
 							},
 							callback:function(row){
-								target.closest('.container').find('.label').text(row.find('#'+target.closest('.container').find('.picker').val()).val());
+								target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
 								target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
 								/* close the reference box */
 								my.referer[target.closest('.container').attr('id')].hide();
@@ -1716,7 +1716,7 @@ var FieldsForm=function(options){
 				for (var i2=0;i2<fieldoptions.length;i2++)
 				{
 					receiver=radio.clone(true);
-					$('.label',receiver).text(fieldoptions[i2]);
+					$('.label',receiver).html(fieldoptions[i2]);
 					$('.receiver',receiver).attr('id',fieldoptions[i2]).attr('name',fieldinfo.code).val(fieldoptions[i2]).prop('checked',checked);
 					fieldcontainer.append(receiver);
 					checked=false;
@@ -1966,7 +1966,7 @@ FieldsForm.prototype={
 						$('.label',fieldcontainer).text('');
 						for (var i=0;i<my.apps[key].length;i++)
 							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==values.value)
-								$('.label',fieldcontainer).text(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
+								$('.label',fieldcontainer).html(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
 					}
 					$('.receiver',fieldcontainer).val(values.value);
 					break;

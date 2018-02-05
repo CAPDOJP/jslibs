@@ -12,7 +12,7 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
-		statustable:null,
+		actiontable:null,
 		fieldtable:[]
 	};
 	/*---------------------------------------------------------------
@@ -57,20 +57,9 @@ jQuery.noConflict();
 		kintone.api(kintone.api.url('/k/v1/app/status',true),'GET',{app:kintone.app.getId()},function(resp){
 			var add=false;
 			var row=null;
-			var statuses=(Object.keys(config).length!==0)?JSON.parse(config['status']):{};
-			var statusfields=[];
-			var statuskeys=[];
-			var statussort=[];
-			$.each(resp.states,function(key,values){
-				if (values.index!='0') statussort.push(values);
-			});
-			statussort.sort(function(a,b){
-				if(parseInt(a.index)<parseInt(b.index)) return -1;
-				if(parseInt(a.index)>parseInt(b.index)) return 1;
-				return 0;
-			});
-			for (var i=0;i<statussort.length;i++) statuskeys.push(statussort[i].name);
-			vars.statustable=$('.statuses').adjustabletable({
+			var actions=(Object.keys(config).length!==0)?JSON.parse(config['action']):{};
+			var actionfields=[];
+			vars.actiontable=$('.actions').adjustabletable({
 				addcallback:function(row){
 					vars.fieldtable.push(
 						$('.fields',row).adjustabletable({
@@ -80,24 +69,25 @@ jQuery.noConflict();
 					);
 				}
 			});
-			for (var i=0;i<statuskeys.length;i++)
-			{
-				if (i!=0) vars.statustable.addrow();
-				row=vars.statustable.rows.last();
-				$('span.statusname',row).text(statuskeys[i]);
-				$('input#status',row).val(statuskeys[i]);
-				if (statuskeys[i] in statuses)
+			if (resp.actions)
+				for (var i=0;i<resp.actions.length;i++)
 				{
-					statusfields=statuses[statuskeys[i]].split(',');
-					add=false;
-					for (var i2=0;i2<statusfields.length;i2++)
+					if (i!=0) vars.actiontable.addrow();
+					row=vars.actiontable.rows.last();
+					$('span.actionname',row).text(resp.actions[i].name);
+					$('input#action',row).val(resp.actions[i].name);
+					if (resp.actions[i].name in actions)
 					{
-						if (add) vars.fieldtable[i].addrow();
-						else add=true;
-						$('select#field',vars.fieldtable[i].rows.last()).val(statusfields[i2]);
+						actionfields=actions[resp.actions[i].name].split(',');
+						add=false;
+						for (var i2=0;i2<actionfields.length;i2++)
+						{
+							if (add) vars.fieldtable[i].addrow();
+							else add=true;
+							$('select#field',vars.fieldtable[i].rows.last()).val(actionfields[i2]);
+						}
 					}
 				}
-			}
 		},function(error){});
 	},function(error){});
 	/*---------------------------------------------------------------
@@ -107,9 +97,9 @@ jQuery.noConflict();
 		var row=null;
 		var config=[];
 		var fields=[];
-		var statuses={};
+		var actions={};
 		/* check values */
-		for (var i=0;i<vars.statustable.rows.length;i++)
+		for (var i=0;i<vars.actiontable.rows.length;i++)
 		{
 			fields=[];
 			for (var i2=0;i2<vars.fieldtable[i].rows.length;i2++)
@@ -118,10 +108,10 @@ jQuery.noConflict();
 				if ($('select#field',row).val().length==0) continue;
 				fields.push($('select#field',row).val());
 			}
-			statuses[$('input#status',vars.statustable.rows.eq(i)).val()]=fields.join(',');
+			actions[$('input#action',vars.actiontable.rows.eq(i)).val()]=fields.join(',');
 		}
 		/* setup config */
-		config['status']=JSON.stringify(statuses);
+		config['action']=JSON.stringify(actions);
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

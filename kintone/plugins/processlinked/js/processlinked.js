@@ -34,12 +34,12 @@ jQuery.noConflict();
 				var error=false;
 				var messase='';
 				var fields=[];
-				var statuses=JSON.parse(vars.config['status']);
-				var statusfields=[];
-				if (event.nextStatus.value in statuses)
+				var actions=JSON.parse(vars.config['action']);
+				var actionfields=[];
+				if (event.action.value in actions)
 				{
-					statusfields=statuses[event.nextStatus.value].split(',');
-					for (var i=0;i<statusfields.length;i++) if (statusfields[i] in resp.properties) fields.push(resp.properties[statusfields[i]]);
+					actionfields=actions[event.action.value].split(',');
+					for (var i=0;i<actionfields.length;i++) if (actionfields[i] in resp.properties) fields.push(resp.properties[actionfields[i]]);
 					if (fields.length!=0)
 					{
 						vars.inputform=$('body').fieldsform({

@@ -1,0 +1,61 @@
+/* individual style (common) */
+div.display{
+	background-color:#e3f2fd;
+	box-sizing:border-box;
+	color:#3498db;
+	display:block;
+	font-size:42px;
+	line-height:150px;
+	margin:10px 0px;
+	position:relative;
+	vertical-align:top;
+	width:100%;
+}
+div.field{
+	box-sizing:border-box;
+	color:#616161;
+	display:inline-block;
+	line-height:40px;
+	margin:0px;
+	max-width:300px;
+	padding:5px;
+	position:relative;
+	text-align:left;
+	vertical-align:top;
+	width:100%;
+}
+div.input{
+	box-sizing:border-box;
+	display:inline-block;
+	position:relative;
+	width:100%;
+}
+label.title{
+	box-sizing:border-box;
+	border-left:5px solid #3498db;
+	display:block;
+	line-height:25px;
+	margin:5px 0px;
+	padding:0px;
+	padding-left:5px;
+}
+span.label{
+	box-sizing:border-box;
+	display:inline-block;
+	font-size:18px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	width:100%;
+}
+textarea.receiver{
+	border:1px solid #3498db;
+	border-radius:2px;
+	box-sizing:border-box;
+	display:block;
+	height:calc(7.5em + 10px);
+	line-height:1.5em;
+	padding:5px;
+	vertical-align:top;
+	width:100%;
+}

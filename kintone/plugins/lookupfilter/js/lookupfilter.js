@@ -77,8 +77,12 @@ jQuery.noConflict();
 		loaddatas:function(counter,params,callback){
 			var body={
 				app:params[counter].app,
-				query:params[counter].condition+' order by $id asc limit '+params[counter].limit.toString()+' offset '+params[counter].offset.toString()
+				query:''
 			};
+			body.query+=params[counter].condition;
+			body.query+=' order by '+((params[counter].sort.length!=0)?params[counter].sort:'$id asc');
+			body.query+=' limit '+params[counter].limit.toString();
+			body.query+=' offset '+params[counter].offset.toString();
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				Array.prototype.push.apply(params[counter].records,resp.records);
 				params[counter].offset+=params[counter].limit;
@@ -149,11 +153,6 @@ jQuery.noConflict();
 					$.each(conditions,function(key,values){if (item[key].value==values) exists++;});
 					return exists==Object.keys(conditions).length;
 				});
-				filter.sort(function(a,b){
-					if($.fieldvalue(a[vars.lookups[fieldcode].display])<$.fieldvalue(b[vars.lookups[fieldcode].display])) return -1;
-					if($.fieldvalue(a[vars.lookups[fieldcode].display])>$.fieldvalue(b[vars.lookups[fieldcode].display])) return 1;
-					return 0;
-				});
 				for (var i=0;i<filter.length;i++)
 				{
 					list.append(
@@ -196,6 +195,7 @@ jQuery.noConflict();
 				params.push({
 					app:values.app,
 					condition:values.filtercond,
+					sort:values.sort,
 					limit:limit,
 					offset:0,
 					records:[]

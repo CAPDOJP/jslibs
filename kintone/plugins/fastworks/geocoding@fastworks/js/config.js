@@ -27,11 +27,11 @@ jQuery.noConflict();
 			/* check field type */
 			switch (values.type)
 			{
-				case 'RADIO_BUTTON':
-					$('select#action').append($('<option>').attr('value',values.code).text(values.label));
-					break;
 				case 'DATE':
 					$('select#datespan').append($('<option>').attr('value',values.code).text(values.label));
+					break;
+				case 'MODIFIER':
+					$('select#modifier').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 				case 'NUMBER':
 					/* exclude lookup */
@@ -45,6 +45,9 @@ jQuery.noConflict();
 								$('select#lng').append($('<option>').attr('value',values.code).text(values.label));
 							}
 					}
+					break;
+				case 'RADIO_BUTTON':
+					$('select#action').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 				case 'SINGLE_LINE_TEXT':
 					/* exclude lookup */
@@ -77,6 +80,7 @@ jQuery.noConflict();
         	$('select#information').val(config['information']);
         	$('select#action').val(config['action']);
         	$('select#datespan').val(config['datespan']);
+        	$('select#modifier').val(config['modifier']);
         	$('input#defaultcolor').val(config['defaultcolor']);
 			var add=false;
 			var datespancolors=JSON.parse(config['datespancolors']);
@@ -147,6 +151,11 @@ jQuery.noConflict();
 	    	swal('Error!','経過日数算出フィールドを選択して下さい。','error');
 	    	return;
 	    }
+	    if ($('select#modifier').val()=='')
+	    {
+	    	swal('Error!','更新者フィールドを選択して下さい。','error');
+	    	return;
+	    }
 	    if ($('select#lat').val()==$('select#lng').val())
 	    {
 	    	swal('Error!','緯度表示フィールドと経度表示フィールドは異なるフィールドを選択して下さい。','error');
@@ -202,6 +211,7 @@ jQuery.noConflict();
         config['information']=$('select#information').val();
         config['action']=$('select#action').val();
         config['datespan']=$('select#datespan').val();
+        config['modifier']=$('select#modifier').val();
         config['defaultcolor']=$('input#defaultcolor').val();
 		config['datespancolors']=JSON.stringify(datespancolors);
         config['markersize']=$('input#markersize').val();

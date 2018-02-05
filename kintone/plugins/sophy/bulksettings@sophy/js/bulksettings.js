@@ -218,15 +218,12 @@ jQuery.noConflict();
 										function(){
 											functions.showloading();
 											kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:kintone.app.getId(),query:kintone.app.getQuery()},function(resp){
-												var counter=resp.records.length;
-												var error=false;
 												var body={
 													app:kintone.app.getId(),
 													records:[]
 												};
 												for (var i=0;i<resp.records.length;i++)
 												{
-													if (error) break;
 													var record={};
 													$.each(resp.records[i],function(key,values){
 														switch (values.type)
@@ -265,23 +262,18 @@ jQuery.noConflict();
 														id:record['$id'].value,
 														record:record
 													});
-													kintone.api(kintone.api.url('/k/v1/records',true),'PUT',body,function(resp){
-														counter--;
-														if (counter==0)
-														{
-															functions.hideloading();
-															swal({
-																title:'更新完了',
-																text:'更新完了',
-																type:'success'
-															},function(){location.reload(true);});
-														}
-													},function(error){
-														functions.hideloading();
-														swal('Error!',error.message,'error');
-														error=true;
-													});
 												}
+												kintone.api(kintone.api.url('/k/v1/records',true),'PUT',body,function(resp){
+													functions.hideloading();
+													swal({
+														title:'更新完了',
+														text:'更新完了',
+														type:'success'
+													},function(){location.reload(true);});
+												},function(error){
+													functions.hideloading();
+													swal('Error!',error.message,'error');
+												});
 											},function(error){
 												functions.hideloading();
 												swal('Error!',error.message,'error');

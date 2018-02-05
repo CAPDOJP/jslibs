@@ -81,6 +81,9 @@ jQuery.noConflict();
 								case 'MULTI_LINE_TEXT':
 									$('select#facilitatorcomment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 									break;
+								case 'RADIO_BUTTON':
+									$('select#pending').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
 							}
 					}
 				});
@@ -91,6 +94,7 @@ jQuery.noConflict();
 					$('select#history').val(config['history']);
 					$('select#facilitator').val(config['facilitator']);
 					$('select#facilitatorcomment').val(config['facilitatorcomment']);
+					$('select#pending').val(config['pending']);
 				}
 			},function(error){});
 		},function(error){});
@@ -117,10 +121,16 @@ jQuery.noConflict();
 			swal('Error!','ファシリテーターコメントフィールドを選択して下さい。','error');
 			return;
 		}
+		if ($('select#pending').val().length==0)
+		{
+			swal('Error!','コメント公開判定フィールドを選択して下さい。','error');
+			return;
+		}
 		/* setup config */
 		config['history']=$('select#history').val();
 		config['facilitator']=$('select#facilitator').val();
 		config['facilitatorcomment']=$('select#facilitatorcomment').val();
+		config['pending']=$('select#pending').val();
 		/* get view lists */
 		kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
 			var req=$.extend(true,{},resp);

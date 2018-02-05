@@ -105,7 +105,8 @@ jQuery.extend({
 						var exists=0;
 						if (item['studentcode'].value==student['$id'].value) exists++;
 						if (item['appcode'].value==lecturecode) exists++;
-						return exists==2;
+						if (item['starttime'].value==studentcourse['coursestarttime'].value.split(',')[i2]) exists++;
+						return exists==3;
 					});
 					if (reserved.length==0)
 						res.push({
@@ -428,6 +429,24 @@ jQuery.extend({
 			});
 		}
 	},
+	existshistory:function(appcode,cell,callback){
+		var body={
+			app:appcode,
+			query:''
+		};
+		body.query+='studentcode='+$('#studentcode',cell).val();
+		body.query+=' and appcode='+$('#appcode',cell).val();
+		body.query+=' and coursecode='+($('#coursecode',cell).val())?$('#coursecode',cell).val():'null';
+		body.query+=' and date="'+$('#date',cell).val()+'"';
+		body.query+=' and starttime="'+$('#starttime',cell).val()+'"';
+		kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+			if (resp.records.length!=0) swal('Error!','受講済み講座です。','error');
+			else callback();
+		},
+		function(error){
+			swal('Error!',error.message,'error');
+		});
+	},
 	minilecindex:function(){
 		return 7;
 	},
@@ -624,7 +643,7 @@ jQuery.extend({
 			case '12':
 				/* 生徒情報 */
 				if (!('name' in fieldinfos)) error='氏名';
-				if (!('phonetic' in fieldinfos)) error='氏名���な';
+				if (!('phonetic' in fieldinfos)) error='氏名かな';
 				if (!('mail' in fieldinfos)) error='メールアドレス';
 				if (!('question' in fieldinfos)) error='秘密の質問';
 				if (!('birthday' in fieldinfos)) error='生年月日';

@@ -80,6 +80,19 @@ var FieldsForm=function(options){
 			'width':'100%'
 		})
 	);
+	var modifier=div.clone(true).css({
+		'display':'inline-block',
+		'line-height':'40px',
+		'width':'100%'
+	})
+	.append($('<input type="hidden" class="receiver">'))
+	.append(
+		$('<span class="label">').css({
+			'box-sizing':'border-box',
+			'display':'inline-block',
+			'width':'100%'
+		})
+	);
 	var button=$('<button>').css({
 		'background-color':'transparent',
 		'border':'none',
@@ -200,7 +213,7 @@ var FieldsForm=function(options){
 				break;
 			case 'DATESPAN':
 				receiver=datespan.clone(true);
-				fieldcontainer.append(receiver);
+				fieldcontainer.css({'display':'inline-block','width':'50%'}).append(receiver);
 				break;
 			case 'RADIO_BUTTON':
 				var checked=true;
@@ -220,6 +233,10 @@ var FieldsForm=function(options){
 			case 'SINGLE_LINE_TEXT':
 				receiver=textline.clone(true);
 				fieldcontainer.append(receiver);
+				break;
+			case 'MODIFIER':
+				receiver=modifier.clone(true);
+				fieldcontainer.css({'display':'inline-block','width':'50%'}).append(receiver);
 				break;
 		}
 		this.contents.append(fieldcontainer);

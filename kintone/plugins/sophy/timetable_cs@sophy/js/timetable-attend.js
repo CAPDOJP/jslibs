@@ -238,7 +238,7 @@ jQuery.noConflict();
 							return exists==3;
 						});
 						/* rebuild view */
-						functions.build(filter);
+						if (filter.length!=0) functions.build(filter);
 					}
 					/* merge row */
 					var rowspans={cache:'',index:-1,span:0};
@@ -250,7 +250,7 @@ jQuery.noConflict();
 							if (rowspans.index!=-1)
 							{
 								vars.table.contents.find('tr').eq(rowspans.index).find('td').eq(0).attr('rowspan',rowspans.span);
-								for (var i=rowspans[i].index+1;i<index;i++) vars.table.contents.find('tr').eq(i).find('td').eq(0).hide();
+								for (var i=rowspans.index+1;i<index;i++) vars.table.contents.find('tr').eq(i).find('td').eq(0).hide();
 							}
 							rowspans.cache=cell.find('p').text();
 							rowspans.index=index;
