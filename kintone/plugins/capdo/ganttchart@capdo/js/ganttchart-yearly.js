@@ -46,13 +46,11 @@ jQuery.noConflict();
 			/* insert row */
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
-				var inner='';
 				for (var i=0;i<heads.length;i++)
 				{
-					inner='';
-					inner+='<p class="customview-p">'+heads[i]+'</p>';
-					inner+='<input type="hidden" id="segment" value="'+heads[i]+'" />';
-					baserow.find('td').eq(i).html(inner);
+					baserow.find('td').eq(i)
+					.append($('<p>').addClass('customview-p').html(heads[i]))
+					.append($('<input type="hidden" id="segment">').val(heads[i]));
 				}
 				if (filter.length!=0)
 				{

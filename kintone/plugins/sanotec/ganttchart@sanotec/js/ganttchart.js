@@ -46,15 +46,13 @@ jQuery.noConflict();
 			/* insert row */
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
-				var inner='';
 				if (filter.length!=0)
 				{
 					for (var i=0;i<vars.groups.length;i++)
 					{
-						inner='';
-						inner+='<p class="customview-p">'+filter[0][vars.groups[i]].value+'</p>';
-						inner+='<input type="hidden" id="group" value="'+filter[0][vars.groups[i]].value+'" />';
-						baserow.find('td').eq(i).html(inner);
+						baserow.find('td').eq(i)
+						.append($('<p>').addClass('customview-p').html(filter[0][vars.groups[i]].value))
+						.append($('<input type="hidden" id="group">').val(filter[0][vars.groups[i]].value));
 					}
 					for (var i=0;i<filter.length;i++)
 					{

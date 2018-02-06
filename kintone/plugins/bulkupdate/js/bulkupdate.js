@@ -16,7 +16,7 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		bulkform:null,
-		bulkinfos:{}
+		bulkinfos:[]
 	};
 	var events={
 		lists:[
@@ -68,7 +68,7 @@ jQuery.noConflict();
 			});
 			return codes;
 		},
-		formatvalue:function(fieldinfo.code,field){
+		formatvalue:function(fieldinfo,record){
 			var contents=$('#'+fieldinfo.code,vars.bulkform.contents);
 			var receivevalue=contents.find('.receiver').val();
 			var receivevalues=[];
@@ -77,7 +77,7 @@ jQuery.noConflict();
 				case 'CHECK_BOX':
 				case 'MULTI_SELECT':
 					$.each(contents.find('.receiver:checked'),function(){receivevalues.push($(this).val());});
-					if (receivevalues.length!=0) field.value=receivevalues;
+					if (receivevalues.length!=0) record[fieldinfo.code].value=receivevalues;
 					break;
 				case 'FILE':
 					if (receivevalue.length!=0)
@@ -88,7 +88,7 @@ jQuery.noConflict();
 								fileKey:files[index].fileKey
 							});
 						});
-						field.value=receivevalues;
+						record[fieldinfo.code].value=receivevalues;
 					}
 					break;
 				case 'GROUP_SELECT':
@@ -98,15 +98,15 @@ jQuery.noConflict();
 					{
 						var values=receivevalue.split(',');
 						for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2]});
-						field.value=receivevalues;
+						record[fieldinfo.code].value=receivevalues;
 					}
 					break;
 				case 'RADIO_BUTTON':
 					receivevalue=contents.find('[name='+fieldinfo.code+']:checked').val();
-					if (receivevalue.length!=0) field.value=receivevalue;
+					if (receivevalue.length!=0) record[fieldinfo.code].value=receivevalue;
 					break;
 				default:
-					if (receivevalue.length!=0) field.value=receivevalue;
+					if (receivevalue.length!=0) record[fieldinfo.code].value=receivevalue;
 					break;
 			}
 		},
@@ -123,7 +123,7 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
 		if (vars.bulkform) return;
-		vars.bulkinfos={};
+		vars.bulkinfos=[];
 		/* get layout */
 		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
 			var sorted=functions.fieldsort(resp.layout);
@@ -157,8 +157,8 @@ jQuery.noConflict();
 									default:
 										if ($.inArray(fieldcode.cells[i],mappings)<0)
 										{
-											vars.bulkinfos[fieldcode.cells[i]]=cellinfo;
-											vars.bulkinfos[fieldcode.cells[i]]['tablecode']=fieldcode.code;
+											cellinfo['tablecode']=fieldcode.code;
+											vars.bulkinfos.push(cellinfo);
 										}
 										break;
 								}
@@ -182,8 +182,8 @@ jQuery.noConflict();
 								default:
 									if ($.inArray(fieldinfo.code,mappings)<0)
 									{
-										vars.bulkinfos[fieldcode.code]=$.extend(true,{},fieldinfo);
-										vars.bulkinfos[fieldcode.code]['tablecode']='';
+										fieldinfo['tablecode']='';
+										vars.bulkinfos.push($.extend(true,{},fieldinfo));
 									}
 									break;
 							}
@@ -201,28 +201,30 @@ jQuery.noConflict();
 						'width':'48px'
 					})
 					.on('click',function(e){
-						var bulkvalues={};
-						$.each(vars.bulkinfos,function(key,values){
-							switch (values.type)
+						var values={};
+						for (var i=0;i<vars.bulkinfos.length;i++)
+						{
+							var fieldinfo=vars.bulkinfos[i];
+							switch (fieldinfo.type)
 							{
 								case 'CHECK_BOX':
 								case 'GROUP_SELECT':
 								case 'MULTI_SELECT':
 								case 'ORGANIZATION_SELECT':
 								case 'USER_SELECT':
-									bulkvalues[values.code]={
-										type:values.type,
+									values[fieldinfo.code]={
+										type:fieldinfo.type,
 										value:[]
 									};
 									break;
 								default:
-									bulkvalues[values.code]={
-										type:values.type,
+									values[fieldinfo.code]={
+										type:fieldinfo.type,
 										value:''
 									};
 									break;
 							}
-						});
+						}
 						vars.bulkform.show({
 							buttons:{
 								ok:function(){
@@ -264,18 +266,20 @@ jQuery.noConflict();
 															break;
 													}
 												});
-												$.each(vars.bulkinfos,function(key,values){
-													if (values['tablecode'].length!=0)
+												for (var i2=0;i2<vars.bulkinfos.length;i2++)
+												{
+													var fieldinfo=vars.bulkinfos[i2];
+													if (fieldinfo['tablecode'].length!=0)
 													{
-														var tablecode=values['tablecode'];
-														for (var i2=0;i2<record[tablecode].value.length;i2++)
+														var tablecode=fieldinfo['tablecode'];
+														for (var i3=0;i3<record[tablecode].value.length;i3++)
 														{
-															var cells=record[tablecode].value[i2].value;
-															functions.formatvalue(key,cells[key]);
+															var cells=record[tablecode].value[i3].value;
+															functions.formatvalue(fieldinfo,cells);
 														}
 													}
-													else functions.formatvalue(key,record[key]);
-												});
+													else functions.formatvalue(fieldinfo,record);
+												}
 												body.records.push({
 													id:record['$id'].value,
 													record:record
@@ -303,7 +307,7 @@ jQuery.noConflict();
 									vars.bulkform.hide();
 								}
 							},
-							values:bulkvalues
+							values:values
 						});
 					});
 					kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);

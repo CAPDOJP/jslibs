@@ -1,4 +1,11 @@
 /* individual style (common) */
+button.referer-button-search{
+	margin:0px;
+    position:absolute;
+    right:5px;
+    top:5px;
+    z-index:999;
+}
 div.display{
 	background-color:#e3f2fd;
 	box-sizing:border-box;
@@ -29,6 +36,15 @@ div.input{
 	display:inline-block;
 	position:relative;
 	width:100%;
+}
+input.referer-input-multi{
+	box-sizing:border-box;
+    padding-right:30px;
+    position:relative;
+    max-width:auto;
+    min-width:auto;
+    width:100%;
+    z-index:888;
 }
 label.title{
 	box-sizing:border-box;

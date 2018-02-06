@@ -1719,7 +1719,7 @@ var FieldsForm=function(options){
 				{
 					receiver=radio.clone(true);
 					$('.label',receiver).html(this.radionulllabel);
-					$('.receiver',receiver).attr('id',this.radionulllabel).attr('name',fieldinfo.code).val(this.radionulllabel).prop('checked',checked);
+					$('.receiver',receiver).attr('id',this.radionulllabel).attr('name',fieldinfo.code).val('').prop('checked',checked);
 					fieldcontainer.append(receiver);
 					checked=false;
 				}
