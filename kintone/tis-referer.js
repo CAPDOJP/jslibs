@@ -1835,14 +1835,15 @@ FieldsForm.prototype={
 	filevalue:function(files){
 		var names='';
 		var values=[];
-		$.each(files,function(index){
-			names+=files[index].name+',';
-			values.push({
-				contentType:files[index].contentType,
-				fileKey:files[index].fileKey,
-				name:files[index].name
+		if (files)
+			$.each(files,function(index){
+				names+=files[index].name+',';
+				values.push({
+					contentType:files[index].contentType,
+					fileKey:files[index].fileKey,
+					name:files[index].name
+				});
 			});
-		});
 		names=names.replace(/,$/g,'');
 		return {names:names,values:JSON.stringify(values)};
 	},

@@ -217,6 +217,12 @@ jQuery.noConflict();
 										value:[]
 									};
 									break;
+								case 'RADIO_BUTTON':
+									values[fieldinfo.code]={
+										type:fieldinfo.type,
+										value:'更新しない'
+									};
+									break;
 								default:
 									values[fieldinfo.code]={
 										type:fieldinfo.type,
