@@ -1277,12 +1277,14 @@ var FieldsForm=function(options){
 			group:null,
 			organization:null,
 			user:null
-		}
+		},
+		radionulllabel:''
 	},options);
 	/* property */
 	this.buttons=options.buttons;
 	this.fields=options.fields;
 	this.callback=options.callback;
+	this.radionulllabel=options.radionulllabel;
 	/* create elements */
 	var my=this;
 	var div=$('<div>').css({
@@ -1713,6 +1715,14 @@ var FieldsForm=function(options){
 				$.each(fieldinfo.options,function(key,values){
 					fieldoptions[values.index]=values.label;
 				});
+				if (this.radionulllabel.length!=0)
+				{
+					receiver=radio.clone(true);
+					$('.label',receiver).html(this.radionulllabel);
+					$('.receiver',receiver).attr('id',this.radionulllabel).attr('name',fieldinfo.code).val(this.radionulllabel).prop('checked',checked);
+					fieldcontainer.append(receiver);
+					checked=false;
+				}
 				for (var i2=0;i2<fieldoptions.length;i2++)
 				{
 					receiver=radio.clone(true);
