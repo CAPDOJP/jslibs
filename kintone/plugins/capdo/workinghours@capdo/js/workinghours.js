@@ -65,6 +65,14 @@ jQuery.noConflict();
 								id:'cancel',
 								text:'キャンセル'
 							}
+						],
+						searches:[
+							{
+								id:'multi',
+								class:'referer-input-multi',
+								label:'',
+								type:'multi'
+							}
 						]
 					});
 					callback();
