@@ -353,7 +353,7 @@ Referer.prototype={
 			.on('mouseover',function(e){$(this).css({'background-color':'#f5b2b2'});})
 			.on('mouseout',function(e){$(this).css({'background-color':'transparent'});});
 			$.each(filter,function(key,values){
-				list.append($('<input type="hidden" id="'+key+'" value="'+values.value+'">'));
+				list.append($('<input type="hidden" id="'+key+'">').val(values.value));
 			});
 			$.each(my.displaytext,function(index){
 				list.append(
@@ -872,7 +872,7 @@ MultiSelect.prototype={
 					'padding':'5px'
 				})
 				.append($('<span>').html(listtext))
-				.append($('<input type="hidden" value="'+listvalue+'">'))
+				.append($('<input type="hidden">').val(listvalue))
 				.on('click',function(){
 					if ($(this).find('input').val() in my.selection)
 					{
@@ -1734,7 +1734,7 @@ var FieldsForm=function(options){
 				break;
 			case 'TIME':
 				receiver=time.clone(true);
-				receiver.append($('<input type="hidden" class="receiver" value="00:00">'))
+				receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
 				$('.receiverhour',receiver).on('change',function(){
 					$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
 				});
