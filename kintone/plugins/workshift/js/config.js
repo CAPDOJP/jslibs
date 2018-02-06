@@ -183,6 +183,7 @@ jQuery.noConflict();
 				$('select#scale').val(config['scale']);
 				$('select#starthour').val(config['starthour']);
 				$('select#endhour').val(config['endhour']);
+				$('select#charactercode').val(config['charactercode']);
 				$('input#scalefixedwidth').val(config['scalefixedwidth']);
 				if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
 				/* trigger events */
@@ -333,6 +334,7 @@ jQuery.noConflict();
 		config['scale']=$('select#scale').val();
 		config['starthour']=$('select#starthour').val();
 		config['endhour']=$('select#endhour').val();
+		config['charactercode']=$('select#charactercode').val();
 		config['scalefixedwidth']=$('input#scalefixedwidth').val();
 		config['scalefixed']=($('input#scalefixed').prop('checked'))?'1':'0';
 		/* get view lists */

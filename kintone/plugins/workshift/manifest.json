@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone 勤務シフト表作成プラグイン",
+        "ja":"kintone 勤務シフト表/出勤簿作成プラグイン",
         "en":"kintone Work-Shift plug-in",
-        "zh":"kintone 勤務シフト表作成プラグイン"
+        "zh":"kintone 勤務シフト表/出勤簿作成プラグイン"
     },
     "description":{
-        "ja":"日時フィールドを元にシフト表を表示するプラグインです。シフト表をドラッグするだけで、新規レコードを追加出来ます。",
+        "ja":"日時フィールドを元にシフト表を表示/出退社時間の打刻で出勤簿を作成するプラグインです。シフト表をドラッグするだけで、新規レコードを追加出来ます。",
         "en":"This plug-in will display the work shift table based on the date and time field",
-        "zh":"日時フィールドを元にシフト表を表示するプラグインです。シフト表をドラッグするだけで、新規レコードを追加出来ます。"
+        "zh":"日時フィールドを元にシフト表を表示/出退社時間の打刻で出勤簿を作成するプラグインです。シフト表をドラッグするだけで、新規レコードを追加出来ます。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -24,6 +24,7 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "https://rawgit.com/polygonplanet/encoding.js/master/encoding.js",
             "js/sweetalert.min.js",
             "js/attendance.js",
             "js/functions.js",

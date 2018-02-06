@@ -34,6 +34,33 @@ jQuery.noConflict();
 	};
 	var limit=500;
 	var functions={
+		/* download attendance file */
+		downloadattendance:function(){
+			var lines='';
+			lines+='"氏名",';
+			lines+='"出勤",';
+			lines+='"欠勤",';
+			lines+='"実働",';
+			lines+='"遅刻・早退",';
+			lines+='"深夜勤務",';
+			lines+='"普通残業",';
+			lines+='"深夜残業"';
+			lines+='\n';
+			$.each($('tr',vars.rows),function(index){
+				var row=$(this);
+				var line='';
+				lines+='"'+$('td',row).eq(0).text()+'",';
+				lines+=$('td',row).eq(1).text().replace(/[,H日]/g,'')+',';
+				lines+=$('td',row).eq(2).text().replace(/[,H日]/g,'')+',';
+				lines+=$('td',row).eq(3).text().replace(/[,H日]/g,'')+',';
+				lines+=$('td',row).eq(4).text().replace(/[,H日]/g,'')+',';
+				lines+=$('td',row).eq(5).text().replace(/[,H日]/g,'')+',';
+				lines+=$('td',row).eq(6).text().replace(/[,H日]/g,'')+',';
+				lines+=$('td',row).eq(7).text().replace(/[,H日]/g,'')+',';
+				lines+='\n';
+			});
+			$.downloadtext(lines,vars.config['charactercode'],'出勤簿'+vars.fromdate.format('Y-m')+'.csv');
+		},
 		/* reload view */
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
@@ -77,10 +104,15 @@ jQuery.noConflict();
 						var shiftto=$.fieldvalue(filter[i2][vars.config['shifttotime']]).dateformat();
 						var workfrom=$.fieldvalue(filter[i2][vars.config['workfromtime']]).dateformat();
 						var workto=$.fieldvalue(filter[i2][vars.config['worktotime']]).dateformat();
-						var date=new Date(shiftfrom).format('Y-m-d');
+						var date=new Date(shiftfrom).format('Y-m-d').dateformat();
+						var nightstart=date+' 22:00:00';
+						var nightend=new Date(date).calc('1 day').format('Y-m-d').dateformat()+' 05:00:00';
 						var datecalc={};
 						add=true;
+						/* adjust work time */
+						if (new Date(workfrom)<new Date(shiftfrom)) workfrom=shiftfrom;
 						if (workto.length==0) workto=shiftto;
+						/* calculate attendance */
 						if (!(date in attendances))
 						{
 							if (workfrom.length!=0)
@@ -99,32 +131,28 @@ jQuery.noConflict();
 							if (workfrom.length==0) add=false;
 						}
 						if (!add) continue;
-						console.log(workfrom);
-						console.log(workto);
-						console.log(shiftfrom);
-						console.log(shiftto);
 						/* calculate worktime */
 						datecalc=$.datecalc(new Date(workfrom),new Date(workto));
-						work+=datecalc.diffhours+(datecalc.diffminutes/60);
+						work+=datecalc.passedhours+(datecalc.passedminutes/60);
 						/* calculate come in late time */
 						datecalc=$.datecalc(new Date(shiftfrom),new Date(workfrom));
-						if ((datecalc.diffhours+datecalc.diffminutes)>0) tardy+=datecalc.diffhours+(datecalc.diffminutes/60);
+						if ((datecalc.passedhours+datecalc.passedminutes)>0) tardy+=datecalc.passedhours+(datecalc.passedminutes/60);
 						/* calculate leave early time */
 						datecalc=$.datecalc(new Date(workto),new Date(shiftto));
-						if ((datecalc.diffhours+datecalc.diffminutes)>0) tardy+=datecalc.diffhours+(datecalc.diffminutes/60);
+						if ((datecalc.passedhours+datecalc.passedminutes)>0) tardy+=datecalc.passedhours+(datecalc.passedminutes/60);
 						/* calculate over time */
 						datecalc=$.datecalc(new Date(shiftto),new Date(workto));
-						if ((datecalc.diffhours+datecalc.diffminutes)>0) over+=datecalc.diffhours+(datecalc.diffminutes/60);
+						if ((datecalc.passedhours+datecalc.passedminutes)>0) over+=datecalc.passedhours+(datecalc.passedminutes/60);
 						/* calculate night time */
-						if (new Date(workto)>new Date(date).calc('1 day').setHours(5)) workto=date+' 05:00:00';
-						datecalc=$.datecalc(new Date(date).setHours(22),new Date(workto));
-						if ((datecalc.diffhours+datecalc.diffminutes)>0) night+=datecalc.diffhours+(datecalc.diffminutes/60);
+						if (new Date(workto)>new Date(nightend)) workto=nightend;
+						datecalc=$.datecalc(new Date(nightstart),new Date(workto));
+						if ((datecalc.passedhours+datecalc.passedminutes)>0) night+=datecalc.passedhours+(datecalc.passedminutes/60);
 						/* calculate night over time */
-						if (new Date(shiftto)<new Date(date).setHours(22)) shiftto=date+' 22:00:00';
+						if (new Date(shiftto)<new Date(nightstart)) shiftto=nightstart;
 						datecalc=$.datecalc(new Date(shiftto),new Date(workto));
-						if ((datecalc.diffhours+datecalc.diffminutes)>0)
+						if ((datecalc.passedhours+datecalc.passedminutes)>0)
 						{
-							nightover+=datecalc.diffhours+(datecalc.diffminutes/60);
+							nightover+=datecalc.passedhours+(datecalc.passedminutes/60);
 							night-=nightover;
 							over-=nightover;
 						}
@@ -185,8 +213,12 @@ jQuery.noConflict();
 		feed.append(prev);
 		feed.append(month);
 		feed.append(next);
-		if ($('.workshift-headermenucontents').size()) $('.workshift-headermenucontents').remove();
-		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
+		if ($('.custom-elements').size()) $('.custom-elements').remove();
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadattendance">').addClass('custom-elements')[0]);
+		$('.downloadattendance')
+		.text('CSVダウンロード')
+		.on('click',function(e){functions.downloadattendance();});
 		/* setup date value */
 		vars.fromdate=vars.fromdate.calc('first-of-month');
 		vars.todate=vars.fromdate.calc('1 month').calc('-1 day');

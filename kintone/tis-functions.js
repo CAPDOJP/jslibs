@@ -95,7 +95,7 @@ Date.prototype.format=function(pattern){
 	return '';
 }
 String.prototype.dateformat=function(){
-	if(this.match(/Z$/))
+	if(this.match(/Z$/g))
 	{
 		var date=new Date(this.replace(/-/g,'\/').replace(/T/g,' ').replace(/\.000Z$/g,'').replace(/Z$/g,''));
 		date.setHours(date.getHours() + 9);

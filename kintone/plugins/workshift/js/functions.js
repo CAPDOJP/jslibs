@@ -21,6 +21,8 @@ jQuery.extend({
 		var values={
 			diffhours:Math.ceil((to.getTime()-from.getTime())/(1000*60*60)),
 			diffminutes:Math.ceil((to.getTime()-from.getTime())/(1000*60)),
+			passedhours:Math.floor((to.getTime()-from.getTime())/(1000*60*60)),
+			passedminutes:Math.floor(((to.getTime()-from.getTime())/(1000*60))%60),
 			from:fromtime,
 			to:totime,
 			formatfrom:('0'+fromtime.hour).slice(-2)+':'+('0'+fromtime.minute).slice(-2),

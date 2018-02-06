@@ -28,7 +28,8 @@ button.workpunch.end:hover{
 }
 div.workshift-headermenucontents{
   display:inline-block;
-  line-height:30px;
+  height:48px;
+  line-height:48px;
   vertical-align:top;
 }
 div.workshift-headermenucontents *{
@@ -203,4 +204,5 @@ table.attendance tr th{
 }
 table.attendance tr td:nth-of-type(n+2){
   text-align:right;
+  width:8em;
 }
