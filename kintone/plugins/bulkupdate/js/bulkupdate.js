@@ -15,7 +15,8 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		bulkform:null,
+		clearform:null,
+		updateform:null,
 		bulkinfos:[]
 	};
 	var events={
@@ -24,6 +25,21 @@ jQuery.noConflict();
 		]
 	};
 	var functions={
+		clearvalue:function(fieldinfo,record){
+			switch (fieldinfo.type)
+			{
+				case 'CHECK_BOX':
+				case 'GROUP_SELECT':
+				case 'MULTI_SELECT':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					record[fieldinfo.code].value=[];
+					break;
+				default:
+					record[fieldinfo.code].value='';
+					break;
+			}
+		},
 		fieldmapping:function(fieldinfos){
 			var mappings=[];
 			$.each(fieldinfos,function(key,values){
@@ -69,7 +85,7 @@ jQuery.noConflict();
 			return codes;
 		},
 		formatvalue:function(fieldinfo,record){
-			var contents=$('#'+fieldinfo.code,vars.bulkform.contents);
+			var contents=$('#'+fieldinfo.code,vars.updateform.contents);
 			var receivevalue=contents.find('.receiver').val();
 			var receivevalues=[];
 			switch (fieldinfo.type)
@@ -78,18 +94,6 @@ jQuery.noConflict();
 				case 'MULTI_SELECT':
 					$.each(contents.find('.receiver:checked'),function(){receivevalues.push($(this).val());});
 					if (receivevalues.length!=0) record[fieldinfo.code].value=receivevalues;
-					break;
-				case 'FILE':
-					if (receivevalue.length!=0)
-					{
-						var files=JSON.parse(receivevalue);
-						$.each(files,function(index){
-							receivevalues.push({
-								fileKey:files[index].fileKey
-							});
-						});
-						record[fieldinfo.code].value=receivevalues;
-					}
 					break;
 				case 'GROUP_SELECT':
 				case 'ORGANIZATION_SELECT':
@@ -122,7 +126,7 @@ jQuery.noConflict();
 	 kintone events
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
-		if (vars.bulkform) return;
+		if (vars.updateform) return;
 		vars.bulkinfos=[];
 		/* get layout */
 		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
@@ -147,6 +151,7 @@ jQuery.noConflict();
 									case 'CATEGORY':
 									case 'CREATED_TIME':
 									case 'CREATOR':
+									case 'FILE':
 									case 'MODIFIER':
 									case 'RECORD_NUMBER':
 									case 'REFERENCE_TABLE':
@@ -172,6 +177,7 @@ jQuery.noConflict();
 								case 'CATEGORY':
 								case 'CREATED_TIME':
 								case 'CREATOR':
+								case 'FILE':
 								case 'MODIFIER':
 								case 'RECORD_NUMBER':
 								case 'REFERENCE_TABLE':
@@ -190,9 +196,9 @@ jQuery.noConflict();
 						}
 					}
 				});
-				if (!$('.bulkbutton',$('body')).size())
+				if (!$('.updatebutton',$('body')).size())
 				{
-					var button=$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.svg" class="bulkbutton" alt="フィールド一括更新" title="フィールド一括更新" />').css({
+					var button=$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/pencil.svg" class="updatebutton" alt="フィールド一括更新" title="フィールド一括更新" />').css({
 						'cursor':'pointer',
 						'display':'inline-block',
 						'height':'48px',
@@ -231,11 +237,11 @@ jQuery.noConflict();
 									break;
 							}
 						}
-						vars.bulkform.show({
+						vars.updateform.show({
 							buttons:{
 								ok:function(){
-									/* close the bulkform */
-									vars.bulkform.hide();
+									/* close the updateform */
+									vars.updateform.hide();
 									swal({
 										title:'確認',
 										text:'表示中のレコードを更新します。\n宜しいですか?',
@@ -261,6 +267,7 @@ jQuery.noConflict();
 														case 'CATEGORY':
 														case 'CREATED_TIME':
 														case 'CREATOR':
+														case 'FILE':
 														case 'MODIFIER':
 														case 'RECORD_NUMBER':
 														case 'STATUS':
@@ -309,8 +316,8 @@ jQuery.noConflict();
 									});
 								},
 								cancel:function(){
-									/* close the bulkform */
-									vars.bulkform.hide();
+									/* close the updateform */
+									vars.updateform.hide();
 								}
 							},
 							values:values
@@ -318,7 +325,131 @@ jQuery.noConflict();
 					});
 					kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 				}
-				vars.bulkform=$('body').fieldsform({
+				if (!$('.clearbutton',$('body')).size())
+				{
+					var button=$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/eraser.svg" class="clearbutton" alt="フィールド一括クリア" title="フィールド一括クリア" />').css({
+						'cursor':'pointer',
+						'display':'inline-block',
+						'height':'48px',
+						'margin':'0px 12px',
+						'vertical-align':'top',
+						'width':'48px'
+					})
+					.on('click',function(e){
+						var datasource=[];
+						for (var i=0;i<vars.bulkinfos.length;i++)
+						{
+							var fieldinfo=vars.bulkinfos[i];
+							datasource.push({
+								text:fieldinfo.label,
+								value:fieldinfo.code
+							});
+						}
+						vars.clearform.show({
+							datasource:datasource,
+							buttons:{
+								ok:function(selection){
+									/* close the clearform */
+									vars.clearform.hide();
+									if (Object.keys(selection).length==0) return;
+									var labels=[];
+									$.each(selection,function(key,values){labels.push(values);});
+									swal({
+										title:'確認',
+										text:'表示中のフィールド'+labels.join('・')+'の値をクリアします。\n宜しいですか?',
+										type:'warning',
+										showCancelButton:true,
+										confirmButtonText:'OK',
+										cancelButtonText:"キャンセル"
+									},
+									function(){
+										functions.showloading();
+										kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:kintone.app.getId(),query:kintone.app.getQuery()},function(resp){
+											var body={
+												app:kintone.app.getId(),
+												records:[]
+											};
+											for (var i=0;i<resp.records.length;i++)
+											{
+												var record={};
+												$.each(resp.records[i],function(key,values){
+													switch (values.type)
+													{
+														case 'CALC':
+														case 'CATEGORY':
+														case 'CREATED_TIME':
+														case 'CREATOR':
+														case 'FILE':
+														case 'MODIFIER':
+														case 'RECORD_NUMBER':
+														case 'STATUS':
+														case 'STATUS_ASSIGNEE':
+														case 'UPDATED_TIME':
+															break;
+														default:
+															record[key]=values;
+															break;
+													}
+												});
+												for (var i2=0;i2<vars.bulkinfos.length;i2++)
+												{
+													var fieldinfo=vars.bulkinfos[i2];
+													if (fieldinfo['tablecode'].length!=0)
+													{
+														var tablecode=fieldinfo['tablecode'];
+														for (var i3=0;i3<record[tablecode].value.length;i3++)
+														{
+															var cells=record[tablecode].value[i3].value;
+															if (fieldinfo.code in selection) functions.clearvalue(fieldinfo,cells);
+														}
+													}
+													else
+													{
+														if (fieldinfo.code in selection) functions.clearvalue(fieldinfo,record);
+													}
+												}
+												body.records.push({
+													id:record['$id'].value,
+													record:record
+												});
+											}
+											kintone.api(kintone.api.url('/k/v1/records',true),'PUT',body,function(resp){
+												functions.hideloading();
+												swal({
+													title:'更新完了',
+													text:'更新完了',
+													type:'success'
+												},function(){location.reload(true);});
+											},function(error){
+												functions.hideloading();
+												swal('Error!',error.message,'error');
+											});
+										},function(error){
+											functions.hideloading();
+											swal('Error!',error.message,'error');
+										});
+									});
+								},
+								cancel:function(){
+									/* close the clearform */
+									vars.clearform.hide();
+								}
+							}
+						});
+					});
+					kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
+				}
+				vars.clearform=$('body').multiselect({
+					buttons:{
+						ok:{
+							text:'OK'
+						},
+						cancel:{
+							text:'キャンセル'
+						}
+					}
+				});
+				vars.updateform=$('body').fieldsform({
 					buttons:{
 						ok:{
 							text:'OK'
