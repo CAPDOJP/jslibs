@@ -164,10 +164,10 @@ jQuery.noConflict();
 					defaultStyle:{
 						font:'GenShinGothic',
 						fontSize:11
-					}
+					},
 					styles:{
 						header:{
-							alignment:'center'
+							alignment:'center',
 							fontSize:18
 						},
 						tablecell:{
