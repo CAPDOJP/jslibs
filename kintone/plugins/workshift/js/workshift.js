@@ -154,7 +154,7 @@ jQuery.noConflict();
 			/* setup font */
 			pdfMake.fonts={
 				GenShinGothic:{
-					normal:'GenShinGothic-Medium.ttf'
+					normal:'GenShinGothic-Normal.ttf'
 				}
 			};
 			/* reload datas */
@@ -177,8 +177,8 @@ jQuery.noConflict();
 							alignment:'center'
 						}
 					}
-   				};
-   				var worktimes=function(date,records){
+				};
+				var worktimes=function(date,records){
 					var filter=$.grep(records,function(item,index){
 						return new Date(item[vars.config['shiftfromtime']].value.dateformat()).format('Y-m-d')==date.format('Y-m-d');
 					});
@@ -189,7 +189,7 @@ jQuery.noConflict();
 						res+=new Date(filter[i][vars.config['shifttotime']].value.dateformat()).format('H:i')+' , ';
 					}
 					return res.replace(/ , $/g,'');
-   				};
+				};
 				for (var i=0;i<vars.apps['employee'].length;i++)
 				{
 					var employee=vars.apps['employee'][i];
@@ -225,7 +225,7 @@ jQuery.noConflict();
 						]);
 						workdate=workdate.calc('1 day');
 					}
-					definition.content.push({text:workfrom.getFullYear().toStrimg()+'年'+(workfrom.getMonth()+1).toString()+'月勤務予定表',style:'header'});
+					definition.content.push({text:workfrom.getFullYear().toString()+'年'+(workfrom.getMonth()+1).toString()+'月勤務予定表',style:'header'});
 					definition.content.push({text:'氏名：'+employee.display});
 					if (vars.config['assignment'].length!=0) definition.content.push({text:'配属先：'+employee.display});
 					definition.content.push({table:table,pageBreak:'after'});
