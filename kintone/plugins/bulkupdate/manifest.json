@@ -3,9 +3,9 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone 一覧レコード一括更新プラグイン",
+        "ja":"kintone 一覧レコード一括更新/クリアプラグイン",
         "en":"kintone Bulk-Update plug-in",
-        "zh":"kintone 一覧レコード一括更新プラグイン"
+        "zh":"kintone 一覧レコード一括更新/クリアプラグイン"
     },
     "description":{
         "ja":"一覧に表示中のレコードの一括更新/一括クリアを行うプラグインです。",

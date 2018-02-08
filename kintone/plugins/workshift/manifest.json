@@ -24,6 +24,8 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "https://rawgit.com/TIS2010/jslibs/master/pdfmake/pdfmake.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/pdfmake/vfs_fonts.js",
             "https://rawgit.com/polygonplanet/encoding.js/master/encoding.js",
             "js/sweetalert.min.js",
             "js/attendance.js",

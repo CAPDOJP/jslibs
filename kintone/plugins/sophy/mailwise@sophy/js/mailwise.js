@@ -16,16 +16,13 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		history:{
-			next:{
-				button:null,
-				offset:0
-			},
-			prev:{
-				button:null,
-				offset:0
-			},
-			spaceid:null,
+			limit:20,
+			offset:0,
+			error:null,
+			next:null,
+			prev:null,
 			table:null,
+			mails:[]
 		},
 		limit:500,
 		loaded:false,
@@ -168,27 +165,22 @@ jQuery.noConflict();
 				}
 			},function(error){});
 		},
-		loadhistories:function(offset,callback){
+		loadhistories:function(counter,param,spaceid,callback){
 			var body={
 				id:0,
-				limit:20,
-				mail:$('#maillist').val(),
-				pos:offset,
-				spaceId:vars.history.spaceid
+				limit:vars.history.limit,
+				mail:param[counter].mail,
+				pos:param[counter].offset,
+				spaceId:spaceid
 			};
 			kintone.api(kintone.api.url('/m/mw.cgi/v1/address/history/list').replace(/\.json$/,""),'POST',body,function(resp){
 				if(resp.success)
 				{
-					var row=null;
-					var url=window.location.protocol+'//';
-					url+=window.location.host.replace(/^.+?\./,'static.');
-					url+='/contents/k/plugin/mailwise/v2/';
-					/* clear rows */
-					vars.history.table.rows.remove();
+					var url=window.location.protocol+'//'+window.location.host.replace(/^.+?\./,'static.')+'/contents/k/plugin/mailwise/v2/';
 					for(var i=0;i<resp.rows.length;i++)
 					{
 						var icon=$('<img>');
-						var subject=$('<span>');
+						var subject=$('<a>');
 						var query=[];
 						var queryparam=[];
 						switch (resp.rows[i].type)
@@ -207,54 +199,85 @@ jQuery.noConflict();
 										break
 								}
 								queryparam.page='MailView';
-								queryparam.wid=vars.history.spaceid;
+								queryparam.wid=spaceid;
 								queryparam.bs=resp.rows[i].appId;
 								queryparam.mid=resp.rows[i].id;
 								break;
 							case 'visitHistory':
 								icon.attr('src',url+'contact20.png');
 								queryparam.page='FormDocView';
-								queryparam.wid=vars.history.spaceid;
+								queryparam.wid=spaceid;
 								queryparam.bs=resp.rows[i].appId;
 								queryparam.rid=resp.rows[i].id;
 								break;
 							case 'phoneHistory':
 								icon.attr('src',url+'tel20.png');
 								queryparam.page='FormDocView';
-								queryparam.wid=vars.history.spaceid;
+								queryparam.wid=spaceid;
 								queryparam.bs=resp.rows[i].appId;
 								queryparam.rid=resp.rows[i].id;
 								break;
 							case 'bulksend':
 								icon.attr('src',url+'postmail20.png');
 								queryparam.page='PostView';
-								queryparam.wid=vars.history.spaceid;
+								queryparam.wid=spaceid;
 								queryparam.pcid=resp.rows[i].id;
 								break
 						}
 						for(var key in queryparam) query.push(key+'='+queryparam[key]);
-						vars.history.table.addrow();
-						row=vars.history.table.rows.last();
-						row.find('td').eq(0).find('span').text(functions.dateformat(resp.rows[i].date,resp.rows[i].dateType));
-						row.find('td').eq(1).find('span').append(
-							$('<a>')
-							.attr('href',kintone.api.url('/m/mw.cgi?'+query.join('&')))
-							.attr('target','_blank')
-							.append(icon)
-							.append(subject.text(resp.rows[i].title))
-						);
-						row.find('td').eq(2).find('span').text(resp.rows[i].appName);
+						subject
+						.attr('href',kintone.api.url('/m/mw.cgi?'+query.join('&')))
+						.attr('target','_blank')
+						.append(icon)
+						.append($('<span>').text(resp.rows[i].title));
+						param[counter].records.push({
+							date:new Date(resp.rows[i].date.dateformat()),
+							formatdate:functions.dateformat(resp.rows[i].date,resp.rows[i].dateType),
+							subject:subject,
+							app:resp.rows[i].appName
+						});
 					}
-					vars.history.prev.offset=resp.prev;
-					vars.history.next.offset=resp.next;
-					if (!resp.prev) vars.history.prev.button.hide();
-					else vars.history.prev.button.show();
-					if (!resp.next) vars.history.next.button.hide();
-					else vars.history.next.button.show();
-					if (callback!=null) callback(resp.rows);
+					param[counter].offset+=vars.history.limit;
+					if (resp.next) functions.loadhistories(counter,param,spaceid,callback);
+					else
+					{
+						counter++;
+						if (counter<param.length) functions.loadhistories(counter,param,spaceid,callback);
+						else callback();
+					}
 				}
 				else swal('Error!',resp.code+': '+resp.message,'error');
 			});
+		},
+		resethistories:function(){
+			var row=null;
+			if (vars.history.mails.length==0)
+			{
+				vars.history.next.hide();
+				vars.history.prev.hide();
+				vars.history.table.container.hide();
+				vars.history.error.show();
+			}
+			else
+			{
+				/* clear rows */
+				vars.history.table.rows.remove();
+				for (var i=vars.history.offset;i<vars.history.offset+vars.history.limit;i++)
+					if (i<vars.history.mails.length)
+					{
+						vars.history.table.addrow();
+						row=vars.history.table.rows.last();
+						row.find('td').eq(0).find('span').text(vars.history.mails[i].formatdate);
+						row.find('td').eq(1).find('span').append(vars.history.mails[i].subject);
+						row.find('td').eq(2).find('span').text(vars.history.mails[i].app);
+					}
+				if (vars.history.offset==0) vars.history.prev.hide();
+				else vars.history.prev.show();
+				if (vars.history.offset+vars.history.limit>vars.history.mails.length) vars.history.next.hide();
+				else vars.history.next.show();
+				vars.history.table.container.show();
+				vars.history.error.hide();
+			}
 		}
 	};
 	/*---------------------------------------------------------------
@@ -406,9 +429,9 @@ jQuery.noConflict();
 			/* create history */
 			if(vars.config.historyspace)
 			{
+				var counter=0;
+				var param=[];
 				var mails=vars.config.historymails.split(',');;
-				var historymail=$('<select id="maillist">').addClass('mailwise-select').css({'display':'block'});
-				var historyerror=$('<span>').text('表示する履歴がありません。');
 				var historyspace=$(kintone.app.record.getSpaceElement(vars.config.historyspace));
 				var historytable=$('<table>').addClass('subtable-gaia').addClass('mailwise-history');
 				historytable.append($('<thead>').addClass('subtable-header-gaia')
@@ -425,18 +448,22 @@ jQuery.noConflict();
 						.append($('<td>').append($('<span>')))
 					)
 				);
+				vars.history.error=$('<span>').text('表示する履歴がありません。');
 				vars.history.table=historytable.adjustabletable({});
-				vars.history.next.button=$('<a href="javascript:void(0)">').addClass('pager-next-gaia').addClass('mailwise-feed').text('次へ').on('click',function(){
-					functions.loadhistories(vars.history.next.offset);
+				vars.history.next=$('<a href="javascript:void(0)">').addClass('pager-next-gaia').addClass('mailwise-feed').text('次へ').on('click',function(){
+					/* reset history mails */
+					vars.history.offset+=vars.history.limit;
+					functions.resethistories();
 				});
-				vars.history.prev.button=$('<a href="javascript:void(0)">').addClass('pager-prev-gaia').addClass('pager-next-gaia,mailwise-feed').text('前へ').on('click',function(){
-					functions.loadhistories(vars.history.prev.offset);
+				vars.history.prev=$('<a href="javascript:void(0)">').addClass('pager-prev-gaia').addClass('pager-next-gaia,mailwise-feed').text('前へ').on('click',function(){
+					/* reset history mails */
+					vars.history.offset-=vars.history.limit;
+					functions.resethistories();
 				});
-				historyspace.append(historymail);
-				historyspace.append(historyerror);
+				historyspace.append(vars.history.error);
 				historyspace.append(vars.history.table.container);
-				historyspace.append(vars.history.prev.button);
-				historyspace.append(vars.history.next.button);
+				historyspace.append(vars.history.prev);
+				historyspace.append(vars.history.next);
 				historyspace.closest('.layout-gaia').css({'max-width':'100%','padding':'0px','width':'auto'});
 				historyspace.closest('.control-etc-gaia').css({
 					'height':'auto',
@@ -445,33 +472,28 @@ jQuery.noConflict();
 					'padding':'0px 8px',
 					'width':'100%'
 				});
-				if (vars.config.mailto in event.record)
-					historymail.append($('<option>').text(vars.fields[vars.config.mailto].label).val(event.record[vars.config.mailto].value));
+				if (vars.config.mailto in event.record) mails.push(vars.config.mailto);
 				for (var i=0;i<mails.length;i++)
 					if (mails[i] in event.record)
 						if (event.record[mails[i]].value.length!=0)
-							historymail.append($('<option>').text(vars.fields[mails[i]].label).val(event.record[mails[i]].value));
+							param.push({mail:event.record[mails[i]].value,offset:0,records:[]});
 				/* get mailwise space */
 				kintone.api(kintone.api.url('/m/mw.cgi/v1/base/space/list').replace(/\.json$/,""),'POST',{},function(resp){
 					if(resp.success)
 					{
-						vars.history.spaceid=resp.defaultId;
-						historymail.on('change',function(){
-							functions.loadhistories(0,function(histories){
-								if (histories.length==0)
-								{
-									vars.history.next.button.hide();
-									vars.history.prev.button.hide();
-									vars.history.table.container.hide();
-									historyerror.show();
-								}
-								else
-								{
-									vars.history.table.container.show();
-									historyerror.hide();
-								}
+						/* load mailwise mails */
+						functions.loadhistories(counter,param,resp.defaultId,function(){
+							for (var i=0;i<param.length;i++) Array.prototype.push.apply(vars.history.mails,param[i].records);
+							/* sort mails */
+							vars.history.mails.sort(function(a,b){
+								if(a['date']<b['date']) return 1;
+								if(a['date']>b['date']) return -1;
+								return 0;
 							});
-						}).trigger('change');
+							/* reset history mails */
+							vars.history.offset=0;
+							functions.resethistories();
+						});
 					}
 					else swal('Error!',resp.code+': '+resp.message,'error');
 				});
