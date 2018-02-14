@@ -469,8 +469,6 @@ jQuery.noConflict();
 				{
 					var able=0;
 					var free=0;
-					var price=0;
-					var totax=false;
 					for (var i2=0;i2<entryvalue.billtable.value.length;i2++)
 					{
 						var row=entryvalue.billtable.value[i2].value;
@@ -1143,6 +1141,130 @@ jQuery.noConflict();
 		return;
 	});
 	kintone.events.on(events.show,function(event){
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if (!vars.config) return false;
+		var splash=$('<div id="splash">');
+		splash.append(
+			$('<p>')
+			.append($('<span>').text('now loading'))
+			.append($('<span class="dot progress1">').text('.'))
+			.append($('<span class="dot progress2">').text('.'))
+			.append($('<span class="dot progress3">').text('.'))
+			.append($('<span class="dot progress4">').text('.'))
+			.append($('<span class="dot progress5">').text('.'))
+		);
+		$('body').append(splash);
+		/* setup lectures value */
+		vars.lectures=JSON.parse(vars.config['lecture']);
+		/* check app fields */
+		var counter=0;
+		var param=[];
+		for (var i=0;i<vars.lectures.length;i++)
+			param.push({
+				app:'',
+				appname:vars.lectures[i].name,
+				limit:limit,
+				offset:0,
+				records:[],
+				isstudent:false
+			});
+		param.push({
+			app:'',
+			appname:'学年',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
+		param.push({
+			app:'',
+			appname:'保護者',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
+		param.push({
+			app:'',
+			appname:'生徒情報',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:true
+		});
+		param.push({
+			app:vars.config['const'],
+			appname:'基本情報',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
+		param.push({
+			app:vars.config['tax'],
+			appname:'消費税',
+			limit:limit,
+			offset:0,
+			records:[],
+			isstudent:false
+		});
+		$.loadapps(counter,param,splash,function(){
+			splash.addClass('hide');
+			for (var i=0;i<param.length;i++) vars.apps[param[i].app]=param[i].records;
+			if (vars.apps[vars.config['const']].length==0) {swal('Error!','基本情報が登録されていません。','error');return;}
+			else vars.const=vars.apps[vars.config['const']][0];
+			/* calculate reate of tax */
+			vars.taxrate=functions.calculatetaxrate();
+			/* calculate round of tax */
+			switch (vars.const['taxround'].value)
+			{
+				case '1':
+					vars.taxround='floor';
+					break;
+				case '2':
+					vars.taxround='ceil';
+					break;
+				case '3':
+					vars.taxround='round';
+					break;
+			}
+			var calcevents=[];
+			calcevents.push('app.record.create.change.billprice');
+			calcevents.push('app.record.edit.change.billprice');
+			calcevents.push('mobile.app.record.create.change.billprice');
+			calcevents.push('mobile.app.record.edit.change.billprice');
+			calcevents.push('app.record.create.change.taxsegment');
+			calcevents.push('app.record.edit.change.taxsegment');
+			calcevents.push('mobile.app.record.create.change.taxsegment');
+			calcevents.push('mobile.app.record.edit.change.taxsegment');
+			kintone.events.on(calcevents,function(event){
+				if (!event.record['billdate'].value) return event;
+				/* calculate reate of tax */
+				vars.taxrate=functions.calculatetaxrate();
+				/* calculate subtotal and tax */
+				var able=0;
+				var free=0;
+				var unitprice=0;
+				for (var i2=0;i2<event.record['billtable'].value.length;i2++)
+				{
+					var row=event.record['billtable'].value[i2];
+					unitprice=0;
+					unitprice=(row.value['billprice'].value)?parseFloat('0'+row.value['billprice'].value.replace(/,/g,'')):0;
+					if (row.value['taxsegment'].value=='課税') able+=unitprice;
+					else free+=unitprice;
+				}
+				var calc=$.calculatetax({
+					able:able,
+					free:free,
+					isoutsidetax:(vars.const['taxshift']=='0'),
+					taxround:vars.taxround,
+					taxrate:vars.taxrate
+				});
+				event.record['subbill'].value=(calc.able-calc.tax+calc.free).toString();
+				event.record['tax'].value=calc.tax.toString();
+				return event;
+			});
+		});
 		event.record['billdate']['disabled']=true;
 		return event;
 	});

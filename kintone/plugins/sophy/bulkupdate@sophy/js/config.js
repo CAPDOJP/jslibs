@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "bulksettings -config.js-"
+* jQuery-Plugin "bulkupdate -config.js-"
 * Version: 3.0
 * Copyright (c) 2017 TIS
 *

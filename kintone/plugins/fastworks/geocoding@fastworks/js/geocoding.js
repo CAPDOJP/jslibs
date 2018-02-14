@@ -421,7 +421,7 @@ jQuery.noConflict();
 								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							})
 						)
-						.append(span.clone(true).text('現在地を追跡（ドライブモード）'));
+						.append(span.clone(true).text('現在地を追跡（移動モード）'));
 						if (vars.config['chasemode']!='1') vars.chaselocation.hide();
 						/* create displayinfowindow checkbox */
 						vars.displayinfowindow=checkbox.clone(true)
@@ -715,12 +715,22 @@ jQuery.noConflict();
 			if (iscurrentlocation)
 			{
 				vars.map.currentlocation({callback:function(latlng){
+					/*
 					markers.unshift({
 						icon:{
 							anchor:new google.maps.Point(11,11),
 							origin:new google.maps.Point(0,0),
 							size:new google.maps.Size(22,22),
 							url:'https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/currentpos.png',
+						},
+						lat:latlng.lat(),
+						lng:latlng.lng(),
+						serialnumber:false
+					});
+					*/
+					markers.unshift({
+						icon:{
+							url:'https://chart.googleapis.com/chart?chst=d_simple_text_icon_below&chld=|0|000|glyphish_target|24|0288D1|000'
 						},
 						lat:latlng.lat(),
 						lng:latlng.lng(),

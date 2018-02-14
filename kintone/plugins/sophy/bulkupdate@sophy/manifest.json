@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone フィールドデータ一括更新プラグイン",
-        "en":"kintone Bulk-Settings plug-in",
-        "zh":"kintone フィールドデータ一括更新プラグイン"
+        "ja":"kintone 一覧レコード一括更新/クリアプラグイン",
+        "en":"kintone Bulk-Update plug-in",
+        "zh":"kintone 一覧レコード一括更新/クリアプラグイン"
     },
     "description":{
-        "ja":"レコードの一括更新を行うプラグインです。",
-        "en":"This plug-in will batch update of records",
-        "zh":"レコードの一括更新を行うプラグインです。"
+        "ja":"表示中の一覧の条件に該当するレコードの一括更新/一括クリアを行うプラグインです。",
+        "en":"This plug-in will performs bulk update / bulk clear of records corresponding to the condition of the list being displayed",
+        "zh":"表示中の一覧の条件に該当するレコードの一括更新/一括クリアを行うプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -25,7 +25,7 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "js/sweetalert.min.js",
-            "js/bulksettings.js"
+            "js/bulkupdate.js"
         ],
         "css":[
             "css/loading.css",

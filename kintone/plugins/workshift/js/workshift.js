@@ -25,6 +25,10 @@ jQuery.noConflict();
 		table:null,
 		apps:{},
 		config:{},
+		schedule:{
+			offset:0,
+			records:[]
+		},
 		worktimes:[],
 		worktimekeys:[],
 		offset:{},
@@ -144,12 +148,10 @@ jQuery.noConflict();
 				}
 			});
 		},
-		/* download attendance file */
-		downloadworkshift:function(){
-			var workfrom=new Date(vars.fromdate.format('Y-m')+'-01');
-			var workto=workfrom.calc('1 month').calc('-1 day');
-			var offset=0;
-			var records=[];
+		/* download work schedule file */
+		downloadschedule:function(){
+			var fromdate=new Date(vars.fromdate.format('Y-m')+'-01');
+			var todate=fromdate.calc('1 month').calc('-1 day');
 			var week=['日','月','火','水','木','金','土'];
 			/* setup font */
 			pdfMake.fonts={
@@ -158,7 +160,9 @@ jQuery.noConflict();
 				}
 			};
 			/* reload datas */
-			functions.loadmonthlydatas(kintone.app.getId(),workfrom,workto,offset,records,function(){
+			vars.schedule.records=[];
+			vars.schedule.offset=0;
+			functions.loadschedules(kintone.app.getId(),fromdate,todate,function(){
 				var definition={
 					content:[],
 					defaultStyle:{
@@ -166,11 +170,20 @@ jQuery.noConflict();
 						fontSize:11
 					},
 					styles:{
-						header:{
+						caption:{
+							margin:[5,0,0,0]
+						},
+						title:{
 							alignment:'center',
 							fontSize:18
 						},
-						tablecell:{
+						table:{
+							margin:[0,5,0,0]
+						},
+						tablecellcaption:{
+							alignment:'center'
+						},
+						tablecellcontent:{
 							alignment:'left'
 						},
 						tableheader:{
@@ -178,6 +191,11 @@ jQuery.noConflict();
 						}
 					}
 				};
+				var assignments=function(employee){
+					var res='';
+					for (var i=0;i<employee.assignment.length;i++) res+=vars.apps['assignment'][employee.assignment[i]]+',';
+					return res.replace(/,$/g,'');
+				}
 				var worktimes=function(date,records){
 					var filter=$.grep(records,function(item,index){
 						return new Date(item[vars.config['shiftfromtime']].value.dateformat()).format('Y-m-d')==date.format('Y-m-d');
@@ -192,10 +210,9 @@ jQuery.noConflict();
 				};
 				for (var i=0;i<vars.apps['employee'].length;i++)
 				{
+					var day=fromdate;
 					var employee=vars.apps['employee'][i];
-					var workdate=workfrom;
-					/* rebuild view */
-					var filter=$.grep(records,function(item,index){
+					var filter=$.grep(vars.schedule.records,function(item,index){
 						var exists=false;
 						var fieldinfo=vars.fieldinfos[vars.config['employee']];
 						switch (fieldinfo.type)
@@ -211,27 +228,54 @@ jQuery.noConflict();
 						return exists;
 					});
 					var table={
-						widths:[50,50,'auto'],
+						widths:[30,30,'*'],
 						body:[
-							['日','曜日','勤務時間']
+							[
+								{text:'日',style:'tableheader'},
+								{text:'曜日',style:'tableheader'},
+								{text:'勤務時間',style:'tableheader'},
+							]
 						]
 					};
-					for (var i=0;i<workto.getDate();i++)
+					/* build table rows */
+					for (var i2=0;i2<todate.getDate();i2++)
 					{
 						table.body.push([
-							workdate.format('d'),
-							week[workfrom.calc(i.toString()+' day').getDay()],
-							worktimes(workdate,filter)
+							{text:day.format('d'),style:'tablecellcaption'},
+							{text:week[day.getDay()],style:'tablecellcaption'},
+							{text:worktimes(day,filter),style:'tablecellcontent'}
 						]);
-						workdate=workdate.calc('1 day');
+						day=day.calc('1 day');
 					}
-					definition.content.push({text:workfrom.getFullYear().toString()+'年'+(workfrom.getMonth()+1).toString()+'月勤務予定表',style:'header'});
-					definition.content.push({text:'氏名：'+employee.display});
-					if (vars.config['assignment'].length!=0) definition.content.push({text:'配属先：'+employee.display});
-					definition.content.push({table:table,pageBreak:'after'});
+					/* build pdf contents */
+					definition.content.push({text:fromdate.getFullYear().toString()+'年'+(fromdate.getMonth()+1).toString()+'月勤務予定表',style:'title'});
+					definition.content.push({
+						columns:[
+							{text:'氏名',style:'caption',width:50},
+							{text:employee.display,width:'auto'}
+						]
+					});
+					if (vars.config['assignment'].length!=0)
+						definition.content.push({
+							columns:[
+								{text:'配属先',style:'caption',width:50},
+								{text:assignments(employee),width:'auto'}
+							]
+						});
+					if (i<vars.apps['employee'].length-1) definition.content.push({table:table,pageBreak:'after',style:'table'});
+					else definition.content.push({table:table,style:'table'});
 				}
 				/* download */
-				pdfMake.createPdf(definition).open();
+				if (window.navigator.msSaveBlob)
+				{
+					/* IE */
+					pdfMake.createPdf(definition).download('schedule'+fromdate.format('Y-m')+'.pdf');
+				}
+				else
+				{
+					/* Others */
+					pdfMake.createPdf(definition).open();
+				}
 			});
 		},
 		/* display calculate worktime */
@@ -603,7 +647,7 @@ jQuery.noConflict();
 				else callback();
 			},function(error){});
 		},
-		loadmonthlydatas:function(appkey,from,to,offset,records,callback){
+		loadschedules:function(appkey,fromdate,todate,callback){
 			var sort='';
 			var query=kintone.app.getQueryCondition();
 			var body={
@@ -611,14 +655,14 @@ jQuery.noConflict();
 				query:''
 			};
 			query+=((query.length!=0)?' and ':'');
-			query+=vars.config['shiftfromtime']+'>"'+from.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
-			query+=' and '+vars.config['shiftfromtime']+'<"'+to.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
-			sort=' order by '+vars.config['shiftfromtime']+' asc limit '+limit.toString()+' offset '+offset.toString();
+			query+=vars.config['shiftfromtime']+'>"'+fromdate.calc('-1 day').format('Y-m-d')+'T23:59:59+0900"';
+			query+=' and '+vars.config['shiftfromtime']+'<"'+todate.calc('1 day').format('Y-m-d')+'T00:00:00+0900"';
+			sort=' order by '+vars.config['shiftfromtime']+' asc limit '+limit.toString()+' offset '+vars.schedule.offset.toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-				Array.prototype.push.apply(records,resp.records);
-				offset+=limit;
-				if (resp.records.length==limit) functions.loadmonthlydatas(appkey,from,to,offset,records,callback);
+				Array.prototype.push.apply(vars.schedule.records,resp.records);
+				vars.schedule.offset+=limit;
+				if (resp.records.length==limit) functions.loadschedules(appkey,fromdate,todate,callback);
 				else callback();
 			},function(error){});
 		}
@@ -663,7 +707,7 @@ jQuery.noConflict();
 		feed.append(next);
 		if ($('.custom-elements').size()) $('.custom-elements').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadworkshift">').addClass('custom-elements')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadschedule">').addClass('custom-elements')[0]);
 		kintone.app.getHeaderSpaceElement().appendChild(vars.legend.addClass('custom-elements')[0]);
 		$('body').append(vars.guidefrom.addClass('custom-elements')).append(vars.guideto.addClass('custom-elements'));
 		/* fixed header */
@@ -687,7 +731,7 @@ jQuery.noConflict();
 			container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
 		});
 		/* download pdf */
-		$('.downloadworkshift').text('勤務予定表ダウンロード').on('click',function(e){functions.downloadworkshift();});
+		$('.downloadschedule').text('勤務予定表ダウンロード').on('click',function(e){functions.downloadschedule();});
 		/* setup date value */
 		functions.adjustdates();
 		/* day pickup button */
