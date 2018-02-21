@@ -82,13 +82,14 @@ jQuery.noConflict();
 				}
 				container.append(contents);
 			}
-			if (vars.apps.length!=added.length)
-			{
-				var contents=functions.createcategory('その他');
-				for (var i=0;i<vars.apps.length;i++)
-					if (added.indexOf(vars.apps[i].appId)<0) contents.append(functions.createlink(vars.apps[i]));
-				container.append(contents);
-			}
+			if (vars.config['addothers']=='1')
+				if (vars.apps.length!=added.length)
+				{
+					var contents=functions.createcategory('その他');
+					for (var i=0;i<vars.apps.length;i++)
+						if (added.indexOf(vars.apps[i].appId)<0) contents.append(functions.createlink(vars.apps[i]));
+					container.append(contents);
+				}
 		});
 		return event;
 	});

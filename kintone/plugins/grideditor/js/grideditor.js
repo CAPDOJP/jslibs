@@ -802,8 +802,9 @@ jQuery.noConflict();
 				var displayfields=['$id'];
 				var message='';
 				var showed=false;
+				var top=$('.gaia-header-toolbar').outerHeight(false).toString()+'px';
 				/* create header and template */
-				vars.header.append($('<th>').text('No'));
+				vars.header.append($('<th>').css({'top':top}).append($('<span>').html('No')));
 				vars.template.append($('<td>').append($('<label>')));
 				$.each(sorted,function(index){
 					if (sorted[index] in resp.properties)
@@ -834,7 +835,7 @@ jQuery.noConflict();
 						if ($.inArray(fieldinfo.type,vars.excludes)<0)
 						{
 							/* append header field */
-							vars.header.append($('<th>').text(fieldinfo.label));
+							vars.header.append($('<th>').css({'top':top}).append($('<span>').html(fieldinfo.label)));
 							/* append template field */
 							vars.template.append(functions.fieldcreate(fieldinfo));
 							/* check hidden field */
@@ -856,7 +857,7 @@ jQuery.noConflict();
 					}
 				});
 				/* append header field */
-				vars.header.append($('<th>').text(''));
+				vars.header.append($('<th>').css({'top':top}).append($('<span>').html('&nbsp;')));
 				/* append button field */
 				vars.template.append($('<td class="buttoncell">')
 					.append($('<button class="customview-button edit-button">').on('click',function(){

@@ -942,6 +942,7 @@ var TermSelect=function(options){
 		isadd:false,
 		isdatepick:false,
 		issingle:false,
+		istimeonly:false,
 		buttons:{
 			ok:{
 				text:''
@@ -955,6 +956,7 @@ var TermSelect=function(options){
 	this.isadd=options.isadd;
 	this.isdatepick=options.isdatepick;
 	this.issingle=options.issingle;
+	this.istimeonly=options.istimeonly;
 	this.buttons=options.buttons;
 	/* valiable */
 	var my=this;
@@ -1117,7 +1119,7 @@ var TermSelect=function(options){
 		);
 	}
 	/* day pickup */
-	if (options.isdatepick)
+	if (options.isdatepick && !options.istimeonly)
 	{
 		this.template.find('.date').closest('div').css({'padding-left':'30px'})
 		.append(
@@ -1144,7 +1146,7 @@ var TermSelect=function(options){
 		my.contents.css({'height':(my.container.height()-my.buttonblock.outerHeight(true)).toString()+'px'});
 	});
 	/* day pickup */
-	if (options.isdatepick)
+	if (options.isdatepick && !options.istimeonly)
 	{
 		var activerow=null;
 		this.calendar=$('body').calendar({
@@ -1171,6 +1173,7 @@ TermSelect.prototype={
 				my.buttonblock.find('button#'+key).off('click').on('click',function(){
 					if (values!=null)
 					{
+						var date='';
 						var starttime='';
 						var endtime='';
 						var times=0;
@@ -1178,6 +1181,7 @@ TermSelect.prototype={
 						$.each($('div.term',my.container),function(){
 							var row=$(this);
 							if ($('.date',row).text().length==0) return true;
+							date=(!my.istimeonly)?$('.date',row).text():new Date().format('Y-m-d');
 							starttime=$('.starthour',row).val()+':'+$('.startminute',row).val();
 							endtime=$('.endhour',row).val()+':'+$('.endminute',row).val();
 							if (!my.issingle)
@@ -1188,11 +1192,11 @@ TermSelect.prototype={
 									endtime=$('.starthour',row).val()+':'+$('.startminute',row).val();
 								}
 								times=0;
-								times+=new Date(($('.date',row).text()+'T'+endtime+':00+09:00').dateformat()).getTime();
-								times-=new Date(($('.date',row).text()+'T'+starttime+':00+09:00').dateformat()).getTime();
+								times+=new Date((date+'T'+endtime+':00+09:00').dateformat()).getTime();
+								times-=new Date((date+'T'+starttime+':00+09:00').dateformat()).getTime();
 							}
 							datetimes.push({
-								date:$('.date',row).text(),
+								date:date,
 								starttime:starttime,
 								endtime:endtime,
 								hours:times/(1000*60*60)
@@ -1248,6 +1252,7 @@ jQuery.fn.termselect=function(options){
 		minutespan:30,
 		isdatepick:false,
 		issingle:false,
+		istimeonly:false,
 		buttons:{}
 	},options);
 	options.container=this;

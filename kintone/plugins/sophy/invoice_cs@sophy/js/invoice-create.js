@@ -114,7 +114,7 @@ jQuery.noConflict();
 					billfrom=vars.fromdate.calc('first-of-month').calc('1 month');
 					billto=billfrom.calc('1 month').calc('-1 day');
 					/* check status */
-					if (student['status'].value!='通塾中') continue;
+					if (student['status'].value=='退塾') continue;
 					/* check admissiondate */
 					if (vars.todate<admissiondate) continue;
 					/* check leave of absence */

@@ -1,95 +1,111 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">対象フィールド</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="trigger">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<table class="items">
-			<thead>
-				<tr>
-					<th>選択値</th>
-					<th>必須入力フィールド</th>
-					<th>開閉グループフィールド</th>
-					<th>自動入力フィールド</th>
-				</tr>
-			</thead>
+		<table class="fields">
 			<tbody>
-				<tr>
-					<td class="caption">
-						<span class="itemname"></span>
-						<input type="hidden" id="item">
-					</td>
+				<tr class="field">
 					<td>
-						<table class="inner requires">
-							<tbody>
+						<div class="kintoneplugin-label">対象フィールド</div>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="field">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addfield" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delfield" alt="x" title="削除">
+						</div>
+						<table class="outer settings">
+							<thead>
 								<tr>
-									<td>
-										<div class="kintoneplugin-select-outer">
-											<div class="kintoneplugin-select">
-												<select id="requirefield">
-													<option value=""></option>
-												</select>
-											</div>
-										</div>
-									</td>
-									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+									<th>選択値</th>
+									<th>必須入力フィールド</th>
+									<th>開閉グループフィールド</th>
+									<th>自動入力フィールド</th>
 								</tr>
-							</tbody>
-						</table>
-					</td>
-					<td>
-						<table class="inner groups">
+							</thead>
 							<tbody>
 								<tr>
-									<td>
-										<div class="kintoneplugin-select-outer">
-											<div class="kintoneplugin-select">
-												<select id="groupfield">
-													<option value=""></option>
-												</select>
-											</div>
-										</div>
-									</td>
-									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
-								</tr>
-							</tbody>
-						</table>
-					</td>
-					<td>
-						<table class="inner autos">
-							<tbody>
-								<tr>
-									<td>
-										<div class="kintoneplugin-select-outer">
-											<div class="kintoneplugin-select">
-												<select id="autofield">
-													<option value=""></option>
-												</select>
-											</div>
-										</div>
+									<td class="caption">
+										<span class="itemname"></span>
+										<input type="hidden" id="item">
 									</td>
 									<td>
-										<div class="kintoneplugin-select-outer">
-											<div class="kintoneplugin-select">
-												<select id="autovalue">
-													<option value=""></option>
-												</select>
-											</div>
-										</div>
-										<div class="kintoneplugin-input-outer">
-											<input type="text" id="autovalue" class="kintoneplugin-input-text" value="" >
-										</div>
+										<table class="inner requires">
+											<tbody>
+												<tr>
+													<td>
+														<div class="kintoneplugin-select-outer">
+															<div class="kintoneplugin-select">
+																<select id="requirefield">
+																	<option value=""></option>
+																</select>
+															</div>
+														</div>
+														<div class="buttons">
+															<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+															<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
 									</td>
-									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-									<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+									<td>
+										<table class="inner groups">
+											<tbody>
+												<tr>
+													<td>
+														<div class="kintoneplugin-select-outer">
+															<div class="kintoneplugin-select">
+																<select id="groupfield">
+																	<option value=""></option>
+																</select>
+															</div>
+														</div>
+														<div class="buttons">
+															<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+															<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</td>
+									<td>
+										<table class="inner autos">
+											<tbody>
+												<tr>
+													<td>
+														<div class="kintoneplugin-select-outer">
+															<div class="kintoneplugin-select">
+																<select id="autofield">
+																	<option value=""></option>
+																</select>
+															</div>
+														</div>
+													</td>
+													<td>
+														<div class="kintoneplugin-select-outer">
+															<div class="kintoneplugin-select">
+																<select id="autovalue">
+																	<option value=""></option>
+																</select>
+															</div>
+														</div>
+														<div class="kintoneplugin-input-outer">
+															<input type="text" id="autovalue" class="kintoneplugin-input-text" value="" >
+														</div>
+														<div class="buttons">
+															<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+															<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</td>
 								</tr>
 							</tbody>
 						</table>

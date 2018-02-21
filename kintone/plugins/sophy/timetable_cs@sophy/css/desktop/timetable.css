@@ -381,7 +381,7 @@ table.timetable-attend tbody tr td p.timetable-datacell span.lecture:not(.texton
   content:'出席';
 }
 table.timetable-attend tbody tr td p.timetable-datacell span.lecture:not(.textonly) > span.red:after{
-  content:'欠席';
+  content:'保留';
 }
 /* individual style (scheduling) */
 div.timetable-scheduling-container{

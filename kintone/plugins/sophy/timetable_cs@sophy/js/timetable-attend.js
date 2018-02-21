@@ -116,7 +116,7 @@ jQuery.noConflict();
 			.on('click',function(){
 				var cell=$(this).closest('td');
 				$.entryhistory(vars.config['history'],0,cell,function(record){
-					$('.lecture',cell).addClass('textonly').empty().append($('<span>').text('出席'));
+					$('.lecture',cell).empty().addClass('textonly').append($('<span>').text('出席'));
 				});
 			})
 			.on({
@@ -126,8 +126,8 @@ jQuery.noConflict();
 			var red=$($.redsvg())
 			.on('click',function(){
 				var cell=$(this).closest('td');
-				$.entryhistory(vars.config['history'],1,cell,function(record){
-					$('.lecture',cell).empty().addClass('textonly').append($('<span>').text('欠席'));
+				$.entrypending(cell,vars.progress,vars.apps[kintone.app.getId()],function(){
+					$('.lecture',cell).empty().addClass('textonly').append($('<span>').text('保留'));
 				});
 			})
 			.on({
@@ -169,7 +169,11 @@ jQuery.noConflict();
 						break;
 				}
 			}
-			else $('.lecture',cell).append($('<span>').addClass('button red').append(red));
+			else
+			{
+				if ($('#transferpending',cell).val()=='1') $('.lecture',cell).addClass('textonly').append($('<span>').text('保留'));
+				else $('.lecture',cell).append($('<span>').addClass('button red').append(red));
+			}
 			/* append balloon */
 			var balloon=$('<div class="timetable-balloon">');
 			var inner='';
@@ -234,8 +238,7 @@ jQuery.noConflict();
 							var exists=0;
 							if (item['studentcode'].value==heads[i]) exists++;
 							if (item['transfered'].value==0) exists++;
-							if (item['transferpending'].value==0) exists++;
-							return exists==3;
+							return exists==2;
 						});
 						/* rebuild view */
 						if (filter.length!=0) functions.build(filter);

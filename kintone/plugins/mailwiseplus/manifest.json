@@ -1,0 +1,49 @@
+{
+	"manifest_version":1,
+	"version":1,
+	"type":"APP",
+	"name":{
+		"ja":"kintone メールワイズ連携プラグイン【機能追加版】",
+		"en":"kintone MailWisePlus plug-in",
+		"zh":"kintone メールワイズ連携プラグイン【機能追加版】"
+	},
+	"description":{
+		"ja":"複数メールアドレスの履歴表示に対応したメールワイズ連携プラグインです。",
+		"en":"This plug-in is a mailwise interaction plug-in that supports multiple mail address history display",
+		"zh":"複数メールアドレスの履歴表示に対応したメールワイズ連携プラグインです。"
+	},
+	"icon": "image/icon.png",
+	"homepage_url":{
+		"ja":"http://www.tis2010.jp/",
+		"en":"http://www.tis2010.jp/",
+		"zh":"http://www.tis2010.jp/"
+	},
+	"desktop":{
+		"js":[
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+			"js/sweetalert.min.js",
+			"js/mailwiseplus.js"
+		],
+		"css":[
+			"css/51-modern-default.css",
+			"css/sweetalert.css",
+			"css/desktop/mailwiseplus.css"
+		]
+	},
+	"config":{
+		"html":"html/config.html",
+		"js":[
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+			"js/sweetalert.min.js",
+			"js/config.js"
+		],
+		"css":[
+			"css/51-jp-default.css",
+			"css/sweetalert.css"
+		]
+	}
+}

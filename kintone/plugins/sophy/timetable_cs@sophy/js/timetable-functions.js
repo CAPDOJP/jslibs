@@ -9,7 +9,7 @@ jQuery.extend({
 					app:param[counter].app,
 					query:''
 				};
-				if (param[counter].isstudent) body.query+='status in ("通塾中") ';
+				if (param[counter].isstudent) body.query+='status not in ("退塾") ';
 				if ($.minilecindex()==counter) body.query+='date>"'+new Date().calc('-1 day').format('Y-m-d')+'" ';
 				body.query+='order by $id asc limit '+param[counter].limit.toString()+' offset '+param[counter].offset.toString();
 				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -223,7 +223,7 @@ jQuery.extend({
 					starttime:{value:$('#starttime',cell).val()},
 					hours:{value:$('#hours',cell).val()},
 					lookback:{value:''},
-					motivation:{value:[]},
+					motivation:{value:''},
 					absence:{value:absence.toString()},
 					reporttable:{value:[]}
 				}

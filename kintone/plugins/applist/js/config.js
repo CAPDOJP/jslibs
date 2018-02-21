@@ -56,6 +56,7 @@ jQuery.noConflict();
 		if (Object.keys(config).length!==0)
 		{
 			categories=JSON.parse(config['category']);
+			if (config['addothers']=='1') $('input#addothers').prop('checked',true);
 			for (var i=0;i<categories.length;i++)
 			{
 				var category=categories[i];
@@ -105,6 +106,7 @@ jQuery.noConflict();
 			}
 		/* setup config */
 		config['category']=JSON.stringify(categories);
+		config['addothers']=($('input#addothers').prop('checked'))?'1':'0';
 		/* get view lists */
 		kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
 			var req=$.extend(true,{},resp);
