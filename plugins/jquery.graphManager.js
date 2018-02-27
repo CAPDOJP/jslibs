@@ -115,8 +115,8 @@ graphManager.prototype={
 				this.maxvalue=Math.max(this.maxvalue,this.minvalue*-1);
 				this.minvalue=Math.max(this.maxvalue,this.minvalue*-1)*-1;
 			}
+			else this.minvalue=0;
 		}
-		else this.minvalue=0;
 		if (this.scale.max==null)
 		{
 			if (this.maxvalue.toString().length>1)
