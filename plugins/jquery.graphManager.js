@@ -99,16 +99,16 @@ graphManager.prototype={
 		var padding={left:10,right:10,top:10,bottom:10,holizontal:20,vertical:20};
 		var path=new Path2D();
 		/* 目盛設定初期化 */
-		this.maxvalue=(!this.scale.max)?Number.MIN_SAFE_INTEGER:this.scale.max;
-		this.minvalue=(!this.scale.min)?Number.MAX_SAFE_INTEGER:this.scale.min;
+		this.maxvalue=(this.scale.max==null)?Number.MIN_SAFE_INTEGER:this.scale.max;
+		this.minvalue=(this.scale.min==null)?Number.MAX_SAFE_INTEGER:this.scale.min;
 		$.each(this.values,function(index){
 			var values=my.values[index];
 			$.each(values,function(index){
-				if (!my.scale.max && my.maxvalue<Math.ceil(values[index])) my.maxvalue=Math.ceil(values[index]);
-				if (!my.scale.min && my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
+				if (this.scale.max==null && my.maxvalue<Math.ceil(values[index])) my.maxvalue=Math.ceil(values[index]);
+				if (this.scale.min==null && my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
 			});
 		});
-		if (!this.scale.min)
+		if (this.scale.min==null)
 		{
 			if (this.minvalue<0)
 			{
@@ -117,7 +117,7 @@ graphManager.prototype={
 			}
 		}
 		else this.minvalue=0;
-		if (!this.scale.max)
+		if (this.scale.max==null)
 		{
 			if (this.maxvalue.toString().length>1)
 			{
