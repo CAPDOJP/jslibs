@@ -15,91 +15,17 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		loaded:0,
-		apps:{},
 		config:{},
-		offset:{}
+		fieldinfos:{},
+		params:{}
 	};
 	var events={
 		show:[
 			'app.record.create.show',
-			'app.record.edit.show'
+			'app.record.edit.show',
+			'mobile.app.record.create.show',
+			'mobile.app.record.edit.show'
 		]
-	};
-	var limit=500;
-	var functions={
-		loaddatas:function(appkey){
-	        kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:appkey,query:'order by $id asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString()},function(resp){
-	        	if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-	        	else Array.prototype.push.apply(vars.apps[appkey],resp.records);
-				vars.offset[appkey]+=limit;
-				if (resp.records.length==limit) functions.loaddatas(appkey);
-				else vars.loaded++;
-			},function(error){});
-		},
-		/* related data acquisition */
-		relations:function(options){
-			var options=$.extend({
-				basefield:'',
-				baseapp:'',
-				baseappfield:'',
-				istable:false,
-				fields:[]
-			},options);
-			setInterval(function(){
-				$.each($('body').fields(options.basefield),function(){
-					var counter=0;
-					var target=$(this);
-					var targetvalue=(target.val())?target.val():'';
-					if ($.data(target[0],'value')==null) $.data(target[0],'value','');
-					if ($.data(target[0],'value')==targetvalue) return;
-					$.data(target[0],'value',targetvalue);
-					if (options.istable) counter=target.closest('tbody').find('tr').index(target.closest('tr'));
-					/* set fields value */
-					$.each(options.fields,function(index){
-						var fieldvalues=$.extend({
-							relationfield:'',
-							relationapp:'',
-							relationappfield:'',
-							basecode:'',
-							relationcode:'',
-							lookup:false,
-							rewrite:true,
-						},options.fields[index]);
-						var exclude=false;
-						var field=$('body').fields(fieldvalues.relationfield)[counter];
-						if (!fieldvalues.rewrite)
-						{
-							if (field.val())
-								if (field.val().toString().length!=0) exclude=true;
-						}
-						if (!exclude)
-							if (targetvalue.length!=0)
-							{
-								var filterbase=$.grep(vars.apps[options.baseapp],function(item,index){return item[options.baseappfield].value==targetvalue;});
-								if (filterbase.length!=0)
-								{
-									var filterrelation=$.grep(vars.apps[fieldvalues.relationapp],function(item,index){
-										return item[fieldvalues.relationcode].value==filterbase[0][fieldvalues.basecode].value;
-									});
-									if (filterrelation.length!=0)
-									{
-										field.val(filterrelation[0][fieldvalues.relationappfield].value);
-										if (fieldvalues.lookup) field.parent().parent().find('button').eq(0).trigger('click');
-									}
-								}
-							}
-					});
-				});
-			},500);
-		},
-		/* loading wait */
-	    waitloaded:function(callback){
-	        setTimeout(function(){
-	            if (vars.loaded!=Object.keys(vars.apps).length) functions.waitloaded(callback);
-	            else callback();
-	        },1000);
-    	}
 	};
 	/*---------------------------------------------------------------
 	 kintone events
@@ -107,38 +33,107 @@ jQuery.noConflict();
 	kintone.events.on(events.show,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
-		var params=[];
-	    /* get configuration */
-	    $.each(JSON.parse(vars.config['relations']),function(index,values){
-	    	params[index]={
-	    		basefield:values['basefield'],
-	    		baseapp:values['baseapp'],
-	    		baseappfield:values['baseappfield'],
-	    		istable:(values['istable']=='1')?true:false,
-				fields:[]
-	    	};
-       		vars.apps[values['baseapp']]=null;
-	    	var fields=[];
-        	$.each(values['relations'],function(index,values){
-        		fields.push({
-		        	relationfield:values['relationfield'],
-		        	relationapp:values['relationapp'],
-		        	relationappfield:values['relationappfield'],
-		        	basecode:values['basecode'],
-		        	relationcode:values['relationcode'],
-        			lookup:(values['lookup']=='1')?true:false,
-        			rewrite:(values['rewrite']=='1')?false:true
-        		});
-        		vars.apps[values['relationapp']]=null;
-        	});
-        	params[index].fields=fields;
-	    });
-	    /* setup relation datas */
-	    $.each(vars.apps,function(key,values){vars.offset[key]=0;functions.loaddatas(key);})
-		/* loading wait */
-		functions.waitloaded(function(){
-			$.each(params,function(index){functions.relations(params[index]);});
-		});
+		/* get fieldinfo */
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+			vars.fieldinfos=$.fieldparallelize(resp.properties);
+			/* get configuration */
+			$.each(JSON.parse(vars.config['relations']),function(index,values){
+				vars.params[values['basefield']]={
+					baseapp:values['baseapp'],
+					baseappfield:values['baseappfield'],
+					basetype:values['basetype'],
+					istable:(values['istable']=='1')?true:false,
+					relations:[]
+				};
+				var relations=[];
+				$.each(values['relations'],function(index,values){
+					relations.push({
+						relationfield:values['relationfield'],
+						relationapp:values['relationapp'],
+						relationappfield:values['relationappfield'],
+						relationtype:values['relationtype'],
+						basecode:values['basecode'],
+						relationcode:values['relationcode'],
+						lookup:(values['lookup']=='1')?true:false,
+						rewrite:(values['rewrite']=='1')?false:true
+					});
+				});
+				vars.params[values['basefield']].relations=relations;
+			});
+			$.each(vars.params,function(key,values){
+				setInterval(function(){
+					$.each($('body').fields(key),function(){
+						var counter=0;
+						var base={
+							target:$(this),
+							value:null
+						};
+						base.value=(base.target.val())?base.target.val():'';
+						if ($.data(base.target[0],'value')==null) $.data(base.target[0],'value','');
+						if ($.data(base.target[0],'value')==base.value) return;
+						$.data(base.target[0],'value',base.value);
+						if (base.value.length!=0)
+						{
+							if (values.istable) counter=base.target.closest('tbody').find('tr').index(base.target.closest('tr'));
+							var body={
+								app:values.baseapp,
+								query:''
+							};
+							switch (values.basetype)
+							{
+								case 'NUMBER':
+									body.query=values.baseappfield+'='+base.value;
+									break;
+								case 'SINGLE_LINE_TEXT':
+									body.query=values.baseappfield+'="'+base.value+'"';
+									break;
+							}
+							kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+								if (resp.records.length==0) return;
+								for (var i=0;i<values.relations.length;i++)
+								{
+									var exclude=false;
+									var relation=values.relations[i];
+									var field=$('body').fields(relation.relationfield)[counter];
+									if (!relation.rewrite)
+									{
+										if (field.val())
+											if (field.val().toString().length!=0) exclude=true;
+									}
+									if (!exclude)
+									{
+										(function(record,relation,field){
+											var body={
+												app:relation.relationapp,
+												query:''
+											};
+											switch (relation.relationtype)
+											{
+												case 'NUMBER':
+													body.query=relation.relationcode+'='+record[relation.basecode].value;
+													break;
+												case 'SINGLE_LINE_TEXT':
+													body.query=relation.relationcode+'="'+record[relation.basecode].value+'"';
+													break;
+											}
+											kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+												if (resp.records.length==0) return;
+												field.val(resp.records[0][relation.relationappfield].value);
+												if (relation.lookup) field.parent().parent().find('button').eq(0).trigger('click');
+											},function(error){
+												swal('Error!',error.message,'error');
+											});
+										})(resp.records[0],relation,field);
+									}
+								}
+							},function(error){
+								swal('Error!',error.message,'error');
+							});
+						}
+					});
+				},250);
+			});
+		},function(error){});
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

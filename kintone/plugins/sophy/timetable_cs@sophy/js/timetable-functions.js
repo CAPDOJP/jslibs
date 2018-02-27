@@ -78,54 +78,58 @@ jQuery.extend({
 		for (var i=0;i<studentrecords.length;i++)
 		{
 			var student=studentrecords[i];
-			var studentcourse=(function(){
-				var res=null;
-				for (var i=0;i<student['coursetable'].value.length;i++)
-				{
-					var row=student['coursetable'].value[i].value;
-					if (!row['courseenddate'].value) row['courseenddate'].value='9999-12-31';
-					if (row['courseenddate'].value.length==0) row['courseenddate'].value='9999-12-31';
-					if (day>new Date(row['coursestartdate'].value.dateformat()).calc('-1 day') && day<new Date(row['courseenddate'].value.dateformat()).calc('1 day')) res=row;
-				}
-				return res;
-			})();
-			if (studentcourse==null) continue;
-			var course=$.grep(lecturerecords,function(item,index){return (item['code'].value==studentcourse['coursecode'].value);})[0];
-			var coursegrade=$.coursegrade(course,student['gradecode'].value);
-			/* check admissiondate */
-			if (day<new Date(student['admissiondate'].value.dateformat())) continue;
-			/* check leave of absence */
-			if (day>new Date(student['loafrom'].value.dateformat()).calc('-1 day') && day<new Date(student['loato'].value.dateformat()).calc('1 day')) continue;
-			/* check week schedule */
-			for (var i2=0;i2<studentcourse['courseweek'].value.length;i2++)
+			if (student['status'].value!='外部')
 			{
-				if (week.indexOf(studentcourse['courseweek'].value[i2])==day.getDay())
+				var studentcourse=(function(){
+					var res=null;
+					for (var i=0;i<student['coursetable'].value.length;i++)
+					{
+						var row=student['coursetable'].value[i].value;
+						if (!row['courseenddate'].value) row['courseenddate'].value='9999-12-31';
+						if (row['courseenddate'].value.length==0) row['courseenddate'].value='9999-12-31';
+						if (day>new Date(row['coursestartdate'].value.dateformat()).calc('-1 day') && day<new Date(row['courseenddate'].value.dateformat()).calc('1 day')) res=row;
+					}
+					return res;
+				})();
+				if (studentcourse==null) continue;
+				var course=$.grep(lecturerecords,function(item,index){return (item['code'].value==studentcourse['coursecode'].value);})[0];
+				var coursegrade=$.coursegrade(course,student['gradecode'].value);
+				/* check admissiondate */
+				if (day<new Date(student['admissiondate'].value.dateformat())) continue;
+				/* check leave of absence */
+				if (day>new Date(student['loafrom'].value.dateformat()).calc('-1 day') && day<new Date(student['loato'].value.dateformat()).calc('1 day')) continue;
+				/* check week schedule */
+				for (var i2=0;i2<studentcourse['courseweek'].value.length;i2++)
 				{
-					var reserved=$.grep(checkrecords,function(item,index){
-						var exists=0;
-						if (item['studentcode'].value==student['$id'].value) exists++;
-						if (item['appcode'].value==lecturecode) exists++;
-						if (item['starttime'].value==studentcourse['coursestarttime'].value.split(',')[i2]) exists++;
-						return exists==3;
-					});
-					if (reserved.length==0)
-						res.push({
-							'$id':{value:''},
-							studentcode:{value:student['$id'].value},
-							studentname:{value:student['name'].value},
-							appcode:{value:lecturecode},
-							appname:{value:lecturename},
-							coursecode:{value:course['code'].value},
-							coursename:{value:course['name'].value},
-							date:{value:day.format('Y-m-d')},
-							starttime:{value:studentcourse['coursestarttime'].value.split(',')[i2]},
-							hours:{value:coursegrade['hours'].value},
-							baserecordid:{value:null},
-							transfered:{value:0},
-							transfertimes:{value:0},
-							transferpending:{value:0},
-							transferlimit:{value:day.calc(limit+' month').format('Y-m-d')}
+					if (week.indexOf(studentcourse['courseweek'].value[i2])==day.getDay())
+					{
+						var reserved=$.grep(checkrecords,function(item,index){
+							var exists=0;
+							if (item['studentcode'].value==student['$id'].value) exists++;
+							if (item['appcode'].value==lecturecode) exists++;
+							if (item['date'].value==day.format('Y-m-d')) exists++;
+							if (item['starttime'].value==studentcourse['coursestarttime'].value.split(',')[i2]) exists++;
+							return exists==4;
 						});
+						if (reserved.length==0)
+							res.push({
+								'$id':{value:''},
+								studentcode:{value:student['$id'].value},
+								studentname:{value:student['name'].value},
+								appcode:{value:lecturecode},
+								appname:{value:lecturename},
+								coursecode:{value:course['code'].value},
+								coursename:{value:course['name'].value},
+								date:{value:day.format('Y-m-d')},
+								starttime:{value:studentcourse['coursestarttime'].value.split(',')[i2]},
+								hours:{value:coursegrade['hours'].value},
+								baserecordid:{value:null},
+								transfered:{value:0},
+								transfertimes:{value:0},
+								transferpending:{value:0},
+								transferlimit:{value:day.calc(limit+' month').format('Y-m-d')}
+							});
+					}
 				}
 			}
 		}
@@ -436,7 +440,7 @@ jQuery.extend({
 		};
 		body.query+='studentcode='+$('#studentcode',cell).val();
 		body.query+=' and appcode='+$('#appcode',cell).val();
-		body.query+=' and coursecode='+($('#coursecode',cell).val())?$('#coursecode',cell).val():'null';
+		body.query+=' and coursecode='+(($('#coursecode',cell).val())?$('#coursecode',cell).val():'null');
 		body.query+=' and date="'+$('#date',cell).val()+'"';
 		body.query+=' and starttime="'+$('#starttime',cell).val()+'"';
 		kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){

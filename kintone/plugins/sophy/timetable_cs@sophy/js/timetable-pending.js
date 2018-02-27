@@ -215,6 +215,7 @@ jQuery.noConflict();
 			else vars.const=vars.apps[vars.config['const']][0];
 			/* create termselect */
 			vars.termselect=$('body').termselect({
+				minutespan:15,
 				isadd:true,
 				isdatepick:true,
 				buttons:{

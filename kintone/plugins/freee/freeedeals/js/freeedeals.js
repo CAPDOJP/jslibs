@@ -37,11 +37,11 @@ jQuery.noConflict();
 			var request={};
 			var details=[];
 			var payments=[];
-			request['company_id']=$('select.companies').val();
+			request['company_id']=parseInt($('select.companies').val());
 			request['type']=$('select.dealtypes').val();
 			request['issue_date']=functions.createrequestvalue(record,vars.config['issue_date']);
 			request['due_date']=functions.createrequestvalue(record,vars.config['due_date']);
-			request['partner_id']=functions.createrequestvalue(record,vars.config['partner_id']);
+			request['partner_id']=functions.createrequestvalue(record,vars.config['partner_id'],'integer');
 			request['ref_number']=functions.createrequestvalue(record,vars.config['ref_number']);
 			if (!request['issue_date']) return null;
 			tablecode=vars.fieldinfos[vars.config['amount']].tablecode;
@@ -51,11 +51,11 @@ jQuery.noConflict();
 				{
 					var detail={};
 					var row=record[tablecode].value[i].value;
-					detail['amount']=functions.createrequestvalue(row,vars.config['amount']);
-					detail['account_item_id']=functions.createrequestvalue(row,vars.config['account_item_id']);
-					detail['tax_code']=functions.createrequestvalue(row,vars.config['tax_code']);
-					detail['item_id']=functions.createrequestvalue(row,vars.config['item_id']);
-					detail['section_id']=functions.createrequestvalue(row,vars.config['section_id']);
+					detail['amount']=functions.createrequestvalue(row,vars.config['amount'],'integer');
+					detail['account_item_id']=functions.createrequestvalue(row,vars.config['account_item_id'],'integer');
+					detail['tax_code']=functions.createrequestvalue(row,vars.config['tax_code'],'integer');
+					detail['item_id']=functions.createrequestvalue(row,vars.config['item_id'],'integer');
+					detail['section_id']=functions.createrequestvalue(row,vars.config['section_id'],'integer');
 					detail['description']=functions.createrequestvalue(row,vars.config['description']);
 					details.push(detail);
 				}
@@ -63,11 +63,11 @@ jQuery.noConflict();
 			else
 			{
 				var detail={};
-				detail['amount']=functions.createrequestvalue(record,vars.config['amount']);
-				detail['account_item_id']=functions.createrequestvalue(record,vars.config['account_item_id']);
-				detail['tax_code']=functions.createrequestvalue(record,vars.config['tax_code']);
-				detail['item_id']=functions.createrequestvalue(record,vars.config['item_id']);
-				detail['section_id']=functions.createrequestvalue(record,vars.config['section_id']);
+				detail['amount']=functions.createrequestvalue(record,vars.config['amount'],'integer');
+				detail['account_item_id']=functions.createrequestvalue(record,vars.config['account_item_id'],'integer');
+				detail['tax_code']=functions.createrequestvalue(record,vars.config['tax_code'],'integer');
+				detail['item_id']=functions.createrequestvalue(record,vars.config['item_id'],'integer');
+				detail['section_id']=functions.createrequestvalue(record,vars.config['section_id'],'integer');
 				detail['description']=functions.createrequestvalue(record,vars.config['description']);
 				details.push(detail);
 			}
@@ -90,8 +90,8 @@ jQuery.noConflict();
 						var row=record[tablecode].value[i].value;
 						payment['date']=functions.createrequestvalue(row,vars.config['from_walletable_date']);
 						payment['from_walletable_type']=functions.createrequestvalue(row,vars.config['from_walletable_type']);
-						payment['from_walletable_id']=functions.createrequestvalue(row,vars.config['from_walletable_id']);
-						payment['amount']=functions.createrequestvalue(row,vars.config['from_walletable_amount']);
+						payment['from_walletable_id']=functions.createrequestvalue(row,vars.config['from_walletable_id'],'integer');
+						payment['amount']=functions.createrequestvalue(row,vars.config['from_walletable_amount'],'integer');
 						payments.push(payment);
 					}
 				}
@@ -100,8 +100,8 @@ jQuery.noConflict();
 					var payment={};
 					payment['date']=functions.createrequestvalue(record,vars.config['from_walletable_date']);
 					payment['from_walletable_type']=functions.createrequestvalue(record,vars.config['from_walletable_type']);
-					payment['from_walletable_id']=functions.createrequestvalue(record,vars.config['from_walletable_id']);
-					payment['amount']=functions.createrequestvalue(record,vars.config['from_walletable_amount']);
+					payment['from_walletable_id']=functions.createrequestvalue(record,vars.config['from_walletable_id'],'integer');
+					payment['amount']=functions.createrequestvalue(record,vars.config['from_walletable_amount'],'integer');
 					payments.push(payment);
 				}
 			}
@@ -115,13 +115,26 @@ jQuery.noConflict();
 			});
 			return request;
 		},
-		createrequestvalue:function(record,field){
+		createrequestvalue:function(record,field,number){
 			var res=null;
 			if (field in record)
 			{
 				if (record[field].value)
 					if (record[field].value.toString().length!=0)
-						res=record[field].value;
+					{
+						switch (number)
+						{
+							case 'integer':
+								res=parseInt(record[field].value);
+								break;
+							case 'float':
+								res=parseFloat(record[field].value);
+								break;
+							default:
+								res=record[field].value;
+								break;
+						}
+					}
 			}
 			return res;
 		},

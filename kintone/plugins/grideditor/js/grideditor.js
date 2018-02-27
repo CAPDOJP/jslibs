@@ -467,7 +467,7 @@ jQuery.noConflict();
 				body={
 					app:kintone.app.getId(),
 					id:id,
-					record:record
+					record:{}
 				};
 				record[fieldinfo.code]={value:functions.fieldvalue(target,fieldinfo)};
 			}
@@ -751,7 +751,7 @@ jQuery.noConflict();
 		/* append elements */
 		vars.grid.append($('<thead>').append(vars.header));
 		vars.grid.append(vars.rows);
-		vars.container.empty().append(vars.grid);
+		vars.container.empty().append($('<p class="grideditor-caution">')).append(vars.grid);
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
 		var headerspace=$(kintone.app.getHeaderSpaceElement());
@@ -814,13 +814,13 @@ jQuery.noConflict();
 						if (fieldinfo.type in vars.disabled)
 						{
 							message='';
-							message+='以下のフィールドが配置されている場合は使用出来ません。\n\n';
 							$.each(vars.disabled,function(key,value){
-								message+=value+'\n';
+								message+=value+'/';
 							});
-							swal('Error!',message,'error');
-							vars.grid.hide();
-							return;
+							message=message.replace(/\/$/g,'');
+							message+='は一覧画面からの編集対象外です。';
+							message+='必須指定がなされている場合は登録時にエラーとなりますので、ご注意下さい。';
+							$('.grideditor-caution').text(message).show();
 						}
 						/* check required files */
 						if (fieldinfo.type=='FILE' && fieldinfo.required && !showed)

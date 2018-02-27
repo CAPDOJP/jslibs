@@ -35,13 +35,13 @@ jQuery.noConflict();
 		createrequest:function(record){
 			var tablecode='';
 			var request={};
-			var details=[];
-			request['company_id']=$('select.companies').val();
+			var docitems=[];
+			request['company_id']=parseInt($('select.companies').val());
 			request['type']=$('select.doctype').val();
-			request['partner_id']=functions.createrequestvalue(record,vars.config['partner_id']);
+			request['partner_id']=functions.createrequestvalue(record,vars.config['partner_id'],'integer');
 			request['partner_name']=functions.createrequestvalue(record,vars.config['partner_name']);
 			request['partner_zipcode']=functions.createrequestvalue(record,vars.config['partner_zipcode']);
-			request['partner_prefecture_code']=functions.createrequestvalue(record,vars.config['partner_prefecture_code']);
+			request['partner_prefecture_code']=functions.createrequestvalue(record,vars.config['partner_prefecture_code'],'integer');
 			request['partner_address1']=functions.createrequestvalue(record,vars.config['partner_address1']);
 			request['partner_address2']=functions.createrequestvalue(record,vars.config['partner_address2']);
 			request['partner_info']=functions.createrequestvalue(record,vars.config['partner_info']);
@@ -54,7 +54,7 @@ jQuery.noConflict();
 			request['doc_reference_id']=functions.createrequestvalue(record,vars.config['doc_reference_id']);
 			request['notes']=functions.createrequestvalue(record,vars.config['notes']);
 			request['tax_entry_method']=vars.config['taxshift'];
-			request['status']=$('select.docstatus').val();
+			request['status']=parseInt($('select.docstatus').val());
 			if (!request['partner_id']) return null;
 			if (!request['issue_date']) return null;
 			tablecode=vars.fieldinfos[vars.config['qty']].tablecode;
@@ -62,45 +62,58 @@ jQuery.noConflict();
 			{
 				for (var i=0;i<record[tablecode].value.length;i++)
 				{
-					var detail={};
+					var docitem={};
 					var row=record[tablecode].value[i].value;
 					var type=0;
-					var unitprice=functions.createrequestvalue(row,vars.config['unit_price']);
+					var unitprice=functions.createrequestvalue(row,vars.config['unit_price'],'integer');
 					if (unitprice)
 					{
-						if (parseInt(unitprice)>0) type=0;
+						if (unitprice>0) type=0;
 						else type=1;
 					}
 					else type=3;
-					detail['order']=i;
-					detail['qty']=(type!=3)?functions.createrequestvalue(row,vars.config['qty']):null;
-					detail['unit']=(type!=3)?functions.createrequestvalue(row,vars.config['unit']):null;
-					detail['unit_price']=unitprice;
-					detail['description']=functions.createrequestvalue(row,vars.config['breakdown']);
-					detail['account_item_id']=(type!=3)?functions.createrequestvalue(row,vars.config['account_item_id']):null;
-					detail['item_name']=(type!=3)?functions.createrequestvalue(row,vars.config['item_name']):null;
-					detail['section_name']=(type!=3)?functions.createrequestvalue(row,vars.config['section_name']):null;
-					detail['type']=type;
-					details.push(detail);
+					docitem['order']=i;
+					docitem['qty']=(type!=3)?functions.createrequestvalue(row,vars.config['qty'],'integer'):null;
+					docitem['unit']=(type!=3)?functions.createrequestvalue(row,vars.config['unit']):null;
+					docitem['unit_price']=unitprice;
+					docitem['description']=functions.createrequestvalue(row,vars.config['breakdown']);
+					docitem['account_item_id']=(type!=3)?functions.createrequestvalue(row,vars.config['account_item_id'],'integer'):null;
+					docitem['item_name']=(type!=3)?functions.createrequestvalue(row,vars.config['item_name']):null;
+					docitem['section_name']=(type!=3)?functions.createrequestvalue(row,vars.config['section_name']):null;
+					docitem['type']=type;
+					docitems.push(docitem);
 				}
 			}
-			request['details']=$.grep(details,function(item,index){
+			request['doc_items']=$.grep(docitems,function(item,index){
 				var exists=0;
 				if (item['qty']) exists++;
 				if (item['unit_price']) exists++;
 				if (item['description']) exists++;
 				return exists==3;
 			});
-			if (request['details'].length==0) return null;
+			if (request['doc_items'].length==0) return null;
 			return request;
 		},
-		createrequestvalue:function(record,field){
+		createrequestvalue:function(record,field,number){
 			var res=null;
 			if (field in record)
 			{
 				if (record[field].value)
 					if (record[field].value.toString().length!=0)
-						res=record[field].value;
+					{
+						switch (number)
+						{
+							case 'integer':
+								res=parseInt(record[field].value);
+								break;
+							case 'float':
+								res=parseFloat(record[field].value);
+								break;
+							default:
+								res=record[field].value;
+								break;
+						}
+					}
 			}
 			return res;
 		},

@@ -295,78 +295,95 @@ jQuery.noConflict();
 			vars.apps[kintone.app.getId()]=null;
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
-				var records=vars.apps[kintone.app.getId()];
-				/* clear balloon */
-				$('div.timetable-balloon').remove();
-				/* initialize rows */
-				vars.table.contents.find('tr').show();
-				/* initialize cells */
-				vars.table.contents.find('td').each(function(index){
-					var display=index-vars.fromdate.getDay();
-					var day=vars.fromdate.calc(display.toString()+' day');
-					var cell=$(this);
-					/* not process less than one day this month */
-					if (display<0) {cell.empty();return;}
-					/* not processing beyond the next month 1 day */
-					if (day.format('Y-m')!=vars.fromdate.format('Y-m')) {cell.empty();return;}
-					cell.empty();
-					cell.append($('<div class="timetable-monthly-days">')
-						.append($('<span>').text(display+1))
-						.append($('<button class="customview-button time-button">').text('タイムテーブルを表示').on('click',function(){
-							var query='';
-							query+='view='+vars.config.datetimetable+'&date='+day.format('Y-m-d');
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
-						}))
-					);
-					switch ((index+1)%7)
-					{
-						case 0:
-							//saturday's style
-							cell.find('span').css({'color':'#69B4C8'});
-							break;
-						case 1:
-							//sunday's style
-							cell.find('span').css({'color':'#FA8273'});
-							break;
-					}
-					var filter=$.grep(records,function(item,index){
-						return item['date'].value==day.format('Y-m-d');
-					});
-					/* append recoed of schedule */
-					if (day>new Date().calc('-1 day'))
-					{
-						var schedule=$.createschedule(
-							vars.apps[vars.config['student']],
-							vars.apps[vars.lecturekeys[0]],
-							filter,
-							vars.lecturekeys[0],
-							vars.lectures[vars.lecturekeys[0]].name,
-							vars.week,
-							day,
-							vars.const['transferlimit'].value
+				vars.apps[vars.config['history']]=null;
+				vars.offset[vars.config['history']]=0;
+				functions.loaddatas(vars.config['history'],function(){
+					var records=vars.apps[kintone.app.getId()];
+					/* clear balloon */
+					$('div.timetable-balloon').remove();
+					/* initialize rows */
+					vars.table.contents.find('tr').show();
+					/* initialize cells */
+					vars.table.contents.find('td').each(function(index){
+						var display=index-vars.fromdate.getDay();
+						var day=vars.fromdate.calc(display.toString()+' day');
+						var cell=$(this);
+						/* not process less than one day this month */
+						if (display<0) {cell.empty();return;}
+						/* not processing beyond the next month 1 day */
+						if (day.format('Y-m')!=vars.fromdate.format('Y-m')) {cell.empty();return;}
+						cell.empty();
+						cell.append($('<div class="timetable-monthly-days">')
+							.append($('<span>').text(display+1))
+							.append($('<button class="customview-button time-button">').text('タイムテーブルを表示').on('click',function(){
+								var query='';
+								query+='view='+vars.config.datetimetable+'&date='+day.format('Y-m-d');
+								window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+							}))
 						);
-						Array.prototype.push.apply(filter,schedule);
-						Array.prototype.push.apply(records,schedule);
-					}
-					filter=$.grep(filter,function(item,index){
-						var exists=0;
-						if (item['transfered'].value==0) exists++;
-						if (item['transferpending'].value==0) exists++;
-						return exists==2;
+						switch ((index+1)%7)
+						{
+							case 0:
+								//saturday's style
+								cell.find('span').css({'color':'#69B4C8'});
+								break;
+							case 1:
+								//sunday's style
+								cell.find('span').css({'color':'#FA8273'});
+								break;
+						}
+						var filter=$.grep(records,function(item,index){
+							var exists=0;
+							var check=item;
+							if (item['date'].value==day.format('Y-m-d')) exists++;
+							if ($.grep(vars.apps[vars.config['history']],function(item,index){
+								var exists=0;
+								if (item['studentcode'].value==check['studentcode'].value) exists++;
+								if (item['appcode'].value==check['appcode'].value) exists++;
+								if (item['coursecode'].value==check['coursecode'].value) exists++;
+								if (item['date'].value==check['date'].value) exists++;
+								if (item['starttime'].value==check['starttime'].value) exists++;
+								if (item['hours'].value==check['hours'].value) exists++;
+								return exists==6;
+							}).length==0) exists++;
+							return exists==2;
+						});
+						/* append recoed of schedule */
+						if (day>new Date(new Date().format('Y-m-d')).calc('-1 day'))
+						{
+							var schedule=$.createschedule(
+								vars.apps[vars.config['student']],
+								vars.apps[vars.lecturekeys[0]],
+								filter,
+								vars.lecturekeys[0],
+								vars.lectures[vars.lecturekeys[0]].name,
+								vars.week,
+								day,
+								vars.const['transferlimit'].value
+							);
+							Array.prototype.push.apply(filter,schedule);
+							Array.prototype.push.apply(records,schedule);
+						}
+						filter=$.grep(filter,function(item,index){
+							var exists=0;
+							if (item['transfered'].value==0) exists++;
+							if (item['transferpending'].value==0) exists++;
+							return exists==2;
+						});
+						/* sort */
+						filter.sort(function(a,b){
+							if(a['starttime'].value<b['starttime'].value) return -1;
+							if(a['starttime'].value>b['starttime'].value) return 1;
+							return 0;
+						});
+						/* rebuild view */
+						functions.build(filter,cell);
 					});
-					/* sort */
-					filter.sort(function(a,b){
-						if(a['starttime'].value<b['starttime'].value) return -1;
-						if(a['starttime'].value>b['starttime'].value) return 1;
-						return 0;
-					});
-					/* rebuild view */
-					functions.build(filter,cell);
+					/* check no element rows */
+					$.each(vars.table.contents.find('tr'),function(index,values){
+						if (!$(this).find('div').size()) $(this).hide();
+					})
 				});
-				/* check no element rows */
-				$.each(vars.table.contents.find('tr'),function(index,values){
-					if (!$(this).find('div').size()) $(this).hide();
-				})
 			});
 		},
 		/* reload datas */
@@ -512,6 +529,7 @@ jQuery.noConflict();
 			});
 			/* create termselect */
 			vars.termselect=$('body').termselect({
+				minutespan:15,
 				isadd:true,
 				isdatepick:true,
 				buttons:{

@@ -166,6 +166,7 @@ jQuery.noConflict();
 															listcode.append($('<option>').attr('value',fieldinfo.code).text('['+appname+']'+fieldinfo.label));
 														}
 													});
+													$.data(listappfield[0],'fieldinfos',fieldinfos);
 													if ($.hasData(listappfield[0]))
 														if ($.data(listappfield[0],'initialdata').length!=0)
 														{
@@ -237,6 +238,7 @@ jQuery.noConflict();
 		var rowfields=null;
 		var config=[];
 		var relations=[];
+		var fieldinfos={};
 		/* check values */
 		for (var i=0;i<vars.relationtable.rows.length;i++)
 		{
@@ -252,11 +254,13 @@ jQuery.noConflict();
 			values['basefield']=$('select#basefield',rowrelations).val();
 			values['baseapp']=vars.fieldinfos[$('select#basefield',rowrelations).val()].lookup.relatedApp.app;
 			values['baseappfield']=vars.fieldinfos[$('select#basefield',rowrelations).val()].lookup.relatedKeyField;
+			values['basetype']=vars.fieldinfos[$('select#basefield',rowrelations).val()].type;
 			values['istable']=(tablecode.length!=0)?'1':'0';
 			values['relations']=[];
 			for (var i2=0;i2<vars.fieldtable[i].rows.length;i2++)
 			{
 				rowfields=vars.fieldtable[i].rows.eq(i2);
+				fieldinfos=$.data($('select#relationappfield',rowfields)[0],'fieldinfos');
 				if ($('select#relationfield',rowfields).val()=='')
 				{
 					swal('Error!','表示フィールドを選択して下さい。','error');
@@ -309,6 +313,7 @@ jQuery.noConflict();
 					relationfield:$('select#relationfield',rowfields).val(),
 					relationapp:$('select#relationapp',rowfields).val(),
 					relationappfield:$('select#relationappfield',rowfields).val(),
+					relationtype:fieldinfos[$('select#relationappfield',rowfields).val()].type,
 					basecode:$('select#basecode',rowfields).val(),
 					relationcode:$('select#relationcode',rowfields).val(),
 					lookup:(vars.fieldinfos[$('select#relationfield',rowfields).val()].lookup)?'1':'0',

@@ -301,8 +301,9 @@ jQuery.noConflict();
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fields=resp.properties;
 			/* create form */
+			if ($('.mailwise-form').size()) $('.mailwise-form').remove();
 			var headspace=$(kintone.app.getHeaderMenuSpaceElement());
-			var mailform=$('<form>').attr('action','/m/mw.cgi').attr('method','POST').attr('target','_blank');
+			var mailform=$('<form class="mailwise-form">').attr('action','/m/mw.cgi').attr('method','POST').attr('target','_blank');
 			mailform.append($('<input type="hidden" name="Page">').val('PostConfirm'));
 			mailform.append($('<input type="hidden" name="MailTo">').val('1'));
 			mailform.append($('<input type="hidden" name="Subject">').val(''));
@@ -388,8 +389,9 @@ jQuery.noConflict();
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fields=resp.properties;
 			/* create form */
+			if ($('.mailwise-form').size()) $('.mailwise-form').remove();
 			var headspace=$('.gaia-argoui-app-toolbar-statusmenu');
-			var mailform=$('<form>').attr('action','/m/mw.cgi').attr('method','POST').attr('target','_blank');
+			var mailform=$('<form class="mailwise-form">').attr('action','/m/mw.cgi').attr('method','POST').attr('target','_blank');
 			mailform.append($('<input type="hidden" name="Page">').val('MailSend'));
 			mailform.append($('<input type="hidden" name="MailTo">').val('1'));
 			mailform.append($('<input type="hidden" name="To">').val(functions.field(vars.config.mailto,event.record).value));
@@ -427,6 +429,15 @@ jQuery.noConflict();
 				else mailform.submit();
 			});
 			/* create history */
+			vars.history={
+				limit:20,
+				offset:0,
+				error:null,
+				next:null,
+				prev:null,
+				table:null,
+				mails:[]
+			};
 			if(vars.config.historyspace)
 			{
 				var counter=0;

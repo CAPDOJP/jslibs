@@ -538,6 +538,7 @@ jQuery.noConflict();
 							var fieldcode='night';
 							if (filter.length==0) return true;
 							updatevalue.record[fieldcode+'id']={value:values[courses[0]].id.join(',')};
+							updatevalue.record[fieldcode+'bulkbill']={value:$('#courselist').val()};
 							updatevalues.push(updatevalue);
 						});
 						functions.updatestudents(updatevalues,message);
@@ -866,6 +867,7 @@ jQuery.noConflict();
 			});
 			/* create termselect */
 			vars.termselect=$('body').termselect({
+				minutespan:15,
 				buttons:{
 					ok:{
 						text:'OK'
@@ -876,6 +878,7 @@ jQuery.noConflict();
 				}
 			});
 			vars.termselectsingle=$('body').termselect({
+				minutespan:15,
 				issingle:true,
 				buttons:{
 					ok:{
@@ -976,8 +979,18 @@ jQuery.noConflict();
 								coursecontainer.show();
 								return;
 							}
-							courselist.empty().append($('<option>').attr('value','').text(''));
-							coursecontainer.hide();
+							if (index==vars.lecturekeys.length-2)
+							{
+								courselist.empty().append($('<option>').attr('value','').html('&nbsp;支払方法選択&nbsp;'));
+								courselist.append($('<option>').attr('value','0').html('&nbsp;分割&nbsp;'));
+								courselist.append($('<option>').attr('value','1').html('&nbsp;一括&nbsp;'));
+								coursecontainer.show();
+							}
+							else
+							{
+								courselist.empty().append($('<option>').attr('value','').text(''));
+								coursecontainer.hide();
+							}
 						}
 					});
 					vars.attendants.append(lecturecontainer);

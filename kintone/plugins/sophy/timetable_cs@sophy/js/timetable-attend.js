@@ -206,17 +206,16 @@ jQuery.noConflict();
 					var records=vars.apps[kintone.app.getId()];
 					var heads=[];
 					/* append recoed of schedule */
-					if (vars.date>new Date().calc('-1 day'))
-						Array.prototype.push.apply(records,$.createschedule(
-							vars.apps[vars.config['student']],
-							vars.apps[vars.lecturekeys[0]],
-							records,
-							vars.lecturekeys[0],
-							vars.lectures[vars.lecturekeys[0]].name,
-							vars.week,
-							vars.date,
-							vars.const['transferlimit'].value
-						));
+					Array.prototype.push.apply(records,$.createschedule(
+						vars.apps[vars.config['student']],
+						vars.apps[vars.lecturekeys[0]],
+						records,
+						vars.lecturekeys[0],
+						vars.lectures[vars.lecturekeys[0]].name,
+						vars.week,
+						vars.date,
+						vars.const['transferlimit'].value
+					));
 					/* sort */
 					records.sort(function(a,b){
 						if(a['starttime'].value<b['starttime'].value) return -1;

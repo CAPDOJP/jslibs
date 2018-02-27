@@ -63,52 +63,61 @@ jQuery.noConflict();
 							vars.progress.find('.message').text(params[vars.counter.param].caption+'データ登録中');
 							var error=false;
 							vars.counter.progress[params[vars.counter.param].key]=0;
-							for (var i=0;i<values.length;i++)
+							if (values.length==0)
 							{
-								if (error) return;
-								(function(record,appkey,key,indexes,total,callback){
-									var filter=$.grep(vars.records[key],function(item,index){
-										return item[indexes].value==record[indexes].value;
-									});
-									var body={};
-									var method='';
-									if (filter.length!=0)
-									{
-										$.each(filter[0],function(key,values){
-											if (values.type=='SUBTABLE') record[key]={value:values.value};
+								vars.counter.param++;
+								if (vars.counter.param<params.length) functions.downloadfreee(params,callback);
+								else callback();
+							}
+							else
+							{
+								for (var i=0;i<values.length;i++)
+								{
+									if (error) return;
+									(function(record,appkey,key,indexes,total,callback){
+										var filter=$.grep(vars.records[key],function(item,index){
+											return item[indexes].value==record[indexes].value;
 										});
-										method='PUT';
-										body={
-											app:appkey,
-											id:filter[0]['$id'].value,
-											record:record
-										};
-									}
-									else
-									{
-										method='POST';
-										body={
-											app:appkey,
-											record:record
-										};
-									}
-									kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
-										vars.counter.progress[key]++;
-										if (vars.counter.progress[key]<total)
+										var body={};
+										var method='';
+										if (filter.length!=0)
 										{
-											vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(vars.counter.progress[key]/total));
+											$.each(filter[0],function(key,values){
+												if (values.type=='SUBTABLE') record[key]={value:values.value};
+											});
+											method='PUT';
+											body={
+												app:appkey,
+												id:filter[0]['$id'].value,
+												record:record
+											};
 										}
+										else
+										{
+											method='POST';
+											body={
+												app:appkey,
+												record:record
+											};
+										}
+										kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
+											vars.counter.progress[key]++;
+											if (vars.counter.progress[key]<total)
+											{
+												vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(vars.counter.progress[key]/total));
+											}
+											else callback();
+										},function(error){
+											vars.progress.hide();
+											swal('Error!',error.message,'error');
+											error=true;
+										});
+									})(values[i],params[vars.counter.param].app,params[vars.counter.param].key,params[vars.counter.param].indexes,values.length,function(){
+										vars.counter.param++;
+										if (vars.counter.param<params.length) functions.downloadfreee(params,callback);
 										else callback();
-									},function(error){
-										vars.progress.hide();
-										swal('Error!',error.message,'error');
-										error=true;
 									});
-								})(values[i],params[vars.counter.param].app,params[vars.counter.param].key,params[vars.counter.param].indexes,values.length,function(){
-									vars.counter.param++;
-									if (vars.counter.param<params.length) functions.downloadfreee(params,callback);
-									else callback();
-								});
+								}
 							}
 						});
 					}

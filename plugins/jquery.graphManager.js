@@ -19,7 +19,9 @@
 *			@ scale			:目盛設定
 *							{
 *								position:【left:right】,
-*								width:幅
+*								width:幅,
+*								min:最小目盛,
+*								max:最大目盛
 *							}
 *			@ captions		:項目名
 *			@ captionformat	:項目名変換関数
@@ -43,7 +45,7 @@ var graphManager = function(options){
 	var options=$.extend({
 		canvas:null,
 		type:'line',
-		scale:{label:'',position:'left',width:0},
+		scale:{label:'',position:'left',width:0,min:null,max:null},
 		captions:[],
 		captionformat:null,
 		markers:[],
@@ -66,6 +68,8 @@ var graphManager = function(options){
 	this.minvalue=Number.MAX_SAFE_INTEGER;
 	if (!('position' in this.scale)) this.scale['position']='left';
 	if (!('width' in this.scale)) this.scale['width']=0;
+	if (!('min' in this.scale)) this.scale['min']=null;
+	if (!('max' in this.scale)) this.scale['max']=null;
 	if (this.graph[0].getContext)
 	{
 		this.context=this.graph[0].getContext('2d');
@@ -95,13 +99,13 @@ graphManager.prototype={
 		var padding={left:10,right:10,top:10,bottom:10,holizontal:20,vertical:20};
 		var path=new Path2D();
 		/* 目盛設定初期化 */
-		this.maxvalue=Number.MIN_SAFE_INTEGER;
-		this.minvalue=Number.MAX_SAFE_INTEGER;
+		this.maxvalue=(!this.scale.max)?Number.MIN_SAFE_INTEGER:this.scale.max;
+		this.minvalue=(!this.scale.min)?Number.MAX_SAFE_INTEGER:this.scale.min;
 		$.each(this.values,function(index){
 			var values=my.values[index];
 			$.each(values,function(index){
-				if (my.maxvalue<Math.ceil(values[index])) my.maxvalue=Math.ceil(values[index]);
-				if (my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
+				if (!this.scale.max && my.maxvalue<Math.ceil(values[index])) my.maxvalue=Math.ceil(values[index]);
+				if (!this.scale.min && my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
 			});
 		});
 		if (this.minvalue<0)

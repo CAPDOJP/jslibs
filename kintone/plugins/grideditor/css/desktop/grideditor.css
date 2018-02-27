@@ -1,4 +1,13 @@
 /* individual style */
+p.grideditor-caution{
+    background-color:#f44336;
+    color:#FFFFFF;
+    display:none;
+    line-height:2em;
+    margin:0px;
+    padding:0px 0.5em;
+    text-align:center;
+}
 table#grideditor{
     border-collapse:separate;
 }
