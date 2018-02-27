@@ -104,8 +104,8 @@ graphManager.prototype={
 		$.each(this.values,function(index){
 			var values=my.values[index];
 			$.each(values,function(index){
-				if (!this.scale.max && my.maxvalue<Math.ceil(values[index])) my.maxvalue=Math.ceil(values[index]);
-				if (!this.scale.min && my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
+				if (!my.scale.max && my.maxvalue<Math.ceil(values[index])) my.maxvalue=Math.ceil(values[index]);
+				if (!my.scale.min && my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
 			});
 		});
 		if (this.minvalue<0)
