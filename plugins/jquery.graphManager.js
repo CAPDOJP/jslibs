@@ -108,17 +108,23 @@ graphManager.prototype={
 				if (!my.scale.min && my.minvalue>Math.floor(values[index])) my.minvalue=Math.floor(values[index]);
 			});
 		});
-		if (this.minvalue<0)
+		if (!this.scale.min)
 		{
-			this.maxvalue=Math.max(this.maxvalue,this.minvalue*-1);
-			this.minvalue=Math.max(this.maxvalue,this.minvalue*-1)*-1;
+			if (this.minvalue<0)
+			{
+				this.maxvalue=Math.max(this.maxvalue,this.minvalue*-1);
+				this.minvalue=Math.max(this.maxvalue,this.minvalue*-1)*-1;
+			}
 		}
 		else this.minvalue=0;
-		if (this.maxvalue.toString().length>1)
+		if (!this.scale.max)
 		{
-			pow=Math.pow(10,this.maxvalue.toString().length-1);
-			this.maxvalue=Math.floor(this.maxvalue/pow)*pow+pow;
-			if (this.minvalue<0) this.minvalue=this.maxvalue*-1;
+			if (this.maxvalue.toString().length>1)
+			{
+				pow=Math.pow(10,this.maxvalue.toString().length-1);
+				this.maxvalue=Math.floor(this.maxvalue/pow)*pow+pow;
+				if (this.minvalue<0) this.minvalue=this.maxvalue*-1;
+			}
 		}
 		/* グラフ初期化 */
 		this.context.clearRect(0,0,this.graph.width(),this.graph.height());
