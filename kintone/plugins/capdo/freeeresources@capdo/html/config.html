@@ -1,0 +1,410 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Freee認証情報<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">Freeeで作成したアプリケーションのAppID・Secretを入力して下さい。</div>
+		<div class="kintoneplugin-block">
+			<span class="kintoneplugin-unit">AppID</span>
+			<div class="kintoneplugin-input-outer">
+				<input type="text" id="freeeappid" class="kintoneplugin-input-text" value="" >
+			</div>
+		</div>
+		<div class="kintoneplugin-block">
+			<span class="kintoneplugin-unit">Secret</span>
+			<div class="kintoneplugin-input-outer">
+				<input type="text" id="freeesecret" class="kintoneplugin-input-text" value="" >
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">勘定科目アプリ</div>
+		<div class="kintoneplugin-desc">Freeeの勘定科目を登録するアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="account" class="apps">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="account">
+			<thead>
+				<tr>
+					<th>Freeeフィールド</th>
+					<th>Kintoneフィールド</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="caption">
+						<span>勘定科目ID</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="id" class="fields number">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【数値フィールド】</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">
+						<span>勘定科目名</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="name" class="fields string">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【文字列(1行)フィールド】</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">
+						<span>税区分コード</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="default_tax_code" class="fields number">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【数値フィールド】</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">品目アプリ</div>
+		<div class="kintoneplugin-desc">Freeeの品目を登録するアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="item" class="apps">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="item">
+			<thead>
+				<tr>
+					<th>Freeeフィールド</th>
+					<th>Kintoneフィールド</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="caption">
+						<span>品目ID</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="id" class="fields number">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【数値フィールド】</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">
+						<span>品目名</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="name" class="fields string">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【文字列(1行)フィールド】</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">部門アプリ</div>
+		<div class="kintoneplugin-desc">Freeeの部門を登録するアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="section" class="apps">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="section">
+			<thead>
+				<tr>
+					<th>Freeeフィールド</th>
+					<th>Kintoneフィールド</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="caption">
+						<span>部門ID</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="id" class="fields number">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【数値フィールド】</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">
+						<span>部門名</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="name" class="fields string">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【文字列(1行)フィールド】</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">税区分アプリ</div>
+		<div class="kintoneplugin-desc">Freeeの税区分を登録するアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="tax" class="apps">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="tax">
+			<thead>
+				<tr>
+					<th>Freeeフィールド</th>
+					<th>Kintoneフィールド</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="caption">
+						<span>税区分コード</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="code" class="fields number">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【数値フィールド】</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">
+						<span>税区分名</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="name_ja" class="fields string">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【文字列(1行)フィールド】</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先アプリ</div>
+		<div class="kintoneplugin-desc">Freeeの取引先を登録するアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner" class="apps">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="partner">
+			<thead>
+				<tr>
+					<th>Freeeフィールド</th>
+					<th>Kintoneフィールド</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="caption">
+						<span>取引先ID</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="id" class="fields number">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【数値フィールド】</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">
+						<span>取引先名</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="name" class="fields string">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【文字列(1行)フィールド】</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">口座アプリ</div>
+		<div class="kintoneplugin-desc">Freeeの口座を登録するアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="walletable" class="apps">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<table class="walletable">
+			<thead>
+				<tr>
+					<th>Freeeフィールド</th>
+					<th>Kintoneフィールド</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="caption">
+						<span>口座ID</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="id" class="fields number">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【数値フィールド】</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">
+						<span>口座名</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="name" class="fields string">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【文字列(1行)フィールド】</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="caption">
+						<span>口座区分</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="type" class="fields string">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="caption">
+						<span>【文字列(1行)フィールド】</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

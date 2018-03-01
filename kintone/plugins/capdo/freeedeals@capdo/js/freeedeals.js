@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "freeedocs"
+* jQuery-Plugin "freeedeals"
 * Version: 3.0
 * Copyright (c) 2016 TIS
 *
@@ -35,63 +35,84 @@ jQuery.noConflict();
 		createrequest:function(record){
 			var tablecode='';
 			var request={};
-			var docitems=[];
+			var details=[];
+			var payments=[];
 			request['company_id']=parseInt($('select.companies').val());
-			request['type']=$('select.doctype').val();
-			request['partner_id']=functions.createrequestvalue(record,vars.config['partner_id'],'integer');
-			request['partner_name']=functions.createrequestvalue(record,vars.config['partner_name']);
-			request['partner_zipcode']=functions.createrequestvalue(record,vars.config['partner_zipcode']);
-			request['partner_prefecture_code']=functions.createrequestvalue(record,vars.config['partner_prefecture_code'],'integer');
-			request['partner_address1']=functions.createrequestvalue(record,vars.config['partner_address1']);
-			request['partner_address2']=functions.createrequestvalue(record,vars.config['partner_address2']);
-			request['partner_info']=functions.createrequestvalue(record,vars.config['partner_info']);
-			request['company_info']=functions.createrequestvalue(record,vars.config['company_info']);
-			request['description']=functions.createrequestvalue(record,vars.config['description']);
+			request['type']=$('select.dealtypes').val();
 			request['issue_date']=functions.createrequestvalue(record,vars.config['issue_date']);
-			request['sales_added_date']=functions.createrequestvalue(record,vars.config['sales_added_date']);
-			request['payment_date']=functions.createrequestvalue(record,vars.config['payment_date']);
-			request['bank_info']=functions.createrequestvalue(record,vars.config['bank_info']);
-			request['doc_reference_id']=functions.createrequestvalue(record,vars.config['doc_reference_id']);
-			request['notes']=functions.createrequestvalue(record,vars.config['notes']);
-			request['tax_entry_method']=vars.config['taxshift'];
-			request['status']=parseInt($('select.docstatus').val());
-			if (!request['partner_id']) return null;
+			request['due_date']=functions.createrequestvalue(record,vars.config['due_date']);
+			request['partner_id']=functions.createrequestvalue(record,vars.config['partner_id'],'integer');
+			request['ref_number']=functions.createrequestvalue(record,vars.config['ref_number']);
 			if (!request['issue_date']) return null;
-			tablecode=vars.fieldinfos[vars.config['qty']].tablecode;
+			tablecode=vars.fieldinfos[vars.config['amount']].tablecode;
 			if (tablecode.length!=0)
 			{
 				for (var i=0;i<record[tablecode].value.length;i++)
 				{
-					var docitem={};
+					var detail={};
 					var row=record[tablecode].value[i].value;
-					var type=0;
-					var unitprice=functions.createrequestvalue(row,vars.config['unit_price'],'integer');
-					if (unitprice)
-					{
-						if (unitprice>0) type=0;
-						else type=1;
-					}
-					else type=3;
-					docitem['order']=i;
-					docitem['qty']=(type!=3)?functions.createrequestvalue(row,vars.config['qty'],'integer'):null;
-					docitem['unit']=(type!=3)?functions.createrequestvalue(row,vars.config['unit']):null;
-					docitem['unit_price']=unitprice;
-					docitem['description']=functions.createrequestvalue(row,vars.config['breakdown']);
-					docitem['account_item_id']=(type!=3)?functions.createrequestvalue(row,vars.config['account_item_id'],'integer'):null;
-					docitem['item_name']=(type!=3)?functions.createrequestvalue(row,vars.config['item_name']):null;
-					docitem['section_name']=(type!=3)?functions.createrequestvalue(row,vars.config['section_name']):null;
-					docitem['type']=type;
-					docitems.push(docitem);
+					detail['amount']=functions.createrequestvalue(row,vars.config['amount'],'integer');
+					detail['account_item_id']=functions.createrequestvalue(row,vars.config['account_item_id'],'integer');
+					detail['tax_code']=functions.createrequestvalue(row,vars.config['tax_code'],'integer');
+					detail['item_id']=functions.createrequestvalue(row,vars.config['item_id'],'integer');
+					detail['section_id']=functions.createrequestvalue(row,vars.config['section_id'],'integer');
+					detail['description']=functions.createrequestvalue(row,vars.config['description']);
+					details.push(detail);
 				}
 			}
-			request['doc_items']=$.grep(docitems,function(item,index){
+			else
+			{
+				var detail={};
+				detail['amount']=functions.createrequestvalue(record,vars.config['amount'],'integer');
+				detail['account_item_id']=functions.createrequestvalue(record,vars.config['account_item_id'],'integer');
+				detail['tax_code']=functions.createrequestvalue(record,vars.config['tax_code'],'integer');
+				detail['item_id']=functions.createrequestvalue(record,vars.config['item_id'],'integer');
+				detail['section_id']=functions.createrequestvalue(record,vars.config['section_id'],'integer');
+				detail['description']=functions.createrequestvalue(record,vars.config['description']);
+				details.push(detail);
+			}
+			request['details']=$.grep(details,function(item,index){
 				var exists=0;
-				if (item['qty']) exists++;
-				if (item['unit_price']) exists++;
-				if (item['description']) exists++;
+				if (item['amount']) exists++;
+				if (item['account_item_id']) exists++;
+				if (item['tax_code']) exists++;
 				return exists==3;
 			});
-			if (request['doc_items'].length==0) return null;
+			if (request['details'].length==0) return null;
+			if (vars.config['addwalletable']=='1')
+			{
+				tablecode=vars.fieldinfos[vars.config['from_walletable_date']].tablecode;
+				if (tablecode.length!=0)
+				{
+					for (var i=0;i<record[tablecode].value.length;i++)
+					{
+						var payment={};
+						var row=record[tablecode].value[i].value;
+						payment['date']=functions.createrequestvalue(row,vars.config['from_walletable_date']);
+						payment['from_walletable_type']=functions.createrequestvalue(row,vars.config['from_walletable_type']);
+						payment['from_walletable_id']=functions.createrequestvalue(row,vars.config['from_walletable_id'],'integer');
+						payment['amount']=functions.createrequestvalue(row,vars.config['from_walletable_amount'],'integer');
+						payments.push(payment);
+					}
+				}
+				else
+				{
+					var payment={};
+					payment['date']=functions.createrequestvalue(record,vars.config['from_walletable_date']);
+					payment['from_walletable_type']=functions.createrequestvalue(record,vars.config['from_walletable_type']);
+					payment['from_walletable_id']=functions.createrequestvalue(record,vars.config['from_walletable_id'],'integer');
+					payment['amount']=functions.createrequestvalue(record,vars.config['from_walletable_amount'],'integer');
+					payments.push(payment);
+				}
+			}
+			request['payments']=$.grep(payments,function(item,index){
+				var exists=0;
+				if (item['date']) exists++;
+				if (item['from_walletable_type']) exists++;
+				if (item['from_walletable_id']) exists++;
+				if (item['amount']) exists++;
+				return exists==4;
+			});
 			return request;
 		},
 		createrequestvalue:function(record,field,number){
@@ -133,8 +154,7 @@ jQuery.noConflict();
 						kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 							vars.fieldinfos=$.fieldparallelize(resp.properties);
 							var companies=$('<div class="kintoneplugin-select-outer">').append($('<div class="kintoneplugin-select">').append($('<select class="companies">')));
-							var docstatus=$('<div class="kintoneplugin-select-outer">').append($('<div class="kintoneplugin-select">').append($('<select class="docstatus">')));
-							var doctype=$('<div class="kintoneplugin-select-outer">').append($('<div class="kintoneplugin-select">').append($('<select class="doctype">')));
+							var dealtypes=$('<div class="kintoneplugin-select-outer">').append($('<div class="kintoneplugin-select">').append($('<select class="dealtypes">')));
 							var register=$('<button type="button" class="kintoneplugin-button-dialog-ok register">');
 							/* setup elements */
 							$('select',companies).append($('<option>').attr('value','').html('&nbsp;事業所選択&nbsp;'));
@@ -143,29 +163,18 @@ jQuery.noConflict();
 								var company=json.companies[i];
 								$('select',companies).append($('<option>').attr('value',company.id).html('&nbsp;'+company.display_name+'&nbsp;'));
 							}
-							$('select',docstatus).append($('<option>').attr('value','').html('&nbsp;ステータス&nbsp;'));
-							$('select',docstatus).append($('<option>').attr('value','0').html('&nbsp;下書き&nbsp;'));
-							$('select',docstatus).append($('<option>').attr('value','3').html('&nbsp;発行&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','').html('&nbsp;書類種別&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','invoice').html('&nbsp;請求書&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','delivery_note').html('&nbsp;納品書&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','quotation').html('&nbsp;見積書&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','order_sheet').html('&nbsp;発注書&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','income_receipt').html('&nbsp;領収書&nbsp;'));
+							$('select',dealtypes).append($('<option>').attr('value','').html('&nbsp;収支区分選択&nbsp;'));
+							$('select',dealtypes).append($('<option>').attr('value','income').html('&nbsp;収入&nbsp;'));
+							$('select',dealtypes).append($('<option>').attr('value','expense').html('&nbsp;支出&nbsp;'));
 							register.text('Freeeへ取引登録').on('click',function(e){
 								if ($('select.companies').val().length==0)
 								{
 									swal('Error!','事業所を選択して下さい。','error');
 									return;
 								}
-								if ($('select.doctype').val().length==0)
+								if ($('select.dealtypes').val().length==0)
 								{
-									swal('Error!','書類種別を選択して下さい。','error');
-									return;
-								}
-								if ($('select.docstatus').val().length==0)
-								{
-									swal('Error!','発行ステータスを選択して下さい。','error');
+									swal('Error!','収支区分を選択して下さい。','error');
 									return;
 								}
 								swal({
@@ -185,16 +194,14 @@ jQuery.noConflict();
 							if (type=='list')
 							{
 								kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(doctype.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(docstatus.addClass('custom-elements')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(dealtypes.addClass('custom-elements')[0]);
 								kintone.app.getHeaderMenuSpaceElement().appendChild(register.addClass('custom-elements')[0]);
 							}
 							else
 							{
 								if ($('.gaia-app-statusbar').is(':visible')) $('.gaia-app-statusbar').css({'margin-right':'8px'});
 								$('.gaia-argoui-app-toolbar-statusmenu').append(companies.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(doctype.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(docstatus.addClass('custom-elements'));
+								$('.gaia-argoui-app-toolbar-statusmenu').append(dealtypes.addClass('custom-elements'));
 								$('.gaia-argoui-app-toolbar-statusmenu').append(register.addClass('custom-elements'));
 							}
 						});
@@ -260,7 +267,7 @@ jQuery.noConflict();
 				{
 					if (error) break;
 					kintone.proxy(
-						'https://api.freee.co.jp/api/1/docs',
+						'https://api.freee.co.jp/api/1/deals',
 						'POST',
 						{
 							'Authorization':'Bearer '+vars.accesstoken,
@@ -361,16 +368,46 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		functions.gettoken('list',function(){
-			functions.getcompanies('list');
-		});
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					functions.gettoken('list',function(){
+						functions.getcompanies('list');
+					});
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 		return event;
 	});
 	kintone.events.on(events.show,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		functions.gettoken('show',function(){
-			functions.getcompanies('show');
-		});
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					functions.gettoken('show',function(){
+						functions.getcompanies('show');
+					});
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

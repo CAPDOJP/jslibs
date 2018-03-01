@@ -523,6 +523,19 @@ jQuery.fn.fields=function(fieldcode,isgroup){
 		});
 	return fields;
 }
+jQuery.fn.fieldcontainer=function(field,type){
+	var res;
+	switch (type)
+	{
+		case 'NUMBER':
+			res=field.closest('.control-decimal-field-gaia');
+			break;
+		case 'SINGLE_LINE_TEXT':
+			res=field.closest('.control-single_line_text-field-gaia');
+			break;
+	}
+	return res;
+}
 /*
 *--------------------------------------------------------------------
 * color selector

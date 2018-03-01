@@ -1,0 +1,305 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Freee認証情報<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">Freeeで作成したアプリケーションのAppID・Secretを入力して下さい。</div>
+		<div class="kintoneplugin-block">
+			<span class="kintoneplugin-unit">AppID</span>
+			<div class="kintoneplugin-input-outer">
+				<input type="text" id="freeeappid" class="kintoneplugin-input-text" value="" >
+			</div>
+		</div>
+		<div class="kintoneplugin-block">
+			<span class="kintoneplugin-unit">Secret</span>
+			<div class="kintoneplugin-input-outer">
+				<input type="text" id="freeesecret" class="kintoneplugin-input-text" value="" >
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">税転嫁<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="taxshift">
+					<option value="2">外税</option>
+					<option value="1">内税</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">書類番号フィールド</div>
+		<div class="kintoneplugin-desc">書類番号(伝票番号)を設定するフィールドを指定して下さい。【数値/文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="doc_reference_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*入力内容は20桁以内にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">事業所連絡先フィールド</div>
+		<div class="kintoneplugin-desc">事業所連絡先を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="company_info">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*請求書発行元となる自社の部署名・担当者名です。</div>
+		<div class="kintoneplugin-caution">*入力内容は250文字以内にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">発生日フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">発生日を設定するフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="issue_date">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">売上計上日フィールド</div>
+		<div class="kintoneplugin-desc">売上計上日を設定するフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="sales_added_date">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">振込期日フィールド</div>
+		<div class="kintoneplugin-desc">振込期日を設定するフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="payment_date">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先IDフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">取引先IDを設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先名フィールド</div>
+		<div class="kintoneplugin-desc">取引先名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner_name">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先郵便番号フィールド</div>
+		<div class="kintoneplugin-desc">取引先郵便番号を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner_zipcode">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*入力内容はハイフン付きにして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先都道府県コードフィールド</div>
+		<div class="kintoneplugin-desc">取引先都道府県コードを設定するフィールドを指定して下さい。【数値/計算フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner_prefecture_code">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*Freee側コード体系に合わせる為、JISの都道府県コードから-1したコードにして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先住所1フィールド</div>
+		<div class="kintoneplugin-desc">取引先住所1を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner_address1">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先住所2フィールド</div>
+		<div class="kintoneplugin-desc">取引先住所2を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner_address2">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先連絡先フィールド</div>
+		<div class="kintoneplugin-desc">取引先連絡先を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner_info">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*取引先の部署名・担当者名です。</div>
+		<div class="kintoneplugin-caution">*入力内容は250文字以内にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">件名フィールド</div>
+		<div class="kintoneplugin-desc">件名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="description">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">振込先情報フィールド</div>
+		<div class="kintoneplugin-desc">振込先情報を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="bank_info">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*入力内容は250文字以内にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">備考フィールド</div>
+		<div class="kintoneplugin-desc">備考を設定するフィールドを指定して下さい。【文字列(複数行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="notes">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*入力内容は2000文字以内にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">品名フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">品名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="breakdown">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*入力内容は250文字以内にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">単価フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">単価を設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="unit_price">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">行種類について</div>
+		<div class="kintoneplugin-desc">1.割引行</div>
+		<div class="kintoneplugin-desc indent">単価フィールドの値がマイナスの場合は、割引行としてFreeeに登録します。</div>
+		<div class="kintoneplugin-desc">2.テキスト行</div>
+		<div class="kintoneplugin-desc indent">単価フィールドの値が空の場合は、テキスト行としてFreeeに登録します。</div>
+		<div class="kintoneplugin-caution indent">*テキスト行のみの請求書は、不可となります。</div>
+		<div class="kintoneplugin-label">合計金額について</div>
+		<div class="kintoneplugin-desc indent">合計金額がマイナスとなる場合は、Freee側が未対応の為、不可となります。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">数量フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">数量を設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="qty">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">単位フィールド</div>
+		<div class="kintoneplugin-desc">単位を設定するフィールドを指定して下さい。【文字列(1行)/ラジオボタン/ドロップダウンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="unit">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*入力内容は250文字以内にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">勘定科目IDフィールド</div>
+		<div class="kintoneplugin-desc">勘定科目IDを設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="account_item_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*未指定の場合は売上高になります。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">品目名フィールド</div>
+		<div class="kintoneplugin-desc">品目名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="item_name">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*完全一致する品目名がfreee側にない場合は、無視されます。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">部門名フィールド</div>
+		<div class="kintoneplugin-desc">部門名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="section_name">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*完全一致する部門名がfreee側にない場合は、無視されます。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

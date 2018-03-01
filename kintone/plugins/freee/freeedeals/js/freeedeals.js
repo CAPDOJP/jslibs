@@ -212,7 +212,7 @@ jQuery.noConflict();
 					}
 				},
 				function(error){
-					swal('Error!',error.message,'error');
+					swal('Error!','Freeeへの接続に失敗しました。','error');
 				}
 			);
 		},
@@ -304,7 +304,7 @@ jQuery.noConflict();
 						},
 						function(error){
 							functions.hideloading();
-							swal('Error!',error.message,'error');
+							swal('Error!','Freeeへの接続に失敗しました。','error');
 							error=true;
 						}
 					);

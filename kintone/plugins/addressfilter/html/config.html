@@ -1,0 +1,118 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<table class="outer settings">
+			<tbody>
+				<tr class="setting">
+					<td>
+						<div class="kintoneplugin-label margin">コード/名称フィールド</div>
+						<div class="kintoneplugin-desc">都道府県/市区町村/町名を設定するフィールドを指定して下さい。</div>
+						<table class="inner">
+							<thead>
+								<tr>
+									<th></th>
+									<th>コード<span class="kintoneplugin-require">*</span>【数値フィールド】</th>
+									<th>名称【文字列(1行)フィールド】</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="caption"><span>都道府県</span></td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="prefecture">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="prefecturename">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td class="caption"><span>市区町村</span></td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="city">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="cityname">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td class="caption"><span>町名</span></td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="street">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="streetname">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">連結住所フィールド</div>
+							<div class="kintoneplugin-desc">住所を連結して表示する場合は、そのフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+							<div class="kintoneplugin-select-outer">
+								<div class="kintoneplugin-select">
+									<select id="address">
+										<option value=""></option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">郵便番号フィールド</div>
+							<div class="kintoneplugin-desc">郵便番号を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+							<div class="kintoneplugin-select-outer">
+								<div class="kintoneplugin-select">
+									<select id="zip">
+										<option value=""></option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

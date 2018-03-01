@@ -108,6 +108,7 @@ jQuery.noConflict();
 		{
 			$('input#freeeappid').val(config['freeeappid']);
 			$('input#freeesecret').val(config['freeesecret']);
+			$('input#license').val(config['license']);
 			$.each($('.apps'),function(index){
 				var id=$(this).attr('id');
 				var table=$('.'+id);
@@ -142,6 +143,11 @@ jQuery.noConflict();
 			swal('Error!','FreeeSecretを入力して下さい。','error');
 			return;
 		}
+		if ($('input#license').val().length==0)
+		{
+			swal('Error!','ライセンス認証URLを入力して下さい。','error');
+			return;
+		}
 		/* setup config */
 		$.each($('.apps'),function(index){
 			var id=$(this).attr('id');
@@ -155,6 +161,7 @@ jQuery.noConflict();
 		})
 		config['freeeappid']=$('input#freeeappid').val();
 		config['freeesecret']=$('input#freeesecret').val();
+		config['license']=$('input#license').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

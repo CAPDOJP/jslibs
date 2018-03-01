@@ -1,0 +1,47 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 都道府県/市区町村/町名選択プラグイン",
+        "en":"kintone Address Filter plug-in",
+        "zh":"kintone 都道府県/市区町村/町名選択プラグイン"
+    },
+    "description":{
+        "ja":"都道府県/市区町村/町名で階層区分化したドロップダウンフィールドを元に住所を選択するプラグインです。郵便番号からの検索も出来ます。",
+        "en":"This plug-in to selects an address from the drop-down field hierarchically segmented by prefecture / city / town / town name. You can also search from zip codes.",
+        "zh":"都道府県/市区町村/町名で階層区分化したドロップダウンフィールドを元に住所を選択するプラグインです。郵便番号からの検索も出来ます。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/addressfilter.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/51-modern-default.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

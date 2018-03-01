@@ -1,0 +1,48 @@
+{
+	"manifest_version":1,
+	"version":1,
+	"type":"APP",
+	"name":{
+		"ja":"kintone 会計ソフトFreee取引登録プラグイン@キャップドゥ",
+		"en":"kintone Freee-Deals plug-in",
+		"zh":"kintone 会計ソフトFreee取引登録プラグイン@キャップドゥ"
+	},
+	"description":{
+		"ja":"Kintoneからクラウド会計ソフトFreeeへ取引データを登録するプラグインです。",
+		"en":"This plug-in registers transaction data from Kintone to cloud accounting software Freee",
+		"zh":"Kintoneからクラウド会計ソフトFreeeへ取引データを登録するプラグインです。"
+	},
+	"icon": "image/icon.png",
+	"homepage_url":{
+        "ja":"http://www.capdo-jp.com/",
+        "en":"http://www.capdo-jp.com/",
+        "zh":"http://www.capdo-jp.com/"
+	},
+	"desktop":{
+		"js":[
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+			"js/sweetalert.min.js",
+			"js/freeedeals.js"
+		],
+		"css":[
+			"css/51-modern-default.css",
+            "css/loading.css",
+			"css/sweetalert.css"
+		]
+	},
+	"config":{
+		"html":"html/config.html",
+		"js":[
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+			"js/sweetalert.min.js",
+			"js/config.js"
+		],
+		"css":[
+			"css/51-jp-default.css",
+			"css/sweetalert.css"
+		]
+	}
+}

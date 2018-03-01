@@ -361,16 +361,46 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		functions.gettoken('list',function(){
-			functions.getcompanies('list');
-		});
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					functions.gettoken('list',function(){
+						functions.getcompanies('list');
+					});
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 		return event;
 	});
 	kintone.events.on(events.show,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		functions.gettoken('show',function(){
-			functions.getcompanies('show');
-		});
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					functions.gettoken('show',function(){
+						functions.getcompanies('show');
+					});
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

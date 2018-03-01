@@ -311,11 +311,26 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
-		$('body').append(vars.progress);
-		functions.gettoken(function(){
-			functions.getcompanies();
-		});
+		kintone.proxy(
+			vars.config['license']+'?domain='+$(location).attr('host').replace(/\.cybozu\.com/g,''),
+			'GET',
+			{},
+			{},
+			function(body,status,headers){
+				if (status>=200 && status<300)
+				{
+					var json=JSON.parse(body);
+					if (parseInt('0'+json.permit)==0) {swal('Error!','ライセンスが登録されていません。','error');return;}
+					vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
+					$('body').append(vars.progress);
+					functions.gettoken(function(){
+						functions.getcompanies();
+					});
+				}
+				else swal('Error!','ライセンス認証に失敗しました。','error');
+			},
+			function(error){swal('Error!','ライセンス認証に失敗しました。','error');}
+		);
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

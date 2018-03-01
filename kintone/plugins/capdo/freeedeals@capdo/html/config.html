@@ -1,0 +1,190 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Freee認証情報<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">Freeeで作成したアプリケーションのAppID・Secretを入力して下さい。</div>
+		<div class="kintoneplugin-block">
+			<span class="kintoneplugin-unit">AppID</span>
+			<div class="kintoneplugin-input-outer">
+				<input type="text" id="freeeappid" class="kintoneplugin-input-text" value="" >
+			</div>
+		</div>
+		<div class="kintoneplugin-block">
+			<span class="kintoneplugin-unit">Secret</span>
+			<div class="kintoneplugin-input-outer">
+				<input type="text" id="freeesecret" class="kintoneplugin-input-text" value="" >
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">発生日フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">発生日を設定するフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="issue_date">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">支払期日フィールド</div>
+		<div class="kintoneplugin-desc">支払期日を設定するフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="due_date">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引先IDフィールド</div>
+		<div class="kintoneplugin-desc">取引先IDを設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="partner_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">管理番号フィールド</div>
+		<div class="kintoneplugin-desc">管理番号(伝票番号)を設定するフィールドを指定して下さい。【数値/文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="ref_number">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">取引金額フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">取引金額を設定するフィールドを指定して下さい。【数値/計算フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="amount">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*取引金額フィールドの値は税込金額にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">勘定科目IDフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">勘定科目IDを設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="account_item_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">税区分コードフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">税区分コードを設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="tax_code">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">品目IDフィールド</div>
+		<div class="kintoneplugin-desc">品目IDを設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="item_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">部門IDフィールド</div>
+		<div class="kintoneplugin-desc">部門IDを設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="section_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">備考フィールド</div>
+		<div class="kintoneplugin-desc">備考を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="description">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">決済情報設定</div>
+		<div class="kintoneplugin-desc">Freeeへの登録に決済情報を含める場合は、チェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="addwalletable" value="0">決済情報を同時に登録する</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">決済日フィールド</div>
+		<div class="kintoneplugin-desc">決済日を設定するフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="from_walletable_date">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">口座区分フィールド</div>
+		<div class="kintoneplugin-desc">口座区分を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="from_walletable_type">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">口座IDフィールド</div>
+		<div class="kintoneplugin-desc">口座IDを設定するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="from_walletable_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">決済金額フィールド</div>
+		<div class="kintoneplugin-desc">決済金額を設定するフィールドを指定して下さい。【数値/計算フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="from_walletable_amount">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>
