@@ -527,12 +527,83 @@ jQuery.fn.fieldcontainer=function(field,type){
 	var res;
 	switch (type)
 	{
+		case 'CALC':
+			res=field.closest('.control-calc-field-gaia');
+			break;
+		case 'CHECK_BOX':
+			res=field.closest('.control-multiple_check-field-gaia');
+			break;
+		case 'CREATED_TIME':
+			res=field.closest('.control-created_at-field-gaia');
+			break;
+		case 'CREATOR':
+			res=field.closest('.control-creator-field-gaia');
+			break;
+		case 'DATE':
+			res=field.closest('.control-date-field-gaia');
+			break;
+		case 'DATETIME':
+			res=field.closest('.control-datetime-field-gaia');
+			break;
+		case 'DROP_DOWN':
+			res=field.closest('.control-single_select-field-gaia');
+			break;
+		case 'FILE':
+			res=field.closest('.control-file-field-gaia');
+			break;
+		case 'GROUP_SELECT':
+			res=field.closest('.control-group_select-field-gaia');
+			break;
+		case 'HR':
+			res=field.closest('.control-hr-field-gaia');
+			break;
+		case 'LABEL':
+			res=field.closest('.control-label-field-gaia');
+			break;
+		case 'LINK':
+			res=field.closest('.control-link-field-gaia');
+			break;
+		case 'MODIFIER':
+			res=field.closest('.control-modifier-field-gaia');
+			break;
+		case 'MULTI_LINE_TEXT':
+			res=field.closest('.control-multiple_line_text-field-gaia');
+			break;
+		case 'MULTI_SELECT':
+			res=field.closest('.control-multiple_select-field-gaia');
+			break;
 		case 'NUMBER':
 			res=field.closest('.control-decimal-field-gaia');
+			break;
+		case 'ORGANIZATION_SELECT':
+			res=field.closest('.control-organization_select-field-gaia');
+			break;
+		case 'RADIO_BUTTON':
+			res=field.closest('.control-single_check-field-gaia');
+			break;
+		case 'RECORD_NUMBER':
+			res=field.closest('.control-record_id-field-gaia');
+			break;
+		case 'REFERENCE_TABLE':
+			res=field.closest('.control-reference_table-field-gaia');
+			break;
+		case 'RICH_TEXT':
+			res=field.closest('.control-editor-field-gaia');
 			break;
 		case 'SINGLE_LINE_TEXT':
 			res=field.closest('.control-single_line_text-field-gaia');
 			break;
+		case 'SPACER':
+			res=field.closest('.control-spacer-field-gaia');
+			break;
+		case 'TIME':
+			res=field.closest('.control-time-field-gaia');
+			break;
+		case 'UPDATED_TIME':
+			res=field.closest('.control-modified_at-field-gaia');
+			break;
+		case 'USER_SELECT':
+			res=field.closest('.control-user_select-field-gaia');
 	}
 	return res;
 }

@@ -57,17 +57,16 @@ jQuery.noConflict();
 					/* check field type */
 					switch (fieldinfo.type)
 					{
-						case 'NUMBER':
-							$('select#prefecture').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							$('select#city').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							$('select#street').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							break;
 						case 'SINGLE_LINE_TEXT':
-							$('select#prefecturename').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							$('select#cityname').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							$('select#streetname').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							$('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							$('select#zip').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							/* exclude lookup */
+							if (!fieldinfo.lookup)
+							{
+								$('select#prefecture').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#city').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#street').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#zip').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							}
 					}
 				}
 			});
@@ -88,11 +87,8 @@ jQuery.noConflict();
 					else add=true;
 					row=vars.settingtable.rows.last();
 					$('select#prefecture',row).val(settings[i].prefecture);
-					$('select#prefecturename',row).val(settings[i].prefecturename);
 					$('select#city',row).val(settings[i].city);
-					$('select#cityname',row).val(settings[i].cityname);
 					$('select#street',row).val(settings[i].street);
-					$('select#streetname',row).val(settings[i].streetname);
 					$('select#address',row).val(settings[i].address);
 					$('select#zip',row).val(settings[i].zip);
 				}
@@ -113,74 +109,50 @@ jQuery.noConflict();
 			/* check values */
 			if ($('select#prefecture',row).val()=='')
 			{
-				swal('Error!','都道府県コードを指定して下さい。','error');
+				swal('Error!','都道府県を指定して下さい。','error');
 				return;
 			}
 			if ($('select#city',row).val()=='')
 			{
-				swal('Error!','市区町村コードを指定して下さい。','error');
+				swal('Error!','市区町村を指定して下さい。','error');
 				return;
 			}
 			if ($('select#street',row).val()=='')
 			{
-				swal('Error!','町名コードを指定して下さい。','error');
+				swal('Error!','町名を指定して下さい。','error');
 				return;
 			}
 			tablecodes['prefecture']=($('select#prefecture',row).val().length!=0)?vars.fieldinfos[$('select#prefecture',row).val()].tablecode:'';
-			tablecodes['prefecturename']=($('select#prefecturename',row).val().length!=0)?vars.fieldinfos[$('select#prefecturename',row).val()].tablecode:'';
 			tablecodes['city']=($('select#city',row).val().length!=0)?vars.fieldinfos[$('select#city',row).val()].tablecode:'';
-			tablecodes['cityname']=($('select#cityname',row).val().length!=0)?vars.fieldinfos[$('select#cityname',row).val()].tablecode:'';
 			tablecodes['street']=($('select#street',row).val().length!=0)?vars.fieldinfos[$('select#street',row).val()].tablecode:'';
-			tablecodes['streetname']=($('select#streetname',row).val().length!=0)?vars.fieldinfos[$('select#streetname',row).val()].tablecode:'';
 			tablecodes['address']=($('select#address',row).val().length!=0)?vars.fieldinfos[$('select#address',row).val()].tablecode:'';
 			tablecodes['zip']=($('select#zip',row).val().length!=0)?vars.fieldinfos[$('select#zip',row).val()].tablecode:'';
 			if (tablecodes['prefecture']!=tablecodes['city'])
 			{
-				swal('Error!','都道府県コードと市区町村コードの指定は同一テーブルにして下さい。','error');
+				swal('Error!','都道府県と市区町村の指定は同一テーブルにして下さい。','error');
 				return;
 			}
 			if (tablecodes['prefecture']!=tablecodes['street'])
 			{
-				swal('Error!','都道府県コードと町名コードの指定は同一テーブルにして下さい。','error');
+				swal('Error!','都道府県と町名の指定は同一テーブルにして下さい。','error');
 				return;
 			}
-			if ($('select#prefecturename',row).val().length!=0)
-				if (tablecodes['prefecture']!=tablecodes['prefecturename'])
-				{
-					swal('Error!','都道府県コードと都道府県名の指定は同一テーブルにして下さい。','error');
-					return;
-				}
-			if ($('select#cityname',row).val().length!=0)
-				if (tablecodes['prefecture']!=tablecodes['cityname'])
-				{
-					swal('Error!','都道府県コードと市区町村名の指定は同一テーブルにして下さい。','error');
-					return;
-				}
-			if ($('select#streetname',row).val().length!=0)
-				if (tablecodes['prefecture']!=tablecodes['streetname'])
-				{
-					swal('Error!','都道府県コードと町名の指定は同一テーブルにして下さい。','error');
-					return;
-				}
 			if ($('select#address',row).val().length!=0)
 				if (tablecodes['prefecture']!=tablecodes['address'])
 				{
-					swal('Error!','都道府県コードと連結住所の指定は同一テーブルにして下さい。','error');
+					swal('Error!','都道府県と連結住所の指定は同一テーブルにして下さい。','error');
 					return;
 				}
 			if ($('select#zip',row).val().length!=0)
 				if (tablecodes['prefecture']!=tablecodes['zip'])
 				{
-					swal('Error!','都道府県コードと郵便番号の指定は同一テーブルにして下さい。','error');
+					swal('Error!','都道府県と郵便番号の指定は同一テーブルにして下さい。','error');
 					return;
 				}
 			settings.push({
 				prefecture:$('select#prefecture',row).val(),
-				prefecturename:$('select#prefecturename',row).val(),
 				city:$('select#city',row).val(),
-				cityname:$('select#cityname',row).val(),
 				street:$('select#street',row).val(),
-				streetname:$('select#streetname',row).val(),
 				address:$('select#address',row).val(),
 				zip:$('select#zip',row).val(),
 				tablecode:tablecodes['prefecture']

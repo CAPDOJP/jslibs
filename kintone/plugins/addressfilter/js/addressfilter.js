@@ -16,7 +16,8 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		template:null,
-		config:{}
+		config:{},
+		zips:{}
 	};
 	var events={
 		show:[
@@ -42,7 +43,7 @@ jQuery.noConflict();
 							for (var i=0;i<json.records.length;i++)
 							{
 								var record=json.records[i];
-								list.append($('<option>').attr('value',record.id).html('&nbsp;'+record.name+'&nbsp;'));
+								list.append($('<option>').attr('value',record.name).html('&nbsp;'+record.name+'&nbsp;'));
 							}
 							if (value) list.val(value);
 							if (callback) callback();
@@ -75,7 +76,7 @@ jQuery.noConflict();
 							for (var i=0;i<json.records.length;i++)
 							{
 								var record=json.records[i];
-								list.append($('<option>').attr('value',record.id).html('&nbsp;'+record.name+'&nbsp;'));
+								list.append($('<option>').attr('value',record.name).html('&nbsp;'+record.name+'&nbsp;'));
 							}
 							if (value) list.val(value);
 							if (callback) callback();
@@ -106,10 +107,12 @@ jQuery.noConflict();
 					switch (status)
 					{
 						case 200:
+							vars.zips={};
 							for (var i=0;i<json.records.length;i++)
 							{
 								var record=json.records[i];
-								list.append($('<option>').attr('value',record.id).html('&nbsp;'+record.name+'&nbsp;'));
+								list.append($('<option>').attr('value',record.name).html('&nbsp;'+((record.name.length!=0)?record.name:'以下に掲載がない住所')+'&nbsp;'));
+								vars.zips[record.name]=record.id;
 							}
 							if (value) list.val(value);
 							if (callback) callback();
@@ -161,9 +164,6 @@ jQuery.noConflict();
 				$('.input',$('.'+setting.prefecture+key)).val('');
 				$('.input',$('.'+setting.city+key)).val('');
 				$('.input',$('.'+setting.street+key)).val('');
-				if (setting.prefecturename.length!=0) $('.input',$('.'+setting.prefecturename+key)).val('');
-				if (setting.cityname.length!=0) $('.input',$('.'+setting.cityname+key)).val('');
-				if (setting.streetname.length!=0) $('.input',$('.'+setting.streetname+key)).val('');
 				if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val('');
 				if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val('');
 				$('.select',$('.'+setting.prefecture+key)).empty();
@@ -175,9 +175,6 @@ jQuery.noConflict();
 				$('.input',$('.'+setting.prefecture+key)).val(list.val());
 				$('.input',$('.'+setting.city+key)).val('');
 				$('.input',$('.'+setting.street+key)).val('');
-				if (setting.prefecturename.length!=0) $('.input',$('.'+setting.prefecturename+key)).val($('option:selected',list).text().replace(/ /g,''));
-				if (setting.cityname.length!=0) $('.input',$('.'+setting.cityname+key)).val('');
-				if (setting.streetname.length!=0) $('.input',$('.'+setting.streetname+key)).val('');
 				if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val('');
 				if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val('');
 				$('.select',$('.'+setting.city+key)).empty();
@@ -187,8 +184,6 @@ jQuery.noConflict();
 			{
 				$('.input',$('.'+setting.city+key)).val(list.val());
 				$('.input',$('.'+setting.street+key)).val('');
-				if (setting.cityname.length!=0) $('.input',$('.'+setting.cityname+key)).val($('option:selected',list).text().replace(/ /g,''));
-				if (setting.streetname.length!=0) $('.input',$('.'+setting.streetname+key)).val('');
 				if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val('');
 				if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val('');
 				$('.select',$('.'+setting.street+key)).empty();
@@ -196,7 +191,6 @@ jQuery.noConflict();
 			if (level==3)
 			{
 				$('.input',$('.'+setting.street+key)).val(list.val());
-				if (setting.streetname.length!=0) $('.input',$('.'+setting.streetname+key)).val($('option:selected',list).text().replace(/ /g,''));
 				if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val('');
 				if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val('');
 			}
@@ -221,9 +215,9 @@ jQuery.noConflict();
 					});
 				});
 				container.append(list);
-				$.fieldcontainer(container,'NUMBER').css({'width':'auto'});
 				functions.reloadprefecture($('.select',list),((record)?record[setting.prefecture].value:null));
 				target.hide();
+				$('body').fieldcontainer(container,'SINGLE_LINE_TEXT').css({'width':'auto'});
 				$.data(target[0],'added',true);
 			});
 			$.each($('body').fields(setting.city),function(index){
@@ -243,9 +237,9 @@ jQuery.noConflict();
 					});
 				});
 				container.append(list);
-				$.fieldcontainer(container,'NUMBER').css({'width':'auto'});
 				functions.reloadcity($('.select',list),((record)?record[setting.prefecture].value:null),((record)?record[setting.city].value:null));
 				target.hide();
+				$('body').fieldcontainer(container,'SINGLE_LINE_TEXT').css({'width':'auto'});
 				$.data(target[0],'added',true);
 			});
 			$.each($('body').fields(setting.street),function(index){
@@ -269,45 +263,19 @@ jQuery.noConflict();
 							address+=$('.select option:selected',$('.'+setting.street+key)).text().replace(/ /g,'');
 							$('.input',$('.'+setting.address+key)).val(address);
 						}
-						if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val($('.select',list).val().substr(0,3)+'-'+$('.select',list).val().substr(3));
+						if (setting.zip.length!=0)
+						{
+							var zip=vars.zips[$('.select',list).val()];
+							$('.input',$('.'+setting.zip+key)).val(zip.substr(0,3)+'-'+zip.substr(3));
+						}
 					});
 				});
 				container.append(list);
-				$.fieldcontainer(container,'NUMBER').css({'width':'auto'});
 				functions.reloadstreet($('.select',list),((record)?record[setting.prefecture].value:null),((record)?record[setting.city].value:null),((record)?record[setting.street].value:null));
 				target.hide();
+				$('body').fieldcontainer(container,'SINGLE_LINE_TEXT').css({'width':'auto'});
 				$.data(target[0],'added',true);
 			});
-			if (setting.prefecturename.length!=0)
-				$.each($('body').fields(setting.prefecturename),function(index){
-					var key='_'+index.toString();
-					var target=$(this).addClass('input');
-					var container=target.closest('div').addClass(setting.prefecturename+key);
-					if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
-					if ($.data(target[0],'added')) return true;
-					$.fieldcontainer(container,'SINGLE_LINE_TEXT').hide();
-					$.data(target[0],'added',true);
-				});
-			if (setting.cityname.length!=0)
-				$.each($('body').fields(setting.cityname),function(index){
-					var key='_'+index.toString();
-					var target=$(this).addClass('input');
-					var container=target.closest('div').addClass(setting.cityname+key);
-					if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
-					if ($.data(target[0],'added')) return true;
-					$.fieldcontainer(container,'SINGLE_LINE_TEXT').hide();
-					$.data(target[0],'added',true);
-				});
-			if (setting.streetname.length!=0)
-				$.each($('body').fields(setting.streetname),function(index){
-					var key='_'+index.toString();
-					var target=$(this).addClass('input');
-					var container=target.closest('div').addClass(setting.streetname+key);
-					if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
-					if ($.data(target[0],'added')) return true;
-					$.fieldcontainer(container,'SINGLE_LINE_TEXT').hide();
-					$.data(target[0],'added',true);
-				});
 			if (setting.address.length!=0)
 				$.each($('body').fields(setting.address),function(index){
 					var key='_'+index.toString();
@@ -327,12 +295,12 @@ jQuery.noConflict();
 					target.on('change',function(){
 						functions.reloadzip(target.val(),function(record){
 							functions.resetfields(null,setting,key,0,function(){
-								functions.reloadprefecture($('.select',$('.'+setting.prefecture+key)),record.prefecture);
-								functions.reloadcity($('.select',$('.'+setting.city+key)),record.prefecture,record.city);
-								functions.reloadstreet($('.select',$('.'+setting.street+key)),record.prefecture,record.city,record.street);
-								if (setting.prefecturename.length!=0) $('.input',$('.'+setting.prefecturename+key)).val(record.prefecturename);
-								if (setting.cityname.length!=0) $('.input',$('.'+setting.cityname+key)).val(record.cityname);
-								if (setting.streetname.length!=0) $('.input',$('.'+setting.streetname+key)).val(record.streetname);
+								functions.reloadprefecture($('.select',$('.'+setting.prefecture+key)),record.prefecturename);
+								functions.reloadcity($('.select',$('.'+setting.city+key)),record.prefecturename,record.cityname);
+								functions.reloadstreet($('.select',$('.'+setting.street+key)),record.prefecturename,record.cityname,record.streetname);
+								$('.input',$('.'+setting.prefecture+key)).val(record.prefecturename);
+								$('.input',$('.'+setting.city+key)).val(record.cityname);
+								$('.input',$('.'+setting.street+key)).val(record.streetname);
 								if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val(record.name);
 								if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val(record.id.substr(0,3)+'-'+record.id.substr(3));
 							});
