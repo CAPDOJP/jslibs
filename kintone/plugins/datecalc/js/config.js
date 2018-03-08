@@ -57,10 +57,31 @@ jQuery.noConflict();
 					/* check field type */
 					switch (fieldinfo.type)
 					{
+						case 'CALC':
+							switch (fieldinfo.format.toUpperCase())
+							{
+								case 'NUMBER':
+								case 'NUMBER_DIGIT':
+									if (!fieldinfo.lookup)
+									{
+										$('select#yearfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										$('select#monthfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										$('select#dayfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									}
+									break;
+							}
+							break;
 						case 'DATE':
 							$('select#fromdate').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							$('select#todate').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
+						case 'NUMBER':
+							if (!fieldinfo.lookup)
+							{
+								$('select#yearfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#monthfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#dayfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							}
 					}
 				}
 			});
@@ -86,6 +107,9 @@ jQuery.noConflict();
 					row=vars.calculationtable.rows.last();
 					$('select#fromdate',row).val(calculations[index].fromdate);
 					$('select#todate',row).val(calculations[index].todate);
+					$('select#yearfield',row).append(calculations[index].yearfield);
+					$('select#monthfield',row).append(calculations[index].monthfield);
+					$('select#dayfield',row).append(calculations[index].dayfield);
 					$('input#year',row).val(calculations[index].year);
 					$('input#month',row).val(calculations[index].month);
 					$('input#day',row).val(calculations[index].day);
@@ -121,6 +145,24 @@ jQuery.noConflict();
 				swal('Error!','テーブル内フィールドの指定は同一テーブルにして下さい。','error');
 				return;
 			}
+			if ($('select#yearfield',row).val().length!=0)
+				if (vars.fieldinfos[$('select#fromdate',row).val()].tablecode!=vars.fieldinfos[$('select#yearfield',row).val()].tablecode)
+				{
+					swal('Error!','テーブル内フィールドの指定は同一テーブルにして下さい。','error');
+					return;
+				}
+			if ($('select#monthfield',row).val().length!=0)
+				if (vars.fieldinfos[$('select#fromdate',row).val()].tablecode!=vars.fieldinfos[$('select#monthfield',row).val()].tablecode)
+				{
+					swal('Error!','テーブル内フィールドの指定は同一テーブルにして下さい。','error');
+					return;
+				}
+			if ($('select#dayfield',row).val().length!=0)
+				if (vars.fieldinfos[$('select#fromdate',row).val()].tablecode!=vars.fieldinfos[$('select#dayfield',row).val()].tablecode)
+				{
+					swal('Error!','テーブル内フィールドの指定は同一テーブルにして下さい。','error');
+					return;
+				}
 			if (!$.isNumeric($('input#year',row).val()))
 			{
 				swal('Error!','年数は数値を入力して下さい。','error');
@@ -141,8 +183,11 @@ jQuery.noConflict();
 				fromdate:$('select#fromdate',row).val(),
 				todate:$('select#todate',row).val(),
 				year:$('input#year',row).val(),
+				yearfield:$('select#yearfield',row).val(),
 				month:$('input#month',row).val(),
+				monthfield:$('select#monthfield',row).val(),
 				day:$('input#day',row).val(),
+				dayfield:$('select#dayfield',row).val(),
 				tablecode:vars.fieldinfos[$('select#fromdate',row).val()].tablecode
 			});
 		}

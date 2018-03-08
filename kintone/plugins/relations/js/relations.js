@@ -63,8 +63,8 @@ jQuery.noConflict();
 			$.each(vars.params,function(key,values){
 				setInterval(function(){
 					$.each($('body').fields(key),function(){
-						var counter=0;
 						var base={
+							container:$('body'),
 							target:$(this),
 							value:null
 						};
@@ -74,7 +74,7 @@ jQuery.noConflict();
 						$.data(base.target[0],'value',base.value);
 						if (base.value.length!=0)
 						{
-							if (values.istable) counter=base.target.closest('tbody').find('tr').index(base.target.closest('tr'));
+							if (values.istable) base.container=base.target.closest('tr');
 							var body={
 								app:values.baseapp,
 								query:''
@@ -82,6 +82,7 @@ jQuery.noConflict();
 							switch (values.basetype)
 							{
 								case 'NUMBER':
+								case 'RECORD_NUMBER':
 									body.query=values.baseappfield+'='+base.value;
 									break;
 								case 'SINGLE_LINE_TEXT':
@@ -94,7 +95,7 @@ jQuery.noConflict();
 								{
 									var exclude=false;
 									var relation=values.relations[i];
-									var field=$('body').fields(relation.relationfield)[counter];
+									var field=base.container.fields(relation.relationfield)[0];
 									if (!relation.rewrite)
 									{
 										if (field.val())
@@ -110,6 +111,7 @@ jQuery.noConflict();
 											switch (relation.relationtype)
 											{
 												case 'NUMBER':
+												case 'RECORD_NUMBER':
 													body.query=relation.relationcode+'='+record[relation.basecode].value;
 													break;
 												case 'SINGLE_LINE_TEXT':

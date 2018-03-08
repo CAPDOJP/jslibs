@@ -163,7 +163,7 @@ jQuery.noConflict();
 							}
 							swal({
 								title:'確認',
-								text:'Freeeから各種データをダウンロードします。宜しいですか？。',
+								text:'Freeeから各種データをダウンロードします。宜しいですか？',
 								type:'info',
 								showCancelButton:true,
 								cancelButtonText:'Cancel'

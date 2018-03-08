@@ -69,6 +69,7 @@
   line-height: 1.5;
   padding: 3px 5px;
   position: relative;
+  vertical-align: top;
 }
 .kintoneplugin-unit.color {
   border-radius: 2px;
@@ -89,6 +90,7 @@
   padding: 0;
   border: 1px solid #ccc;
   border-radius: 2px;
+  vertical-align: top;
 }
 
 .kintoneplugin-input-text {
@@ -222,6 +224,7 @@
   padding: 1px;
   border-radius: 4px;
   background-color: #727272;
+  vertical-align: top;
 }
 
 .kintoneplugin-select {
@@ -257,8 +260,6 @@
 
 .kintoneplugin-select select {
   margin: 0;
-  min-width: 108px;
-  width: 144%;
   height: 20px;
   outline: none;
   border: 0 none;

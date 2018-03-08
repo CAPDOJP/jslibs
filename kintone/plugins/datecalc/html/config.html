@@ -34,13 +34,37 @@
 						<div class="kintoneplugin-input-outer">
 							<input type="text" id="year" class="kintoneplugin-input-text" value="" >
 						</div>
+						<span class="kintoneplugin-unit">OR</span>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="yearfield">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
 						<span class="kintoneplugin-unit">年</span>
 						<div class="kintoneplugin-input-outer">
 							<input type="text" id="month" class="kintoneplugin-input-text" value="" >
 						</div>
+						<span class="kintoneplugin-unit">OR</span>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="monthfield">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
 						<span class="kintoneplugin-unit">ヶ月</span>
 						<div class="kintoneplugin-input-outer">
 							<input type="text" id="day" class="kintoneplugin-input-text" value="" >
+						</div>
+						<span class="kintoneplugin-unit">OR</span>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="dayfield">
+									<option value=""></option>
+								</select>
+							</div>
 						</div>
 						<span class="kintoneplugin-unit">日後の日付を算出</span>
 					</td>
@@ -50,6 +74,7 @@
 			</tbody>
 		</table>
 		<div class="kintoneplugin-alert">月初を指定する場合は「初」、月末を指定する場合は「末」を日数欄に入力して下さい。</div>
+		<div class="kintoneplugin-alert">加算用フィールドが設定されている場合は、加算用フィールドの値を元に計算されます。</div>
 	</div>
 </div>
 <div class="block">

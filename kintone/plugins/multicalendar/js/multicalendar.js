@@ -142,9 +142,7 @@ jQuery.noConflict();
 							events.push('app.record.edit.change.'+fieldinfo.tablecode);
 							events.push('mobile.app.record.edit.change.'+fieldinfo.tablecode);
 							kintone.events.on(events,function(event){
-								$.each(event.changes.row.value,function(key,values){
-									for (var i=0;i<vars.fields.length;i++) if (key==vars.fields[i]) functions.appendbuttons(key);
-								});
+								functions.appendbuttons(fieldinfo.code);
 								return event;
 							});
 						}

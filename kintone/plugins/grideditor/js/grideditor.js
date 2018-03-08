@@ -409,22 +409,25 @@ jQuery.noConflict();
 			});
 			if (fieldinfo.lookup)
 			{
-				vars.apps[fieldinfo.lookup.relatedApp.app]=null;
-				vars.offset[fieldinfo.lookup.relatedApp.app]=0;
-				functions.loaddatas(fieldinfo.lookup.relatedApp.app,fieldinfo);
+				if (!(fieldinfo.lookup.relatedApp.app in vars.apps))
+				{
+					vars.apps[fieldinfo.lookup.relatedApp.app]=null;
+					vars.offset[fieldinfo.lookup.relatedApp.app]=0;
+					functions.loaddatas(fieldinfo.lookup.relatedApp.app,fieldinfo);
+				}
 				button.on('click',function(){
 					var target=$(this);
-					vars.referer[fieldinfo.code].show({
+					vars.referer[fieldinfo.lookup.relatedApp.app].show({
 						buttons:{
 							cancel:function(){
 								/* close the reference box */
-								vars.referer[fieldinfo.code].hide();
+								vars.referer[fieldinfo.lookup.relatedApp.app].hide();
 							}
 						},
 						callback:function(row){
 							target.closest('td').find('#'+fieldinfo.code).val(row.find('#'+fieldinfo.lookup.relatedKeyField).val()).trigger('change');
 							/* close the reference box */
-							vars.referer[fieldinfo.code].hide();
+							vars.referer[fieldinfo.lookup.relatedApp.app].hide();
 						}
 					});
 				});
@@ -681,9 +684,11 @@ jQuery.noConflict();
 				else
 				{
 					/* create reference box */
-					vars.referer[fieldinfo.code]=$('body').referer({
+					var displaytext=fieldinfo.lookup.lookupPickerFields;
+					if (displaytext.length==0) displaytext=[fieldinfo.lookup.relatedKeyField];
+					vars.referer[fieldinfo.lookup.relatedApp.app]=$('body').referer({
 						datasource:vars.apps[appkey],
-						displaytext:fieldinfo.lookup.lookupPickerFields,
+						displaytext:displaytext,
 						searchbuttonclass:'customview-button search-button referer-button-search',
 						searchbuttontext:'',
 						buttons:[
@@ -701,7 +706,7 @@ jQuery.noConflict();
 							}
 						]
 					});
-					vars.referer[fieldinfo.code].searchblock.find('input#multi').closest('label').css({'width':'100%'});
+					vars.referer[fieldinfo.lookup.relatedApp.app].searchblock.find('input#multi').closest('label').css({'width':'100%'});
 				}
 			},function(error){});
 		}

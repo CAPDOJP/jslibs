@@ -15,19 +15,20 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
+		isbarcode:false,
 		isdisplaymap:false,
 		ismobile:false,
 		centerLocation:null,
 		chaselocation:null,
 		currentlocation:null,
 		currentmarker:null,
-		displayinfowindow:null,
 		displaypoi:null,
 		displaydatespan:null,
 		displaymap:null,
 		editor:null,
 		editorconfirm:null,
 		map:null,
+		progress:null,
 		splash:null,
 		viewlist:null,
 		apps:{},
@@ -70,6 +71,145 @@ jQuery.noConflict();
 		centering:function(){
 			if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) vars.map.map.setCenter(vars.map.markers[0].getPosition());
 			else vars.map.map.setCenter(new google.maps.LatLng(vars.markers[vars.markers.length-1].lat,vars.markers[vars.markers.length-1].lng));
+		},
+		/* create barcode */
+		createbarcode:function(record,callback){
+			var check=0;
+			var counter=0;
+			var index=0;
+			var canvas=null;
+			var context=null;
+			var images=$.images();
+			var chars={
+				from:[],
+				to:[],
+				check:{'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'-':10,'CC1':11,'CC2':12,'CC3':13,'CC4':14,'CC5':15,'CC6':16,'CC7':17,'CC8':18},
+				conv:{
+					'A':['CC1','0'],'B':['CC1','1'],'C':['CC1','2'],'D':['CC1','3'],'E':['CC1','4'],'F':['CC1','5'],'G':['CC1','6'],'H':['CC1','7'],'I':['CC1','8'],
+					'J':['CC1','9'],'K':['CC2','0'],'L':['CC2','1'],'M':['CC2','2'],'N':['CC2','3'],'O':['CC2','4'],'P':['CC2','5'],'Q':['CC2','6'],'R':['CC2','7'],
+					'S':['CC2','8'],'T':['CC2','9'],'U':['CC3','0'],'V':['CC3','1'],'W':['CC3','2'],'X':['CC3','3'],'Y':['CC3','4'],'Z':['CC3','5']
+				}
+			};
+			/* create barcode text */
+			chars.from=record[vars.config.address].value
+			.replace(/([一二三四五六七八九十]+)(丁目|丁|番地|番|号|地割|線|の|ノ)/g,'$1@')
+			.replace(/一[十]*([一二三四五六七八九十]{1})@/g,'1$1@')
+			.replace(/二[十]*([一二三四五六七八九十]{1})@/g,'2$1@')
+			.replace(/三[十]*([一二三四五六七八九十]{1})@/g,'3$1@')
+			.replace(/四[十]*([一二三四五六七八九十]{1})@/g,'4$1@')
+			.replace(/五[十]*([一二三四五六七八九十]{1})@/g,'5$1@')
+			.replace(/六[十]*([一二三四五六七八九十]{1})@/g,'6$1@')
+			.replace(/七[十]*([一二三四五六七八九十]{1})@/g,'7$1@')
+			.replace(/八[十]*([一二三四五六七八九十]{1})@/g,'8$1@')
+			.replace(/九[十]*([一二三四五六七八九十]{1})@/g,'9$1@')
+			.replace(/十([一二三四五六七八九十]{1})@/g,'1$1@')
+			.replace(/一@/g,'1-')
+			.replace(/二@/g,'2-')
+			.replace(/三@/g,'3-')
+			.replace(/四@/g,'4-')
+			.replace(/五@/g,'5-')
+			.replace(/六@/g,'6-')
+			.replace(/七@/g,'7-')
+			.replace(/八@/g,'8-')
+			.replace(/九@/g,'9-')
+			.replace(/十@/g,'10-')
+			.replace(/[Ａ-Ｚａ-ｚ]/g,function(s){
+				return String.fromCharCode(s.charCodeAt(0)-65248);
+			})
+			.replace(/[０-９]/g,function(s){
+				return String.fromCharCode(s.charCodeAt(0)-65248);
+			})
+			.toUpperCase()
+			.replace(/[&＆\/／･・\.．]/g,'')
+			.replace(/[‐－―ー]([0-9]+)/g,'-$1')
+			.replace(/[^0-9A-Z-]|[A-Z]{2,}/g,'-')
+			.replace(/-{2,}/g,'-')
+			.replace(/([0-9]+)F$/g,'$1')
+			.replace(/([0-9]+)F([0-9]+)/g,'$1-$2')
+			.replace(/-([A-Z]{1})/g,'$1')
+			.replace(/([A-Z]{1})-/g,'$1')
+			.replace(/^-/g,'')
+			.replace(/-$/g,'')
+			.split('')
+			chars.to=record[vars.config.zip].value.replace(/[０-９]/g,function(s){
+				return String.fromCharCode(s.charCodeAt(0)-65248);
+			})
+			.replace(/[^0-9]/g,'')
+			.split('');
+			for (var i=0;i<13;i++) chars.to.push('CC4');
+			/* calc check digit */
+			index=7;
+			for (var i=0;i<chars.from.length;i++)
+			{
+				if (index>chars.to.length-1) break;
+				if (chars.from[i].match(/[A-Z]/g))
+				{
+					var conv=chars.conv[chars.from[i]];
+					chars.to[index]=conv[0];
+					if (index<chars.to.length-1) chars.to[index+1]=conv[1];
+					index++;
+				}
+				else chars.to[index]=chars.from[i];
+				index++;
+			}
+			for (var i=0;i<chars.to.length;i++) check+=chars.check[chars.to[i]];
+			check=19-check%19;
+			if (check==19) check=0;
+			chars.to.push(Object.keys(chars.check).filter(function(key){return chars.check[key]==check.toString()})[0]);
+			record[vars.config.barcodetext].value='STC'+chars.to.join('')+'SPC';
+			/* create barcode image */
+			canvas=$('<canvas height="12" width="276">');
+			if (canvas[0].getContext)
+			{
+				context=canvas[0].getContext('2d');
+				context.fillStyle='rgb(255,255,255)';
+				context.fillRect(0,0,canvas[0].width,canvas[0].height);
+				counter=chars.to.length;
+				index=0;
+				functions.loadimage(context,images['STC'],index,function(){
+					for (var i=0;i<chars.to.length;i++)
+					{
+						index+=12;
+						functions.loadimage(context,images[chars.to[i]],index,function(){
+							counter--;
+							if (counter==0)
+							{
+								index+=12;
+								functions.loadimage(context,images['SPC'],index,function(){
+									var datas=atob(canvas[0].toDataURL('image/png').replace(/^[^,]*,/,''));
+									var buffer=new Uint8Array(datas.length);
+									for (var i=0;i<datas.length;i++) buffer[i]=datas.charCodeAt(i);
+									(function(buffer){
+										var blob=new Blob([buffer],{type:'image/png'});
+										var filedata=new FormData();
+										var xhr=new XMLHttpRequest();
+										filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
+										filedata.append('file',blob,'barcode.png');
+										xhr.open('POST',encodeURI('/k/v1/file.json'),false);
+										xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+										xhr.responseType='multipart/form-data';
+										xhr.onload=function(){
+											if (xhr.status===200) record[vars.config.barcodeimage].value=[{fileKey:JSON.parse(xhr.responseText).fileKey}];
+											if (callback) callback(record);
+										};
+										xhr.onerror=function(){
+											if (callback) callback(record);
+										};
+										xhr.send(filedata);
+									})(buffer.buffer);
+								});
+							}
+						});
+					}
+				});
+			}
+		},
+		/* check create barcode */
+		denybarcode:function(record){
+			var address=(record[vars.config.address].value)?record[vars.config.address].value:'';
+			var zip=(record[vars.config.zip].value)?record[vars.config.zip].value:'';
+			if (zip.match(/00$/g)) zip='';
+			return (!(address.length!=0 && zip.length!=0));
 		},
 		/* display map */
 		displaymap:function(options){
@@ -166,6 +306,96 @@ jQuery.noConflict();
 							{
 								if ($('.displaymap').size()) $('.displaymap').remove();
 								kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
+								if (vars.isbarcode)
+								{
+									if ($('.createbarcode').size()) $('.createbarcode').remove();
+									kintone.app.getHeaderMenuSpaceElement().appendChild(
+										$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/barcode.svg" class="createbarcode" alt="バーコード生成" title="バーコード生成" />').css({
+											'cursor':'pointer',
+											'display':'inline-block',
+											'height':'48px',
+											'margin':'0px 12px',
+											'vertical-align':'top',
+											'width':'48px'
+										})
+										.on('click',function(e){
+											if (!confirm('表示中の一覧の条件に該当するすべてのレコードのバーコードを生成します。宜しいですか？')) return;
+											var error=false;
+											var counter=0;
+											var progress=function(){
+												counter++;
+												if (counter<vars.apps[vars.config['app']].length)
+												{
+													vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/vars.apps[vars.config['app']].length));
+												}
+												else
+												{
+													vars.progress.hide();
+													alert('データを登録しました。');
+													location.reload(true);
+												}
+											};
+											if (vars.apps[vars.config['app']].length==0)
+											{
+												vars.progress.hide();
+												alert('レコードがありません。');
+												return;
+											}
+											else
+											{
+												vars.progress.find('.message').text('データ登録中');
+												vars.progress.find('.progressbar').find('.progresscell').width(0);
+												vars.progress.show();
+											}
+											for (var i=0;i<vars.apps[vars.config['app']].length;i++)
+											{
+												if (error) break;
+												if (!functions.denybarcode(vars.apps[vars.config['app']][i]))
+												{
+													var record={};
+													var body={
+														app:kintone.app.getId(),
+														id:vars.apps[vars.config['app']][i]['$id'].value,
+														record:{}
+													};
+													$.each(vars.apps[vars.config['app']][i],function(key,values){
+														switch (values.type)
+														{
+															case 'CALC':
+															case 'CATEGORY':
+															case 'CREATED_TIME':
+															case 'CREATOR':
+															case 'MODIFIER':
+															case 'RECORD_NUMBER':
+															case 'STATUS':
+															case 'STATUS_ASSIGNEE':
+															case 'UPDATED_TIME':
+																break;
+															default:
+																record[key]=values;
+																break;
+														}
+													});
+													(function(record,body){
+														functions.createbarcode(record,function(record){
+															body.record=record;
+															kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+																progress();
+															},function(error){
+																vars.progress.hide();
+																alert(error.message);
+																error=true;
+															});
+														});
+													})(record,body);
+												}
+												else progress();
+											}
+										})[0]
+									);
+									vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
+									$('body').append(vars.progress);
+								}
 							}
 							if (callback!=null) callback();
 							/* chase mode */
@@ -199,6 +429,9 @@ jQuery.noConflict();
 							});
 							vars.editorconfirm.show(function(){
 								var address=results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
+								var zip='';
+								for (var i=0;i<results.address_components.length;i++)
+									if (results.address_components[i].types[0]==="postal_code") zip=results.address_components[i].long_name;
 								$('.head',vars.editor.container).text('ピン登録');
 								$('#'+vars.config['datespan'],vars.editor.contents).find('.label').text('');
 								$('#'+vars.config['datespan'],vars.editor.contents).find('.receiver').val('');
@@ -228,12 +461,7 @@ jQuery.noConflict();
 												app:vars.config['app'],
 												record:{}
 											};
-											body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().replace(/\r?\n/g,'')};
-											body.record[vars.config['lat']]={value:latlng.lat()};
-											body.record[vars.config['lng']]={value:latlng.lng()};
-											body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
-											body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
-											kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+											var callback=function(resp){
 												var label='';
 												label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
 												label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
@@ -252,9 +480,34 @@ jQuery.noConflict();
 													action:'更新'
 												});
 												functions.reloadmap(function(){vars.map.map.setCenter(latlng)});
-											},function(error){
-												alert(error.message);
-											});
+											};
+											body.record[vars.config['zip']]={value:zip};
+											body.record[vars.config['address']]={value:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().replace(/\r?\n/g,'')};
+											body.record[vars.config['lat']]={value:latlng.lat()};
+											body.record[vars.config['lng']]={value:latlng.lng()};
+											body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
+											body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
+											if (vars.isbarcode)
+											{
+												body.record[vars.config['barcodetext']]={value:''};
+												body.record[vars.config['barcodeimage']]={value:[]};
+												functions.createbarcode(body.record,function(record){
+													body.record=record;
+													kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+														callback(resp);
+													},function(error){
+														alert(error.message);
+													});
+												});
+											}
+											else
+											{
+												kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+													callback(resp);
+												},function(error){
+													alert(error.message);
+												});
+											}
 											/* close editor */
 											vars.editor.hide();
 										},
@@ -423,25 +676,6 @@ jQuery.noConflict();
 						)
 						.append(span.clone(true).text('現在地を追跡（移動モード）'));
 						if (vars.config['chasemode']!='1') vars.chaselocation.hide();
-						/* create displayinfowindow checkbox */
-						vars.displayinfowindow=checkbox.clone(true)
-						.append($('<input type="checkbox" id="infowindow">')
-							.on('change',function(e){
-								/* swtich view of menu */
-								if ($('.customview-menu').is(':visible'))
-								{
-									if (vars.ismobile) $('div.customview-navi').hide();
-									else $('div.customview-navi').removeClass('show');
-								}
-								if ($(this).prop('checked')) vars.map.openinfowindow();
-								else vars.map.closeinfowindow();
-								/* swtich view of editorconfirm */
-								vars.editorconfirm.hide();
-								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
-							})
-						)
-						.append(span.clone(true).text('情報ウインドウを表示'));
-						vars.displayinfowindow.hide();
 						/* create displaydatespan checkbox */
 						vars.displaydatespan=checkbox.clone(true)
 						.append($('<input type="checkbox" id="datespan">')
@@ -482,8 +716,14 @@ jQuery.noConflict();
 						)
 						.append(span.clone(true).text('施設を表示'));
 						/* create display map button */
-						vars.displaymap=$('<button class="kintoneplugin-button-dialog-ok displaymap">')
-						.text('地図を表示')
+						vars.displaymap=$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/compass.svg" class="displaymap" alt="地図を表示" title="地図を表示" />').css({
+							'cursor':'pointer',
+							'display':'inline-block',
+							'height':'48px',
+							'margin':'0px 12px',
+							'vertical-align':'top',
+							'width':'48px'
+						})
 						.on('click',function(e){
 							functions.reloadmap(function(){
 								vars.isdisplaymap=true;
@@ -527,7 +767,6 @@ jQuery.noConflict();
 										$('<div class="customview-navicontents">')
 										.prepend(vars.displaypoi)
 										.prepend(vars.displaydatespan)
-										.prepend(vars.displayinfowindow)
 										.prepend(vars.chaselocation)
 										.prepend(vars.currentlocation)
 								)
@@ -635,6 +874,15 @@ jQuery.noConflict();
 				}
 			},function(error){});
 		},
+		/* image load */
+		loadimage:function(context,src,position,callback){
+			var image=new Image();
+			image.onload=function(){
+				context.drawImage(image,position,0);
+				callback();
+			};
+			image.src=src;
+		},
 		/* marker load */
 		loadmarkers:function(){
 			var markers=[];
@@ -686,7 +934,6 @@ jQuery.noConflict();
 		reloadmap:function(callback){
 			var iscurrentlocation=vars.currentlocation.find('input[type=checkbox]').prop('checked');
 			var isextensionindex=vars.displaydatespan.find('input[type=checkbox]').prop('checked');
-			var isopeninfowindow=vars.displayinfowindow.find('input[type=checkbox]').prop('checked');
 			var color='';
 			var colors=JSON.parse(vars.config['datespancolors']);
 			var markers=$.extend(true,[],vars.markers);
@@ -715,19 +962,6 @@ jQuery.noConflict();
 			if (iscurrentlocation)
 			{
 				vars.map.currentlocation({callback:function(latlng){
-					/*
-					markers.unshift({
-						icon:{
-							anchor:new google.maps.Point(11,11),
-							origin:new google.maps.Point(0,0),
-							size:new google.maps.Size(22,22),
-							url:'https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/currentpos.png',
-						},
-						lat:latlng.lat(),
-						lng:latlng.lng(),
-						serialnumber:false
-					});
-					*/
 					markers.unshift({
 						icon:{
 							url:'https://chart.googleapis.com/chart?chst=d_simple_text_icon_below&chld=|0|000|glyphish_target|24|0288D1|000'
@@ -740,7 +974,7 @@ jQuery.noConflict();
 					vars.map.reloadmap({
 						markers:markers,
 						isextensionindex:isextensionindex,
-						isopeninfowindow:isopeninfowindow,
+						isopeninfowindow:false,
 						callback:function(){
 							for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
 							if (callback!==undefined) callback();
@@ -754,7 +988,7 @@ jQuery.noConflict();
 				vars.map.reloadmap({
 					markers:markers,
 					isextensionindex:isextensionindex,
-					isopeninfowindow:isopeninfowindow,
+					isopeninfowindow:false,
 					callback:function(){
 						for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
 						if (callback!==undefined) callback();
@@ -810,6 +1044,8 @@ jQuery.noConflict();
 		{
 			if (event.viewType.toUpperCase()=='CALENDAR') return event;
 		}
+		/* check barcode */
+		vars.isbarcode=(vars.config.barcodetext.length!=0 && vars.config.barcodeimage.length!=0);
 		/* initialize valiable */
 		vars.markers=[];
 		if (vars.map!=null)
@@ -912,8 +1148,12 @@ jQuery.noConflict();
 						address:target.val(),
 						callback:function(json){
 							var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+							var zip='';
+							for (var i=0;i<json.results[0].address_components.length;i++)
+								if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
 							record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
 							record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
+							record.record[vars.config['zip']].value=zip;
 							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
 							else kintone.app.record.set(record);
 						}
@@ -946,8 +1186,12 @@ jQuery.noConflict();
 								case 'OK':
 									var lat=json.results[0].geometry.location.lat
 									var lng=json.results[0].geometry.location.lng;
+									var zip='';
+									for (var i=0;i<json.results[0].address_components.length;i++)
+										if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
 									event.record[vars.config['lat']].value=lat;
 									event.record[vars.config['lng']].value=lng;
+									event.record[vars.config['zip']].value=zip;
 									resolve(event);
 									break;
 							}

@@ -1,0 +1,48 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 郵便バーコード生成プラグイン",
+        "en":"kintone Postal Barcode plug-in",
+        "zh":"kintone 郵便バーコード生成プラグイン"
+    },
+    "description":{
+        "ja":"郵便番号と住所からカスタマーバーコードを生成するプラグインです。",
+        "en":"This plug-in generates customer barcodes from zip codes and addresses.",
+        "zh":"郵便番号と住所からカスタマーバーコードを生成するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/postalimages.js",
+            "js/postalbarcode.js"
+        ],
+        "css":[
+			"css/51-modern-default.css",
+            "css/progress.css",
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

@@ -30,6 +30,9 @@ jQuery.noConflict();
 				case 'DATE':
 					$('select#datespan').append($('<option>').attr('value',values.code).text(values.label));
 					break;
+				case 'FILE':
+					$('select#barcodeimage').append($('<option>').attr('value',values.code).text(values.label));
+					break;
 				case 'MODIFIER':
 					$('select#modifier').append($('<option>').attr('value',values.code).text(values.label));
 					break;
@@ -53,7 +56,9 @@ jQuery.noConflict();
 					/* exclude lookup */
 					if (!values.lookup)
 					{
+						$('select#zip').append($('<option>').attr('value',values.code).text(values.label));
 						$('select#address').append($('<option>').attr('value',values.code).text(values.label));
+						$('select#barcodetext').append($('<option>').attr('value',values.code).text(values.label));
 						$('select#information').append($('<option>').attr('value',values.code).text(values.label));
 					}
 					break;
@@ -73,9 +78,12 @@ jQuery.noConflict();
 		});
         if (Object.keys(config).length!==0)
         {
+        	$('select#zip').val(config['zip']);
         	$('select#address').val(config['address']);
         	$('select#lat').val(config['lat']);
         	$('select#lng').val(config['lng']);
+			$('select#barcodetext').val(config['barcodetext']);
+			$('select#barcodeimage').val(config['barcodeimage']);
         	$('select#spacer').val(config['spacer']);
         	$('select#information').val(config['information']);
         	$('select#action').val(config['action']);
@@ -116,6 +124,11 @@ jQuery.noConflict();
         var config=[];
 		var datespancolors={};
 	    /* check values */
+	    if ($('select#zip').val()=='')
+	    {
+	    	swal('Error!','郵便番号入力フィールドを選択して下さい。','error');
+	    	return;
+	    }
 	    if ($('select#address').val()=='')
 	    {
 	    	swal('Error!','住所入力フィールドを選択して下さい。','error');
@@ -204,9 +217,12 @@ jQuery.noConflict();
 	    if (error) return;
 		/* setup config */
         config['app']=kintone.app.getId().toString();
+        config['zip']=$('select#zip').val();
         config['address']=$('select#address').val();
         config['lat']=$('select#lat').val();
         config['lng']=$('select#lng').val();
+		config['barcodetext']=$('select#barcodetext').val();
+		config['barcodeimage']=$('select#barcodeimage').val();
         config['spacer']=$('select#spacer').val();
         config['information']=$('select#information').val();
         config['action']=$('select#action').val();

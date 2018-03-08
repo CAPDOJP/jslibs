@@ -16,8 +16,7 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		template:null,
-		config:{},
-		zips:{}
+		config:{}
 	};
 	var events={
 		show:[
@@ -107,13 +106,14 @@ jQuery.noConflict();
 					switch (status)
 					{
 						case 200:
-							vars.zips={};
+							var zips={};
 							for (var i=0;i<json.records.length;i++)
 							{
 								var record=json.records[i];
 								list.append($('<option>').attr('value',record.name).html('&nbsp;'+((record.name.length!=0)?record.name:'以下に掲載がない住所')+'&nbsp;'));
-								vars.zips[record.name]=record.id;
+								zips[record.name]=record.id;
 							}
+							$.data(list[0],'zips',JSON.stringify(zips));
 							if (value) list.val(value);
 							if (callback) callback();
 							break;
@@ -158,156 +158,170 @@ jQuery.noConflict();
 			);
 		},
 		/* reset fields */
-		resetfields(list,setting,key,level,callback){
+		resetfields(list,prefecture,city,street,address,zip,level,callback){
 			if (level==0)
 			{
-				$('.input',$('.'+setting.prefecture+key)).val('');
-				$('.input',$('.'+setting.city+key)).val('');
-				$('.input',$('.'+setting.street+key)).val('');
-				if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val('');
-				if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val('');
-				$('.select',$('.'+setting.prefecture+key)).empty();
-				$('.select',$('.'+setting.city+key)).empty();
-				$('.select',$('.'+setting.street+key)).empty();
+				prefecture.input.val('');
+				city.input.val('');
+				street.input.val('');
+				if (address.input) address.input.val('');
+				if (zip.input) zip.input.val('');
+				$('select',prefecture.list).empty();
+				$('select',city.list).empty();
+				$('select',street.list).empty();
 			}
 			if (level==1)
 			{
-				$('.input',$('.'+setting.prefecture+key)).val(list.val());
-				$('.input',$('.'+setting.city+key)).val('');
-				$('.input',$('.'+setting.street+key)).val('');
-				if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val('');
-				if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val('');
-				$('.select',$('.'+setting.city+key)).empty();
-				$('.select',$('.'+setting.street+key)).empty();
+				prefecture.input.val(list.val());
+				city.input.val('');
+				street.input.val('');
+				if (address.input) address.input.val('');
+				if (zip.input) zip.input.val('');
+				$('select',city.list).empty();
+				$('select',street.list).empty();
 			}
 			if (level==2)
 			{
-				$('.input',$('.'+setting.city+key)).val(list.val());
-				$('.input',$('.'+setting.street+key)).val('');
-				if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val('');
-				if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val('');
-				$('.select',$('.'+setting.street+key)).empty();
+				city.input.val(list.val());
+				street.input.val('');
+				if (address.input) address.input.val('');
+				if (zip.input) zip.input.val('');
+				$('select',street.list).empty();
 			}
 			if (level==3)
 			{
-				$('.input',$('.'+setting.street+key)).val(list.val());
-				if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val('');
-				if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val('');
+				street.input.val(list.val());
+				if (address.input) address.input.val('');
+				if (zip.input) zip.input.val('');
 			}
 			if (callback) callback();
 		},
 		/* setup filters */
-		setupfilter:function(setting,records){
+		setupfilter:function(setting,records,create){
 			$.each($('body').fields(setting.prefecture),function(index){
-				var key='_'+index.toString();
-				var list=null;
-				var target=$(this).addClass('input');
-				var container=target.closest('div').css({'width':'auto'}).addClass(setting.prefecture+key);
-				var record=(records.length>index)?records[index]:null;
+				var target=$(this);
+				var container=(setting.tablecode.length!=0)?target.closest('tr'):$('body');
+				var prefecture={
+					container:null,
+					input:null,
+					list:vars.template.clone(true)
+				};
+				var city={
+					container:null,
+					input:null,
+					list:vars.template.clone(true)
+				};
+				var street={
+					container:null,
+					input:null,
+					list:vars.template.clone(true)
+				};
+				var address={
+					container:null,
+					input:null,
+				};
+				var zip={
+					container:null,
+					input:null,
+				};
+				var initialvalues=functions.setupinitialvalues(setting,records,create,index);
 				if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
 				if ($.data(target[0],'added')) return true;
-				/* initialize valiable */
-				list=vars.template.clone(true);
-				$('select',list).addClass('select')
+				prefecture.input=target;
+				prefecture.container=prefecture.input.closest('div').css({'width':'auto'});
+				city.input=container.fields(setting.city)[0];
+				city.container=city.input.closest('div').css({'width':'auto'});
+				street.input=container.fields(setting.street)[0];
+				street.container=street.input.closest('div').css({'width':'auto'});
+				if (setting.address.length!=0)
+				{
+					address.input=container.fields(setting.address)[0];
+					address.container=address.input.closest('div');
+				}
+				if (setting.zip.length!=0)
+				{
+					zip.input=container.fields(setting.zip)[0];
+					zip.container=zip.input.closest('div');
+				}
+				$('select',prefecture.list)
 				.on('change',function(){
-					functions.resetfields($('.select',list),setting,key,1,function(){
-						functions.reloadcity($('.select',$('.'+setting.city+key)),$('.select',list).val());
+					functions.resetfields($('select',prefecture.list),prefecture,city,street,address,zip,1,function(){
+						functions.reloadcity($('select',city.list),$('select',prefecture.list).val());
 					});
 				});
-				container.append(list);
-				functions.reloadprefecture($('.select',list),((record)?record[setting.prefecture].value:null));
-				target.hide();
-				$('body').fieldcontainer(container,'SINGLE_LINE_TEXT').css({'width':'auto'});
-				$.data(target[0],'added',true);
-			});
-			$.each($('body').fields(setting.city),function(index){
-				var key='_'+index.toString();
-				var list=null;
-				var target=$(this).addClass('input');
-				var container=target.closest('div').css({'width':'auto'}).addClass(setting.city+key);
-				var record=(records.length>index)?records[index]:null;
-				if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
-				if ($.data(target[0],'added')) return true;
-				/* initialize valiable */
-				list=vars.template.clone(true);
-				$('select',list).addClass('select')
+				$('select',city.list)
 				.on('change',function(){
-					functions.resetfields($('.select',list),setting,key,2,function(){
-						functions.reloadstreet($('.select',$('.'+setting.street+key)),$('.select',$('.'+setting.prefecture+key)).val(),$('.select',list).val());
+					functions.resetfields($('select',city.list),prefecture,city,street,address,zip,2,function(){
+						functions.reloadstreet($('select',street.list),$('select',prefecture.list).val(),$('select',city.list).val());
 					});
 				});
-				container.append(list);
-				functions.reloadcity($('.select',list),((record)?record[setting.prefecture].value:null),((record)?record[setting.city].value:null));
-				target.hide();
-				$('body').fieldcontainer(container,'SINGLE_LINE_TEXT').css({'width':'auto'});
-				$.data(target[0],'added',true);
-			});
-			$.each($('body').fields(setting.street),function(index){
-				var key='_'+index.toString();
-				var list=null;
-				var target=$(this).addClass('input');
-				var container=target.closest('div').css({'width':'auto'}).addClass(setting.street+key);
-				var record=(records.length>index)?records[index]:null;
-				if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
-				if ($.data(target[0],'added')) return true;
-				/* initialize valiable */
-				list=vars.template.clone(true);
-				$('select',list).addClass('select')
+				$('select',street.list)
 				.on('change',function(){
-					functions.resetfields($('.select',list),setting,key,3,function(){
-						var address='';
+					functions.resetfields($('select',street.list),prefecture,city,street,address,zip,3,function(){
+						var addressvalue='';
 						if (setting.address.length!=0)
 						{
-							address+=$('.select option:selected',$('.'+setting.prefecture+key)).text().replace(/ /g,'');
-							address+=$('.select option:selected',$('.'+setting.city+key)).text().replace(/ /g,'');
-							address+=$('.select option:selected',$('.'+setting.street+key)).text().replace(/ /g,'');
-							$('.input',$('.'+setting.address+key)).val(address);
+							addressvalue+=$('select option:selected',prefecture.list).val();
+							addressvalue+=$('select option:selected',city.list).val();
+							addressvalue+=$('select option:selected',street.list).val();
+							address.input.val(addressvalue);
 						}
 						if (setting.zip.length!=0)
 						{
-							var zip=vars.zips[$('.select',list).val()];
-							$('.input',$('.'+setting.zip+key)).val(zip.substr(0,3)+'-'+zip.substr(3));
+							var zipvalue=JSON.parse($.data($('select',street.list)[0],'zips'))[$('select',street.list).val()];
+							zip.input.val(zipvalue.substr(0,3)+'-'+zipvalue.substr(3));
 						}
 					});
 				});
-				container.append(list);
-				functions.reloadstreet($('.select',list),((record)?record[setting.prefecture].value:null),((record)?record[setting.city].value:null),((record)?record[setting.street].value:null));
-				target.hide();
-				$('body').fieldcontainer(container,'SINGLE_LINE_TEXT').css({'width':'auto'});
-				$.data(target[0],'added',true);
-			});
-			if (setting.address.length!=0)
-				$.each($('body').fields(setting.address),function(index){
-					var key='_'+index.toString();
-					var target=$(this).addClass('input');
-					var container=target.closest('div').addClass(setting.address+key);
-					if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
-					if ($.data(target[0],'added')) return true;
-					$.data(target[0],'added',true);
-				});
-			if (setting.zip.length!=0)
-				$.each($('body').fields(setting.zip),function(index){
-					var key='_'+index.toString();
-					var target=$(this).addClass('input');
-					var container=target.closest('div').addClass(setting.zip+key);
-					if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
-					if ($.data(target[0],'added')) return true;
-					target.on('change',function(){
-						functions.reloadzip(target.val(),function(record){
-							functions.resetfields(null,setting,key,0,function(){
-								functions.reloadprefecture($('.select',$('.'+setting.prefecture+key)),record.prefecturename);
-								functions.reloadcity($('.select',$('.'+setting.city+key)),record.prefecturename,record.cityname);
-								functions.reloadstreet($('.select',$('.'+setting.street+key)),record.prefecturename,record.cityname,record.streetname);
-								$('.input',$('.'+setting.prefecture+key)).val(record.prefecturename);
-								$('.input',$('.'+setting.city+key)).val(record.cityname);
-								$('.input',$('.'+setting.street+key)).val(record.streetname);
-								if (setting.address.length!=0) $('.input',$('.'+setting.address+key)).val(record.name);
-								if (setting.zip.length!=0) $('.input',$('.'+setting.zip+key)).val(record.id.substr(0,3)+'-'+record.id.substr(3));
-							});
+				zip.input.on('change',function(){
+					functions.reloadzip(zip.input.val(),function(record){
+						functions.resetfields(null,prefecture,city,street,address,zip,0,function(){
+							functions.reloadprefecture($('select',prefecture.list),record.prefecturename);
+							functions.reloadcity($('select',city.list),record.prefecturename,record.cityname);
+							functions.reloadstreet($('select',street.list),record.prefecturename,record.cityname,record.streetname);
+							prefecture.input.val(record.prefecturename);
+							city.input.val(record.cityname);
+							street.input.val(record.streetname);
+							if (setting.address.length!=0) address.input.val(record.name);
+							if (setting.zip.length!=0) zip.input.val(record.id.substr(0,3)+'-'+record.id.substr(3));
 						});
 					});
-					$.data(target[0],'added',true);
 				});
+				prefecture.container.append(prefecture.list);
+				city.container.append(city.list);
+				street.container.append(street.list);
+				prefecture.input.hide();
+				city.input.hide();
+				street.input.hide();
+				$('body').fieldcontainer(prefecture.container,'SINGLE_LINE_TEXT').css({'width':'auto'});
+				$('body').fieldcontainer(city.container,'SINGLE_LINE_TEXT').css({'width':'auto'});
+				$('body').fieldcontainer(street.container,'SINGLE_LINE_TEXT').css({'width':'auto'});
+				functions.reloadprefecture($('select',prefecture.list),initialvalues.prefecture,function(){
+					if (create) prefecture.input.val(initialvalues.prefecture);
+				});
+				functions.reloadcity($('select',city.list),initialvalues.prefecture,initialvalues.city,function(){
+					if (create) city.input.val(initialvalues.city);
+				});
+				functions.reloadstreet($('select',street.list),initialvalues.prefecture,initialvalues.city,initialvalues.street);
+				$.data(target[0],'added',true);
+			});
+		},
+		/* setup initialvalues */
+		setupinitialvalues:function(setting,records,create,index){
+			var res={};
+			if (create)
+			{
+				res['prefecture']=((setting.prefectureinit.length!=0)?setting.prefectureinit:null);
+				res['city']=((setting.cityinit.length!=0)?setting.cityinit:null);
+				res['street']=null;
+			}
+			else
+			{
+				res['prefecture']=records[index][setting.prefecture].value;
+				res['city']=records[index][setting.city].value;
+				res['street']=records[index][setting.street].value;
+			}
+			return res;
 		}
 	};
 	/*---------------------------------------------------------------
@@ -326,17 +340,17 @@ jQuery.noConflict();
 			if (setting.tablecode.length!=0)
 			{
 				records=[];
-				for (var i=0;i<event.record[setting.tablecode].value.length;i++) records.push(event.record[setting.tablecode].value[i].value);
+				for (var i2=0;i2<event.record[setting.tablecode].value.length;i2++) records.push(event.record[setting.tablecode].value[i2].value);
 			}
 			/* setup filters */
-			functions.setupfilter(setting,records);
+			functions.setupfilter(setting,records,(event.type.match(/create/g)!=null));
 			if (setting.tablecode.length!=0)
 			{
 				var events=[];
 				events.push('app.record.create.change.'+setting.tablecode);
 				events.push('app.record.edit.change.'+setting.tablecode);
 				kintone.events.on(events,function(event){
-					functions.setupfilter(setting);
+					functions.setupfilter(setting,[],true);
 					return event;
 				});
 			}

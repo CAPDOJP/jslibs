@@ -15,10 +15,9 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		segment:null,
+		template:null,
 		apps:{},
 		config:{},
-		containers:{},
 		lookups:{}
 	};
 	var events={
@@ -29,50 +28,6 @@ jQuery.noConflict();
 	};
 	var limit=500;
 	var functions={
-		/* append buttons */
-		appendsegments:function(fieldcode){
-			$.each($('body').fields(fieldcode),function(index){
-				var target=$(this).addClass('relatedto');
-				var buttons={
-					ok:target.closest('div[class*=lookup]').find('button.input-lookup-gaia').hide(),
-					clear:target.closest('div[class*=lookup]').find('button.input-clear-gaia')
-				};
-				var container=target.closest('div').css({'width':'auto'});
-				var segments=vars.lookups[fieldcode].segments;
-				if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
-				if ($.data(target[0],'added')) return true;
-				/* initialize valiable */
-				vars.containers[fieldcode+'_'+index.toString()]=container;
-				/* append dropdown */
-				var list=null;
-				for (var i=0;i<segments.length;i++)
-				{
-					list=vars.segment.clone(true);
-					list.find('select')
-					.attr('id',segments[i])
-					.attr('data-index',i)
-					.on('change',function(){
-						var index=parseInt($(this).attr('data-index'));
-						functions.reloadsegments(fieldcode,container,index);
-					});
-					container.append(list);
-				}
-				list=vars.segment.clone(true);
-				list.find('select')
-				.attr('id','relatedfrom')
-				.on('change',function(){
-					if ($(this).val().length!=0)
-					{
-						$('.relatedto',container).val($(this).val());
-						buttons.ok.trigger('click');
-					}
-				});
-				target.hide();
-				container.append(list).parents('[class*=lookup]').css({'width':'auto'});
-				functions.reloadsegments(fieldcode,container,-1);
-				$.data(target[0],'added',true);
-			});
-		},
 		/* reload datas */
 		loaddatas:function(counter,params,callback){
 			var body={
@@ -144,7 +99,7 @@ jQuery.noConflict();
 				}
 				listcover.hide();
 			}
-			list=$('#relatedfrom',container).empty().append($('<option>').attr('value','').text(''));
+			list=$('#relatedkey',container).empty().append($('<option>').attr('value','').text(''));
 			listcover=list.closest('.lookupfilter');
 			if (Object.keys(conditions).length==segments.length)
 			{
@@ -165,18 +120,57 @@ jQuery.noConflict();
 			}
 			else listcover.hide();
 		},
-		/* setup segment values */
-		setupsegments:function(fieldcode,record,row){
-			if (!record[fieldcode].value) return;
-			if (record[fieldcode].value.length==0) return;
-			var container=vars.containers[fieldcode+'_'+row.toString()];
-			var records=$.grep(vars.apps[vars.lookups[fieldcode].app],function(item,index){return item[vars.lookups[fieldcode].relatedkey].value==record[fieldcode].value;});
-			var segments=vars.lookups[fieldcode].segments;
-			if (records.length!=0)
-			{
-				for (var i=0;i<segments.length;i++) $('#'+segments[i],container).val(records[0][segments[i]].value).trigger('change');
-				$('#relatedfrom',container).val(records[0][vars.lookups[fieldcode].relatedkey].value);
-			}
+		/* setup segments */
+		setupsegments:function(fieldcode,records){
+			$.each($('body').fields(fieldcode),function(index){
+				var target=$(this);
+				var buttons={
+					ok:target.closest('div[class*=lookup]').find('button.input-lookup-gaia').hide(),
+					clear:target.closest('div[class*=lookup]').find('button.input-clear-gaia')
+				};
+				var container=target.closest('div').css({'width':'auto'});
+				var segments=vars.lookups[fieldcode].segments;
+				if ($.data(target[0],'added')==null) $.data(target[0],'added',false);
+				if ($.data(target[0],'added')) return true;
+				/* append dropdown */
+				var list=null;
+				for (var i=0;i<segments.length;i++)
+				{
+					list=vars.template.clone(true);
+					list.find('select')
+					.attr('id',segments[i])
+					.attr('data-index',i)
+					.on('change',function(){
+						var index=parseInt($(this).attr('data-index'));
+						functions.reloadsegments(fieldcode,container,index);
+					});
+					container.append(list);
+				}
+				list=vars.template.clone(true);
+				list.find('select')
+				.attr('id','relatedkey')
+				.on('change',function(){
+					if ($(this).val().length!=0)
+					{
+						target.val($(this).val());
+						buttons.ok.trigger('click');
+					}
+				});
+				target.hide();
+				container.append(list).parents('[class*=lookup]').css({'width':'auto'});
+				functions.reloadsegments(fieldcode,container,-1);
+				if (records.length>index)
+					(function(fieldcode,container,record){
+						var records=$.grep(vars.apps[vars.lookups[fieldcode].app],function(item,index){return item[vars.lookups[fieldcode].relatedkey].value==record[fieldcode].value;});
+						var segments=vars.lookups[fieldcode].segments;
+						if (records.length!=0)
+						{
+							for (var i=0;i<segments.length;i++) $('#'+segments[i],container).val(records[0][segments[i]].value).trigger('change');
+							$('#relatedkey',container).val(records[0][vars.lookups[fieldcode].relatedkey].value);
+						}
+					})(fieldcode,container,records[index]);
+				$.data(target[0],'added',true);
+			});
 		}
 	};
 	/*---------------------------------------------------------------
@@ -186,7 +180,7 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
 		/* initialize valiable */
-		vars.segment=$('<div class="kintoneplugin-select-outer lookupfilter">').append($('<div class="kintoneplugin-select">').append($('<select>')));
+		vars.template=$('<div class="kintoneplugin-select-outer lookupfilter">').append($('<div class="kintoneplugin-select">').append($('<select>')));
 		vars.lookups=JSON.parse(vars.config['lookup']);
 		var counter=0;
 		var params=[];
@@ -205,30 +199,24 @@ jQuery.noConflict();
 		functions.loaddatas(counter,params,function(){
 			for (var i=0;i<params.length;i++) vars.apps[params[i].app]=params[i].records;
 			$.each(vars.lookups,function(key,values){
-				/* append segments */
-				functions.appendsegments(key);
+				var records=[event.record];
+				if (values.tablecode.length!=0)
+				{
+					records=[];
+					for (var i=0;i<event.record[values.tablecode].value.length;i++) records.push(event.record[values.tablecode].value[i].value);
+				}
+				/* setup segments */
+				functions.setupsegments(key,records);
 				if (values.tablecode.length!=0)
 				{
 					var events=[];
 					events.push('app.record.create.change.'+values.tablecode);
 					events.push('app.record.edit.change.'+values.tablecode);
 					kintone.events.on(events,function(event){
-						$.each(event.changes.row.value,function(key,values){
-							if (key in vars.lookups) functions.appendsegments(key);
-						});
+						functions.setupsegments(key,[]);
 						return event;
 					});
 				}
-				/* setup segments */
-				if (values.tablecode.length!=0)
-				{
-					for (var i=0;i<event.record[values.tablecode].value.length;i++)
-					{
-						var record=event.record[values.tablecode].value[i].value;
-						functions.setupsegments(key,record,i);
-					}
-				}
-				else functions.setupsegments(key,event.record,0);
 			});
 		});
 	});

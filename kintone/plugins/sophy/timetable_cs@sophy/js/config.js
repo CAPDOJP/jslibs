@@ -30,7 +30,7 @@ jQuery.noConflict();
 			'#B473B4'
 		]
 	};
-	var VIEW_NAME=['月次予定表','日次タイムテーブル','出欠確認','スケジュール作成','振替保留一覧'];
+	var VIEW_NAME=['月次予定表','日次タイムテーブル','出欠確認','スケジュール作成','受講キャンセル','振替保留一覧'];
 	var functions={
 		loadapps:function(callback){
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
@@ -237,7 +237,8 @@ jQuery.noConflict();
 				config['datetimetable']=resp.views[VIEW_NAME[1]].id;
 				config['attend']=resp.views[VIEW_NAME[2]].id;
 				config['scheduling']=resp.views[VIEW_NAME[3]].id;
-				config['pending']=resp.views[VIEW_NAME[4]].id;
+				config['cancel']=resp.views[VIEW_NAME[4]].id;
+				config['pending']=resp.views[VIEW_NAME[5]].id;
 				/* save config */
 				kintone.plugin.app.setConfig(config);
 			},function(error){});

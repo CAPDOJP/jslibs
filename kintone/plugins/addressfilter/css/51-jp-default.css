@@ -77,9 +77,10 @@
   box-sizing: border-box;
   display: inline-block;
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 20px;
   padding: 3px 5px;
   position: relative;
+  vertical-align: top;
 }
 .kintoneplugin-unit.color {
   border-radius: 2px;
@@ -233,6 +234,7 @@
   padding: 1px;
   border-radius: 4px;
   background-color: #727272;
+  vertical-align: top;
 }
 
 .kintoneplugin-select {

@@ -39,6 +39,69 @@ jQuery.noConflict();
 				}
 			});
 			return codes;
+		},
+		reloadprefecture:function(list,value,callback){
+			list.empty();
+			list.append($('<option>').attr('value','').html(''));
+			kintone.proxy(
+				'https://tis2010.jp/service/api/place/prefecture',
+				'GET',
+				{},
+				{},
+				function(body,status,headers){
+					var json=JSON.parse(body);
+					switch (status)
+					{
+						case 200:
+							for (var i=0;i<json.records.length;i++)
+							{
+								var record=json.records[i];
+								list.append($('<option>').attr('value',record.name).html(record.name));
+							}
+							if (value) list.val(value);
+							if (callback) callback();
+							break;
+						default:
+							swal('Error!',json.error.message,'error');
+							break;
+					}
+				},
+				function(error){
+					swal('Error!','APIへの接続に失敗しました。','error');
+				}
+			);
+		},
+		reloadcity:function(list,prefecture,value,callback){
+			list.empty();
+			list.append($('<option>').attr('value','').html(''));
+			if (!prefecture) return;
+			kintone.proxy(
+				'https://tis2010.jp/service/api/place/city?prefecture='+prefecture,
+				'GET',
+				{},
+				{},
+				function(body,status,headers){
+					var json=JSON.parse(body);
+					switch (status)
+					{
+						case 200:
+							for (var i=0;i<json.records.length;i++)
+							{
+								var record=json.records[i];
+								list.append($('<option>').attr('value',record.name).html(record.name));
+							}
+							if (value) list.val(value);
+							if (callback) callback();
+							break;
+						default:
+							swal('Error!',json.error.message,'error');
+							break;
+					}
+				},
+				function(error){
+					swal('Error!','APIへの接続に失敗しました。','error');
+				}
+			);
 		}
 	};
 	/*---------------------------------------------------------------
@@ -71,28 +134,51 @@ jQuery.noConflict();
 				}
 			});
 			/* initialize valiable */
-			vars.settingtable=$('.settings').adjustabletable({
-				add:'img.add',
-				del:'img.del'
-			});
-			var add=false;
-			var row=null;
-			var settings=[];
-			if (Object.keys(config).length!==0)
-			{
-				settings=JSON.parse(config['settings']);
-				for (var i=0;i<settings.length;i++)
+			functions.reloadprefecture($('select#prefectureinit'),null,function(){
+				vars.settingtable=$('.settings').adjustabletable({
+					add:'img.add',
+					del:'img.del',
+					addcallback:function(row){
+						$('select#prefectureinit',row).on('change',function(){
+							var list=$('select#cityinit',row);
+							var value=list.val();
+							if ($.hasData(list[0]))
+								if ($.data(list[0],'initialdata').length!=0)
+								{
+									value=$.data(list[0],'initialdata');
+									$.data(list[0],'initialdata','');
+								}
+							functions.reloadcity($('select#cityinit',row),$(this).val(),value);
+						});
+					}
+				});
+				var add=false;
+				var row=null;
+				var settings=[];
+				if (Object.keys(config).length!==0)
 				{
-					if (add) vars.settingtable.addrow();
-					else add=true;
-					row=vars.settingtable.rows.last();
-					$('select#prefecture',row).val(settings[i].prefecture);
-					$('select#city',row).val(settings[i].city);
-					$('select#street',row).val(settings[i].street);
-					$('select#address',row).val(settings[i].address);
-					$('select#zip',row).val(settings[i].zip);
+					settings=JSON.parse(config['settings']);
+					for (var i=0;i<settings.length;i++)
+					{
+						var init={
+							city:settings[i].cityinit,
+							prefecture:settings[i].prefectureinit,
+						};
+						if (add) vars.settingtable.addrow();
+						else add=true;
+						row=vars.settingtable.rows.last();
+						$('select#prefecture',row).val(settings[i].prefecture);
+						$('select#prefectureinit',row).val(init.prefecture);
+						$('select#city',row).val(settings[i].city);
+						$('select#street',row).val(settings[i].street);
+						$('select#address',row).val(settings[i].address);
+						$('select#zip',row).val(settings[i].zip);
+						/* trigger events */
+						$.data($('select#cityinit',row)[0],'initialdata',init.city);
+						$('select#prefectureinit',row).trigger('change');
+					}
 				}
-			}
+			});
 		});
 	},function(error){});
 	/*---------------------------------------------------------------
@@ -151,7 +237,9 @@ jQuery.noConflict();
 				}
 			settings.push({
 				prefecture:$('select#prefecture',row).val(),
+				prefectureinit:$('select#prefectureinit',row).val(),
 				city:$('select#city',row).val(),
+				cityinit:$('select#cityinit',row).val(),
 				street:$('select#street',row).val(),
 				address:$('select#address',row).val(),
 				zip:$('select#zip',row).val(),

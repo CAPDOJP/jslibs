@@ -433,6 +433,56 @@ p.timetable-scheduling-title{
   padding:0px 5px;
   text-align:center;
 }
+/* individual style (cancel) */
+div.timetable-cancel-container{
+  box-sizing:border-box;
+  display:inline-block;
+  margin:0px;
+  padding:1em;
+  vertical-align:top;
+  width:50%;
+}
+div.timetable-cancel-list{
+  border: 1px solid #e3e7e8;
+  height:50vh;
+  margin:0px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  width:100%;
+}
+p.timetable-cancel-item{
+  border-bottom: 1px solid #e3e7e8;
+  box-sizing:border-box;
+  color: #3498db;
+  margin:0px;
+  padding:5px 35px 5px 15px;
+  position:relative;
+  line-height:20px;
+  width:100%;
+}
+p.timetable-cancel-item img{
+  box-sizing:border-box;
+  cursor:pointer;
+  height:30px;
+  margin:0px;
+  outline:none;
+  position:absolute;
+  right:0px;
+  top:50%;
+  vertical-align:top;
+  width:30px;
+  -webkit-transform:translate(0%,-50%);
+  -ms-transform:translate(0%,-50%);
+  transform:translate(0%,-50%);
+}
+p.timetable-cancel-title{
+  box-sizing:border-box;
+  line-height:30px;
+  margin:0px;
+  margin-top:1em;
+  padding:0px 5px;
+  text-align:center;
+}
 /* individual style (pending) */
 table.timetable-pending{
   background-color:#FFFFFF;

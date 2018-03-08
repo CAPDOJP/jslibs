@@ -23,13 +23,15 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "js/images.js",
             "js/input.js",
             "js/map.js",
             "js/geocoding.js"
         ],
         "css":[
-            "css/desktop/51-modern-default.css",
-            "css/desktop/geocoding.css"
+            "css/51-modern-default.css",
+            "css/progress.css",
+            "css/geocoding.css"
         ]
     },
     "mobile":{
@@ -37,13 +39,14 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "js/images.js",
             "js/input.js",
             "js/map.js",
             "js/geocoding.js"
         ],
         "css":[
-            "css/desktop/51-modern-default.css",
-            "css/desktop/geocoding.css"
+            "css/51-modern-default.css",
+            "css/geocoding.css"
         ]
     },
     "config":{

@@ -1,0 +1,41 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone ルックアップデータ連動プラグイン",
+        "en":"kintone Lookup Linked plug-in",
+        "zh":"kintone ルックアップデータ連動プラグイン"
+    },
+    "description":{
+        "ja":"ルックアップフィールドの値をテーブル内のルックアップフィールドにコピーするプラグインです。",
+        "en":"This plug-in copies the value of the lookup field into the lookup field in the table",
+        "zh":"ルックアップフィールドの値をテーブル内のルックアップフィールドにコピーするプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.capdo-jp.com/",
+        "en":"http://www.capdo-jp.com/",
+        "zh":"http://www.capdo-jp.com/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/lookuplinked.js"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

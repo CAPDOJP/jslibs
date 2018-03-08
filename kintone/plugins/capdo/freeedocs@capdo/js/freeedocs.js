@@ -170,7 +170,7 @@ jQuery.noConflict();
 								}
 								swal({
 									title:'確認',
-									text:'Freeeに取引データを登録します。宜しいですか？。',
+									text:'Freeeに取引データを登録します。宜しいですか？',
 									type:'info',
 									showCancelButton:true,
 									cancelButtonText:'Cancel'

@@ -1,0 +1,48 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">郵便番号フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">郵便番号を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="zip">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">住所フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">住所を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="address">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">バーコード画像フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">バーコード画像を設定するフィールドを指定して下さい。【添付ファイルフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="barcode">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*登録の際には、生成したバーコード画像で上書きしてしまいますので、ご注意下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">バーコード画像ダウンロード判定<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">Kintoneの仕様でレコード追加/編集画面では添付ファイルフィールドへの自動登録が出来ません。<br>回避策として、生成したバーコード画像をダウンロードする仕様としておりますが、ダウンロードが不要の場合はチェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="denydownload" value="0">レコード追加/編集画面でバーコード画像をダウンロードしない</label>
+		</div>
+		<div class="kintoneplugin-caution">*チェックを付けた場合でも、一覧からの一括生成は有効です。</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>
