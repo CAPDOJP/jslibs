@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "geocoding"
+* jQuery-Plugin "customersinfo"
 * Version: 1.0
 * Copyright (c) 2016 TIS
 *
@@ -15,7 +15,6 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		isbarcode:false,
 		isdisplaymap:false,
 		ismobile:false,
 		centerLocation:null,
@@ -62,6 +61,7 @@ jQuery.noConflict();
 		save:[
 			'app.record.create.submit',
 			'app.record.edit.submit',
+			'app.record.index.edit.submit',
 			'mobile.app.record.create.submit',
 			'mobile.app.record.edit.submit'
 		]
@@ -72,142 +72,232 @@ jQuery.noConflict();
 			if (vars.currentlocation.find('input[type=checkbox]').prop('checked')) vars.map.map.setCenter(vars.map.markers[0].getPosition());
 			else vars.map.map.setCenter(new google.maps.LatLng(vars.markers[vars.markers.length-1].lat,vars.markers[vars.markers.length-1].lng));
 		},
-		/* create barcode */
-		createbarcode:function(record,callback){
-			var check=0;
-			var counter=0;
-			var index=0;
-			var canvas=null;
-			var context=null;
-			var images=$.images();
-			var chars={
-				from:[],
-				to:[],
-				check:{'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'-':10,'CC1':11,'CC2':12,'CC3':13,'CC4':14,'CC5':15,'CC6':16,'CC7':17,'CC8':18},
-				conv:{
-					'A':['CC1','0'],'B':['CC1','1'],'C':['CC1','2'],'D':['CC1','3'],'E':['CC1','4'],'F':['CC1','5'],'G':['CC1','6'],'H':['CC1','7'],'I':['CC1','8'],
-					'J':['CC1','9'],'K':['CC2','0'],'L':['CC2','1'],'M':['CC2','2'],'N':['CC2','3'],'O':['CC2','4'],'P':['CC2','5'],'Q':['CC2','6'],'R':['CC2','7'],
-					'S':['CC2','8'],'T':['CC2','9'],'U':['CC3','0'],'V':['CC3','1'],'W':['CC3','2'],'X':['CC3','3'],'Y':['CC3','4'],'Z':['CC3','5']
-				}
-			};
-			/* create barcode text */
-			chars.from=record[vars.config.address].value
-			.replace(/([一二三四五六七八九十]+)(丁目|丁|番地|番|号|地割|線|の|ノ)/g,'$1@')
-			.replace(/一[十]*([一二三四五六七八九十]{1})@/g,'1$1@')
-			.replace(/二[十]*([一二三四五六七八九十]{1})@/g,'2$1@')
-			.replace(/三[十]*([一二三四五六七八九十]{1})@/g,'3$1@')
-			.replace(/四[十]*([一二三四五六七八九十]{1})@/g,'4$1@')
-			.replace(/五[十]*([一二三四五六七八九十]{1})@/g,'5$1@')
-			.replace(/六[十]*([一二三四五六七八九十]{1})@/g,'6$1@')
-			.replace(/七[十]*([一二三四五六七八九十]{1})@/g,'7$1@')
-			.replace(/八[十]*([一二三四五六七八九十]{1})@/g,'8$1@')
-			.replace(/九[十]*([一二三四五六七八九十]{1})@/g,'9$1@')
-			.replace(/十([一二三四五六七八九十]{1})@/g,'1$1@')
-			.replace(/一@/g,'1-')
-			.replace(/二@/g,'2-')
-			.replace(/三@/g,'3-')
-			.replace(/四@/g,'4-')
-			.replace(/五@/g,'5-')
-			.replace(/六@/g,'6-')
-			.replace(/七@/g,'7-')
-			.replace(/八@/g,'8-')
-			.replace(/九@/g,'9-')
-			.replace(/十@/g,'10-')
-			.replace(/[Ａ-Ｚａ-ｚ]/g,function(s){
-				return String.fromCharCode(s.charCodeAt(0)-65248);
-			})
-			.replace(/[０-９]/g,function(s){
-				return String.fromCharCode(s.charCodeAt(0)-65248);
-			})
-			.toUpperCase()
-			.replace(/[&＆\/／･・\.．]/g,'')
-			.replace(/[‐－―ー]([0-9]+)/g,'-$1')
-			.replace(/[^0-9A-Z-]|[A-Z]{2,}/g,'-')
-			.replace(/-{2,}/g,'-')
-			.replace(/([0-9]+)F$/g,'$1')
-			.replace(/([0-9]+)F([0-9]+)/g,'$1-$2')
-			.replace(/-([A-Z]{1})/g,'$1')
-			.replace(/([A-Z]{1})-/g,'$1')
-			.replace(/^-/g,'')
-			.replace(/-$/g,'')
-			.split('')
-			chars.to=record[vars.config.zip].value.replace(/[０-９]/g,function(s){
-				return String.fromCharCode(s.charCodeAt(0)-65248);
-			})
-			.replace(/[^0-9]/g,'')
-			.split('');
-			for (var i=0;i<13;i++) chars.to.push('CC4');
-			/* calc check digit */
-			index=7;
-			for (var i=0;i<chars.from.length;i++)
+		/* check destinations */
+		checkdestination:function(record,callback){
+			if (vars.config['usedestination']=='1')
 			{
-				if (index>chars.to.length-1) break;
-				if (chars.from[i].match(/[A-Z]/g))
-				{
-					var conv=chars.conv[chars.from[i]];
-					chars.to[index]=conv[0];
-					if (index<chars.to.length-1) chars.to[index+1]=conv[1];
-					index++;
-				}
-				else chars.to[index]=chars.from[i];
-				index++;
-			}
-			for (var i=0;i<chars.to.length;i++) check+=chars.check[chars.to[i]];
-			check=19-check%19;
-			if (check==19) check=0;
-			chars.to.push(Object.keys(chars.check).filter(function(key){return chars.check[key]==check.toString()})[0]);
-			record[vars.config.barcodetext].value='STC'+chars.to.join('')+'SPC';
-			/* create barcode image */
-			canvas=$('<canvas height="12" width="276">');
-			if (canvas[0].getContext)
-			{
-				context=canvas[0].getContext('2d');
-				context.fillStyle='rgb(255,255,255)';
-				context.fillRect(0,0,canvas[0].width,canvas[0].height);
-				counter=chars.to.length;
-				index=0;
-				functions.loadimage(context,images['STC'],index,function(){
-					for (var i=0;i<chars.to.length;i++)
+				var body={
+					app:vars.config['app'],
+					query:''
+				};
+				var familydestination=record[vars.config['familyname']].value+'家御一同様';
+				var singledestination=record[vars.config['familyname']].value+record[vars.config['givenname']].value+'様';
+				var mailingoptions=JSON.parse(vars.config['mailingoptions']);
+				body.query+=vars.config['barcodetext']+'="'+record[vars.config['barcodetext']].value+'"';
+				body.query+=' and '+vars.config['familyname']+'="'+record[vars.config['familyname']].value+'"';
+				body.query+=' and '+vars.config['mailing']+' not in ("'+mailingoptions[2].option+'")';
+				body.query+=' and $id not in ('+(('$id' in record)?record['$id'].value:'0')+')';
+				body.query+=' order by $id asc';
+				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+					if (resp.records.length!=0)
 					{
-						index+=12;
-						functions.loadimage(context,images[chars.to[i]],index,function(){
-							counter--;
-							if (counter==0)
+						var returnvalues=[];
+						var updatevalues=[];
+						for (var i=0;i<resp.records.length;i++)
+						{
+							var updatevalue={
+								app:vars.config['app'],
+								id:resp.records[i]['$id'].value,
+								record:{}
+							};
+							singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
+							switch (record[vars.config['mailing']].value)
 							{
-								index+=12;
-								functions.loadimage(context,images['SPC'],index,function(){
-									var datas=atob(canvas[0].toDataURL('image/png').replace(/^[^,]*,/,''));
-									var buffer=new Uint8Array(datas.length);
-									for (var i=0;i<datas.length;i++) buffer[i]=datas.charCodeAt(i);
-									(function(buffer){
-										var blob=new Blob([buffer],{type:'image/png'});
-										var filedata=new FormData();
-										var xhr=new XMLHttpRequest();
-										filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
-										filedata.append('file',blob,'barcode.png');
-										xhr.open('POST',encodeURI('/k/v1/file.json'),false);
-										xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
-										xhr.responseType='multipart/form-data';
-										xhr.onload=function(){
-											if (xhr.status===200) record[vars.config.barcodeimage].value=[{fileKey:JSON.parse(xhr.responseText).fileKey}];
-											if (callback) callback(record);
-										};
-										xhr.onerror=function(){
-											if (callback) callback(record);
-										};
-										xhr.send(filedata);
-									})(buffer.buffer);
+								case mailingoptions[0].option:
+									updatevalue.record[vars.config['mailing']]={value:mailingoptions[1].option};
+									updatevalue.record[vars.config['destination']]={value:familydestination};
+									break;
+								case mailingoptions[1].option:
+									updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+									updatevalue.record[vars.config['destination']]={value:familydestination};
+									break;
+								case mailingoptions[2].option:
+									updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+									if (resp.records.length==1) updatevalue.record[vars.config['destination']]={value:singledestination};
+									else updatevalue.record[vars.config['destination']]={value:familydestination};
+									break;
+							}
+							updatevalues.push(updatevalue);
+							returnvalues.push(updatevalue.id);
+						}
+						(function(values,callback){
+							var counter=values.length;
+							var error=false;
+							for (var i=0;i<values.length;i++)
+							{
+								if (error) callback(true);
+								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',values[i],function(resp){
+									counter--;
+									if (counter==0) callback(false);
+								},function(error){
+									error=true;
 								});
 							}
+						})(updatevalues,function(error){
+							record[vars.config['destination']].value=familydestination;
+							if (error) callback([]);
+							else callback(returnvalues);
 						});
 					}
+					else
+					{
+						record[vars.config['destination']].value=singledestination;
+						callback([]);
+					}
+				},
+				function(error){
+					callback([]);
 				});
 			}
+			else callback([]);
+		},
+		/* create barcode */
+		createbarcode:function(record,type,callback){
+			if (!functions.denybarcode(record))
+			{
+				var check=0;
+				var counter=0;
+				var index=0;
+				var canvas=null;
+				var context=null;
+				var images=$.images();
+				var chars={
+					from:[],
+					to:[],
+					check:{'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'-':10,'CC1':11,'CC2':12,'CC3':13,'CC4':14,'CC5':15,'CC6':16,'CC7':17,'CC8':18},
+					conv:{
+						'A':['CC1','0'],'B':['CC1','1'],'C':['CC1','2'],'D':['CC1','3'],'E':['CC1','4'],'F':['CC1','5'],'G':['CC1','6'],'H':['CC1','7'],'I':['CC1','8'],
+						'J':['CC1','9'],'K':['CC2','0'],'L':['CC2','1'],'M':['CC2','2'],'N':['CC2','3'],'O':['CC2','4'],'P':['CC2','5'],'Q':['CC2','6'],'R':['CC2','7'],
+						'S':['CC2','8'],'T':['CC2','9'],'U':['CC3','0'],'V':['CC3','1'],'W':['CC3','2'],'X':['CC3','3'],'Y':['CC3','4'],'Z':['CC3','5']
+					}
+				};
+				/* create barcode text */
+				chars.from=record[vars.config['address']].value
+				.replace(/([一二三四五六七八九十]+)(丁目|丁|番地|番|号|地割|線|の|ノ)/g,'$1@')
+				.replace(/一[十]*([一二三四五六七八九十]{1})@/g,'1$1@')
+				.replace(/二[十]*([一二三四五六七八九十]{1})@/g,'2$1@')
+				.replace(/三[十]*([一二三四五六七八九十]{1})@/g,'3$1@')
+				.replace(/四[十]*([一二三四五六七八九十]{1})@/g,'4$1@')
+				.replace(/五[十]*([一二三四五六七八九十]{1})@/g,'5$1@')
+				.replace(/六[十]*([一二三四五六七八九十]{1})@/g,'6$1@')
+				.replace(/七[十]*([一二三四五六七八九十]{1})@/g,'7$1@')
+				.replace(/八[十]*([一二三四五六七八九十]{1})@/g,'8$1@')
+				.replace(/九[十]*([一二三四五六七八九十]{1})@/g,'9$1@')
+				.replace(/十([一二三四五六七八九十]{1})@/g,'1$1@')
+				.replace(/一@/g,'1-')
+				.replace(/二@/g,'2-')
+				.replace(/三@/g,'3-')
+				.replace(/四@/g,'4-')
+				.replace(/五@/g,'5-')
+				.replace(/六@/g,'6-')
+				.replace(/七@/g,'7-')
+				.replace(/八@/g,'8-')
+				.replace(/九@/g,'9-')
+				.replace(/十@/g,'10-')
+				.replace(/[Ａ-Ｚａ-ｚ]/g,function(s){
+					return String.fromCharCode(s.charCodeAt(0)-65248);
+				})
+				.replace(/[０-９]/g,function(s){
+					return String.fromCharCode(s.charCodeAt(0)-65248);
+				})
+				.toUpperCase()
+				.replace(/[&＆\/／･・\.．]/g,'')
+				.replace(/[‐－―ー]([0-9]+)/g,'-$1')
+				.replace(/[^0-9A-Z-]|[A-Z]{2,}/g,'-')
+				.replace(/-{2,}/g,'-')
+				.replace(/([0-9]+)F$/g,'$1')
+				.replace(/([0-9]+)F([0-9]+)/g,'$1-$2')
+				.replace(/-([A-Z]{1})/g,'$1')
+				.replace(/([A-Z]{1})-/g,'$1')
+				.replace(/^-/g,'')
+				.replace(/-$/g,'')
+				.split('')
+				chars.to=record[vars.config['zip']].value.replace(/[０-９]/g,function(s){
+					return String.fromCharCode(s.charCodeAt(0)-65248);
+				})
+				.replace(/[^0-9]/g,'')
+				.split('');
+				for (var i=0;i<13;i++) chars.to.push('CC4');
+				/* calc check digit */
+				index=7;
+				for (var i=0;i<chars.from.length;i++)
+				{
+					if (index>chars.to.length-1) break;
+					if (chars.from[i].match(/[A-Z]/g))
+					{
+						var conv=chars.conv[chars.from[i]];
+						chars.to[index]=conv[0];
+						if (index<chars.to.length-1) chars.to[index+1]=conv[1];
+						index++;
+					}
+					else chars.to[index]=chars.from[i];
+					index++;
+				}
+				for (var i=0;i<chars.to.length;i++) check+=chars.check[chars.to[i]];
+				check=19-check%19;
+				if (check==19) check=0;
+				chars.to.push(Object.keys(chars.check).filter(function(key){return chars.check[key]==check.toString()})[0]);
+				record[vars.config['barcodetext']].value='STC'+chars.to.join('')+'SPC';
+				/* create barcode image */
+				canvas=$('<canvas height="12" width="276">');
+				if (canvas[0].getContext)
+				{
+					context=canvas[0].getContext('2d');
+					context.fillStyle='rgb(255,255,255)';
+					context.fillRect(0,0,canvas[0].width,canvas[0].height);
+					counter=chars.to.length;
+					index=0;
+					functions.loadimage(context,images['STC'],index,function(){
+						for (var i=0;i<chars.to.length;i++)
+						{
+							index+=12;
+							functions.loadimage(context,images[chars.to[i]],index,function(){
+								counter--;
+								if (counter==0)
+								{
+									index+=12;
+									functions.loadimage(context,images['SPC'],index,function(){
+										var datas=atob(canvas[0].toDataURL('image/png').replace(/^[^,]*,/,''));
+										var buffer=new Uint8Array(datas.length);
+										for (var i=0;i<datas.length;i++) buffer[i]=datas.charCodeAt(i);
+										(function(buffer){
+											var blob=new Blob([buffer],{type:'image/png'});
+											if (type=='list')
+											{
+												var filedata=new FormData();
+												var xhr=new XMLHttpRequest();
+												filedata.append('__REQUEST_TOKEN__',kintone.getRequestToken());
+												filedata.append('file',blob,'barcode.png');
+												xhr.open('POST',encodeURI('/k/v1/file.json'),false);
+												xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+												xhr.responseType='multipart/form-data';
+												xhr.onload=function(){
+													if (xhr.status===200) record[vars.config['barcodeimage']].value=[{fileKey:JSON.parse(xhr.responseText).fileKey}];
+													if (callback) callback(record);
+												};
+												xhr.onerror=function(){
+													if (callback) callback(record);
+												};
+												xhr.send(filedata);
+											}
+											else
+											{
+												if (callback) callback(record);
+											}
+										})(buffer.buffer);
+									});
+								}
+							});
+						}
+					});
+				}
+			}
+			else callback(null);
 		},
 		/* check create barcode */
 		denybarcode:function(record){
-			var address=(record[vars.config.address].value)?record[vars.config.address].value:'';
-			var zip=(record[vars.config.zip].value)?record[vars.config.zip].value:'';
+			var address=(record[vars.config['address']].value)?record[vars.config['address']].value:'';
+			var zip=(record[vars.config['zip']].value)?record[vars.config['zip']].value:'';
 			if (zip.match(/00$/g)) zip='';
 			return (!(address.length!=0 && zip.length!=0));
 		},
@@ -230,6 +320,7 @@ jQuery.noConflict();
 							switch (json.status)
 							{
 								case 'ZERO_RESULTS':
+									alert('地図座標が取得出来ませんでした。');
 									break;
 								case 'OVER_QUERY_LIMIT':
 									alert('リクエストが割り当て量を超えています。');
@@ -306,11 +397,11 @@ jQuery.noConflict();
 							{
 								if ($('.displaymap').size()) $('.displaymap').remove();
 								kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
-								if (vars.isbarcode)
+								if (vars.config['usebarcode']=='1')
 								{
 									if ($('.createbarcode').size()) $('.createbarcode').remove();
 									kintone.app.getHeaderMenuSpaceElement().appendChild(
-										$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/barcode.svg" class="createbarcode" alt="バーコード生成" title="バーコード生成" />').css({
+										$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/barcode.svg" class="createbarcode" alt="郵便バーコード生成" title="郵便バーコード生成" />').css({
 											'cursor':'pointer',
 											'display':'inline-block',
 											'height':'48px',
@@ -319,46 +410,21 @@ jQuery.noConflict();
 											'width':'48px'
 										})
 										.on('click',function(e){
-											if (!confirm('表示中の一覧の条件に該当するすべてのレコードのバーコードを生成します。宜しいですか？')) return;
+											if (!confirm('表示中の一覧の条件に該当するすべてのレコードの郵便バーコードを生成します。宜しいですか？')) return;
 											var error=false;
 											var counter=0;
-											var progress=function(){
-												counter++;
-												if (counter<vars.apps[vars.config['app']].length)
-												{
-													vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/vars.apps[vars.config['app']].length));
-												}
-												else
-												{
-													vars.progress.hide();
-													alert('データを登録しました。');
-													location.reload(true);
-												}
-											};
-											if (vars.apps[vars.config['app']].length==0)
-											{
-												vars.progress.hide();
-												alert('レコードがありません。');
-												return;
-											}
-											else
-											{
-												vars.progress.find('.message').text('データ登録中');
-												vars.progress.find('.progressbar').find('.progresscell').width(0);
-												vars.progress.show();
-											}
-											for (var i=0;i<vars.apps[vars.config['app']].length;i++)
-											{
-												if (error) break;
-												if (!functions.denybarcode(vars.apps[vars.config['app']][i]))
+											var exclude=[];
+											var records=[];
+											var barcoderegist=function(index){
+												if (index<vars.apps[vars.config['app']].length)
 												{
 													var record={};
 													var body={
-														app:kintone.app.getId(),
-														id:vars.apps[vars.config['app']][i]['$id'].value,
+														app:vars.config['app'],
+														id:vars.apps[vars.config['app']][index]['$id'].value,
 														record:{}
 													};
-													$.each(vars.apps[vars.config['app']][i],function(key,values){
+													$.each(vars.apps[vars.config['app']][index],function(key,values){
 														switch (values.type)
 														{
 															case 'CALC':
@@ -377,20 +443,100 @@ jQuery.noConflict();
 														}
 													});
 													(function(record,body){
-														functions.createbarcode(record,function(record){
-															body.record=record;
+														functions.createbarcode(record,'list',function(record){
+															if (record)
+															{
+																body.record=record;
+																records.push(body);
+															}
+															barcoderegist(index+1);
+														});
+													})(record,body);
+												}
+												else
+												{
+													for (var i=0;i<records.length;i++)
+													{
+														if (error) break;
+														(function(body){
 															kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-																progress();
+																progress(function(){
+																	if (vars.config['usedestination']=='1')
+																	{
+																		counter=0;
+																		vars.progress.find('.message').text('宛名データ更新中');
+																		vars.progress.find('.progressbar').find('.progresscell').width(0);
+																		destinationregist(0);
+																	}
+																	else
+																	{
+																		alert('データを登録しました。');
+																		location.reload(true);
+																	}
+																});
 															},function(error){
 																vars.progress.hide();
 																alert(error.message);
 																error=true;
 															});
-														});
-													})(record,body);
+														})(records[i]);
+													}
 												}
-												else progress();
+											};
+											var destinationregist=function(index){
+												if (index<records.length)
+												{
+													if ($.inArray(records[index].id,exclude)<0)
+													{
+														delete records[index].record[vars.config['barcodeimage']];
+														functions.checkdestination(records[index].record,function(ids){
+															Array.prototype.push.apply(exclude,ids);
+															kintone.api(kintone.api.url('/k/v1/record',true),'PUT',records[index],function(resp){
+																progress();
+																destinationregist(index+1);
+															},function(error){
+																vars.progress.hide();
+																alert(error.message);
+															});
+														});
+													}
+													else
+													{
+														progress();
+														destinationregist(index+1);
+													}
+												}
+											};
+											var progress=function(callback){
+												counter++;
+												if (counter<records.length)
+												{
+													vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/records.length));
+												}
+												else
+												{
+													vars.progress.hide();
+													if (callback) callback();
+													else
+													{
+														alert('データを登録しました。');
+														location.reload(true);
+													}
+												}
+											};
+											if (vars.apps[vars.config['app']].length==0)
+											{
+												vars.progress.hide();
+												alert('レコードがありません。');
+												return;
 											}
+											else
+											{
+												vars.progress.find('.message').text('バーコードデータ登録中');
+												vars.progress.find('.progressbar').find('.progresscell').width(0);
+												vars.progress.show();
+											}
+											barcoderegist(0);
 										})[0]
 									);
 									vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
@@ -487,17 +633,20 @@ jQuery.noConflict();
 											body.record[vars.config['lng']]={value:latlng.lng()};
 											body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
 											body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
-											if (vars.isbarcode)
+											if (vars.config['usebarcode']=='1')
 											{
 												body.record[vars.config['barcodetext']]={value:''};
 												body.record[vars.config['barcodeimage']]={value:[]};
-												functions.createbarcode(body.record,function(record){
-													body.record=record;
-													kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-														callback(resp);
-													},function(error){
-														alert(error.message);
-													});
+												functions.createbarcode(body.record,'list',function(record){
+													if (record)
+													{
+														body.record=record;
+														kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+															callback(resp);
+														},function(error){
+															alert(error.message);
+														});
+													}
 												});
 											}
 											else
@@ -1044,8 +1193,6 @@ jQuery.noConflict();
 		{
 			if (event.viewType.toUpperCase()=='CALENDAR') return event;
 		}
-		/* check barcode */
-		vars.isbarcode=(vars.config.barcodetext.length!=0 && vars.config.barcodeimage.length!=0);
 		/* initialize valiable */
 		vars.markers=[];
 		if (vars.map!=null)
@@ -1135,6 +1282,7 @@ jQuery.noConflict();
 			var button=null;
 			var input=null;
 			var height=0;
+			var events=[];
 			input=$('body').fields(vars.config['address'])[0];
 			button=$('<button class="customsearch-button">');
 			height=input.outerHeight(false);
@@ -1160,46 +1308,146 @@ jQuery.noConflict();
 					});
 				})
 			);
+			events=[];
+			events.push('app.record.create.change.'+vars.config['zip']);
+			events.push('mobile.app.record.create.change.'+vars.config['zip']);
+			events.push('app.record.edit.change.'+vars.config['zip']);
+			events.push('mobile.app.record.edit.change.'+vars.config['zip']);
+			events.push('app.record.index.edit.change.'+vars.config['zip']);
+			events.push('app.record.create.change.'+vars.config['address']);
+			events.push('mobile.app.record.create.change.'+vars.config['address']);
+			events.push('app.record.edit.change.'+vars.config['address']);
+			events.push('mobile.app.record.edit.change.'+vars.config['address']);
+			events.push('app.record.index.edit.change.'+vars.config['address']);
+			kintone.events.on(events,function(event){
+				functions.createbarcode(event.record,'show',function(record){
+					if (record)
+					{
+						if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
+						else kintone.app.record.set({'record':record});
+					}
+				});
+				return event;
+			});
+			var mailingoptions=JSON.parse(vars.config['mailingoptions']);
+			events=[];
+			events.push('app.record.create.change.'+vars.config['mailing']);
+			events.push('mobile.app.record.create.change.'+vars.config['mailing']);
+			events.push('app.record.edit.change.'+vars.config['mailing']);
+			events.push('mobile.app.record.edit.change.'+vars.config['mailing']);
+			events.push('app.record.index.edit.change.'+vars.config['mailing']);
+			kintone.events.on(events,function(event){
+				switch (event.record[vars.config['mailing']].value)
+				{
+					case mailingoptions[0].option:
+						if (mailingoptions[0].sync.length!=0)
+						{
+							event.record[mailingoptions[0].sync].value=[mailingoptions[0].option];
+						}
+						break;
+					case mailingoptions[1].option:
+						if (mailingoptions[1].sync.length!=0)
+						{
+							event.record[mailingoptions[1].sync].value=[mailingoptions[1].option];
+						}
+						break;
+					case mailingoptions[2].option:
+						if (mailingoptions[2].sync.length!=0)
+						{
+							event.record[mailingoptions[2].sync].value=[mailingoptions[2].option];
+						}
+						break;
+				}
+				return event;
+			});
+			if (mailingoptions[0].sync.length!=0)
+			{
+				events=[];
+				events.push('app.record.create.change.'+mailingoptions[0].sync);
+				events.push('mobile.app.record.create.change.'+mailingoptions[0].sync);
+				events.push('app.record.edit.change.'+mailingoptions[0].sync);
+				events.push('mobile.app.record.edit.change.'+mailingoptions[0].sync);
+				events.push('app.record.index.edit.change.'+mailingoptions[0].sync);
+				kintone.events.on(events,function(event){
+					if ($.inArray(mailingoptions[0].option,event.record[mailingoptions[0].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[0].option;
+					return event;
+				});
+			}
+			if (mailingoptions[1].sync.length!=0)
+			{
+				events=[];
+				events.push('app.record.create.change.'+mailingoptions[1].sync);
+				events.push('mobile.app.record.create.change.'+mailingoptions[1].sync);
+				events.push('app.record.edit.change.'+mailingoptions[1].sync);
+				events.push('mobile.app.record.edit.change.'+mailingoptions[1].sync);
+				events.push('app.record.index.edit.change.'+mailingoptions[1].sync);
+				kintone.events.on(events,function(event){
+					if ($.inArray(mailingoptions[1].option,event.record[mailingoptions[1].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[1].option;
+					return event;
+				});
+			}
+			if (mailingoptions[2].sync.length!=0)
+			{
+				events=[];
+				events.push('app.record.create.change.'+mailingoptions[2].sync);
+				events.push('mobile.app.record.create.change.'+mailingoptions[2].sync);
+				events.push('app.record.edit.change.'+mailingoptions[2].sync);
+				events.push('mobile.app.record.edit.change.'+mailingoptions[2].sync);
+				events.push('app.record.index.edit.change.'+mailingoptions[2].sync);
+				kintone.events.on(events,function(event){
+					if ($.inArray(mailingoptions[2].option,event.record[mailingoptions[2].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[2].option;
+					return event;
+				});
+			}
 		}
 		kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
 	});
 	kintone.events.on(events.save,function(event){
-		if (parseFloat('0'+event.record[vars.config['lat']].value)+parseFloat('0'+event.record[vars.config['lng']].value)==0)
-		{
-			return new kintone.Promise(function(resolve,reject){
-				kintone.proxy(
-					'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURIComponent(event.record[vars.config['address']].value),
-					'GET',
-					{},
-					{},
-					function(body,status,headers){
-						if (status>=200 && status<300){
-							var json=JSON.parse(body);
-							switch (json.status)
-							{
-								case 'ZERO_RESULTS':
-								case 'OVER_QUERY_LIMIT':
-								case 'REQUEST_DENIED':
-								case 'INVALID_REQUEST':
-									break;
-								case 'OK':
-									var lat=json.results[0].geometry.location.lat
-									var lng=json.results[0].geometry.location.lng;
-									var zip='';
-									for (var i=0;i<json.results[0].address_components.length;i++)
-										if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
-									event.record[vars.config['lat']].value=lat;
-									event.record[vars.config['lng']].value=lng;
-									event.record[vars.config['zip']].value=zip;
-									resolve(event);
-									break;
-							}
+		var getlatlng=function(address,success,error){
+			kintone.proxy(
+				'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+address,
+				'GET',
+				{},
+				{},
+				function(body,status,headers){
+					if (status>=200 && status<300){
+						var json=JSON.parse(body);
+						switch (json.status)
+						{
+							case 'ZERO_RESULTS':
+							case 'OVER_QUERY_LIMIT':
+							case 'REQUEST_DENIED':
+							case 'INVALID_REQUEST':
+								error();
+								break;
+							case 'OK':
+								success(json);
+								break;
 						}
 					}
-				);
-			});
-		}
-		else return event;
+				}
+			);
+		};
+		return new kintone.Promise(function(resolve,reject){
+			if (parseFloat('0'+event.record[vars.config['lat']].value)+parseFloat('0'+event.record[vars.config['lng']].value)==0)
+			{
+				getlatlng(encodeURIComponent(event.record[vars.config['address']].value),function(json){
+					var lat=json.results[0].geometry.location.lat
+					var lng=json.results[0].geometry.location.lng;
+					var zip='';
+					for (var i=0;i<json.results[0].address_components.length;i++)
+						if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
+					event.record[vars.config['lat']].value=lat;
+					event.record[vars.config['lng']].value=lng;
+					event.record[vars.config['zip']].value=zip;
+					functions.checkdestination(event.record,function(){resolve(event);});
+				},
+				function(){
+					functions.checkdestination(event.record,function(){resolve(event);});
+				});
+			}
+			else functions.checkdestination(event.record,function(){resolve(event);});
+		});
 	});
 })(jQuery,kintone.$PLUGIN_ID);

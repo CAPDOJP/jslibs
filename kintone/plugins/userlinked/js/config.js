@@ -117,7 +117,8 @@ jQuery.noConflict();
 					{
 						var fieldinfo=vars.fieldinfos[sorted[index]];
 						/* check required */
-						if ('required' in fieldinfo) $('select#requirefield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+						if ('required' in fieldinfo)
+							if (fieldinfo.type!='FILE') $('select#requirefield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 						/* check field type */
 						switch (fieldinfo.type)
 						{

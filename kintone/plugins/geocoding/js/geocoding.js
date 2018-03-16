@@ -57,6 +57,7 @@ jQuery.noConflict();
 							switch (json.status)
 							{
 								case 'ZERO_RESULTS':
+									alert('地図座標が取得出来ませんでした。');
 									break;
 								case 'OVER_QUERY_LIMIT':
 									alert('リクエストが割り当て量を超えています。');

@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone 住所/緯度経度変換プラグイン@FW",
+        "ja":"kintone 顧客情報操作プラグイン@FW",
         "en":"kintone Geocoding plug-in",
-        "zh":"kintone 住所/緯度経度変換プラグイン@FW"
+        "zh":"kintone 顧客情報操作プラグイン@FW"
     },
     "description":{
-        "ja":"入力された住所を元に地図や緯度経度を表示するプラグインです。",
-        "en":"This plug-in to view the map and latitude and longitude based on the input address",
-        "zh":"入力された住所を元に地図や緯度経度を表示するプラグインです。"
+        "ja":"入力された顧客情報を元に各操作を行うプラグインです。",
+        "en":"This plug-in performs each operation based on inputted customer information",
+        "zh":"入力された顧客情報を元に各操作を行うプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -22,31 +22,29 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "js/images.js",
             "js/input.js",
             "js/map.js",
-            "js/geocoding.js"
+            "js/customersinfo.js"
         ],
         "css":[
             "css/51-modern-default.css",
             "css/progress.css",
-            "css/geocoding.css"
+            "css/customersinfo.css"
         ]
     },
     "mobile":{
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "js/images.js",
             "js/input.js",
             "js/map.js",
-            "js/geocoding.js"
+            "js/customersinfo.js"
         ],
         "css":[
             "css/51-modern-default.css",
-            "css/geocoding.css"
+            "css/customersinfo.css"
         ]
     },
     "config":{

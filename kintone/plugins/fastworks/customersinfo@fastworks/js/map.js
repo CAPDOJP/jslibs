@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "tis-route"
+* jQuery-Plugin "map"
 * Version: 1.0
 * Copyright (c) 2016 TIS
 *

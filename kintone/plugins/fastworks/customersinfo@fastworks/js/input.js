@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "tis-referer"
+* jQuery-Plugin "input"
 * Version: 1.0
 * Copyright (c) 2016 TIS
 *

@@ -1,16 +1,16 @@
 {
     "manifest_version":1,
-    "version":1,
+    "version":3,
     "type":"APP",
     "name":{
-        "ja":"kintone ファシリテーターコメント入力プラグイン@ソフィー",
-        "en":"kintone Facilitators Comment plug-in",
-        "zh":"kintone ファシリテーターコメント入力プラグイン@ソフィー"
+        "ja":"kintone ツリー形式一覧表示プラグイン",
+        "en":"kintone Tree List plug-in",
+        "zh":"kintone ツリー形式一覧表示プラグイン"
     },
     "description":{
-        "ja":"ファシリテーターがコメントを入力するプラグインです。",
-        "en":"This plug-in where the facilitator inputs a comment",
-        "zh":"ファシリテーターがコメントを入力するプラグインです。"
+        "ja":"一覧をツリー形式で表示するプラグインです。",
+        "en":"This plug-in will displays the list in tree form",
+        "zh":"一覧をツリー形式で表示するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -22,15 +22,13 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "js/sweetalert.min.js",
-            "js/facilitatorcomment.js"
+            "js/treelist.js"
         ],
         "css":[
-            "css/51-modern-default.css",
             "css/sweetalert.css",
             "css/desktop/common.css",
-            "css/desktop/facilitatorcomment.css"
+            "css/desktop/treelist.css"
         ]
     },
     "config":{

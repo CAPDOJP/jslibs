@@ -56,6 +56,8 @@ var Table=function(options){
 	this.container.append(this.head);
 	this.container.append(this.contents);
 	if (options.container!=null) options.container.append(this.container);
+	/* initialize valiable */
+	this.rows=this.contents.children('tr');
 	/* valiable */
 	var my=this;
 	var container=this.container;
@@ -220,6 +222,8 @@ Table.prototype={
 	/* rows clear */
 	clearrows:function(){
 		this.contents.empty();
+		/* initialize valiable */
+		this.rows=this.contents.children('tr');
 	},
 	/* row insert */
 	insertrow:function(row,callback){
@@ -230,6 +234,8 @@ Table.prototype={
         	if (this.contents.find('tr').index(row)==this.contents.find('tr').length-1) this.contents.append(target);
         	else target.insertAfter(row);
 	    }
+		/* initialize valiable */
+		this.rows=this.contents.children('tr');
     	if (callback!=null) callback(target);
 	},
 	/* mearge cell */

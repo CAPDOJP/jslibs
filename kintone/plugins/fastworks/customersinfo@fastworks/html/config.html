@@ -1,0 +1,333 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">郵便番号入力フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">郵便番号を入力するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="zip">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">住所入力フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">住所を入力するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="address">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">緯度表示フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">取得した緯度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="lat">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">経度表示フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">取得した経度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="lng">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">地図表示フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">地図を表示するスペースを選択して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="spacer">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">各マーカーの情報ウインドウに表示するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="information">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ピン操作フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">ピン操作の判定対象となるフィールドを選択して下さい。【ラジオボタンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="action">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">経過日数算出フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">地図内のマーカーに表示する経過日数の対象となるフィールドを選択して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="datespan">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">更新者フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">レコードの更新者フィールドを選択して下さい。【更新者フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="modifier">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">マーカー色指定</div>
+		<table class="colors">
+			<thead>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">規定色</span>
+					</td>
+					<td>
+						<span id="defaultcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="defaultcolor" value="">
+					</td>
+					<td colspan="2"></td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-input-outer">
+							<input type="text" id="datespanday" class="kintoneplugin-input-text" value="" >
+						</div>
+						<span class="kintoneplugin-unit">日以上</span>
+					</td>
+					<td>
+						<span id="datespancolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="datespancolor" value="">
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">マーカーサイズ</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="markersize" class="kintoneplugin-input-text" value="" >
+		</div>
+		<span class="kintoneplugin-unit">px</span>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">マーカーフォントサイズ</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="markerfont" class="kintoneplugin-input-text" value="" >
+		</div>
+		<span class="kintoneplugin-unit">px</span>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">現在地追跡</div>
+		<div class="kintoneplugin-desc">地図上の現在地を移動毎に更新する場合は、チェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="chasemode" value="0">現在地を追跡する</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Google Maps APIキー</div>
+		<div class="kintoneplugin-desc">一覧地図を表示する場合は、Google Maps APIキーを取得し、取得したキーを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">郵便バーコード設定</div>
+		<div class="kintoneplugin-desc">郵便バーコードを生成場合は、チェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="usebarcode" value="0">郵便バーコードを生成する</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">郵便バーコードフィールド</div>
+		<div class="kintoneplugin-desc">郵便バーコードを設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="barcodetext">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">郵便バーコード画像フィールド</div>
+		<div class="kintoneplugin-desc">郵便バーコード画像を設定するフィールドを指定して下さい。【添付ファイルフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="barcodeimage">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">宛名分け設定</div>
+		<div class="kintoneplugin-desc">入力情報を元に宛名分けを行いたい場合は、チェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="usedestination" value="0">宛名分けをする</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">姓フィールド</div>
+		<div class="kintoneplugin-desc">姓を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="familyname">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">名フィールド</div>
+		<div class="kintoneplugin-desc">名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="givenname">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">宛名フィールド</div>
+		<div class="kintoneplugin-desc">宛名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="destination">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">郵送判定フィールド</div>
+		<div class="kintoneplugin-desc">郵送判定を設定するフィールドを指定して下さい。【ラジオボタンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="mailing">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<table class="mailings">
+			<thead>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">判定区分</span>
+					</td>
+					<td>
+						<span class="kintoneplugin-unit">選択値</span>
+					</td>
+					<td>
+						<span class="kintoneplugin-unit">同期フィールド</span>
+					</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">郵送可</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="mailingoption">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="mailingsync">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">郵送不可</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="mailingoption">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="mailingsync">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">物故</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="mailingoption">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="mailingsync">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="kintoneplugin-caution">*同期を設定した場合は、指定したチェックボックス内にある値の中で選択値と同一の値のみにチェックが付きます。</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

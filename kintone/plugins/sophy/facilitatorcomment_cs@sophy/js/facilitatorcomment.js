@@ -87,6 +87,12 @@ jQuery.noConflict();
 						var comment=$.grep(vars.apps[kintone.app.getId()],function(item,index){
 							return item['studentcode'].value==history['studentcode'].value;
 						});
+						if ($('input#inputdeny').prop('checked'))
+						{
+							if (comment.length!=0)
+								if (comment[0][vars.config.facilitatorcomment].value)
+									if (comment[0][vars.config.facilitatorcomment].value.length!=0) continue;
+						}
 						for (var i2=0;i2<history['reporttable'].value.length;i2++)
 						{
 							var row=vars.template.clone(true);
@@ -124,7 +130,7 @@ jQuery.noConflict();
 						for (var i=0;i<mergecolumns;i++)
 						{
 							var cell=row.find('td').eq(i+captioncolumns);
-							if (rowspans[i].cache!=cell.find('div').text())
+							if (rowspans[i].cache!=cell.text())
 							{
 								if (rowspans[i].index!=-1)
 								{
@@ -139,7 +145,7 @@ jQuery.noConflict();
 										}
 									}
 								}
-								rowspans[i].cache=cell.find('div').text();
+								rowspans[i].cache=cell.text();
 								rowspans[i].index=index;
 								rowspans[i].span=0;
 								for (var i2=i+1;i2<mergecolumns;i2++)
@@ -150,7 +156,7 @@ jQuery.noConflict();
 										vars.rows.find('tr').eq(rowspans[i2].index).find('td').eq(i2+captioncolumns).attr('rowspan',rowspans[i2].span);
 										for (var i3=rowspans[i2].index+1;i3<index;i3++) vars.rows.find('tr').eq(i3).find('td').eq(i2+captioncolumns).hide();
 									}
-									rowspans[i2].cache=cell.find('div').text();
+									rowspans[i2].cache=cell.text();
 									rowspans[i2].index=index;
 									rowspans[i2].span=0;
 								}
@@ -163,7 +169,7 @@ jQuery.noConflict();
 					for (var i=0;i<mergecolumns;i++)
 					{
 						var cell=row.find('td').eq(i+captioncolumns);
-						if (rowspans[i].cache==cell.find('div').text() && rowspans[i].index!=index)
+						if (rowspans[i].cache==cell.text() && rowspans[i].index!=index)
 						{
 							vars.rows.find('tr').eq(rowspans[i].index).find('td').eq(i+captioncolumns).attr('rowspan',rowspans[i].span);
 							for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.rows.find('tr').eq(i2).find('td').eq(i+captioncolumns).hide();
@@ -216,7 +222,6 @@ jQuery.noConflict();
 						/* resize column */
 						$.each(vars.drag.cells,function(index){
 							vars.drag.cells[index].css({'width':width.toString()+'px'});
-							vars.drag.cells[index].find('div').css({'width':width.toString()+'px'});
 						});
 						/* resize container */
 						$.each(vars.containers,function(index){
@@ -269,6 +274,11 @@ jQuery.noConflict();
 		feed.append(prev);
 		feed.append(week);
 		feed.append(next);
+		feed.append(
+			$('<span class="kintoneplugin-input-checkbox-item kintoneplugin-input-checkbox-item-inline">')
+			.append($('<input type="checkbox" name="checkbox" value="0" id="inputdeny" checked="checked">'))
+			.append($('<label for="inputdeny">').text('コメント入力済みは表示しない'))
+		);
 		if ($('.facilitatorcomment-dayfeed').size()) $('.facilitatorcomment-dayfeed').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
@@ -286,6 +296,7 @@ jQuery.noConflict();
 				functions.load();
 			});
 		});
+		$('input#inputdeny').on('change',function(){functions.load();});
 		if (!$('.facilitatorcomment').size())
 		{
 			/* create table */
@@ -413,12 +424,12 @@ jQuery.noConflict();
 				);
 				/* append columns */
 				$.each(vars.fields.my,function(key,values){
-					vars.header.append($('<th>').append($('<div>').addClass(key).text(values)));
-					vars.template.append($('<td>').append($('<div>').addClass(key)));
+					vars.header.append($('<th>').addClass(key).text(values));
+					vars.template.append($('<td>').addClass(key));
 				});
 				$.each(vars.fields.history,function(key,values){
-					vars.header.append($('<th>').append($('<div>').addClass(key).text(values)));
-					vars.template.append($('<td>').append($('<div>').addClass(key)));
+					vars.header.append($('<th>').addClass(key).text(values));
+					vars.template.append($('<td>').addClass(key));
 				});
 				/* append elements */
 				vars.table.append($('<thead>').append(vars.header));

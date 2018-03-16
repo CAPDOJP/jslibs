@@ -19,13 +19,18 @@ table#facilitatorcomment tr td.adjust,
 table#facilitatorcomment tr th.adjust{
 	cursor:col-resize;
 }
-table#facilitatorcomment tr td div,
-table#facilitatorcomment tr th div{
+table#facilitatorcomment tr th{
 	box-sizing:border-box;
-    overflow:hidden;
 	padding:0px 3px;
-	text-overflow:'';
-	vertical-align:top;
     white-space:nowrap;
-	width:100%;
+}
+table#facilitatorcomment tr td{
+	box-sizing:border-box;
+	padding:0px 3px;
+}
+table#facilitatorcomment tr td.lookback,
+table#facilitatorcomment tr td.selftarget,
+table#facilitatorcomment tr td.selfevaluation,
+table#facilitatorcomment tr td.staffcomment{
+	max-width:400px;
 }
