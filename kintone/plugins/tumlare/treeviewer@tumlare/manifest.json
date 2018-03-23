@@ -3,14 +3,14 @@
     "version":3,
     "type":"APP",
     "name":{
-        "ja":"kintone ツリー形式一覧表示プラグイン",
-        "en":"kintone Tree List plug-in",
-        "zh":"kintone ツリー形式一覧表示プラグイン"
+        "ja":"kintone ツリー構造一覧表示プラグイン@ツムラーレ",
+        "en":"kintone Tree Viewer plug-in",
+        "zh":"kintone ツリー構造一覧表示プラグイン@ツムラーレ"
     },
     "description":{
-        "ja":"一覧をツリー形式で表示するプラグインです。",
-        "en":"This plug-in will displays the list in tree form",
-        "zh":"一覧をツリー形式で表示するプラグインです。"
+        "ja":"レコードを階層構造に基づき表示するプラグインです。",
+        "en":"This plug-in will displays records based on hierarchical structure",
+        "zh":"レコードを階層構造に基づき表示するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -22,13 +22,14 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
             "js/sweetalert.min.js",
-            "js/treelist.js"
+            "js/treeviewer.js"
         ],
         "css":[
             "css/sweetalert.css",
             "css/desktop/common.css",
-            "css/desktop/treelist.css"
+            "css/desktop/treeviewer.css"
         ]
     },
     "config":{

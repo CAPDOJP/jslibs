@@ -1,13 +1,18 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">階層フィールド【ルックアップ・ラジオボタン・ドロップダウン】<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-label">階層設定フィールド【ルックアップ】<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">ツリー構造の階層とするフィールドを選択して下さい。</div>
-		<table class="segments">
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="lookup">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<table class="levels">
 			<thead>
 				<tr>
-					<th>階層フィールド</th>
-					<th>表示フィールド</th>
-					<th>並び順</th>
+					<th>階層設定</th>
 					<th colspan="2"></th>
 				</tr>
 			</thead>
@@ -16,27 +21,8 @@
 					<td>
 						<div class="kintoneplugin-select-outer">
 							<div class="kintoneplugin-select">
-								<select id="segment">
+								<select id="level">
 									<option value=""></option>
-								</select>
-							</div>
-						</div>
-					</td>
-					<td>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="segmentdisplay">
-									<option value=""></option>
-								</select>
-							</div>
-						</div>
-					</td>
-					<td>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="segmentsort">
-									<option value="asc">昇順</option>
-									<option value="desc">降順</option>
 								</select>
 							</div>
 						</div>

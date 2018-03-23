@@ -252,10 +252,10 @@ jQuery.noConflict();
 							});
 						});
 						/* clear elements */
-						if ($('.custom-elements').size()) $('.custom-elements').remove();
+						if ($('.custom-elements-freeeresources').size()) $('.custom-elements-freeeresources').remove();
 						/* append elements */
-						kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements')[0]);
-						kintone.app.getHeaderMenuSpaceElement().appendChild(download.addClass('custom-elements')[0]);
+						kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements-freeeresources')[0]);
+						kintone.app.getHeaderMenuSpaceElement().appendChild(download.addClass('custom-elements-freeeresources')[0]);
 					}
 					else
 					{

@@ -78,6 +78,9 @@ jQuery.noConflict();
 						case 'RADIO_BUTTON':
 							if (fieldinfo.tablecode.length!=0) $('select#unit').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
+						case 'LINK':
+							if (fieldinfo.protocol=='WEB') $('select#doc_url').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							break;
 						case 'MULTI_LINE_TEXT':
 							if (fieldinfo.tablecode.length==0) $('select#notes').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
@@ -99,6 +102,7 @@ jQuery.noConflict();
 							if (fieldinfo.tablecode.length==0)
 							{
 								$('select#doc_reference_id').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#doc_status').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#company_info').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#partner_name').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#partner_zipcode').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
@@ -124,8 +128,10 @@ jQuery.noConflict();
 				$('input#freeesecret').val(config['freeesecret']);
 				$('input#license').val(config['license']);
 				$('select#taxshift').val(config['taxshift']);
+				$('select#doctype').val(config['doctype']);
 				$('select#company_info').val(config['company_info']);
 				$('select#doc_reference_id').val(config['doc_reference_id']);
+				$('select#doc_status').val(config['doc_status']);
 				$('select#issue_date').val(config['issue_date']);
 				$('select#sales_added_date').val(config['sales_added_date']);
 				$('select#payment_date').val(config['payment_date']);
@@ -146,6 +152,7 @@ jQuery.noConflict();
 				$('select#account_item_id').val(config['account_item_id']);
 				$('select#item_name').val(config['item_name']);
 				$('select#section_name').val(config['section_name']);
+				$('select#doc_url').val(config['doc_url']);
 			}
 		});
 	},function(error){});
@@ -166,6 +173,16 @@ jQuery.noConflict();
 			swal('Error!','FreeeSecretを入力して下さい。','error');
 			return;
 		}
+		if ($('select#doc_reference_id').val()=='')
+		{
+			swal('Error!','書類番号を指定して下さい。','error');
+			return;
+		}
+		if ($('select#doc_status').val()=='')
+		{
+			swal('Error!','発行ステータスを指定して下さい。','error');
+			return;
+		}
 		if ($('select#issue_date').val()=='')
 		{
 			swal('Error!','発生日を指定して下さい。','error');
@@ -184,6 +201,11 @@ jQuery.noConflict();
 		if ($('select#qty').val()=='')
 		{
 			swal('Error!','数量を指定して下さい。','error');
+			return;
+		}
+		if ($('select#doc_url').val()=='')
+		{
+			swal('Error!','Freee書類URLを指定して下さい。','error');
 			return;
 		}
 		if ($('input#license').val().length==0)
@@ -326,8 +348,10 @@ jQuery.noConflict();
 		config['freeesecret']=$('input#freeesecret').val();
 		config['license']=$('input#license').val();
 		config['taxshift']=$('select#taxshift').val();
+		config['doctype']=$('select#doctype').val();
 		config['company_info']=$('select#company_info').val();
 		config['doc_reference_id']=$('select#doc_reference_id').val();
+		config['doc_status']=$('select#doc_status').val();
 		config['issue_date']=$('select#issue_date').val();
 		config['sales_added_date']=$('select#sales_added_date').val();
 		config['payment_date']=$('select#payment_date').val();
@@ -348,6 +372,7 @@ jQuery.noConflict();
 		config['account_item_id']=$('select#account_item_id').val();
 		config['item_name']=$('select#item_name').val();
 		config['section_name']=$('select#section_name').val();
+		config['doc_url']=$('select#doc_url').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

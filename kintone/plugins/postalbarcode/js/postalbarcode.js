@@ -233,10 +233,10 @@ jQuery.noConflict();
 		if (!('address' in vars.config)) return event;
 		if (!('barcode' in vars.config)) return event;
 		/* clear elements */
-		if ($('.custom-elements').size()) $('.custom-elements').remove();
+		if ($('.custom-elements-postalbarcode').size()) $('.custom-elements-postalbarcode').remove();
 		/* append elements */
 		kintone.app.getHeaderMenuSpaceElement().appendChild(
-			$('<button type="button" class="kintoneplugin-button-dialog-ok custom-elements">')
+			$('<button type="button" class="kintoneplugin-button-dialog-ok custom-elements-postalbarcode">')
 			.text('バーコード生成')
 			.on('click',function(e){
 				swal({

@@ -102,6 +102,11 @@ jQuery.noConflict();
 		/* check display map */
 		if (!'map' in vars.config) return event;
 		if (vars.config['map']!='1') return event;
+		else
+		{
+			if ('excludeview' in vars.config)
+				if ($.inArray(event.viewId.toString(),JSON.parse(vars.config['excludeview']))>-1) return event;
+		}
 		/* initialize valiable */
 		vars.markers=[];
 		/* create currentlocation checkbox */
@@ -150,11 +155,17 @@ jQuery.noConflict();
 				var record=values
 				var lat=parseFloat('0'+record[vars.config['lat']].value);
 				var lng=parseFloat('0'+record[vars.config['lng']].value);
+				var informations=JSON.parse(vars.config['information']);
 				var label='';
 				if (lat+lng!=0)
 				{
 					label='';
-					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
+					if (informations.length==0) label+=record[vars.config['address']].value;
+					else
+					{
+						for (var i=0;i<informations.length;i++) label+=record[informations[i]].value+'<br>';
+						label=label.replace(/\<br\>$/g,'');
+					}
 					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					vars.markers.push({
 						colors:6,

@@ -501,6 +501,7 @@
   box-sizing: border-box;
   padding: 0 16px;
   min-width: 163px;
+  margin-right: 8px;
   height: 48px;
   outline: none;
   border: 1px solid #e3e7e8;

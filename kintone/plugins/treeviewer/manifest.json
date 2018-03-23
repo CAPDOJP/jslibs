@@ -1,0 +1,49 @@
+{
+    "manifest_version":1,
+    "version":3,
+    "type":"APP",
+    "name":{
+        "ja":"kintone ツリー構造一覧表示プラグイン",
+        "en":"kintone Tree Viewer plug-in",
+        "zh":"kintone ツリー構造一覧表示プラグイン"
+    },
+    "description":{
+        "ja":"レコードを階層構造に基づき表示するプラグインです。",
+        "en":"This plug-in will displays records based on hierarchical structure",
+        "zh":"レコードを階層構造に基づき表示するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/treeviewer.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/desktop/common.css",
+            "css/desktop/treeviewer.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

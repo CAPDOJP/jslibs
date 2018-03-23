@@ -15,7 +15,6 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		container:null,
 		drag:{
 			capture:false,
 			cells:[],
@@ -25,16 +24,14 @@ jQuery.noConflict();
 				position:0
 			}
 		},
-		grid:null,
-		header:null,
-		rows:null,
-		template:null,
+		table:null,
 		thumbnail:null,
+		columns:[],
 		containers:[],
 		excludefields:[],
+		excludeviews:[],
 		config:{},
-		fieldcodes:{},
-		tablecodes:{}
+		fieldinfos:{}
 	};
 	var events={
 		show:[
@@ -42,31 +39,6 @@ jQuery.noConflict();
 		]
 	};
 	var functions={
-		/* add columns */
-		addcolumns:function(fieldinfo,istable){
-			switch (fieldinfo.type)
-			{
-				case 'SUBTABLE':
-					if (fieldinfo.code in vars.tablecodes)
-					{
-						$.each(vars.tablecodes[fieldinfo.code],function(index){
-							functions.addcolumns(fieldinfo.fields[vars.tablecodes[fieldinfo.code][index]],true);
-						});
-					}
-					break;
-				default:
-					if ($.inArray(fieldinfo.code,vars.excludefields)<0)
-					{
-						vars.header.append($('<th>').append($('<div>').text(fieldinfo.label)));
-						vars.template.append($('<td>').append($('<div>')));
-						vars.fieldcodes[fieldinfo.code]={
-							isTable:istable,
-							fieldinfo:fieldinfo
-						};
-					}
-					break;
-			}
-		},
 		/* download file */
 		download:function(fileKey){
 			return new Promise(function(resolve,reject)
@@ -84,21 +56,6 @@ jQuery.noConflict();
 					reject(Error('There was a network error.'));
 				};
 				xhr.send();
-			});
-		},
-		/* get table sorted index */
-		tablesort:function(layout){
-			var codes=[];
-			$.each(layout,function(index,values){
-				if (values.type=='SUBTABLE')
-				{
-					codes=[];
-					$.each(values.fields,function(index,values){
-						/* exclude spacer */
-						if ($.inArray(values.code,vars.excludefields)<0 && !values.elementId) codes.push(values.code);
-					});
-					if (codes.length!=0) vars.tablecodes[values.code]=codes;
-				}
 			});
 		},
 		/* setup value */
@@ -294,87 +251,146 @@ jQuery.noConflict();
 	kintone.events.on(events.show,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
-		/* check viewid */
-		if ('excludeview' in vars.config)
-		{
-			var excludeviews=vars.config.excludeview.split(',');
-			if (excludeviews.length!=0)
-				if ($.inArray(event.viewId.toString(),excludeviews)>-1) return;
-		}
-		else return;
-		/* initialize valiable */
-		vars.container=$('div#view-list-data-gaia');
-		vars.grid=$('<table id="listviewer" class="customview-table">');
-		vars.header=$('<tr>');
-		vars.rows=$('<tbody>');
-		vars.template=$('<tr>');
-		vars.thumbnail=$('<div class="imageviewer">').css({
-			'background-color':'rgba(0,0,0,0.5)',
-			'display':'none',
-			'height':'100%',
-			'left':'0px',
-			'position':'fixed',
-			'top':'0px',
-			'width':'100%',
-			'z-index':'999999'
-		})
-		.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png">').css({
-			'cursor':'pointer',
-			'display':'block',
-			'height':'30px',
-			'margin':'0px',
-			'padding':'0px',
-			'position':'absolute',
-			'right':'5px',
-			'top':'5px',
-			'width':'30px'
-		}))
-		.append($('<img class="listviewer-image">').css({
-			'bottom':'0',
-			'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
-			'display':'block',
-			'height':'auto',
-			'left':'0',
-			'margin':'auto',
-			'max-height':'calc(100% - 80px)',
-			'max-width':'calc(100% - 80px)',
-			'padding':'0px',
-			'position':'absolute',
-			'right':'0',
-			'top':'0',
-			'width':'auto'
-		}))
-		.on('click',function(){vars.thumbnail.hide();});
-		vars.containers=[];
 		if ('excludefield' in vars.config) vars.excludefields=vars.config.excludefield.split(',');
-		/* get table layout */
-		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
-			functions.tablesort(resp.layout);
-			/* create grid */
-			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
-				var fieldinfo=resp.properties;
-				kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
-					$.each(resp.views,function(key,values){
-					    if (values.type.toUpperCase()=='LIST' && values.id==event.viewId)
-					    {
+		if ('excludeview' in vars.config) vars.excludeviews=vars.config.excludeview.split(',');
+		/* check viewid */
+		if ($.inArray(event.viewId.toString(),vars.excludeviews)>-1) return event;
+		/* initialize valiable */
+		vars.containers=[];
+		/* fixed header */
+		var headeractions=$('div.contents-actionmenu-gaia');
+		var headerspace=$(kintone.app.getHeaderSpaceElement());
+		headeractions.parent().css({'position':'relative'});
+		headerspace.parent().css({'position':'relative'});
+		$(window).on('load resize scroll',function(e){
+			headeractions.css({
+				'left':$(window).scrollLeft().toString()+'px',
+				'position':'absolute',
+				'top':'0px',
+				'width':$(window).width().toString()+'px'
+			});
+			headerspace.css({
+				'left':$(window).scrollLeft().toString()+'px',
+				'position':'absolute',
+				'top':headeractions.outerHeight(false)+'px',
+				'width':$(window).width().toString()+'px'
+			});
+			$('div#view-list-data-gaia').css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
+		});
+		/* get views of app */
+		kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
+			$.each(resp.views,function(key,values){
+				if (values.type.toUpperCase()=='LIST' && values.id==event.viewId)
+				{
+					/* get layout of app */
+					kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
+						var tablelayout={};
+						(function(layouts){
+							for (var i=0;i<layouts.length;i++)
+							{
+								var layout=layouts[i];
+								if (layout.type=='SUBTABLE')
+								{
+									var fields=[];
+									for (var i2=0;i2<layout.fields.length;i2++)
+									{
+										var fieldinfo=layout.fields[i2];
+										/* exclude spacer */
+										if ($.inArray(fieldinfo.code,vars.excludefields)<0 && !fieldinfo.elementId) fields.push(fieldinfo.code);
+									}
+									tablelayout[layout.code]=fields;
+								}
+							}
+						})(resp.layout);
+						/* get fields of app */
+						kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+							var head=$('<tr>');
+							var template=$('<tr>');
+							var setvalues=function(row,style,record){
+								var index=vars.table.rows.index(row);
+								var baserow=row.addClass(style);
+								var tables=[];
+								$.each(record,function(key,values){
+									switch (values.type)
+									{
+										case 'SUBTABLE':
+											for (var i=0;i<values.value.length;i++)
+											{
+												if (tables.length<i) tables.push({});
+												$.each(values.value[i].value,function(key,values){
+													if (i==0)
+													{
+														if (!key.match(/^\$/g))
+															if ($('#'+key,row)) functions.setvalue($('div',$('#'+key,row)),vars.fieldinfos[key],values.value);
+													}
+													else tables[i-1][key]=values;
+												});
+											}
+											break;
+										default:
+											if (!key.match(/^\$/g))
+												if ($('#'+key,row)) functions.setvalue($('div',$('#'+key,row)),vars.fieldinfos[key],values.value);
+											break;
+									}
+								});
+								if (tables.length!=0)
+								{
+									for (var i=0;i<tables.length;i++)
+										vars.table.insertrow(baserow,function(row){
+											baserow=setvalues(row,style,tables[i]);
+										});
+									$.each($('.notable',row),function(){$(this).attr('rowspan',tables.length+1);});
+									for (var i=index+1;i<index+tables.length+1;i++) $('.notable',vars.table.rows.eq(i)).remove();
+								}
+								if ('$id' in record) $('input',$('.buttoncell',row)).first().val(record['$id'].value);
+								return baserow;
+							};
+							vars.fieldinfos=resp.properties;
+							/* setup columninfos */
+							for (var i=0;i<values.fields.length;i++)
+							{
+								var fieldinfo=vars.fieldinfos[values.fields[i]];
+								if (fieldinfo.code in tablelayout)
+								{
+									for (var i2=0;i2<tablelayout[fieldinfo.code].length;i2++)
+										vars.columns.push({
+											fieldinfo:fieldinfo.fields[tablelayout[fieldinfo.code][i2]],
+											istable:true
+										});
+								}
+								else
+								{
+									vars.columns.push({
+										fieldinfo:fieldinfo,
+										istable:false
+									});
+								}
+							}
+							/* initialize valiable */
+							vars.fieldinfos=$.fieldparallelize(vars.fieldinfos);
 							/* append button column */
-							vars.header.append($('<th>').text(''));
-							vars.template.append($('<td class="buttoncell">')
+							head.append($('<th>').append($('<div>').text('')));
+							template.append($('<td class="buttoncell notable">')
 								.append($('<button class="customview-button edit-button">').on('click',function(){
-									var row=$(this).closest('tr');
-									var index=row.find('td').first().find('input').val();
+									var cell=$(this).closest('td');
+									var index=$('input',cell).val();
 									if (index.length!=0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
 								}))
 								.append($('<input type="hidden" value="">'))
 							);
 							/* append columns */
-							$.each(values.fields,function(index){functions.addcolumns(fieldinfo[values.fields[index]],false);});
+							for (var i=0;i<vars.columns.length;i++)
+							{
+								head.append($('<th>').append($('<div>').text(vars.columns[i].fieldinfo.label)));
+								if (vars.columns[i].istable) template.append($('<td id="'+vars.columns[i].fieldinfo.code+'">').append($('<div>')));
+								else template.append($('<td id="'+vars.columns[i].fieldinfo.code+'" class="notable">').append($('<div>')));
+							}
 							/* append button column */
-							vars.header.append($('<th>').text(''));
-							vars.template.append($('<td class="buttoncell">')
+							head.append($('<th>').append($('<div>').text('')));
+							template.append($('<td class="buttoncell notable">')
 								.append($('<button class="customview-button close-button">').on('click',function(){
 									var row=$(this).closest('tr');
-									var index=row.find('td').first().find('input').val();
+									var index=$('input',$('td',row).first()).val();
 									if (index.length!=0)
 									{
 										swal({
@@ -392,95 +408,78 @@ jQuery.noConflict();
 												ids:[index]
 											};
 											kintone.api(kintone.api.url('/k/v1/records',true),method,body,function(resp){
-												var rowindex=vars.rows.find('tr').index(row);
-												var rowspan=parseInt('0'+row.find('td').first().attr('rowspan'));
+												var rowindex=vars.table.rows.index(row);
+												var rowspan=parseInt('0'+$('td',row).first().attr('rowspan'));
 												if (rowspan==0) rowspan=1;
-												for (var i=rowindex;i<rowindex+rowspan;i++) vars.rows.find('tr').eq(rowindex).remove();
+												for (var i=rowindex;i<rowindex+rowspan;i++) vars.table.rows.eq(rowindex).remove();
 											},function(error){});
 										});
 									}
 								}))
 							);
-							/* create row */
-							var rowcounter=0;
-							$.each(event.records,function(index,values){
-								var record=values
-								var cellindex=0;
-								var rowindex=0;
-								var rows=[vars.template.clone(true)];
-								var keys=Object.keys(vars.fieldcodes);
-								/* setup field values */
-								rows[rowindex].find('td').first().find('input').val(record['$id'].value);
-								$.each(record,function(key,values){
-									switch (values.type)
-									{
-										case 'SUBTABLE':
-											if (key in vars.tablecodes)
-												$.each(values.value,function(index,values){
-													if (rowindex>rows.length-1)
-													{
-														/* append row */
-														rows.push(vars.template.clone(true));
-														rows[rowindex].find('td').first().find('button').hide();
-														rows[rowindex].find('td').last().find('button').hide();
-													}
-													$.each(values.value,function(key,values){
-														if (keys.indexOf(key)>-1) functions.setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1).find('div'),vars.fieldcodes[key].fieldinfo,values.value);
-													});
-													rowindex++;
-												});
-											break;
-										default:
-											if (keys.indexOf(key)>-1) functions.setvalue(rows[rowindex].find('td').eq(keys.indexOf(key)+1).find('div'),vars.fieldcodes[key].fieldinfo,values.value);
-											break;
-									}
-									rowindex=0;
-								});
-								/* append row */
-								$.each(rows,function(index){
-									cellindex=1;
-									rowindex=index;
-									/* concat cells */
-									$.each(keys,function(index){
-										if (rowindex==0)
-										{
-											if (!vars.fieldcodes[keys[index]].isTable) rows[rowindex].find('td').eq(index+1).attr('rowspan',rows.length);
-										}
-										else
-										{
-											if (!vars.fieldcodes[keys[index]].isTable) rows[rowindex].find('td').eq(cellindex).remove();
-											else cellindex++;
-										}
-									});
-									if (rowindex==0)
-									{
-										rows[rowindex].find('td').first().attr('rowspan',rows.length);
-										rows[rowindex].find('td').last().attr('rowspan',rows.length);
-									}
-									else
-									{
-										rows[rowindex].find('td').first().remove();
-										rows[rowindex].find('td').last().remove();
-									}
-									/* append */
-									vars.rows.append(rows[rowindex].addClass((rowcounter%2==0)?'odd':'even'));
-								});
-								rowcounter++;
+							/* create table */
+							vars.table=$('<table id="listviewer" class="customview-table">').mergetable({
+								container:$('div#view-list-data-gaia').empty(),
+								head:head,
+								template:template,
+								merge:false
 							});
+							/* place records */
+							for (var i=0;i<event.records.length;i++)
+							{
+								var record=event.records[i];
+								vars.table.insertrow(null,function(row){
+									setvalues(row,((i%2==0)?'odd':'even'),record);
+								});
+							}
 							/* append elements */
-							vars.grid.append($('<thead>').append(vars.header));
-							vars.grid.append(vars.rows);
-							vars.container.empty().append(vars.grid);
+							vars.thumbnail=$('<div class="imageviewer">').css({
+								'background-color':'rgba(0,0,0,0.5)',
+								'display':'none',
+								'height':'100%',
+								'left':'0px',
+								'position':'fixed',
+								'top':'0px',
+								'width':'100%',
+								'z-index':'999999'
+							})
+							.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png">').css({
+								'cursor':'pointer',
+								'display':'block',
+								'height':'30px',
+								'margin':'0px',
+								'padding':'0px',
+								'position':'absolute',
+								'right':'5px',
+								'top':'5px',
+								'width':'30px'
+							}))
+							.append($('<img class="listviewer-image">').css({
+								'bottom':'0',
+								'box-shadow':'0px 0px 3px rgba(0,0,0,0.35)',
+								'display':'block',
+								'height':'auto',
+								'left':'0',
+								'margin':'auto',
+								'max-height':'calc(100% - 80px)',
+								'max-width':'calc(100% - 80px)',
+								'padding':'0px',
+								'position':'absolute',
+								'right':'0',
+								'top':'0',
+								'width':'auto'
+							}))
+							.on('click',function(){vars.thumbnail.hide();});
 							$('body').append(vars.thumbnail);
 							/* append fix containers */
-							$.each(vars.grid.parents(),function(index){
+							$.each(vars.table.container.parents(),function(index){
 								var check=$(this).attr('style');
 								if (check)
-									if (check.indexOf(vars.grid.width().toString()+'px')>-1) vars.containers.push($(this));
+									if (check.indexOf(vars.table.container.width().toString()+'px')>-1) vars.containers.push($(this));
 							});
-							if (vars.containers.length==0) vars.containers.push(vars.container);
+							if (vars.containers.length==0) vars.containers.push($('div#view-list-data-gaia'));
 							/* mouse events */
-							$(vars.grid).on('mousemove','td,th',function(e){
+							$(vars.table.container).on('mousemove','td,th',function(e){
 								if (vars.drag.capture) return;
 								var left=e.pageX-$(this).offset().left;
 								var hit=true;
@@ -489,7 +488,7 @@ jQuery.noConflict();
 								if (hit) $(this).addClass('adjust');
 								else $(this).removeClass('adjust');
 							});
-							$(vars.grid).on('mousedown','td,th',function(e){
+							$(vars.table.container).on('mousedown','td,th',function(e){
 								if (!$(this).hasClass('adjust')) return;
 								vars.drag.capture=true;
 								vars.drag.keep.column=$(this).outerWidth(false);
@@ -497,7 +496,7 @@ jQuery.noConflict();
 								vars.drag.keep.position=e.pageX;
 								/* setup resize column */
 								vars.drag.cells=[];
-								$.each($('td,th',vars.grid),function(index){
+								$.each($('td,th',vars.table.container),function(index){
 									if (e.pageX>$(this).offset().left && e.pageX<$(this).offset().left+$(this).outerWidth(false)) vars.drag.cells.push($(this));
 								});
 								e.stopPropagation();
@@ -526,10 +525,10 @@ jQuery.noConflict();
 								e.stopPropagation();
 								e.preventDefault();
 							});
-					    }
-					})
-				});
-			},function(error){});
-		},function(error){});
+						},function(error){});
+					},function(error){});
+				}
+			})
+		});
 	});
 })(jQuery,kintone.$PLUGIN_ID);

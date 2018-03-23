@@ -27,7 +27,22 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">書類番号フィールド</div>
+		<div class="kintoneplugin-label">書類種別<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">Freeeへ登録する書類種別を選択して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="doctype">
+					<option value="invoice">請求書</option>
+					<option value="delivery_note">納品書</option>
+					<option value="quotation">見積書</option>
+					<option value="order_sheet">発注書</option>
+					<option value="income_receipt">領収書</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">書類番号フィールド<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">書類番号(伝票番号)を設定するフィールドを指定して下さい。【数値/文字列(1行)フィールド】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
@@ -37,6 +52,17 @@
 			</div>
 		</div>
 		<div class="kintoneplugin-caution">*入力内容は20桁以内にして下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">発行ステータス確認フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">Freee側の発行ステータスを設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="doc_status">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">事業所連絡先フィールド</div>
@@ -286,6 +312,18 @@
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="section_name">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*完全一致する部門名がfreee側にない場合は、無視されます。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Freee書類URLフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">Freeeの書類URLを設定するフィールドを指定して下さい。【リンクフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="doc_url">
 					<option value=""></option>
 				</select>
 			</div>

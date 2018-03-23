@@ -180,22 +180,22 @@ jQuery.noConflict();
 								});
 							});
 							/* clear elements */
-							if ($('.custom-elements').size()) $('.custom-elements').remove();
+							if ($('.custom-elements-freeedocs').size()) $('.custom-elements-freeedocs').remove();
 							/* append elements */
 							if (type=='list')
 							{
-								kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(doctype.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(docstatus.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(register.addClass('custom-elements')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements-freeedocs')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(doctype.addClass('custom-elements-freeedocs')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(docstatus.addClass('custom-elements-freeedocs')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(register.addClass('custom-elements-freeedocs')[0]);
 							}
 							else
 							{
 								if ($('.gaia-app-statusbar').is(':visible')) $('.gaia-app-statusbar').css({'margin-right':'8px'});
-								$('.gaia-argoui-app-toolbar-statusmenu').append(companies.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(doctype.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(docstatus.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(register.addClass('custom-elements'));
+								$('.gaia-argoui-app-toolbar-statusmenu').append(companies.addClass('custom-elements-freeedocs'));
+								$('.gaia-argoui-app-toolbar-statusmenu').append(doctype.addClass('custom-elements-freeedocs'));
+								$('.gaia-argoui-app-toolbar-statusmenu').append(docstatus.addClass('custom-elements-freeedocs'));
+								$('.gaia-argoui-app-toolbar-statusmenu').append(register.addClass('custom-elements-freeedocs'));
 							}
 						});
 					}
@@ -268,11 +268,19 @@ jQuery.noConflict();
 						},
 						requests[i],
 						function(body,status,headers){
+							var json=JSON.parse(body);
 							switch (status)
 							{
 								case 400:
 									functions.hideloading();
-									swal('Error!','不正なリクエストです。','error');
+									var message='不正なリクエストです。';
+									for (var i2=0;i2<json.errors.length;i2++)
+									{
+										var error=json.errors[i2];
+										if ($.inArray('Doc referenceが重複しています',error.messages)>-1)
+											message=vars.fieldinfos[vars.config['doc_reference_id']].label+'が重複しています。';
+									}
+									swal('Error!',message,'error');
 									error=true;
 									break;
 								case 401:

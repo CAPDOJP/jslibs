@@ -213,9 +213,9 @@ jQuery.noConflict();
 		feed.append(prev);
 		feed.append(month);
 		feed.append(next);
-		if ($('.custom-elements').size()) $('.custom-elements').remove();
-		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadattendance">').addClass('custom-elements')[0]);
+		if ($('.custom-elements-attendance').size()) $('.custom-elements-attendance').remove();
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements-attendance')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadattendance">').addClass('custom-elements-attendance')[0]);
 		$('.downloadattendance')
 		.text('CSVダウンロード')
 		.on('click',function(e){functions.downloadattendance();});

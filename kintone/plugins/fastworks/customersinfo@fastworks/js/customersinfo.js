@@ -46,6 +46,10 @@ jQuery.noConflict();
 	};
 	var limit=500;
 	var events={
+		delete:[
+			'app.record.detail.delete.submit',
+			'app.record.index.delete.submit'
+		],
 		lists:[
 			'app.record.index.show',
 			'mobile.app.record.index.show'
@@ -85,7 +89,7 @@ jQuery.noConflict();
 				var mailingoptions=JSON.parse(vars.config['mailingoptions']);
 				body.query+=vars.config['barcodetext']+'="'+record[vars.config['barcodetext']].value+'"';
 				body.query+=' and '+vars.config['familyname']+'="'+record[vars.config['familyname']].value+'"';
-				body.query+=' and '+vars.config['mailing']+' not in ("'+mailingoptions[2].option+'")';
+				body.query+=' and '+vars.config['mailing']+' not in ("'+mailingoptions[2].option+'","'+mailingoptions[3].option+'")';
 				body.query+=' and $id not in ('+(('$id' in record)?record['$id'].value:'0')+')';
 				body.query+=' order by $id asc';
 				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -112,6 +116,7 @@ jQuery.noConflict();
 									updatevalue.record[vars.config['destination']]={value:familydestination};
 									break;
 								case mailingoptions[2].option:
+								case mailingoptions[3].option:
 									updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
 									if (resp.records.length==1) updatevalue.record[vars.config['destination']]={value:singledestination};
 									else updatevalue.record[vars.config['destination']]={value:familydestination};
@@ -452,20 +457,26 @@ jQuery.noConflict();
 															barcoderegist(index+1);
 														});
 													})(record,body);
+													progress(vars.apps[vars.config['app']].length,function(){});
 												}
 												else
 												{
+													counter=0;
+													vars.progress.find('.message').text('バーコードデータ登録中');
+													vars.progress.find('.progressbar').find('.progresscell').width(0);
+													vars.progress.show();
 													for (var i=0;i<records.length;i++)
 													{
 														if (error) break;
 														(function(body){
 															kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-																progress(function(){
+																progress(records.length,function(){
 																	if (vars.config['usedestination']=='1')
 																	{
 																		counter=0;
-																		vars.progress.find('.message').text('宛名データ更新中');
+																		vars.progress.find('.message').text('システムデータ更新中');
 																		vars.progress.find('.progressbar').find('.progresscell').width(0);
+																		vars.progress.show();
 																		destinationregist(0);
 																	}
 																	else
@@ -492,7 +503,7 @@ jQuery.noConflict();
 														functions.checkdestination(records[index].record,function(ids){
 															Array.prototype.push.apply(exclude,ids);
 															kintone.api(kintone.api.url('/k/v1/record',true),'PUT',records[index],function(resp){
-																progress();
+																progress(records.length);
 																destinationregist(index+1);
 															},function(error){
 																vars.progress.hide();
@@ -502,16 +513,16 @@ jQuery.noConflict();
 													}
 													else
 													{
-														progress();
+														progress(records.length);
 														destinationregist(index+1);
 													}
 												}
 											};
-											var progress=function(callback){
+											var progress=function(total,callback){
 												counter++;
-												if (counter<records.length)
+												if (counter<total)
 												{
-													vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/records.length));
+													vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/total));
 												}
 												else
 												{
@@ -532,7 +543,7 @@ jQuery.noConflict();
 											}
 											else
 											{
-												vars.progress.find('.message').text('バーコードデータ登録中');
+												vars.progress.find('.message').text('バーコードデータ生成中');
 												vars.progress.find('.progressbar').find('.progresscell').width(0);
 												vars.progress.show();
 											}
@@ -587,7 +598,9 @@ jQuery.noConflict();
 								$('#'+vars.config['modifier'],vars.editor.contents).hide();
 								$('#'+vars.config['address'],vars.editor.contents).find('.label').hide();
 								$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val(address).show();
+								$('#'+vars.config['address'],vars.editor.contents).find('.remarks').text('集合住宅やビルは部屋番号または階数を追記して下さい');
 								$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val('');
+								$('#'+vars.config['information'],vars.editor.contents).find('.remarks').text('名前、会社名、ポスター、２連ポスター、その他メモ等');
 								$('#'+vars.config['action'],vars.editor.contents).hide();
 								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 								vars.editor.show({
@@ -689,7 +702,9 @@ jQuery.noConflict();
 							$('#'+vars.config['modifier'],vars.editor.contents).show();
 							$('#'+vars.config['address'],vars.editor.contents).find('.label').html('<a href="'+link+'" target="_blank">'+vars.markers[index].address+'</a>').show();
 							$('#'+vars.config['address'],vars.editor.contents).find('.receiver').hide();
+							$('#'+vars.config['address'],vars.editor.contents).find('.remarks').text('');
 							$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
+							$('#'+vars.config['information'],vars.editor.contents).find('.remarks').text('');
 							$('#'+vars.markers[index].action,$('#'+vars.config['action'])).prop('checked',true);
 							$('#'+vars.config['action'],vars.editor.contents).show();
 							vars.editor.show({
@@ -734,13 +749,25 @@ jQuery.noConflict();
 												vars.editor.hide();
 												break;
 											case '削除':
+												var mailingoptions=JSON.parse(vars.config['mailingoptions']);
 												var body={
 													app:vars.config['app'],
-													ids:[vars.markers[index].id]
+													id:vars.markers[index].id
 												};
-												kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
-													vars.markers.splice(index,1);
-													functions.reloadmap(function(){vars.map.map.setCenter(center)});
+												kintone.api(kintone.api.url('/k/v1/record',true),'GET',body,function(resp){
+													resp.record[vars.config['mailing']].value=mailingoptions[2].option;
+													functions.checkdestination(resp.record,function(){
+														body={
+															app:vars.config['app'],
+															ids:[vars.markers[index].id]
+														};
+														kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
+															vars.markers.splice(index,1);
+															functions.reloadmap(function(){vars.map.map.setCenter(center)});
+														},function(error){
+															alert(error.message);
+														});
+													});
 												},function(error){
 													alert(error.message);
 												});
@@ -1357,6 +1384,12 @@ jQuery.noConflict();
 							event.record[mailingoptions[2].sync].value=[mailingoptions[2].option];
 						}
 						break;
+					case mailingoptions[3].option:
+						if (mailingoptions[3].sync.length!=0)
+						{
+							event.record[mailingoptions[3].sync].value=[mailingoptions[3].option];
+						}
+						break;
 				}
 				return event;
 			});
@@ -1399,6 +1432,19 @@ jQuery.noConflict();
 					return event;
 				});
 			}
+			if (mailingoptions[3].sync.length!=0)
+			{
+				events=[];
+				events.push('app.record.create.change.'+mailingoptions[3].sync);
+				events.push('mobile.app.record.create.change.'+mailingoptions[3].sync);
+				events.push('app.record.edit.change.'+mailingoptions[3].sync);
+				events.push('mobile.app.record.edit.change.'+mailingoptions[3].sync);
+				events.push('app.record.index.edit.change.'+mailingoptions[3].sync);
+				kintone.events.on(events,function(event){
+					if ($.inArray(mailingoptions[3].option,event.record[mailingoptions[3].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[3].option;
+					return event;
+				});
+			}
 		}
 		kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
@@ -1430,6 +1476,44 @@ jQuery.noConflict();
 			);
 		};
 		return new kintone.Promise(function(resolve,reject){
+			var mailingoptions=JSON.parse(vars.config['mailingoptions']);
+			var checkmailing=function(callback){
+				var body={
+					app:vars.config['app'],
+					query:''
+				};
+				var error=false;
+				body.query+=vars.config['barcodetext']+'="'+event.record[vars.config['barcodetext']].value+'"';
+				body.query+=' and '+vars.config['familyname']+'="'+event.record[vars.config['familyname']].value+'"';
+				body.query+=' and '+vars.config['mailing']+' not in ("'+mailingoptions[2].option+'","'+mailingoptions[3].option+'")';
+				body.query+=' and $id not in ('+(('$id' in event.record)?event.record['$id'].value:'0')+')';
+				body.query+=' order by $id asc';
+				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+					if (resp.records.length!=0)
+					{
+						if (event.record[vars.config['mailing']].value==mailingoptions[0].option)
+							for (var i=0;i<resp.records.length;i++)
+							{
+								var singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
+								if (resp.records[i][vars.config['mailing']].value==mailingoptions[0].option)
+									if (!confirm('現在の世帯代表者「'+singledestination+'」から変更します。宜しいですか？'))
+									{
+										error=true;
+										reject(new Error('mailing select error'));
+									}
+							}
+					}
+					else
+					{
+						if (event.record[vars.config['mailing']].value==mailingoptions[1].option)
+							event.record[vars.config['mailing']].value=mailingoptions[0].option;
+					}
+					if (!error) functions.checkdestination(event.record,function(){resolve(event);});
+				},
+				function(error){
+					functions.checkdestination(event.record,function(){resolve(event);});
+				});
+			};
 			if (parseFloat('0'+event.record[vars.config['lat']].value)+parseFloat('0'+event.record[vars.config['lng']].value)==0)
 			{
 				getlatlng(encodeURIComponent(event.record[vars.config['address']].value),function(json){
@@ -1441,13 +1525,20 @@ jQuery.noConflict();
 					event.record[vars.config['lat']].value=lat;
 					event.record[vars.config['lng']].value=lng;
 					event.record[vars.config['zip']].value=zip;
-					functions.checkdestination(event.record,function(){resolve(event);});
+					checkmailing();
 				},
 				function(){
-					functions.checkdestination(event.record,function(){resolve(event);});
+					checkmailing();
 				});
 			}
-			else functions.checkdestination(event.record,function(){resolve(event);});
+			else checkmailing();
+		});
+	});
+	kintone.events.on(events.delete,function(event){
+		return new kintone.Promise(function(resolve,reject){
+			var mailingoptions=JSON.parse(vars.config['mailingoptions']);
+			event.record[vars.config['mailing']].value=mailingoptions[2].option;
+			functions.checkdestination(event.record,function(){resolve(event);});
 		});
 	});
 })(jQuery,kintone.$PLUGIN_ID);

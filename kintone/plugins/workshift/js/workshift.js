@@ -705,11 +705,11 @@ jQuery.noConflict();
 		feed.append(month);
 		feed.append(button);
 		feed.append(next);
-		if ($('.custom-elements').size()) $('.custom-elements').remove();
-		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements')[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadschedule">').addClass('custom-elements')[0]);
-		kintone.app.getHeaderSpaceElement().appendChild(vars.legend.addClass('custom-elements')[0]);
-		$('body').append(vars.guidefrom.addClass('custom-elements')).append(vars.guideto.addClass('custom-elements'));
+		if ($('.custom-elements-workshift').size()) $('.custom-elements-workshift').remove();
+		kintone.app.getHeaderMenuSpaceElement().appendChild(feed.addClass('custom-elements-workshift')[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild($('<button class="kintoneplugin-button-dialog-ok downloadschedule">').addClass('custom-elements-workshift')[0]);
+		kintone.app.getHeaderSpaceElement().appendChild(vars.legend.addClass('custom-elements-workshift')[0]);
+		$('body').append(vars.guidefrom.addClass('custom-elements-workshift')).append(vars.guideto.addClass('custom-elements-workshift'));
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
 		var headerspace=$(kintone.app.getHeaderSpaceElement());

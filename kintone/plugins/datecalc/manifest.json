@@ -26,6 +26,8 @@
             "js/datecalc.js"
         ],
         "css":[
+            "css/51-modern-default.css",
+            "css/progress.css",
             "css/sweetalert.css"
         ]
     },

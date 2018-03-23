@@ -1261,7 +1261,7 @@ jQuery.noConflict();
 				var calc=$.calculatetax({
 					able:able,
 					free:free,
-					isoutsidetax:(vars.const['taxshift']=='0'),
+					isoutsidetax:(vars.const['taxshift'].value=='0'),
 					taxround:vars.taxround,
 					taxrate:vars.taxrate
 				});

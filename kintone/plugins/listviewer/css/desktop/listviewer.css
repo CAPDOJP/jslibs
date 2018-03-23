@@ -17,6 +17,9 @@ table#listviewer tr td.adjust,
 table#listviewer tr th.adjust{
 	cursor:col-resize;
 }
+table#listviewer tr td.buttoncell{
+	width:30px;
+}
 table#listviewer tr td div,
 table#listviewer tr th div{
 	box-sizing:border-box;

@@ -1,0 +1,56 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<table class="lookups">
+			<tbody>
+				<tr class="lookup">
+					<td>
+						<div class="kintoneplugin-label">対象フィールド</div>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="lookup">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+						<input type="hidden" id="lookuptype">
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+						</div>
+						<table class="inner settings">
+							<thead>
+								<tr>
+									<th>ルックアップ元アプリ内フィールド</th>
+									<th>更新フィールド</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="caption">
+										<span class="updatetoname"></span>
+										<input type="hidden" id="updateto">
+										<input type="hidden" id="updatetype">
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="updatefrom">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="kintoneplugin-caution">*添付ファイルフィールドはレコード追加時にその情報が取得出来ない為、更新フィールド対象外となります。</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

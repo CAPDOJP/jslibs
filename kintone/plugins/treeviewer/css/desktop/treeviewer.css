@@ -1,0 +1,78 @@
+/* individual style (common) */
+*.empty{
+  visibility:hidden;
+}
+*.hide{
+  display:none;
+}
+table.treeviewer-table{
+  background-color:#FFFFFF;
+  border:none;
+  border-collapse:separate;
+  border-spacing:0;
+  box-sizing:border-box;
+  margin:0px;
+  min-width:100%;
+  padding:0px;
+}
+table.treeviewer-table *{
+  box-sizing:border-box;
+  position:relative;
+}
+table.treeviewer-table td,
+table.treeviewer-table th{
+  background-color:#FFFFFF;
+  border:none;
+  font-size:13px;
+  font-weight:normal;
+  padding:0px;
+  position:relative;
+  vertical-align:top;
+}
+table.treeviewer-table td:not(.empty):not(.treecell){
+  border-bottom:1px dotted #C9C9C9;
+}
+table.treeviewer-table td.buttoncell{
+  width:40px;
+}
+table.treeviewer-table td.disusedcell{
+  display:none;
+}
+table.treeviewer-table td.treecell div{
+  background-color:transparent;
+  background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png');
+  background-position:left top;
+  background-repeat:no-repeat;
+  background-size:30px 30px;
+  cursor:pointer;
+  padding-left:35px;
+}
+table.treeviewer-table td.treecell div.open{
+  background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/minus.png');
+}
+table.treeviewer-table th{
+  border-bottom:1px solid #C9C9C9;
+  position:-webkit-sticky;
+  position:sticky;
+  top:0;
+  white-space:nowrap;
+  z-index:2;
+}
+table.treeviewer-table th div,
+table.treeviewer-table td div{
+  line-height:30px;
+  padding:0px 5px;
+  text-align:left;
+  width:100%;
+}
+table.treeviewer-table tr td a,
+table.treeviewer-table tr td span,
+table.treeviewer-table tr td img{
+  display:block;
+}
+table.treeviewer-table img.listviewer-thumbnail{
+  border:none;
+  cursor:pointer;
+  margin:3px 0px;
+  height:54px;
+}

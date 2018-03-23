@@ -20,6 +20,7 @@ jQuery.noConflict();
 		offset:0,
 		config:{},
 		fieldinfos:{},
+		documents:[],
 		records:[]
 	};
 	var events={
@@ -37,7 +38,7 @@ jQuery.noConflict();
 			var request={};
 			var docitems=[];
 			request['company_id']=parseInt($('select.companies').val());
-			request['type']=$('select.doctype').val();
+			request['type']=vars.config['doctype'];
 			request['partner_id']=functions.createrequestvalue(record,vars.config['partner_id'],'integer');
 			request['partner_name']=functions.createrequestvalue(record,vars.config['partner_name']);
 			request['partner_zipcode']=functions.createrequestvalue(record,vars.config['partner_zipcode']);
@@ -54,7 +55,7 @@ jQuery.noConflict();
 			request['doc_reference_id']=functions.createrequestvalue(record,vars.config['doc_reference_id']);
 			request['notes']=functions.createrequestvalue(record,vars.config['notes']);
 			request['tax_entry_method']=vars.config['taxshift'];
-			request['status']=parseInt($('select.docstatus').val());
+			request['status']='0';
 			if (!request['partner_id']) return null;
 			if (!request['issue_date']) return null;
 			tablecode=vars.fieldinfos[vars.config['qty']].tablecode;
@@ -133,9 +134,8 @@ jQuery.noConflict();
 						kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 							vars.fieldinfos=$.fieldparallelize(resp.properties);
 							var companies=$('<div class="kintoneplugin-select-outer">').append($('<div class="kintoneplugin-select">').append($('<select class="companies">')));
-							var docstatus=$('<div class="kintoneplugin-select-outer">').append($('<div class="kintoneplugin-select">').append($('<select class="docstatus">')));
-							var doctype=$('<div class="kintoneplugin-select-outer">').append($('<div class="kintoneplugin-select">').append($('<select class="doctype">')));
 							var register=$('<button type="button" class="kintoneplugin-button-dialog-ok register">');
+							var sync=$('<button type="button" class="kintoneplugin-button-dialog-ok sync">');
 							/* setup elements */
 							$('select',companies).append($('<option>').attr('value','').html('&nbsp;事業所選択&nbsp;'));
 							for (var i=0;i<json.companies.length;i++)
@@ -143,29 +143,10 @@ jQuery.noConflict();
 								var company=json.companies[i];
 								$('select',companies).append($('<option>').attr('value',company.id).html('&nbsp;'+company.display_name+'&nbsp;'));
 							}
-							$('select',docstatus).append($('<option>').attr('value','').html('&nbsp;ステータス&nbsp;'));
-							$('select',docstatus).append($('<option>').attr('value','0').html('&nbsp;下書き&nbsp;'));
-							$('select',docstatus).append($('<option>').attr('value','3').html('&nbsp;発行&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','').html('&nbsp;書類種別&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','invoice').html('&nbsp;請求書&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','delivery_note').html('&nbsp;納品書&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','quotation').html('&nbsp;見積書&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','order_sheet').html('&nbsp;発注書&nbsp;'));
-							$('select',doctype).append($('<option>').attr('value','income_receipt').html('&nbsp;領収書&nbsp;'));
 							register.text('Freeeへ取引登録').on('click',function(e){
 								if ($('select.companies').val().length==0)
 								{
 									swal('Error!','事業所を選択して下さい。','error');
-									return;
-								}
-								if ($('select.doctype').val().length==0)
-								{
-									swal('Error!','書類種別を選択して下さい。','error');
-									return;
-								}
-								if ($('select.docstatus').val().length==0)
-								{
-									swal('Error!','発行ステータスを選択して下さい。','error');
 									return;
 								}
 								swal({
@@ -184,17 +165,31 @@ jQuery.noConflict();
 							/* append elements */
 							if (type=='list')
 							{
+								sync.text('発行ステータス同期').on('click',function(e){
+									if ($('select.companies').val().length==0)
+									{
+										swal('Error!','事業所を選択して下さい。','error');
+										return;
+									}
+									swal({
+										title:'確認',
+										text:'Freeeに登録済みの書類と発行ステータスの同期を行います。宜しいですか？',
+										type:'info',
+										showCancelButton:true,
+										cancelButtonText:'Cancel'
+									},
+									function(){
+										functions.syncfreee();
+									});
+								});
 								kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(doctype.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(docstatus.addClass('custom-elements')[0]);
 								kintone.app.getHeaderMenuSpaceElement().appendChild(register.addClass('custom-elements')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(sync.addClass('custom-elements')[0]);
 							}
 							else
 							{
 								if ($('.gaia-app-statusbar').is(':visible')) $('.gaia-app-statusbar').css({'margin-right':'8px'});
 								$('.gaia-argoui-app-toolbar-statusmenu').append(companies.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(doctype.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(docstatus.addClass('custom-elements'));
 								$('.gaia-argoui-app-toolbar-statusmenu').append(register.addClass('custom-elements'));
 							}
 						});
@@ -250,57 +245,111 @@ jQuery.noConflict();
 				swal('Error!',error.message,'error');
 			});
 		},
+		/* load freee documents */
+		loaddocs:function(callback){
+			kintone.proxy(
+				'https://api.freee.co.jp/api/1/docs?company_id='+$('select.companies').val()+'&doc_type='+vars.config['doctype']+'&limit=100'+'&offset='+vars.offset.toString(),
+				'GET',
+				{
+					'Authorization':'Bearer '+vars.accesstoken
+				},
+				{},
+				function(body,status,headers){
+					if (status==200)
+					{
+						Array.prototype.push.apply(vars.documents,JSON.parse(body)['docs']);
+						vars.offset+=100;
+						if (JSON.parse(body)['docs'].length==100) functions.loaddocs(callback);
+						else callback();
+					}
+					else
+					{
+						functions.hideloading();
+						swal('Error!','Freeeデータのダウンロードに失敗しました。','error');
+					}
+				},
+				function(error){
+					functions.hideloading();
+					swal('Error!','Freeeへの接続に失敗しました。','error');
+				}
+			);
+		},
 		/* register */
 		registerfreee:function(type){
 			var request={};
-			var register=function(requests){
+			var register=function(requests,updates){
 				var error=false;
 				var counter=requests.length;
 				for (var i=0;i<requests.length;i++)
 				{
 					if (error) break;
-					kintone.proxy(
-						'https://api.freee.co.jp/api/1/docs',
-						'POST',
-						{
-							'Authorization':'Bearer '+vars.accesstoken,
-							'Content-Type':'application/json'
-						},
-						requests[i],
-						function(body,status,headers){
-							switch (status)
+					(function(request,update){
+						kintone.proxy(
+							'https://api.freee.co.jp/api/1/docs',
+							'POST',
 							{
-								case 400:
-									functions.hideloading();
-									swal('Error!','不正なリクエストです。','error');
-									error=true;
-									break;
-								case 401:
-									functions.hideloading();
-									swal('Error!','サーバーへのアクセスが拒否されました。','error');
-									error=true;
-									break;
-								case 500:
-									functions.hideloading();
-									swal('Error!','サーバー内で障害が発生しています。','error');
-									error=true;
-									break;
-								default:
-									counter--;
-									if (counter==0)
-									{
+								'Authorization':'Bearer '+vars.accesstoken,
+								'Content-Type':'application/json'
+							},
+							request,
+							function(body,status,headers){
+								var json=JSON.parse(body);
+								switch (status)
+								{
+									case 400:
 										functions.hideloading();
-										swal('登録完了','Freeeへの登録が完了しました。','success');
-									}
-									break;
+										var message='不正なリクエストです。';
+										for (var i2=0;i2<json.errors.length;i2++)
+										{
+											var error=json.errors[i2];
+											if ($.inArray('Doc referenceが重複しています',error.messages)>-1)
+												message=vars.fieldinfos[vars.config['doc_reference_id']].label+'が重複しています。';
+										}
+										swal('Error!',message,'error');
+										error=true;
+										break;
+									case 401:
+										functions.hideloading();
+										swal('Error!','サーバーへのアクセスが拒否されました。','error');
+										error=true;
+										break;
+									case 500:
+										functions.hideloading();
+										swal('Error!','サーバー内で障害が発生しています。','error');
+										error=true;
+										break;
+									default:
+										update.record[vars.config['doc_url']].value='https://secure.freee.co.jp/docs_v2/invoice/'+json.doc.id+'/edit';
+										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',update,function(resp){
+											counter--;
+											if (counter==0)
+											{
+												functions.hideloading();
+												swal({
+													title:'登録完了',
+													text:'Freeeへの登録が完了しました。',
+													type:'info',
+													showCancelButton:false
+												},
+												function(){
+													location.reload(true);
+												});
+											}
+										},function(error){
+											functions.hideloading();
+											swal('Error!',error.message,'error');
+											error=true;
+										});
+										break;
+								}
+							},
+							function(error){
+								functions.hideloading();
+								swal('Error!','Freeeへの接続に失敗しました。','error');
+								error=true;
 							}
-						},
-						function(error){
-							functions.hideloading();
-							swal('Error!','Freeeへの接続に失敗しました。','error');
-							error=true;
-						}
-					);
+						);
+					})(requests[i],updates[i]);
 				}
 			};
 			functions.showloading();
@@ -308,6 +357,7 @@ jQuery.noConflict();
 			{
 				case 'list':
 					var values=[];
+					var updates=[];
 					vars.offset=0;
 					vars.records=[];
 					functions.loaddatas(function(){
@@ -321,10 +371,21 @@ jQuery.noConflict();
 						}
 						for (var i=0;i<vars.records.length;i++)
 						{
+							var update={
+								app:kintone.app.getId(),
+								id:vars.records[i]['$id'].value,
+								record:{}
+							};
+							update.record[vars.config['doc_url']]={value:''};
+							update.record[vars.config['doc_status']]={value:'下書き'};
 							request=functions.createrequest(vars.records[i]);
-							if (request) values.push(request);
+							if (request)
+							{
+								values.push(request);
+								updates.push(update);
+							}
 						}
-						if (values.length!=0) register(values);
+						if (values.length!=0) register(values,updates);
 						else
 						{
 							functions.hideloading();
@@ -335,8 +396,16 @@ jQuery.noConflict();
 					});
 					break;
 				case 'show':
-					request=functions.createrequest(kintone.app.record.get().record);
-					if (request) register([request]);
+					var record=kintone.app.record.get().record;
+					var update={
+						app:kintone.app.getId(),
+						id:record['$id'].value,
+						record:{}
+					};
+					update.record[vars.config['doc_url']]={value:''};
+					update.record[vars.config['doc_status']]={value:'下書き'};
+					request=functions.createrequest(record);
+					if (request) register([request],[update]);
 					else
 					{
 						functions.hideloading();
@@ -346,6 +415,89 @@ jQuery.noConflict();
 					}
 					break;
 			}
+		},
+		/* sync */
+		syncfreee:function(type){
+			var request={};
+			var register=function(updates){
+				var error=false;
+				var counter=updates.length;
+				for (var i=0;i<updates.length;i++)
+				{
+					if (error) break;
+					kintone.api(kintone.api.url('/k/v1/record',true),'PUT',updates[i],function(resp){
+						counter--;
+						if (counter==0)
+						{
+							functions.hideloading();
+							swal({
+								title:'同期完了',
+								text:'発行ステータスの同期が完了しました。',
+								type:'info',
+								showCancelButton:false
+							},
+							function(){
+								location.reload(true);
+							});
+						}
+					},function(error){
+						functions.hideloading();
+						swal('Error!',error.message,'error');
+						error=true;
+					});
+				}
+			};
+			functions.showloading();
+			var values=[];
+			var updates=[];
+			vars.offset=0;
+			vars.documents=[];
+			functions.loaddocs(function(){
+				if (vars.documents.length==0)
+				{
+					functions.hideloading();
+					setTimeout(function(){
+						swal('Error!','書類がありません。','error');
+					},500);
+					return;
+				}
+				vars.offset=0;
+				vars.records=[];
+				functions.loaddatas(function(){
+					if (vars.records.length==0)
+					{
+						functions.hideloading();
+						setTimeout(function(){
+							swal('Error!','レコードがありません。','error');
+						},500);
+						return;
+					}
+					for (var i=0;i<vars.records.length;i++)
+					{
+						var filter=$.grep(vars.documents,function(item,index){
+							return item['doc_reference_id']==vars.records[i][vars.config['doc_reference_id']].value;
+						});
+						if (filter.length!=0)
+						{
+							var update={
+								app:kintone.app.getId(),
+								id:vars.records[i]['$id'].value,
+								record:{}
+							};
+							update.record[vars.config['doc_status']]={value:filter[0]['status_name']};
+							updates.push(update);
+						}
+					}
+					if (updates.length!=0) register(updates);
+					else
+					{
+						functions.hideloading();
+						setTimeout(function(){
+							swal('Error!','登録可能なレコードが見つかりませんでした。','error');
+						},500);
+					}
+				});
+			});
 		},
 		/* switch view of loading */
 		showloading:function(){

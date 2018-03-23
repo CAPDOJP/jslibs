@@ -189,20 +189,20 @@ jQuery.noConflict();
 								});
 							});
 							/* clear elements */
-							if ($('.custom-elements').size()) $('.custom-elements').remove();
+							if ($('.custom-elements-freeedeals').size()) $('.custom-elements-freeedeals').remove();
 							/* append elements */
 							if (type=='list')
 							{
-								kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(dealtypes.addClass('custom-elements')[0]);
-								kintone.app.getHeaderMenuSpaceElement().appendChild(register.addClass('custom-elements')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements-freeedeals')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(dealtypes.addClass('custom-elements-freeedeals')[0]);
+								kintone.app.getHeaderMenuSpaceElement().appendChild(register.addClass('custom-elements-freeedeals')[0]);
 							}
 							else
 							{
 								if ($('.gaia-app-statusbar').is(':visible')) $('.gaia-app-statusbar').css({'margin-right':'8px'});
-								$('.gaia-argoui-app-toolbar-statusmenu').append(companies.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(dealtypes.addClass('custom-elements'));
-								$('.gaia-argoui-app-toolbar-statusmenu').append(register.addClass('custom-elements'));
+								$('.gaia-argoui-app-toolbar-statusmenu').append(companies.addClass('custom-elements-freeedeals'));
+								$('.gaia-argoui-app-toolbar-statusmenu').append(dealtypes.addClass('custom-elements-freeedeals'));
+								$('.gaia-argoui-app-toolbar-statusmenu').append(register.addClass('custom-elements-freeedeals'));
 							}
 						});
 					}

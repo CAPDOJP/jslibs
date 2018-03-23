@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "treelist -config.js-"
+* jQuery-Plugin "treeviewer -config.js-"
 * Version: 3.0
 * Copyright (c) 2016 TIS
 *
@@ -14,7 +14,7 @@ jQuery.noConflict();
 	var vars={
 		excludefieldtable:null,
 		excludeviewtable:null,
-		segmenttable:null,
+		leveltable:null,
 		fieldinfos:{}
 	};
 	var functions={
@@ -68,11 +68,11 @@ jQuery.noConflict();
 							{
 								case 'DROP_DOWN':
 								case 'RADIO_BUTTON':
-									$('select#segment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									$('select#level').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 									break;
 								case 'NUMBER':
 								case 'SINGLE_LINE_TEXT':
-									if (fieldinfo.lookup) $('select#segment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									if (fieldinfo.lookup) $('select#level').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 									break;
 							}
 						}
@@ -87,17 +87,17 @@ jQuery.noConflict();
 					add:'img.add',
 					del:'img.del'
 				});
-				vars.segmenttable=$('.segments').adjustabletable({
+				vars.leveltable=$('.levels').adjustabletable({
 					add:'img.add',
 					del:'img.del',
 					addcallback:function(row){
-						var list=$('select#segmentdisplay',row);
-						var sort=$('select#segmentsort',row);
+						var list=$('select#leveldisplay',row);
+						var sort=$('select#levelsort',row);
 						var listcontainer=list.closest('.kintoneplugin-select-outer');
 						var sortcontainer=sort.closest('.kintoneplugin-select-outer');
 						listcontainer.hide();
 						sortcontainer.hide();
-						$('select#segment',row).on('change',function(){
+						$('select#level',row).on('change',function(){
 							/* initialize field lists */
 							list.html('<option value=""></option>');
 							if ($(this).val().length!=0)
@@ -136,12 +136,12 @@ jQuery.noConflict();
 				var row=null;
 				var excludefields=[];
 				var excludeviews=[];
-				var segments=[];
+				var levels=[];
 				if (Object.keys(config).length!==0)
 				{
 					excludefields=JSON.parse(config['excludefield']);
 					excludeviews=JSON.parse(config['excludeview']);
-					segments=JSON.parse(config['segment']);
+					levels=JSON.parse(config['level']);
 					add=false;
 					$.each(excludefields,function(index){
 						if (add) vars.excludefieldtable.addrow();
@@ -157,15 +157,15 @@ jQuery.noConflict();
 						$('select#excludeview',row).val(excludeviews[index]);
 					});
 					add=false;
-					$.each(segments,function(index){
-						if (add) vars.segmenttable.addrow();
+					$.each(levels,function(index){
+						if (add) vars.leveltable.addrow();
 						else add=true;
-						row=vars.segmenttable.rows.last();
-						$('select#segment',row).val(segments[index].code);
-						$('select#segmentsort',row).val(segments[index].sort);
+						row=vars.leveltable.rows.last();
+						$('select#level',row).val(levels[index].code);
+						$('select#levelsort',row).val(levels[index].sort);
 						/* trigger events */
-						$.data($('select#segmentdisplay',row)[0],'initialdata',segments[index].display);
-						$('select#segment',row).trigger('change');
+						$.data($('select#leveldisplay',row)[0],'initialdata',levels[index].display);
+						$('select#level',row).trigger('change');
 					});
 				}
 			},function(error){});
@@ -179,40 +179,40 @@ jQuery.noConflict();
 		var config=[];
 		var excludefields=[];
 		var excludeviews=[];
-		var segments=[];
+		var levels=[];
 		/* check values */
-		for (var i=0;i<vars.segmenttable.rows.length;i++)
+		for (var i=0;i<vars.leveltable.rows.length;i++)
 		{
-			row=vars.segmenttable.rows.eq(i);
-			if ($('select#segment',row).val().length!=0)
+			row=vars.leveltable.rows.eq(i);
+			if ($('select#level',row).val().length!=0)
 			{
-				var segment={
-					code:$('select#segment',row).val(),
+				var level={
+					code:$('select#level',row).val(),
 					display:'',
 					sort:'',
 					app:'',
 					field:''
 				};
-				var fieldinfo=vars.fieldinfos[segment.code];
+				var fieldinfo=vars.fieldinfos[level.code];
 				if (fieldinfo.lookup)
 				{
-					if ($('select#segmentdisplay',row).val()=='')
+					if ($('select#leveldisplay',row).val()=='')
 					{
 						swal('Error!','表示フィールドを選択して下さい。','error');
 						return;
 					}
 					else
 					{
-						segment.display=$('select#segmentdisplay',row).val();
-						segment.sort=$('select#segmentsort',row).val();
-						segment.app=fieldinfo.lookup.relatedApp.app;
-						segment.field=fieldinfo.lookup.relatedKeyField;
+						level.display=$('select#leveldisplay',row).val();
+						level.sort=$('select#levelsort',row).val();
+						level.app=fieldinfo.lookup.relatedApp.app;
+						level.field=fieldinfo.lookup.relatedKeyField;
 					}
 				}
-				segments.push(segment);
+				levels.push(level);
 			}
 		}
-		if (Object.keys(segments).length==0)
+		if (Object.keys(levels).length==0)
 		{
 			swal('Error!','階層フィールドを1つ以上指定して下さい。','error');
 			return;
@@ -230,7 +230,7 @@ jQuery.noConflict();
 		/* setup config */
 		config['excludefield']=JSON.stringify(excludefields);
 		config['excludeview']=JSON.stringify(excludeviews);
-		config['segment']=JSON.stringify(segments);
+		config['level']=JSON.stringify(levels);
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

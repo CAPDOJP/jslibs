@@ -127,6 +127,14 @@ var FieldsForm=function(options){
 	})
 	.append($('<input type="radio" class="receiver">'))
 	.append($('<span class="label">').css({'color':'#3498db','padding':'0px 10px 0px 5px'}));
+	var remarks=$('<p>').css({
+		'box-sizing':'border-box',
+		'display':'block',
+		'font-size':'0.75em',
+		'line-height':'2em',
+		'margin':'0px',
+		'padding':'0px'
+	});
 	var textline=$('<input type="text" class="receiver">').css({
 		'border':'1px solid #3498db',
 		'border-radius':'2px',
@@ -239,6 +247,7 @@ var FieldsForm=function(options){
 				fieldcontainer.css({'display':'inline-block','width':'50%'}).append(receiver);
 				break;
 		}
+		fieldcontainer.append(remarks.clone(true).addClass('remarks'));
 		this.contents.append(fieldcontainer);
 	}
 	$.each(this.buttons,function(key,values){
