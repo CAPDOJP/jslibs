@@ -236,6 +236,7 @@ jQuery.noConflict();
 	 button events
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
+		var fieldinfo=null;
 		var row=null;
 		var config=[];
 		var apps=[];
@@ -259,7 +260,8 @@ jQuery.noConflict();
 					swal('Error!','更新先キーフィールドを選択して下さい。','error');
 					return;
 				}
-				if (!$.isvalidtype(vars.fieldinfos[$('select#keyfrom',row).val()],vars.appparams[i].fieldinfos[$('select#keyto',row).val()]))
+				fieldinfo=vars.appparams[i].fieldinfos[$('select#keyto',row).val()];
+				if (!$.isvalidtype(vars.fieldinfos[$('select#keyfrom',row).val()],fieldinfo))
 				{
 					swal('Error!','更新キーフィールドに指定したフィールド同士の形式が一致しません。','error');
 					return;
@@ -267,7 +269,7 @@ jQuery.noConflict();
 				app.setting.keys.push({
 					from:$('select#keyfrom',row).val(),
 					to:$('select#keyto',row).val(),
-					type:vars.appparams[i].fieldinfos[$('select#keyto',row).val()],
+					type:fieldinfo.type,
 					format:((fieldinfo.type=='CALC')?fieldinfo.format:'')
 				});
 			}

@@ -336,7 +336,7 @@ jQuery.extend({
 				res=' = "'+field.value+'"';
 				break;
 		}
-		return value;
+		return res;
 	},
 	fieldvalue:function(field){
 		var value=null;
