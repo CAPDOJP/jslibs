@@ -403,7 +403,7 @@ jQuery.extend({
 						break;
 					case 'NUMBER':
 					case 'NUMBER_DIGIT':
-						types=['NUMBER'];
+						types=['NUMBER','RECORD_NUMBER'];
 						break;
 					case 'TIME':
 						types=['TIME'];
@@ -438,7 +438,7 @@ jQuery.extend({
 				break;
 			case 'NUMBER':
 			case 'RECORD_NUMBER':
-				types=['NUMBER'];
+				types=['NUMBER','RECORD_NUMBER'];
 				break;
 			case 'ORGANIZATION_SELECT':
 				types=['ORGANIZATION_SELECT'];
