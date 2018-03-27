@@ -291,6 +291,53 @@ jQuery.extend({
 		});
 		return fields;
 	},
+	fieldquery:function(field){
+		var res='';
+		switch (field.type.toUpperCase())
+		{
+			case 'CALC':
+				switch (keys.format)
+				{
+					case 'NUMBER':
+					case 'NUMBER_DIGIT':
+						res=' = '+field.value;
+						break;
+					default:
+						res=' = "'+field.value+'"';
+						break;
+				}
+				break;
+			case 'CHECK_BOX':
+			case 'MULTI_SELECT':
+				res=' in (';
+				for (var i=0;i<field.value.length;i++) res+='"'+field.value[i]+'",';
+				res=res.replace(/,$/g,'')+')';
+				break;
+			case 'CREATOR':
+			case 'MODIFIER':
+				res=' in ("'+field.value.code+'")';
+				break;
+			case 'DROP_DOWN':
+			case 'RADIO_BUTTON':
+				res=' in ("'+field.value+'")';
+				break;
+			case 'GROUP_SELECT':
+			case 'ORGANIZATION_SELECT':
+			case 'USER_SELECT':
+				res=' in (';
+				for (var i=0;i<field.value.length;i++) res+='"'+field.value[i].code+'",';
+				res=res.replace(/,$/g,'')+')';
+				break;
+			case 'NUMBER':
+			case 'RECORD_NUMBER':
+				res=' = '+field.value;
+				break;
+			default:
+				res=' = "'+field.value+'"';
+				break;
+		}
+		return value;
+	},
 	fieldvalue:function(field){
 		var value=null;
 		switch (field.type.toUpperCase())

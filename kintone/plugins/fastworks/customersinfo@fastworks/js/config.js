@@ -118,6 +118,8 @@ jQuery.noConflict();
 							if (!fieldinfo.lookup)
 							{
 								$('select#zip').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#zip1').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#zip2').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#information').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#barcodetext').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
@@ -143,6 +145,8 @@ jQuery.noConflict();
 				if (Object.keys(config).length!==0)
 				{
 					$('select#zip').val(config['zip']);
+					$('select#zip1').val(config['zip1']);
+					$('select#zip2').val(config['zip2']);
 					$('select#address').val(config['address']);
 					$('select#lat').val(config['lat']);
 					$('select#lng').val(config['lng']);
@@ -209,6 +213,16 @@ jQuery.noConflict();
 		if ($('select#zip').val()=='')
 		{
 			swal('Error!','郵便番号入力フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#zip1').val()=='')
+		{
+			swal('Error!','郵便番号上3桁フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#zip2').val()=='')
+		{
+			swal('Error!','郵便番号下4桁フィールドを選択して下さい。','error');
 			return;
 		}
 		if ($('select#address').val()=='')
@@ -348,6 +362,8 @@ jQuery.noConflict();
 		/* setup config */
 		config['app']=kintone.app.getId().toString();
 		config['zip']=$('select#zip').val();
+		config['zip1']=$('select#zip1').val();
+		config['zip2']=$('select#zip2').val();
 		config['address']=$('select#address').val();
 		config['lat']=$('select#lat').val();
 		config['lng']=$('select#lng').val();

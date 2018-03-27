@@ -3,14 +3,14 @@
     "version":3,
     "type":"APP",
     "name":{
-        "ja":"kintone ツリー構造一覧表示プラグイン@ツムラーレ",
-        "en":"kintone Tree Viewer plug-in",
-        "zh":"kintone ツリー構造一覧表示プラグイン@ツムラーレ"
+        "ja":"kintone ルックアップ階層別一覧表示プラグイン",
+        "en":"kintone Lookup Viewer plug-in",
+        "zh":"kintone ルックアップ階層別一覧表示プラグイン"
     },
     "description":{
-        "ja":"レコードを階層構造に基づき表示するプラグインです。",
-        "en":"This plug-in will displays records based on hierarchical structure",
-        "zh":"レコードを階層構造に基づき表示するプラグインです。"
+        "ja":"ルックアップ参照元の階層構造に基づきレコードを一覧表示するプラグインです。",
+        "en":"This plug-in lists records based on the hierarchical structure of the lookup referrer",
+        "zh":"ルックアップ参照元の階層構造に基づきレコードを一覧表示するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -24,12 +24,12 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
             "js/sweetalert.min.js",
-            "js/treeviewer.js"
+            "js/lookupviewer.js"
         ],
         "css":[
             "css/sweetalert.css",
             "css/desktop/common.css",
-            "css/desktop/treeviewer.css"
+            "css/desktop/lookupviewer.css"
         ]
     },
     "config":{

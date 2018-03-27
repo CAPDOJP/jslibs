@@ -173,6 +173,11 @@ jQuery.noConflict();
 			swal('Error!','FreeeSecretを入力して下さい。','error');
 			return;
 		}
+		if ($('select#doctype').val()=='')
+		{
+			swal('Error!','書類種別を指定して下さい。','error');
+			return;
+		}
 		if ($('select#doc_reference_id').val()=='')
 		{
 			swal('Error!','書類番号を指定して下さい。','error');

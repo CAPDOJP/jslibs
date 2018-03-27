@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "treeviewer -config.js-"
+* jQuery-Plugin "lookupviewer -config.js-"
 * Version: 3.0
 * Copyright (c) 2016 TIS
 *
@@ -215,7 +215,7 @@ jQuery.noConflict();
 		}
 		if (Object.keys(settings.levels).length==0)
 		{
-			swal('Error!','階層設定は1つ以上指定して下さい。','error');
+			swal('Error!','階層は1つ以上指定して下さい。','error');
 			return;
 		}
 		for (var i=0;i<vars.excludeviewtable.rows.length;i++)

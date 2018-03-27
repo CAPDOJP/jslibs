@@ -646,6 +646,12 @@ jQuery.noConflict();
 											body.record[vars.config['lng']]={value:latlng.lng()};
 											body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
 											body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
+											zip=zip.replace(/[^0-9]/g,'');
+											if (zip.length==7)
+											{
+												body.record[vars.config['zip1']]={value:zip.substring(0,3)};
+												body.record[vars.config['zip2']]={value:zip.substring(3,7)};
+											}
 											if (vars.config['usebarcode']=='1')
 											{
 												body.record[vars.config['barcodetext']]={value:''};
@@ -705,7 +711,7 @@ jQuery.noConflict();
 							$('#'+vars.config['address'],vars.editor.contents).find('.remarks').text('');
 							$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
 							$('#'+vars.config['information'],vars.editor.contents).find('.remarks').text('');
-							$('#'+vars.markers[index].action,$('#'+vars.config['action'])).prop('checked',true);
+							$('#'+vars.markers[index].action,$('#'+vars.config['action'],vars.editor.contents)).prop('checked',true);
 							$('#'+vars.config['action'],vars.editor.contents).show();
 							vars.editor.show({
 								buttons:{
@@ -1267,6 +1273,8 @@ jQuery.noConflict();
 						vars.viewlist.append($('<option>').attr('id',views[i].id).text(views[i].name).val(views[i].filterCond+sort));
 					}
 					vars.viewlist.on('change',function(){
+						window.location.href='https://'+$(location).attr('host')+'/k/m/'+vars.config['app']+'/?view='+$('option:selected',$(this)).attr('id');
+						/*
 						if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
 						vars.isdisplaymap=false;
 						vars.apps[vars.config['app']]=null;
@@ -1278,6 +1286,7 @@ jQuery.noConflict();
 								$('div.customview-navi').hide();
 							});
 						});
+						*/
 					});
 					if ($('option#'+event.viewId,vars.viewlist).size()) $('option#'+event.viewId,vars.viewlist).attr('selected',true);
 					functions.loaddatas(vars.viewlist.val(),function(){
@@ -1329,6 +1338,12 @@ jQuery.noConflict();
 							record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
 							record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
 							record.record[vars.config['zip']].value=zip;
+							zip=zip.replace(/[^0-9]/g,'');
+							if (zip.length==7)
+							{
+								record.record[vars.config['zip1']].value=zip.substring(0,3);
+								record.record[vars.config['zip2']].value=zip.substring(3,7);
+							}
 							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
 							else kintone.app.record.set(record);
 						}
@@ -1350,6 +1365,15 @@ jQuery.noConflict();
 				functions.createbarcode(event.record,'show',function(record){
 					if (record)
 					{
+						var zip=record[vars.config['zip']].value.replace(/[０-９]/g,function(s){
+							return String.fromCharCode(s.charCodeAt(0)-65248);
+						})
+						.replace(/[^0-9]/g,'');
+						if (zip.length==7)
+						{
+							record[vars.config['zip1']].value=zip.substring(0,3);
+							record[vars.config['zip2']].value=zip.substring(3,7);
+						}
 						if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
 						else kintone.app.record.set({'record':record});
 					}
@@ -1508,10 +1532,16 @@ jQuery.noConflict();
 						if (event.record[vars.config['mailing']].value==mailingoptions[1].option)
 							event.record[vars.config['mailing']].value=mailingoptions[0].option;
 					}
-					if (!error) functions.checkdestination(event.record,function(){resolve(event);});
+					if (!error) functions.checkdestination(event.record,function(){
+						resolve(event);
+						if (event.type=='app.record.index.edit.submit') location.reload(true);
+					});
 				},
 				function(error){
-					functions.checkdestination(event.record,function(){resolve(event);});
+					functions.checkdestination(event.record,function(){
+						resolve(event);
+						if (event.type=='app.record.index.edit.submit') location.reload(true);
+					});
 				});
 			};
 			if (parseFloat('0'+event.record[vars.config['lat']].value)+parseFloat('0'+event.record[vars.config['lng']].value)==0)
@@ -1525,6 +1555,12 @@ jQuery.noConflict();
 					event.record[vars.config['lat']].value=lat;
 					event.record[vars.config['lng']].value=lng;
 					event.record[vars.config['zip']].value=zip;
+					zip=zip.replace(/[^0-9]/g,'');
+					if (zip.length==7)
+					{
+						event.record[vars.config['zip1']].value=zip.substring(0,3);
+						event.record[vars.config['zip2']].value=zip.substring(3,7);
+					}
 					checkmailing();
 				},
 				function(){
@@ -1538,7 +1574,10 @@ jQuery.noConflict();
 		return new kintone.Promise(function(resolve,reject){
 			var mailingoptions=JSON.parse(vars.config['mailingoptions']);
 			event.record[vars.config['mailing']].value=mailingoptions[2].option;
-			functions.checkdestination(event.record,function(){resolve(event);});
+			functions.checkdestination(event.record,function(){
+				resolve(event);
+				if (event.type=='app.record.index.delete.submit') location.reload(true);
+			});
 		});
 	});
 })(jQuery,kintone.$PLUGIN_ID);

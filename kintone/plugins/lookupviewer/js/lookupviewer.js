@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "treeviewer"
+* jQuery-Plugin "lookupviewer"
 * Version: 3.0
 * Copyright (c) 2016 TIS
 *
@@ -195,7 +195,7 @@ jQuery.noConflict();
 				.append($('<input type="hidden" value="">'))
 			);
 			/* create table */
-			vars.table=$('<table class="treeviewer-table">').mergetable({
+			vars.table=$('<table class="lookupviewer-table">').mergetable({
 				container:$('div#view-list-data-gaia').empty(),
 				head:head,
 				template:template,

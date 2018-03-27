@@ -5,7 +5,7 @@
 *.hide{
   display:none;
 }
-table.treeviewer-table{
+table.lookupviewer-table{
   background-color:#FFFFFF;
   border:none;
   border-collapse:separate;
@@ -15,12 +15,12 @@ table.treeviewer-table{
   min-width:100%;
   padding:0px;
 }
-table.treeviewer-table *{
+table.lookupviewer-table *{
   box-sizing:border-box;
   position:relative;
 }
-table.treeviewer-table td,
-table.treeviewer-table th{
+table.lookupviewer-table td,
+table.lookupviewer-table th{
   background-color:#FFFFFF;
   border:none;
   font-size:13px;
@@ -29,16 +29,16 @@ table.treeviewer-table th{
   position:relative;
   vertical-align:top;
 }
-table.treeviewer-table td:not(.empty):not(.treecell){
+table.lookupviewer-table td:not(.empty):not(.treecell){
   border-bottom:1px dotted #C9C9C9;
 }
-table.treeviewer-table td.buttoncell{
+table.lookupviewer-table td.buttoncell{
   width:40px;
 }
-table.treeviewer-table td.disusedcell{
+table.lookupviewer-table td.disusedcell{
   display:none;
 }
-table.treeviewer-table td.treecell div{
+table.lookupviewer-table td.treecell div{
   background-color:transparent;
   background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png');
   background-position:left top;
@@ -47,10 +47,10 @@ table.treeviewer-table td.treecell div{
   cursor:pointer;
   padding-left:35px;
 }
-table.treeviewer-table td.treecell div.open{
+table.lookupviewer-table td.treecell div.open{
   background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/minus.png');
 }
-table.treeviewer-table th{
+table.lookupviewer-table th{
   border-bottom:1px solid #C9C9C9;
   position:-webkit-sticky;
   position:sticky;
@@ -58,19 +58,19 @@ table.treeviewer-table th{
   white-space:nowrap;
   z-index:2;
 }
-table.treeviewer-table th div,
-table.treeviewer-table td div{
+table.lookupviewer-table th div,
+table.lookupviewer-table td div{
   line-height:30px;
   padding:0px 5px;
   text-align:left;
   width:100%;
 }
-table.treeviewer-table tr td a,
-table.treeviewer-table tr td span,
-table.treeviewer-table tr td img{
+table.lookupviewer-table tr td a,
+table.lookupviewer-table tr td span,
+table.lookupviewer-table tr td img{
   display:block;
 }
-table.treeviewer-table img.listviewer-thumbnail{
+table.lookupviewer-table img.listviewer-thumbnail{
   border:none;
   cursor:pointer;
   margin:3px 0px;
