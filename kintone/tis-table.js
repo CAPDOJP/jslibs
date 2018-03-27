@@ -306,7 +306,6 @@ var AdjustTable=function(options){
 	/* create rows */
 	if (this.rows!=null) this.rows.remove();
 	this.addrow();
-	if (this.del.length!=0) $(this.del,this.rows.first()).css({'display':'none'});
 };
 AdjustTable.prototype={
 	addrow:function(){
@@ -318,7 +317,11 @@ AdjustTable.prototype={
 		/* events */
 		row=this.rows.last();
 		if (this.add.length!=0) $(this.add,row).on('click',function(){my.addrow()});
-		if (this.del.length!=0) $(this.del,row).on('click',function(){my.delrow($(this).closest('tr'))});
+		if (this.del.length!=0)
+		{
+			$(this.del,row).on('click',function(){my.delrow($(this).closest('tr'))});
+			$(this.del,this.rows.first()).css({'display':'none'});
+		}
 		if (this.addcallback!=null) this.addcallback(row);
 	},
 	delrow:function(row){

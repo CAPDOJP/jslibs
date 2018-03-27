@@ -1,48 +1,104 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<table class="lookups">
+		<table class="apps">
 			<tbody>
-				<tr class="lookup">
+				<tr class="app">
 					<td>
-						<div class="kintoneplugin-label">対象フィールド</div>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="lookup">
-									<option value=""></option>
-								</select>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">更新先アプリ</div>
+							<div class="kintoneplugin-select-outer">
+								<div class="kintoneplugin-select">
+									<select id="app">
+										<option value=""></option>
+									</select>
+								</div>
+							</div>
+							<div class="buttons">
+								<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addapp" alt="+" title="追加">
+								<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delapp" alt="x" title="削除">
 							</div>
 						</div>
-						<input type="hidden" id="lookuptype">
-						<div class="buttons">
-							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
-							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
-						</div>
-						<table class="inner settings">
-							<thead>
-								<tr>
-									<th>ルックアップ元アプリ内フィールド</th>
-									<th>更新フィールド</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class="caption">
-										<span class="updatetoname"></span>
-										<input type="hidden" id="updateto">
-										<input type="hidden" id="updatetype">
-									</td>
-									<td>
-										<div class="kintoneplugin-select-outer">
-											<div class="kintoneplugin-select">
-												<select id="updatefrom">
-													<option value=""></option>
-												</select>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">更新キーフィールド設定</div>
+							<div class="kintoneplugin-caution">*キーに指定出来るフィールドは「必須項目にする」にチェックが入っているフィールドと計算フィールドに限ります。</div>
+							<table class="inner keys">
+								<thead>
+									<tr>
+										<th>更新元フィールド</th>
+										<th>更新先フィールド</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>
+											<div class="kintoneplugin-select-outer">
+												<div class="kintoneplugin-select">
+													<select id="keyfrom">
+														<option value=""></option>
+													</select>
+												</div>
 											</div>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
+										</td>
+										<td>
+											<div class="kintoneplugin-select-outer">
+												<div class="kintoneplugin-select">
+													<select id="keyto">
+														<option value=""></option>
+													</select>
+												</div>
+											</div>
+										</td>
+										<td>
+											<div class="buttons">
+												<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addkey" alt="+" title="追加">
+												<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delkey" alt="x" title="削除">
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">更新フィールド設定</div>
+							<table class="inner values">
+								<thead>
+									<tr>
+										<th>更新元フィールド</th>
+										<th>更新先フィールド</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>
+											<div class="kintoneplugin-select-outer">
+												<div class="kintoneplugin-select">
+													<select id="valuefrom">
+														<option value=""></option>
+													</select>
+												</div>
+											</div>
+										</td>
+										<td>
+											<div class="kintoneplugin-select-outer">
+												<div class="kintoneplugin-select">
+													<select id="valueto">
+														<option value=""></option>
+													</select>
+												</div>
+											</div>
+										</td>
+										<td>
+											<div class="buttons">
+												<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addvalue" alt="+" title="追加">
+												<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delvalue" alt="x" title="削除">
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</td>
 				</tr>
 			</tbody>

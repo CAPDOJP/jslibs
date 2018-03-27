@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone ルックアップ参照元レコード更新プラグイン",
+        "ja":"kintone アプリ間レコード更新プラグイン",
         "en":"kintone Reference Update plug-in",
-        "zh":"kintone ルックアップ参照元レコード更新プラグイン"
+        "zh":"kintone アプリ間レコード更新プラグイン"
     },
     "description":{
-        "ja":"ルックアップで取得したレコードを表示中のフィールド値で更新するプラグインです。",
-        "en":"This plug-in that updates records retrieved by lookup with field values being displayed",
-        "zh":"ルックアップで取得したレコードを表示中のフィールド値で更新するプラグインです。"
+        "ja":"別アプリのレコードを編集中のレコードで更新するプラグインです。",
+        "en":"This plug-in that updates records of another application with records being edited",
+        "zh":"別アプリのレコードを編集中のレコードで更新するプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -26,6 +26,7 @@
             "js/referenceupdate.js"
         ],
         "css":[
+            "css/progress.css",
             "css/sweetalert.css"
         ]
     },
@@ -37,6 +38,7 @@
             "js/referenceupdate.js"
         ],
         "css":[
+            "css/progress.css",
             "css/sweetalert.css"
         ]
     },

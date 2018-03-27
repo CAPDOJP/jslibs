@@ -12,8 +12,9 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
-		lookuptable:null,
-		settingtables:[],
+		offset:0,
+		apptable:null,
+		appparams:[],
 		fieldinfos:{}
 	};
 	var functions={
@@ -36,19 +37,36 @@ jQuery.noConflict();
 			});
 			return codes;
 		},
-		reloadsettings:function(settingtable,callback){
+		loadapps:function(callback){
+			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
+				/* setup app lists */
+				$.each(resp.apps,function(index,values){
+					if (values.appId!=kintone.app.getId()) $('select#app').append($('<option>').attr('value',values.appId).text(values.name));
+				})
+				vars.offset+=100;
+				if (resp.apps.length==100) functions.loadapps(callback);
+				else
+				{
+					if (callback!=null) callback();
+				}
+			},function(error){});
+		},
+		reloadsettings:function(params,callback){
 			/* clear rows */
-			var target=$('select#lookup',settingtable.container.closest('tr'));
-			settingtable.clearrows();
+			var target=$('select#app',params.container);
+			params.fieldinfos={};
+			params.keys.clearrows();
+			params.values.clearrows();
 			if (target.val().length!=0)
 			{
-				var fieldinfo=vars.fieldinfos[target.val()];
-				kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+				var fieldinfo=null;
+				kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:target.val()},function(resp){
 					var sorted=functions.fieldsort(resp.layout);
 					/* get fieldinfo */
-					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:target.val()},function(resp){
 						var mappings=[];
-						$('input#lookuptype',settingtable.container.closest('tr')).val(resp.properties[fieldinfo.lookup.relatedKeyField].type);
+						var keylist=$('select#keyto',params.keys.template).html('<option value=""></option>');
+						var valuelist=$('select#valueto',params.values.template).html('<option value=""></option>');
 						/* append lookup mappings fields */
 						$.each(resp.properties,function(key,values){
 							if (values.lookup)
@@ -56,7 +74,6 @@ jQuery.noConflict();
 									mappings.push(values.field);
 								});
 						});
-						if ($.inArray(fieldinfo.lookup.relatedKeyField,mappings)<0) mappings.push(fieldinfo.lookup.relatedKeyField);
 						$.each(sorted,function(index){
 							if (sorted[index] in resp.properties)
 							{
@@ -65,41 +82,46 @@ jQuery.noConflict();
 								switch (fieldinfo.type)
 								{
 									case 'CALC':
+									case 'RADIO_BUTTON':
+									case 'RECORD_NUMBER':
+										keylist.append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										break;
 									case 'CATEGORY':
 									case 'CREATED_TIME':
 									case 'CREATOR':
 									case 'FILE':
 									case 'MODIFIER':
-									case 'RECORD_NUMBER':
 									case 'REFERENCE_TABLE':
 									case 'STATUS':
 									case 'STATUS_ASSIGNEE':
 									case 'UPDATED_TIME':
 										break;
 									default:
-										/* exclude lookup mappings */
-										if ($.inArray(fieldinfo.code,mappings)<0)
-										{
-											var list=null;
-											settingtable.addrow();
-											$('input#updateto',settingtable.rows.last()).val(fieldinfo.code);
-											$('input#updatetype',settingtable.rows.last()).val(fieldinfo.type);
-											$('span.updatetoname',settingtable.rows.last()).text(fieldinfo.label);
-											list=$('select#updatefrom',settingtable.rows.last());
-											list.html('<option value=""></option>');
-											$.each(vars.fieldinfos,function(key,values){
-												if (fieldinfo.type==values.type) list.append($('<option>').attr('value',values.code).text(values.label));
-											});
-										}
+										if (fieldinfo.required) keylist.append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										if ($.inArray(fieldinfo.code,mappings)<0) valuelist.append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								}
+								params.fieldinfos[sorted[index]]=resp.properties[sorted[index]];
 							}
 						});
-						settingtable.container.show();
+						params.keys.addrow();
+						params.keys.container.show();
+						params.values.addrow();
+						params.values.container.show();
 						if (callback) callback();
-					},function(error){settingtable.container.hide();});
-				},function(error){settingtable.container.hide();});
+					},function(error){
+						params.keys.container.hide();
+						params.values.container.hide();
+					});
+				},function(error){
+					params.keys.container.hide();
+					params.values.container.hide();
+				});
 			}
-			else settingtable.container.hide();
+			else
+			{
+				params.keys.container.hide();
+				params.values.container.hide();
+			}
 		}
 	};
 	/*---------------------------------------------------------------
@@ -110,54 +132,104 @@ jQuery.noConflict();
 		/* get fieldinfo */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-			vars.fieldinfos=$.fieldparallelize(resp.properties);
 			$.each(sorted,function(index){
-				if (sorted[index] in vars.fieldinfos)
+				if (sorted[index] in resp.properties)
 				{
-					var fieldinfo=vars.fieldinfos[sorted[index]];
-					if (fieldinfo.lookup) $('select#lookup').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+					var fieldinfo=resp.properties[sorted[index]];
+					/* check field type */
+					switch (fieldinfo.type)
+					{
+						case 'CALC':
+						case 'RADIO_BUTTON':
+						case 'RECORD_NUMBER':
+							$('select#keyfrom').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#valuefrom').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							break;
+						case 'CATEGORY':
+						case 'CREATED_TIME':
+						case 'CREATOR':
+						case 'FILE':
+						case 'MODIFIER':
+						case 'REFERENCE_TABLE':
+						case 'STATUS':
+						case 'STATUS_ASSIGNEE':
+						case 'UPDATED_TIME':
+							break;
+						default:
+							if (fieldinfo.required) $('select#keyfrom').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#valuefrom').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+					}
+					vars.fieldinfos[sorted[index]]=resp.properties[sorted[index]];
 				}
 			});
 			/* initialize valiable */
-			vars.lookuptable=$('.lookups').adjustabletable({
-				add:'img.add',
-				del:'img.del',
+			vars.apptable=$('.apps').adjustabletable({
+				add:'img.addapp',
+				del:'img.delapp',
 				addcallback:function(row){
-					var index=(vars.lookuptable)?vars.lookuptable.rows.index(row):0;
-					vars.settingtables.push($('.settings',row).adjustabletable());
-					$('select#lookup',row).on('change',function(){
-						functions.reloadsettings(vars.settingtables[index]);
+					var index=(vars.apptable)?vars.apptable.rows.index(row):0;
+					vars.appparams.push({
+						container:row,
+						fieldinfos:{},
+						keys:$('.keys',row).adjustabletable({
+							add:'img.addkey',
+							del:'img.delkey'
+						}),
+						values:$('.values',row).adjustabletable({
+							add:'img.addvalue',
+							del:'img.delvalue'
+						})
+					});
+					$('select#app',row).on('change',function(){
+						functions.reloadsettings(vars.appparams[index]);
 					});
 				},
 				delcallback:function(index){
-					vars.settingtables.splice(index,1);
+					vars.appparams.splice(index,1);
 				}
 			});
-			var add=false;
-			var row=null;
-			var lookups=[];
-			var settings={};
-			if (Object.keys(config).length!==0)
-			{
-				lookups=JSON.parse(config['lookups']);
-				for (var i=0;i<lookups.length;i++)
+			functions.loadapps(function(){
+				var add=false;
+				var row=null;
+				var apps=[];
+				if (Object.keys(config).length!==0)
 				{
-					if (add) vars.lookuptable.addrow();
-					else add=true;
-					settings=lookups[i]['setting'];
-					$('select#lookup',vars.lookuptable.rows.last()).val(lookups[i]['lookup']);
-					(function(settingtable){
-						functions.reloadsettings(settingtable,function(){
-							for (var i2=0;i2<settingtable.rows.length;i2++)
-							{
-								row=settingtable.rows.eq(i2);
-								if ($('#updateto',row).val() in settings) $('select#updatefrom',row).val(settings[$('#updateto',row).val()]);
-							}
-						});
-					})(vars.settingtables[i]);
+					apps=JSON.parse(config['apps']);
+					for (var i=0;i<apps.length;i++)
+					{
+						if (add) vars.apptable.addrow();
+						else add=true;
+						$('select#app',vars.apptable.rows.last()).val(apps[i]['app']);
+						(function(params,settings){
+							functions.reloadsettings(params,function(){
+								add=false;
+								for (var i2=0;i2<settings.keys.length;i2++)
+								{
+									if (add) params.keys.addrow();
+									else add=true;
+									row=params.keys.rows.last();
+									$('select#keyfrom',row).val(settings.keys[i2].from);
+									$('select#keyto',row).val(settings.keys[i2].to);
+								}
+								add=false;
+								for (var i2=0;i2<settings.values.length;i2++)
+								{
+									if (add) params.values.addrow();
+									else add=true;
+									row=params.values.rows.last();
+									$('select#valuefrom',row).val(settings.values[i2].from);
+									$('select#valueto',row).val(settings.values[i2].to);
+								}
+							});
+						})(vars.appparams[i],apps[i]['setting']);
+					}
 				}
-			}
-			else vars.settingtables[0].container.hide();
+				else
+				{
+					vars.appparams[0].keys.container.hide();
+					vars.appparams[0].values.container.hide();
+				}
+			});
 		},function(error){});
 	},function(error){});
 	/*---------------------------------------------------------------
@@ -166,28 +238,66 @@ jQuery.noConflict();
 	$('button#submit').on('click',function(e){
 		var row=null;
 		var config=[];
-		var lookups=[];
+		var apps=[];
 		/* check values */
-		for (var i=0;i<vars.lookuptable.rows.length;i++)
+		for (var i=0;i<vars.appparams.length;i++)
 		{
-			var lookup={lookup:'',setting:{},type:''};
-			row=vars.lookuptable.rows.eq(i);
-			if ($('select#lookup',row).val()=='') continue;
-			else
+			var app={app:'',setting:{keys:[],values:[]}};
+			row=vars.appparams[i].container;
+			if ($('select#app',row).val()=='') continue;
+			else app.app=$('select#app',row).val();
+			for (var i2=0;i2<vars.appparams[i].keys.rows.length;i2++)
 			{
-				lookup.lookup=$('select#lookup',row).val();
-				lookup.type=$('input#lookuptype',row).val();
+				row=vars.appparams[i].keys.rows.eq(i2);
+				if ($('select#keyfrom',row).val()=='')
+				{
+					swal('Error!','更新元キーフィールドを選択して下さい。','error');
+					return;
+				}
+				if ($('select#keyto',row).val()=='')
+				{
+					swal('Error!','更新先キーフィールドを選択して下さい。','error');
+					return;
+				}
+				if (!$.isvalidtype(vars.fieldinfos[$('select#keyfrom',row).val()],vars.appparams[i].fieldinfos[$('select#keyto',row).val()]))
+				{
+					swal('Error!','更新キーフィールドに指定したフィールド同士の形式が一致しません。','error');
+					return;
+				}
+				app.setting.keys.push({
+					from:$('select#keyfrom',row).val(),
+					to:$('select#keyto',row).val(),
+					type:vars.appparams[i].fieldinfos[$('select#keyto',row).val()],
+					format:((fieldinfo.type=='CALC')?fieldinfo.format:'')
+				});
 			}
-			for (var i2=0;i2<vars.settingtables[i].rows.length;i2++)
+			for (var i2=0;i2<vars.appparams[i].values.rows.length;i2++)
 			{
-				row=vars.settingtables[i].rows.eq(i2);
-				if ($('select#updatefrom',row).val().length==0) continue;
-				lookup.setting[$('input#updateto',row).val()]=$('select#updatefrom',row).val();
+				row=vars.appparams[i].values.rows.eq(i2);
+				if ($('select#valuefrom',row).val()=='')
+				{
+					swal('Error!','更新元フィールドを選択して下さい。','error');
+					return;
+				}
+				if ($('select#valueto',row).val()=='')
+				{
+					swal('Error!','更新先フィールドを選択して下さい。','error');
+					return;
+				}
+				if (!$.isvalidtype(vars.fieldinfos[$('select#valuefrom',row).val()],vars.appparams[i].fieldinfos[$('select#valueto',row).val()]))
+				{
+					swal('Error!','更新フィールドに指定したフィールド同士の形式が一致しません。','error');
+					return;
+				}
+				app.setting.values.push({
+					from:$('select#valuefrom',row).val(),
+					to:$('select#valueto',row).val()
+				});
 			}
-			lookups.push(lookup);
+			apps.push(app);
 		}
 		/* setup config */
-		config['lookups']=JSON.stringify(lookups,'');
+		config['apps']=JSON.stringify(apps,'');
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});
