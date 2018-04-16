@@ -340,14 +340,10 @@ jQuery.noConflict();
 		if (!('barcode' in vars.config)) return event;
 		var events=[];
 		events.push('app.record.create.change.'+vars.config.zip);
-		events.push('mobile.app.record.create.change.'+vars.config.zip);
 		events.push('app.record.edit.change.'+vars.config.zip);
-		events.push('mobile.app.record.edit.change.'+vars.config.zip);
 		events.push('app.record.index.edit.change.'+vars.config.zip);
 		events.push('app.record.create.change.'+vars.config.address);
-		events.push('mobile.app.record.create.change.'+vars.config.address);
 		events.push('app.record.edit.change.'+vars.config.address);
-		events.push('mobile.app.record.edit.change.'+vars.config.address);
 		events.push('app.record.index.edit.change.'+vars.config.address);
 		kintone.events.on(events,function(event){
 			if (functions.ismakeable(event.record)) functions.createbarcode(event.record,'show');

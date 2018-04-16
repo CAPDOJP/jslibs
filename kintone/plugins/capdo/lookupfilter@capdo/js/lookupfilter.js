@@ -163,7 +163,6 @@ jQuery.noConflict();
 		/* setup segment values */
 		setupsegments:function(fieldcode,record,row){
 			if (!record[fieldcode].value) return;
-			if (record[fieldcode].value.length==0) return;
 			var container=vars.containers[fieldcode+'_'+row.toString()];
 			var records=$.grep(vars.apps[vars.lookups[fieldcode].app],function(item,index){return item[vars.lookups[fieldcode].relatedkey].value==record[fieldcode].value;});
 			var segments=vars.lookups[fieldcode].segments;

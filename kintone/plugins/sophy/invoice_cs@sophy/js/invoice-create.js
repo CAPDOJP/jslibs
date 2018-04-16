@@ -1242,6 +1242,10 @@ jQuery.noConflict();
 			calcevents.push('app.record.edit.change.taxsegment');
 			calcevents.push('mobile.app.record.create.change.taxsegment');
 			calcevents.push('mobile.app.record.edit.change.taxsegment');
+			calcevents.push('app.record.create.change.billtable');
+			calcevents.push('app.record.edit.change.billtable');
+			calcevents.push('mobile.app.record.create.change.billtable');
+			calcevents.push('mobile.app.record.edit.change.billtable');
 			kintone.events.on(calcevents,function(event){
 				if (!event.record['billdate'].value) return event;
 				/* calculate reate of tax */

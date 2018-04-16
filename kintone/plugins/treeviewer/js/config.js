@@ -139,6 +139,7 @@ jQuery.noConflict();
 				var levels=[];
 				if (Object.keys(config).length!==0)
 				{
+					if (config['windowopen']=='1') $('input#windowopen').prop('checked',true);
 					excludefields=JSON.parse(config['excludefield']);
 					excludeviews=JSON.parse(config['excludeview']);
 					levels=JSON.parse(config['level']);
@@ -231,6 +232,7 @@ jQuery.noConflict();
 		config['excludefield']=JSON.stringify(excludefields);
 		config['excludeview']=JSON.stringify(excludeviews);
 		config['level']=JSON.stringify(levels);
+		config['windowopen']=($('input#windowopen').prop('checked'))?'1':'0';
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

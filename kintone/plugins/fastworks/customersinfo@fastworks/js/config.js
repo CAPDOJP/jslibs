@@ -12,7 +12,8 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
-		colortable:null,
+		datespancolortable:null,
+		rankcolortable:null,
 		colors:[],
 		fieldinfos:{}
 	};
@@ -35,6 +36,28 @@ jQuery.noConflict();
 				}
 			});
 			return codes;
+		},
+		reloadranks:function(callback){
+			/* clear rows */
+			var target=$('select#rank');
+			vars.rankcolortable.clearrows();
+			if (target.val().length!=0)
+			{
+				var fieldinfo=vars.fieldinfos[target.val()];
+				var options=[fieldinfo.options.length];
+				$.each(fieldinfo.options,function(key,values){
+					options[values.index]=values.label;
+				});
+				for (var i=0;i<options.length;i++)
+				{
+					vars.rankcolortable.addrow();
+					vars.rankcolortable.rows.last().find('input#item').val(options[i]);
+					vars.rankcolortable.rows.last().find('span.itemname').text(options[i]);
+				}
+				vars.rankcolortable.container.show();
+				if (callback) callback();
+			}
+			else vars.rankcolortable.container.hide();
 		},
 		reloadmailings:function(callback){
 			/* clear rows */
@@ -111,6 +134,7 @@ jQuery.noConflict();
 							break;
 						case 'RADIO_BUTTON':
 							$('select#action').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#rank').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							$('select#mailing').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
 						case 'SINGLE_LINE_TEXT':
@@ -132,7 +156,7 @@ jQuery.noConflict();
 				}
 			});
 			/* initialize valiable */
-			vars.colortable=$('.colors').adjustabletable({
+			vars.datespancolortable=$('.datespancolors').adjustabletable({
 				add:'img.add',
 				del:'img.del',
 				addcallback:function(row){
@@ -140,7 +164,19 @@ jQuery.noConflict();
 					$('span#datespancolor',row).colorSelector(vars.colors,$('input#datespancolor',row));
 				}
 			});
-			if (Object.keys(config).length!==0) $('select#mailing').val(config['mailing']);
+			vars.rankcolortable=$('.rankcolors').adjustabletable({
+				add:'img.add',
+				del:'img.del',
+				addcallback:function(row){
+					$('input#rankcolor',row).val(vars.colors[0].replace('#',''));
+					$('span#rankcolor',row).colorSelector(vars.colors,$('input#rankcolor',row));
+				}
+			});
+			if (Object.keys(config).length!==0)
+			{
+				$('select#rank').val(config['rank']);
+				$('select#mailing').val(config['mailing']);
+			}
 			functions.reloadmailings(function(){
 				if (Object.keys(config).length!==0)
 				{
@@ -154,6 +190,7 @@ jQuery.noConflict();
 					$('select#information').val(config['information']);
 					$('select#action').val(config['action']);
 					$('select#datespan').val(config['datespan']);
+					$('select#rank').val(config['rank']);
 					$('select#modifier').val(config['modifier']);
 					$('select#barcodetext').val(config['barcodetext']);
 					$('select#barcodeimage').val(config['barcodeimage']);
@@ -163,10 +200,11 @@ jQuery.noConflict();
 					$('input#defaultcolor').val(config['defaultcolor']);
 					var add=false;
 					var datespancolors=JSON.parse(config['datespancolors']);
+					var rankcolors=(config['rankcolors'])?JSON.parse(config['rankcolors']):{};
 					$.each(datespancolors,function(key,values){
-						if (add) vars.colortable.addrow();
+						if (add) vars.datespancolortable.addrow();
 						else add=true;
-						var row=vars.colortable.rows.last();
+						var row=vars.datespancolortable.rows.last();
 						$('input#datespanday',row).val(key);
 						$('input#datespancolor',row).val(values);
 					});
@@ -185,6 +223,16 @@ jQuery.noConflict();
 					if (config['usebarcode']=='1') $('input#usebarcode').prop('checked',true);
 					if (config['usedestination']=='1') $('input#usedestination').prop('checked',true);
 					if (config['chasemode']=='1') $('input#chasemode').prop('checked',true);
+					functions.reloadranks(function(){
+						for (var i=0;i<vars.rankcolortable.rows.length;i++)
+						{
+							var row=vars.rankcolortable.rows.eq(i);
+							if ($('#item',row).val() in rankcolors)
+							{
+								$('input#rankcolor',row).val(rankcolors[$('#item',row).val()]);
+							}
+						}
+					});
 				}
 				else
 				{
@@ -192,12 +240,17 @@ jQuery.noConflict();
 					$('input#markerfont').val('11');
 					$('input#defaultcolor').val(vars.colors[0].replace('#',''));
 					$.each($('input#datespancolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
+					$.each($('input#rankcolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
 				}
 			});
+			$('select#rank').on('change',function(){functions.reloadranks()});
 			$('select#mailing').on('change',function(){functions.reloadmailings()});
 			$('span#defaultcolor').colorSelector(vars.colors,$('input#defaultcolor'));
 			$.each($('span#datespancolor'),function(index){
 				$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#datespancolor'));
+			});
+			$.each($('span#rankcolor'),function(index){
+				$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#rankcolor'));
 			});
 		});
 	},function(error){});
@@ -208,6 +261,7 @@ jQuery.noConflict();
 		var error=false;
 		var config=[];
 		var datespancolors={};
+		var rankcolors={};
 		var mailingoptions=[];
 		/* check values */
 		if ($('select#zip').val()=='')
@@ -260,6 +314,11 @@ jQuery.noConflict();
 			swal('Error!','経過日数算出フィールドを選択して下さい。','error');
 			return;
 		}
+		if ($('select#rank',row).val()=='')
+		{
+			swal('Error!','ランク指定フィールドを選択して下さい。','error');
+			return;
+		}
 		if ($('select#modifier').val()=='')
 		{
 			swal('Error!','更新者フィールドを選択して下さい。','error');
@@ -280,18 +339,28 @@ jQuery.noConflict();
 			swal('Error!','マーカー規定色を選択して下さい。','error');
 			return;
 		}
-		for (var i=0;i<vars.colortable.rows.length;i++)
+		for (var i=0;i<vars.datespancolortable.rows.length;i++)
 		{
-			var row=vars.colortable.rows.eq(i);
+			var row=vars.datespancolortable.rows.eq(i);
 			if ($('input#datespanday',row).val().length!=0)
 			{
 				if ($('input#datespancolor',row).val()=='')
 				{
-					swal('Error!','マーカー色を選択して下さい。','error');
+					swal('Error!','経過日数マーカー色を選択して下さい。','error');
 					error=true;
 				}
 				datespancolors[$('input#datespanday',row).val().toString()]=$('input#datespancolor',row).val();
 			}
+		}
+		for (var i=0;i<vars.rankcolortable.rows.length;i++)
+		{
+			var row=vars.rankcolortable.rows.eq(i);
+			if ($('input#rankcolor',row).val()=='')
+			{
+				swal('Error!','ランク別マーカー色を選択して下さい。','error');
+				error=true;
+			}
+			rankcolors[$('input#item',row).val().toString()]=$('input#rankcolor',row).val();
 		}
 		if ($('input#markersize').val()=='') $('input#markersize').val('34');
 		if (!$.isNumeric($('input#markersize').val()))
@@ -371,6 +440,7 @@ jQuery.noConflict();
 		config['information']=$('select#information').val();
 		config['action']=$('select#action').val();
 		config['datespan']=$('select#datespan').val();
+		config['rank']=$('select#rank').val();
 		config['modifier']=$('select#modifier').val();
 		config['barcodetext']=$('select#barcodetext').val();
 		config['barcodeimage']=$('select#barcodeimage').val();
@@ -386,6 +456,7 @@ jQuery.noConflict();
 		config['usedestination']=($('input#usedestination').prop('checked'))?'1':'0';
 		config['chasemode']=($('input#chasemode').prop('checked'))?'1':'0';
 		config['datespancolors']=JSON.stringify(datespancolors);
+		config['rankcolors']=JSON.stringify(rankcolors);
 		config['mailingoptions']=JSON.stringify(mailingoptions);
 		/* save config */
 		kintone.plugin.app.setConfig(config);

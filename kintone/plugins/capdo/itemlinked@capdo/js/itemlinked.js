@@ -23,8 +23,6 @@ jQuery.noConflict();
 		save:[
 			'app.record.create.submit',
 			'app.record.edit.submit',
-			'mobile.app.record.create.submit',
-			'mobile.app.record.edit.submit',
 			'app.record.index.edit.submit'
 		]
 	};
@@ -56,7 +54,6 @@ jQuery.noConflict();
 							for (var i=0;i<vars.fields.length;i++)
 							{
 								if (error.length==0 && !event.record[vars.fields[i]].value) error='必須項目です。';
-								if (error.length==0 && event.record[vars.fields[i]].value.length==0) error='必須項目です。';
 								if (error.length!=0) event.record[vars.fields[i]].error=error;
 							}
 							if (error.length!=0) event.error='未入力項目があります。';

@@ -227,6 +227,75 @@
 		<div class="kintoneplugin-caution">*入力内容は2000文字以内にして下さい。</div>
 	</div>
 	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">行種類フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">明細行の種類を指定するフィールドを選択して下さい。【ラジオボタンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="rowtype">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<table class="rowtypes">
+			<thead>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">行種類</span>
+					</td>
+					<td>
+						<span class="kintoneplugin-unit">選択値</span>
+					</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">通常</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="rowtypeoption">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">割引</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="rowtypeoption">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">テキスト</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="rowtypeoption">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="kintoneplugin-caution">*テキスト行のみの請求書は、不可となります。</div>
+		<div class="kintoneplugin-caution">*合計金額がマイナスとなる場合は、Freee側が未対応の為、不可となります。</div>
+	</div>
+	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">品名フィールド<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">品名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
 		<div class="kintoneplugin-select-outer">
@@ -248,16 +317,6 @@
 				</select>
 			</div>
 		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">行種類について</div>
-		<div class="kintoneplugin-desc">1.割引行</div>
-		<div class="kintoneplugin-desc indent">単価フィールドの値がマイナスの場合は、割引行としてFreeeに登録します。</div>
-		<div class="kintoneplugin-desc">2.テキスト行</div>
-		<div class="kintoneplugin-desc indent">単価フィールドの値が空の場合は、テキスト行としてFreeeに登録します。</div>
-		<div class="kintoneplugin-caution indent">*テキスト行のみの請求書は、不可となります。</div>
-		<div class="kintoneplugin-label">合計金額について</div>
-		<div class="kintoneplugin-desc indent">合計金額がマイナスとなる場合は、Freee側が未対応の為、不可となります。</div>
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">数量フィールド<span class="kintoneplugin-require">*</span></div>

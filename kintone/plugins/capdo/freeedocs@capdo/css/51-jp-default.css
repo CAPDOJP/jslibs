@@ -468,3 +468,26 @@
 .indent{
   padding-left:1em;
 }
+div.kintoneplugin-row table td,
+div.kintoneplugin-row table th{
+  border-bottom:1px dotted #d6d1cc;
+  font-weight: normal;
+  padding:3px;
+  white-space:nowrap;
+}
+div.kintoneplugin-row table tbody tr:nth-of-type(even){
+  background-color:#fffcf2;
+}
+div.kintoneplugin-row table tbody tr td.button{
+  width:28px;
+}
+div.kintoneplugin-row table tbody tr td.button img{
+  cursor:pointer;
+  display:block;
+  margin:0px;
+  padding:0px;
+  width:100%;
+}
+div.kintoneplugin-row table tbody tr td div.kintoneplugin-select-outer{
+  margin:3px 0px;
+}

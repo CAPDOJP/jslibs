@@ -38,6 +38,33 @@ jQuery.noConflict();
 				}
 			});
 			return codes;
+		},
+		reloadrowtypes:function(callback){
+			/* clear rows */
+			var target=$('select#rowtype');
+			var table=$('.rowtypes');
+			if (target.val().length!=0)
+			{
+				$.each(table.find('tbody').find('tr'),function(){
+					var row=$(this);
+					$('select#rowtypeoption',row).empty();
+				})
+				var fieldinfo=vars.fieldinfos[target.val()];
+				var options=[fieldinfo.options.length];
+				$.each(fieldinfo.options,function(key,values){
+					options[values.index]=values.label;
+				});
+				for (var i=0;i<options.length;i++)
+				{
+					$.each(table.find('tbody').find('tr'),function(){
+						var row=$(this);
+						$('select#rowtypeoption',row).append($('<option>').attr('value',options[i]).text(options[i]));
+					})
+				}
+				table.show();
+			}
+			else table.hide();
+			if (callback) callback();
 		}
 	};
 	/*---------------------------------------------------------------
@@ -76,7 +103,11 @@ jQuery.noConflict();
 							break;
 						case 'DROP_DOWN':
 						case 'RADIO_BUTTON':
-							if (fieldinfo.tablecode.length!=0) $('select#unit').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							if (fieldinfo.tablecode.length!=0)
+							{
+								$('select#rowtype').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#unit').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							}
 							break;
 						case 'LINK':
 							if (fieldinfo.protocol=='WEB') $('select#doc_url').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
@@ -122,38 +153,50 @@ jQuery.noConflict();
 					}
 				}
 			});
-			if (Object.keys(config).length!==0)
-			{
-				$('input#freeeappid').val(config['freeeappid']);
-				$('input#freeesecret').val(config['freeesecret']);
-				$('input#license').val(config['license']);
-				$('select#taxshift').val(config['taxshift']);
-				$('select#doctype').val(config['doctype']);
-				$('select#company_info').val(config['company_info']);
-				$('select#doc_reference_id').val(config['doc_reference_id']);
-				$('select#doc_status').val(config['doc_status']);
-				$('select#issue_date').val(config['issue_date']);
-				$('select#sales_added_date').val(config['sales_added_date']);
-				$('select#payment_date').val(config['payment_date']);
-				$('select#partner_id').val(config['partner_id']);
-				$('select#partner_name').val(config['partner_name']);
-				$('select#partner_zipcode').val(config['partner_zipcode']);
-				$('select#partner_prefecture_code').val(config['partner_prefecture_code']);
-				$('select#partner_address1').val(config['partner_address1']);
-				$('select#partner_address2').val(config['partner_address2']);
-				$('select#partner_info').val(config['partner_info']);
-				$('select#description').val(config['description']);
-				$('select#bank_info').val(config['bank_info']);
-				$('select#notes').val(config['notes']);
-				$('select#breakdown').val(config['breakdown']);
-				$('select#unit_price').val(config['unit_price']);
-				$('select#qty').val(config['qty']);
-				$('select#unit').val(config['unit']);
-				$('select#account_item_id').val(config['account_item_id']);
-				$('select#item_name').val(config['item_name']);
-				$('select#section_name').val(config['section_name']);
-				$('select#doc_url').val(config['doc_url']);
-			}
+			if (Object.keys(config).length!==0) $('select#rowtype').val(config['rowtype']);
+			functions.reloadrowtypes(function(){
+				if (Object.keys(config).length!==0)
+				{
+					$('input#freeeappid').val(config['freeeappid']);
+					$('input#freeesecret').val(config['freeesecret']);
+					$('input#license').val(config['license']);
+					$('select#taxshift').val(config['taxshift']);
+					$('select#doctype').val(config['doctype']);
+					$('select#company_info').val(config['company_info']);
+					$('select#doc_reference_id').val(config['doc_reference_id']);
+					$('select#doc_status').val(config['doc_status']);
+					$('select#issue_date').val(config['issue_date']);
+					$('select#sales_added_date').val(config['sales_added_date']);
+					$('select#payment_date').val(config['payment_date']);
+					$('select#partner_id').val(config['partner_id']);
+					$('select#partner_name').val(config['partner_name']);
+					$('select#partner_zipcode').val(config['partner_zipcode']);
+					$('select#partner_prefecture_code').val(config['partner_prefecture_code']);
+					$('select#partner_address1').val(config['partner_address1']);
+					$('select#partner_address2').val(config['partner_address2']);
+					$('select#partner_info').val(config['partner_info']);
+					$('select#description').val(config['description']);
+					$('select#bank_info').val(config['bank_info']);
+					$('select#notes').val(config['notes']);
+					$('select#breakdown').val(config['breakdown']);
+					$('select#unit_price').val(config['unit_price']);
+					$('select#qty').val(config['qty']);
+					$('select#unit').val(config['unit']);
+					$('select#account_item_id').val(config['account_item_id']);
+					$('select#item_name').val(config['item_name']);
+					$('select#section_name').val(config['section_name']);
+					$('select#doc_url').val(config['doc_url']);
+					if (config['rowtypeoptions'])
+					{
+						var rowtypeoptions=JSON.parse(config['rowtypeoptions']);
+						$.each($('.rowtypes').find('tbody').find('tr'),function(index){
+							var row=$(this);
+							$('select#rowtypeoption',row).val(rowtypeoptions[index]);
+						});
+					}
+				}
+			});
+			$('select#rowtype').on('change',function(){functions.reloadrowtypes()});
 		});
 	},function(error){});
 	/*---------------------------------------------------------------
@@ -161,6 +204,7 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
 		var config=[];
+		var rowtypeoptions=[];
 		var tablecodes={};
 		/* check values */
 		if ($('input#freeeappid').val()=='')
@@ -193,6 +237,15 @@ jQuery.noConflict();
 			swal('Error!','発生日を指定して下さい。','error');
 			return;
 		}
+		if ($('select#rowtype').val()=='')
+		{
+			swal('Error!','行種類フィールドを選択して下さい。','error');
+			return;
+		}
+		$.each($('.rowtypes').find('tbody').find('tr'),function(index){
+			var row=$(this);
+			rowtypeoptions.push($('select#rowtypeoption',row).val());
+		})
 		if ($('select#breakdown').val()=='')
 		{
 			swal('Error!','品名を指定して下さい。','error');
@@ -370,6 +423,7 @@ jQuery.noConflict();
 		config['description']=$('select#description').val();
 		config['bank_info']=$('select#bank_info').val();
 		config['notes']=$('select#notes').val();
+		config['rowtype']=$('select#rowtype').val();
 		config['breakdown']=$('select#breakdown').val();
 		config['unit_price']=$('select#unit_price').val();
 		config['qty']=$('select#qty').val();
@@ -378,6 +432,7 @@ jQuery.noConflict();
 		config['item_name']=$('select#item_name').val();
 		config['section_name']=$('select#section_name').val();
 		config['doc_url']=$('select#doc_url').val();
+		config['rowtypeoptions']=JSON.stringify(rowtypeoptions);
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

@@ -3,9 +3,9 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone ファシリテーターコメント入力プラグイン@ソフィー",
+        "ja":"kintone 学習塾用ファシリテーターコメント入力プラグイン@ソフィー",
         "en":"kintone Facilitators Comment plug-in",
-        "zh":"kintone ファシリテーターコメント入力プラグイン@ソフィー"
+        "zh":"kintone 学習塾用ファシリテーターコメント入力プラグイン@ソフィー"
     },
     "description":{
         "ja":"ファシリテーターがコメントを入力するプラグインです。",

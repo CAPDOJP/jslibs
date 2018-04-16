@@ -84,13 +84,7 @@ jQuery.noConflict();
 					docitems.push(docitem);
 				}
 			}
-			request['doc_items']=$.grep(docitems,function(item,index){
-				var exists=0;
-				if (item['qty']) exists++;
-				if (item['unit_price']) exists++;
-				if (item['description']) exists++;
-				return exists==3;
-			});
+			request['doc_items']=docitems;
 			if (request['doc_items'].length==0) return null;
 			return request;
 		},

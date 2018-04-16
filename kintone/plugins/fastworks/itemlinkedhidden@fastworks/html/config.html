@@ -1,0 +1,65 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<table class="fields">
+			<tbody>
+				<tr class="field">
+					<td>
+						<div class="kintoneplugin-label">対象フィールド</div>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="field">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addfield" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delfield" alt="x" title="削除">
+						</div>
+						<table class="outer settings">
+							<thead>
+								<tr>
+									<th>選択値</th>
+									<th>非表示フィールド</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="caption">
+										<span class="itemname"></span>
+										<input type="hidden" id="item">
+									</td>
+									<td>
+										<table class="inner hiddens">
+											<tbody>
+												<tr>
+													<td>
+														<div class="kintoneplugin-select-outer">
+															<div class="kintoneplugin-select">
+																<select id="hiddenfield">
+																	<option value=""></option>
+																</select>
+															</div>
+														</div>
+														<div class="buttons">
+															<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+															<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

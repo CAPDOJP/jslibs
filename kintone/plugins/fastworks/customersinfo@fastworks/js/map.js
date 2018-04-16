@@ -311,7 +311,7 @@ RouteMap.prototype={
 							color:values.colors,
 							fontsize:values.fontsize,
 							icon:values.icon,
-							label:values.extensionindex,
+							label:((parseInt(values.extensionindex)>999)?'xxx':values.extensionindex),
 							latlng:new google.maps.LatLng(values.lat,values.lng),
 							size:values.size
 						},
@@ -360,7 +360,7 @@ RouteMap.prototype={
 								color:values.colors,
 								fontsize:values.fontsize,
 								icon:values.icon,
-								label:values.extensionindex,
+								label:((parseInt(values.extensionindex)>999)?'xxx':values.extensionindex),
 								latlng:new google.maps.LatLng(values.lat,values.lng),
 								size:values.size
 							},

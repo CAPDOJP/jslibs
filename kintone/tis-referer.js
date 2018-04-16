@@ -658,7 +658,7 @@ FileSelect.prototype={
 			xhr.responseType='multipart/form-data';
 			xhr.onload=function(){
 				if (xhr.status===200) resolve(xhr.responseText);
-				else reject(Error('File download error:' + xhr.statusText));
+				else reject(Error('File upload error:' + xhr.statusText));
 			};
 			xhr.onerror=function(){
 				reject(Error('There was a network error.'));
@@ -1914,7 +1914,6 @@ FieldsForm.prototype={
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
 					if (!values.value) return true;
-					if (values.value.length==0) return true;
 					/* initialize value */
 					$('.label',fieldcontainer).text(values.value);
 					$('.receiver',fieldcontainer).val(values.value);
@@ -1926,7 +1925,6 @@ FieldsForm.prototype={
 					$('.receiverhour',fieldcontainer).val('00');
 					$('.receiverminute',fieldcontainer).val('00');
 					if (!values.value) return true;
-					if (values.value.length==0) return true;
 					/* initialize value */
 					$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
 					$('.receiver',fieldcontainer).val(values.value);
@@ -1967,7 +1965,6 @@ FieldsForm.prototype={
 					$('.receiverhour',fieldcontainer).val('00');
 					$('.receiverminute',fieldcontainer).val('00');
 					if (!values.value) return true;
-					if (values.value.length==0) return true;
 					/* initialize value */
 					$('.receiver',fieldcontainer).val(values.value);
 					$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));

@@ -1,0 +1,243 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">使用一覧<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">引取指示を行う一覧をリストより選択して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="targetview">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">引取先住所入力フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">引取先住所を入力するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="address">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">緯度表示フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">取得した緯度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="lat">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">経度表示フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">取得した経度を表示するフィールドを選択して下さい。【数値フィールド(小数点以下9桁以上を指定)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="lng">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">担当者フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">ドライバーを指定するフィールドを選択して下さい。【ユーザー選択フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="driver">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">引取予定日フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">引取予定日を入力するフィールドを選択して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="date">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">引取開始時刻フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">引取開始時刻を入力するフィールドを選択して下さい。【時刻フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="starttime">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">引取終了時刻フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">引取終了時刻を入力するフィールドを選択して下さい。【時刻フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="endtime">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">引取車種フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">引取車種を指定するフィールドを選択して下さい。【ルックアップフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="car">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">自走判定フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">自走判定を指定するフィールドを選択して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="carownmove">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">車両状態フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">車両状態を指定するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="carcondition">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">車種ステータスフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">車種ステータスを指定するフィールドを選択して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="status">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<span class="kintoneplugin-unit">引取指示選択値：</span>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="statusvalue">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">その他表示フィールド</div>
+		<div class="kintoneplugin-desc">情報ウインドウに表示するフィールドを選択して下さい。</div>
+		<table class="informations">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="information">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">地図表示フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">地図を表示するスペースを選択して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="spacer">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">マーカー色指定</div>
+		<table class="markercolors">
+			<thead>
+				<tr>
+					<th>条件</th>
+					<th>指定色</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">通常</span>
+					</td>
+					<td>
+						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="markercolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">引取開始時刻超過</span>
+					</td>
+					<td>
+						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="markercolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">引取終了時刻まであと3時間</span>
+					</td>
+					<td>
+						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="markercolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">引取終了時刻まであと1時間</span>
+					</td>
+					<td>
+						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="markercolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">引取終了時刻超過</span>
+					</td>
+					<td>
+						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="markercolor" value="">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Google Maps APIキー</div>
+		<div class="kintoneplugin-desc">一覧地図を表示する場合は、Google Maps APIキーを取得し、取得したキーを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

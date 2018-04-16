@@ -256,6 +256,155 @@ jQuery.noConflict();
 						/* append elements */
 						kintone.app.getHeaderMenuSpaceElement().appendChild(companies.addClass('custom-elements')[0]);
 						kintone.app.getHeaderMenuSpaceElement().appendChild(download.addClass('custom-elements')[0]);
+						if (vars.config['partnerapp'].length!=0)
+						{
+							kintone.app.getHeaderMenuSpaceElement().appendChild(
+								$('<button type="button" class="kintoneplugin-button-dialog-ok">').text('取引先データアップロード')
+								.on('click',function(e){
+									if ($('select.companies').val().length==0)
+									{
+										swal('Error!','事業所を選択して下さい。','error');
+										return;
+									}
+									swal({
+										title:'確認',
+										text:'Freeeへ取引先データをアップロードします。宜しいですか？',
+										type:'info',
+										showCancelButton:true,
+										cancelButtonText:'Cancel'
+									},
+									function(){
+										var key='partners';
+										var fields=JSON.parse(vars.config['partnerfields']);
+										vars.offset=0;
+										vars.records[key]=[];
+										vars.progress.find('.message').text('取引先データ登録中');
+										vars.progress.find('.progressbar').find('.progresscell').width(0);
+										vars.progress.show();
+										functions.loaddatas(vars.config['partnerapp'],key,function(){
+											var requests=[];
+											var createrequest=function(record){
+												var tablecode='';
+												var request={};
+												var address_attributes={};
+												var partner_bank_account_attributes={};
+												request['company_id']=parseInt($('select.companies').val());
+												if (fields['name'].length!=0) request['name']=createrequestvalue(record,fields['name']);
+												if (fields['shortcut1'].length!=0) request['shortcut1']=createrequestvalue(record,fields['shortcut1']);
+												if (fields['shortcut2'].length!=0) request['shortcut2']=createrequestvalue(record,fields['shortcut2']);
+												if (fields['phone'].length!=0) request['phone']=createrequestvalue(record,fields['phone']);
+												if (fields['contact_name'].length!=0) request['contact_name']=createrequestvalue(record,fields['contact_name']);
+												if (fields['email'].length!=0) request['email']=createrequestvalue(record,fields['email']);
+												if (fields['zipcode'].length!=0) address_attributes['zipcode']=createrequestvalue(record,fields['zipcode']);
+												if (fields['prefecture_code'].length!=0) address_attributes['prefecture_code']=createrequestvalue(record,fields['prefecture_code'],'integer');
+												if (fields['street_name1'].length!=0) address_attributes['street_name1']=createrequestvalue(record,fields['street_name1']);
+												if (fields['street_name2'].length!=0) address_attributes['street_name2']=createrequestvalue(record,fields['street_name2']);
+												if (fields['bank_name'].length!=0) partner_bank_account_attributes['bank_name']=createrequestvalue(record,fields['bank_name']);
+												if (fields['bank_name_kana'].length!=0) partner_bank_account_attributes['bank_name_kana']=createrequestvalue(record,fields['bank_name_kana']);
+												if (fields['bank_code'].length!=0) partner_bank_account_attributes['bank_code']=createrequestvalue(record,fields['bank_code']);
+												if (fields['branch_name'].length!=0) partner_bank_account_attributes['branch_name']=createrequestvalue(record,fields['branch_name']);
+												if (fields['branch_kana'].length!=0) partner_bank_account_attributes['branch_kana']=createrequestvalue(record,fields['branch_kana']);
+												if (fields['branch_code'].length!=0) partner_bank_account_attributes['branch_code']=createrequestvalue(record,fields['branch_code']);
+												if (fields['account_number'].length!=0) partner_bank_account_attributes['account_number']=createrequestvalue(record,fields['account_number']);
+												if (fields['long_account_name'].length!=0) partner_bank_account_attributes['long_account_name']=createrequestvalue(record,fields['long_account_name']);
+												if (fields['account_name'].length!=0) partner_bank_account_attributes['account_name']=createrequestvalue(record,fields['account_name']);
+												if (Object.keys(address_attributes).length!==0) request['address_attributes']=address_attributes;
+												if (Object.keys(partner_bank_account_attributes).length!==0)
+												{
+													partner_bank_account_attributes['account_type']='ordinary';
+													request['partner_bank_account_attributes']=partner_bank_account_attributes;
+												}
+												return request;
+											};
+											var createrequestvalue=function(record,field,number){
+												var res=null;
+												if (field in record)
+												{
+													if (record[field].value)
+														if (record[field].value.toString().length!=0)
+														{
+															switch (number)
+															{
+																case 'integer':
+																	res=parseInt(record[field].value);
+																	break;
+																case 'float':
+																	res=parseFloat(record[field].value);
+																	break;
+																default:
+																	res=record[field].value;
+																	break;
+															}
+														}
+												}
+												return res;
+											};
+											var register=function(requests){
+												var error=false;
+												var counter=requests.length;
+												for (var i=0;i<requests.length;i++)
+												{
+													if (error) break;
+													kintone.proxy(
+														'https://api.freee.co.jp/api/1/partners',
+														'POST',
+														{
+															'Authorization':'Bearer '+vars.accesstoken,
+															'Content-Type':'application/json'
+														},
+														requests[i],
+														function(body,status,headers){
+															switch (status)
+															{
+																case 400:
+																	vars.progress.hide();
+																	swal('Error!','不正なリクエストです。','error');
+																	error=true;
+																	break;
+																case 401:
+																	vars.progress.hide();
+																	swal('Error!','サーバーへのアクセスが拒否されました。','error');
+																	error=true;
+																	break;
+																case 500:
+																	vars.progress.hide();
+																	swal('Error!','サーバー内で障害が発生しています。','error');
+																	error=true;
+																	break;
+																default:
+																	counter--;
+																	if (counter==0)
+																	{
+																		vars.progress.hide();
+																		swal('登録完了','取引先データアップロードが完了しました。','success');
+																	}
+																	break;
+															}
+														},
+														function(error){
+															vars.progress.hide();
+															swal('Error!','Freeeへの接続に失敗しました。','error');
+															error=true;
+														}
+													);
+												}
+											};
+											vars.counter.progress[key]=0;
+											if (vars.records[key].length==0) swal('Error!','取引先データがありません。','error');
+											else
+											{
+												for (var i=0;i<vars.records[key].length;i++)
+												{
+													var request=createrequest(vars.records[key][i]);
+													if (request) requests.push(request);
+												}
+												if (requests.length!=0) register(requests);
+											}
+										});
+									});
+								}).addClass('custom-elements-freeeresources')[0]
+							);
+						}
 					}
 					else
 					{

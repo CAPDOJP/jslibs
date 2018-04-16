@@ -1,0 +1,53 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 英会話用請求書作成プラグイン@ソフィー",
+        "en":"kintone Invoice creation plug-in",
+        "zh":"kintone 英会話用請求書作成プラグイン@ソフィー"
+    },
+    "description":{
+        "ja":"請求書を作成するプラグインです。",
+        "en":"This plug-in creates an invoice",
+        "zh":"請求書を作成するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "https://rawgit.com/polygonplanet/encoding.js/master/encoding.js",
+            "js/sweetalert.min.js",
+            "js/invoice-create.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/51-modern-default.css",
+            "css/desktop/common.css",
+            "css/desktop/invoice.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

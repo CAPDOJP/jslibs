@@ -167,7 +167,6 @@ jQuery.noConflict();
 							if (field in event.record)
 							{
 								if (error.length==0 && !event.record[field].value) error='必須項目です。';
-								if (error.length==0 && event.record[field].value.length==0) error='必須項目です。';
 								if (error.length!=0) event.record[field].error=error;
 							}
 						}

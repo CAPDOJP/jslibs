@@ -19,11 +19,12 @@ jQuery.noConflict();
 		ismobile:false,
 		centerLocation:null,
 		chaselocation:null,
+		createbarcode:null,
 		currentlocation:null,
 		currentmarker:null,
-		displaypoi:null,
-		displaydatespan:null,
 		displaymap:null,
+		displaypoi:null,
+		displayrank:null,
 		editor:null,
 		editorconfirm:null,
 		map:null,
@@ -33,6 +34,10 @@ jQuery.noConflict();
 		apps:{},
 		config:{},
 		fieldinfos:{},
+		keep:{
+			query:'',
+			viewId:''
+		},
 		offset:{},
 		styles:{
 			show:null,
@@ -80,79 +85,83 @@ jQuery.noConflict();
 		checkdestination:function(record,callback){
 			if (vars.config['usedestination']=='1')
 			{
-				var body={
-					app:vars.config['app'],
-					query:''
-				};
-				var familydestination=record[vars.config['familyname']].value+'家御一同様';
-				var singledestination=record[vars.config['familyname']].value+record[vars.config['givenname']].value+'様';
-				var mailingoptions=JSON.parse(vars.config['mailingoptions']);
-				body.query+=vars.config['barcodetext']+'="'+record[vars.config['barcodetext']].value+'"';
-				body.query+=' and '+vars.config['familyname']+'="'+record[vars.config['familyname']].value+'"';
-				body.query+=' and '+vars.config['mailing']+' not in ("'+mailingoptions[2].option+'","'+mailingoptions[3].option+'")';
-				body.query+=' and $id not in ('+(('$id' in record)?record['$id'].value:'0')+')';
-				body.query+=' order by $id asc';
-				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-					if (resp.records.length!=0)
-					{
-						var returnvalues=[];
-						var updatevalues=[];
-						for (var i=0;i<resp.records.length;i++)
+				if (!functions.isnull(record[vars.config['familyname']].value))
+				{
+					var body={
+						app:vars.config['app'],
+						query:''
+					};
+					var familydestination=record[vars.config['familyname']].value+'家御一同様';
+					var singledestination=record[vars.config['familyname']].value+record[vars.config['givenname']].value+'様';
+					var mailingoptions=JSON.parse(vars.config['mailingoptions']);
+					body.query+=vars.config['barcodetext']+'="'+record[vars.config['barcodetext']].value+'"';
+					body.query+=' and '+vars.config['familyname']+'="'+record[vars.config['familyname']].value+'"';
+					body.query+=' and '+vars.config['mailing']+' not in ("'+mailingoptions[2].option+'","'+mailingoptions[3].option+'")';
+					body.query+=' and $id not in ('+(('$id' in record)?record['$id'].value:'0')+')';
+					body.query+=' order by $id asc';
+					kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+						if (resp.records.length!=0)
 						{
-							var updatevalue={
-								app:vars.config['app'],
-								id:resp.records[i]['$id'].value,
-								record:{}
-							};
-							singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
-							switch (record[vars.config['mailing']].value)
+							var returnvalues=[];
+							var updatevalues=[];
+							for (var i=0;i<resp.records.length;i++)
 							{
-								case mailingoptions[0].option:
-									updatevalue.record[vars.config['mailing']]={value:mailingoptions[1].option};
-									updatevalue.record[vars.config['destination']]={value:familydestination};
-									break;
-								case mailingoptions[1].option:
-									updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
-									updatevalue.record[vars.config['destination']]={value:familydestination};
-									break;
-								case mailingoptions[2].option:
-								case mailingoptions[3].option:
-									updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
-									if (resp.records.length==1) updatevalue.record[vars.config['destination']]={value:singledestination};
-									else updatevalue.record[vars.config['destination']]={value:familydestination};
-									break;
+								var updatevalue={
+									app:vars.config['app'],
+									id:resp.records[i]['$id'].value,
+									record:{}
+								};
+								singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
+								switch (record[vars.config['mailing']].value)
+								{
+									case mailingoptions[0].option:
+										updatevalue.record[vars.config['mailing']]={value:mailingoptions[1].option};
+										updatevalue.record[vars.config['destination']]={value:familydestination};
+										break;
+									case mailingoptions[1].option:
+										updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+										updatevalue.record[vars.config['destination']]={value:familydestination};
+										break;
+									case mailingoptions[2].option:
+									case mailingoptions[3].option:
+										updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+										if (resp.records.length==1) updatevalue.record[vars.config['destination']]={value:singledestination};
+										else updatevalue.record[vars.config['destination']]={value:familydestination};
+										break;
+								}
+								updatevalues.push(updatevalue);
+								returnvalues.push(updatevalue.id);
 							}
-							updatevalues.push(updatevalue);
-							returnvalues.push(updatevalue.id);
+							(function(values,callback){
+								var counter=values.length;
+								var error=false;
+								for (var i=0;i<values.length;i++)
+								{
+									if (error) callback(true);
+									kintone.api(kintone.api.url('/k/v1/record',true),'PUT',values[i],function(resp){
+										counter--;
+										if (counter==0) callback(false);
+									},function(error){
+										error=true;
+									});
+								}
+							})(updatevalues,function(error){
+								record[vars.config['destination']].value=familydestination;
+								if (error) callback([]);
+								else callback(returnvalues);
+							});
 						}
-						(function(values,callback){
-							var counter=values.length;
-							var error=false;
-							for (var i=0;i<values.length;i++)
-							{
-								if (error) callback(true);
-								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',values[i],function(resp){
-									counter--;
-									if (counter==0) callback(false);
-								},function(error){
-									error=true;
-								});
-							}
-						})(updatevalues,function(error){
-							record[vars.config['destination']].value=familydestination;
-							if (error) callback([]);
-							else callback(returnvalues);
-						});
-					}
-					else
-					{
-						record[vars.config['destination']].value=singledestination;
+						else
+						{
+							record[vars.config['destination']].value=singledestination;
+							callback([]);
+						}
+					},
+					function(error){
 						callback([]);
-					}
-				},
-				function(error){
-					callback([]);
-				});
+					});
+				}
+				else callback([]);
 			}
 			else callback([]);
 		},
@@ -297,7 +306,7 @@ jQuery.noConflict();
 					});
 				}
 			}
-			else callback(null);
+			else callback(record);
 		},
 		/* check create barcode */
 		denybarcode:function(record){
@@ -359,6 +368,11 @@ jQuery.noConflict();
 				vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
 			}
 		},
+		/* check null */
+		isnull:function(value){
+			if (!value) return true;
+			return false;
+		},
 		/* data load */
 		loaddatas:function(condition,callback){
 			var filters=((condition==null)?'':condition);
@@ -397,163 +411,6 @@ jQuery.noConflict();
 							/* create map */
 							vars.map.map.setOptions({styles:vars.styles.hide});
 							vars.markers=functions.loadmarkers();
-							/* append elements */
-							if (!vars.ismobile)
-							{
-								if ($('.displaymap').size()) $('.displaymap').remove();
-								kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
-								if (vars.config['usebarcode']=='1')
-								{
-									if ($('.createbarcode').size()) $('.createbarcode').remove();
-									kintone.app.getHeaderMenuSpaceElement().appendChild(
-										$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/barcode.svg" class="createbarcode" alt="郵便バーコード生成" title="郵便バーコード生成" />').css({
-											'cursor':'pointer',
-											'display':'inline-block',
-											'height':'48px',
-											'margin':'0px 12px',
-											'vertical-align':'top',
-											'width':'48px'
-										})
-										.on('click',function(e){
-											if (!confirm('表示中の一覧の条件に該当するすべてのレコードの郵便バーコードを生成します。宜しいですか？')) return;
-											var error=false;
-											var counter=0;
-											var exclude=[];
-											var records=[];
-											var barcoderegist=function(index){
-												if (index<vars.apps[vars.config['app']].length)
-												{
-													var record={};
-													var body={
-														app:vars.config['app'],
-														id:vars.apps[vars.config['app']][index]['$id'].value,
-														record:{}
-													};
-													$.each(vars.apps[vars.config['app']][index],function(key,values){
-														switch (values.type)
-														{
-															case 'CALC':
-															case 'CATEGORY':
-															case 'CREATED_TIME':
-															case 'CREATOR':
-															case 'MODIFIER':
-															case 'RECORD_NUMBER':
-															case 'STATUS':
-															case 'STATUS_ASSIGNEE':
-															case 'UPDATED_TIME':
-																break;
-															default:
-																record[key]=values;
-																break;
-														}
-													});
-													(function(record,body){
-														functions.createbarcode(record,'list',function(record){
-															if (record)
-															{
-																body.record=record;
-																records.push(body);
-															}
-															barcoderegist(index+1);
-														});
-													})(record,body);
-													progress(vars.apps[vars.config['app']].length,function(){});
-												}
-												else
-												{
-													counter=0;
-													vars.progress.find('.message').text('バーコードデータ登録中');
-													vars.progress.find('.progressbar').find('.progresscell').width(0);
-													vars.progress.show();
-													for (var i=0;i<records.length;i++)
-													{
-														if (error) break;
-														(function(body){
-															kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-																progress(records.length,function(){
-																	if (vars.config['usedestination']=='1')
-																	{
-																		counter=0;
-																		vars.progress.find('.message').text('システムデータ更新中');
-																		vars.progress.find('.progressbar').find('.progresscell').width(0);
-																		vars.progress.show();
-																		destinationregist(0);
-																	}
-																	else
-																	{
-																		alert('データを登録しました。');
-																		location.reload(true);
-																	}
-																});
-															},function(error){
-																vars.progress.hide();
-																alert(error.message);
-																error=true;
-															});
-														})(records[i]);
-													}
-												}
-											};
-											var destinationregist=function(index){
-												if (index<records.length)
-												{
-													if ($.inArray(records[index].id,exclude)<0)
-													{
-														delete records[index].record[vars.config['barcodeimage']];
-														functions.checkdestination(records[index].record,function(ids){
-															Array.prototype.push.apply(exclude,ids);
-															kintone.api(kintone.api.url('/k/v1/record',true),'PUT',records[index],function(resp){
-																progress(records.length);
-																destinationregist(index+1);
-															},function(error){
-																vars.progress.hide();
-																alert(error.message);
-															});
-														});
-													}
-													else
-													{
-														progress(records.length);
-														destinationregist(index+1);
-													}
-												}
-											};
-											var progress=function(total,callback){
-												counter++;
-												if (counter<total)
-												{
-													vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/total));
-												}
-												else
-												{
-													vars.progress.hide();
-													if (callback) callback();
-													else
-													{
-														alert('データを登録しました。');
-														location.reload(true);
-													}
-												}
-											};
-											if (vars.apps[vars.config['app']].length==0)
-											{
-												vars.progress.hide();
-												alert('レコードがありません。');
-												return;
-											}
-											else
-											{
-												vars.progress.find('.message').text('バーコードデータ生成中');
-												vars.progress.find('.progressbar').find('.progresscell').width(0);
-												vars.progress.show();
-											}
-											barcoderegist(0);
-										})[0]
-									);
-									vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
-									$('body').append(vars.progress);
-								}
-							}
 							if (callback!=null) callback();
 							/* chase mode */
 							if (vars.config['chasemode']=='1')
@@ -585,7 +442,7 @@ jQuery.noConflict();
 								position:latlng
 							});
 							vars.editorconfirm.show(function(){
-								var address=results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
+								var address=results.formatted_address.replace(/日本(,|、)[ ]*/g,'').replace(/〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
 								var zip='';
 								for (var i=0;i<results.address_components.length;i++)
 									if (results.address_components[i].types[0]==="postal_code") zip=results.address_components[i].long_name;
@@ -601,6 +458,8 @@ jQuery.noConflict();
 								$('#'+vars.config['address'],vars.editor.contents).find('.remarks').text('集合住宅やビルは部屋番号または階数を追記して下さい');
 								$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val('');
 								$('#'+vars.config['information'],vars.editor.contents).find('.remarks').text('名前、会社名、ポスター、２連ポスター、その他メモ等');
+								$('#'+vars.fieldinfos[vars.config['rank']].defaultValue,$('#'+vars.config['rank'],vars.editor.contents)).prop('checked',true);
+								$('#'+vars.config['rank'],vars.editor.contents).show();
 								$('#'+vars.config['action'],vars.editor.contents).hide();
 								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 								vars.editor.show({
@@ -633,8 +492,9 @@ jQuery.noConflict();
 													lat:latlng.lat(),
 													lng:latlng.lng(),
 													size:vars.config['markersize'],
-													extensionindex:0,
+													extensionindex:'0',
 													datespan:new Date().format('Y-m-d'),
+													rank:$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val(),
 													modifier:kintone.getLoginUser(),
 													action:'更新'
 												});
@@ -646,11 +506,16 @@ jQuery.noConflict();
 											body.record[vars.config['lng']]={value:latlng.lng()};
 											body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
 											body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
+											body.record[vars.config['rank']]={value:$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val()};
 											zip=zip.replace(/[^0-9]/g,'');
 											if (zip.length==7)
 											{
-												body.record[vars.config['zip1']]={value:zip.substring(0,3)};
-												body.record[vars.config['zip2']]={value:zip.substring(3,7)};
+												body.record[vars.config['zip1']]={value:zip.substring(0,3).replace(/[0-9]/g,function(s){
+													return String.fromCharCode(s.charCodeAt(0)+65248);
+												})};
+												body.record[vars.config['zip2']]={value:zip.substring(3,7).replace(/[0-9]/g,function(s){
+													return String.fromCharCode(s.charCodeAt(0)+65248);
+												})};
 											}
 											if (vars.config['usebarcode']=='1')
 											{
@@ -711,6 +576,8 @@ jQuery.noConflict();
 							$('#'+vars.config['address'],vars.editor.contents).find('.remarks').text('');
 							$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
 							$('#'+vars.config['information'],vars.editor.contents).find('.remarks').text('');
+							$('#'+vars.markers[index].rank,$('#'+vars.config['rank'],vars.editor.contents)).prop('checked',true);
+							$('#'+vars.config['rank'],vars.editor.contents).show();
 							$('#'+vars.markers[index].action,$('#'+vars.config['action'],vars.editor.contents)).prop('checked',true);
 							$('#'+vars.config['action'],vars.editor.contents).show();
 							vars.editor.show({
@@ -734,6 +601,7 @@ jQuery.noConflict();
 												};
 												body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
 												body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
+												body.record[vars.config['rank']]={value:$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val()};
 												body.record[vars.config['action']]={value:action};
 												kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
 													if (vars.markers[index].action!=action) vars.markers.splice(index,1);
@@ -742,8 +610,9 @@ jQuery.noConflict();
 														vars.markers[index].label='';
 														vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
 														vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
-														vars.markers[index].extensionindex=0;
+														vars.markers[index].extensionindex='0';
 														vars.markers[index].datespan=new Date().format('Y-m-d');
+														vars.markers[index].rank=$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val();
 														vars.markers[index].modifier=kintone.getLoginUser();
 														vars.markers[index].action=action;
 													}
@@ -858,9 +727,9 @@ jQuery.noConflict();
 						)
 						.append(span.clone(true).text('現在地を追跡（移動モード）'));
 						if (vars.config['chasemode']!='1') vars.chaselocation.hide();
-						/* create displaydatespan checkbox */
-						vars.displaydatespan=checkbox.clone(true)
-						.append($('<input type="checkbox" id="datespan">')
+						/* create displayrank checkbox */
+						vars.displayrank=checkbox.clone(true)
+						.append($('<input type="checkbox" id="rank">')
 							.on('change',function(e){
 								/* swtich view of menu */
 								if ($('.customview-menu').is(':visible'))
@@ -875,9 +744,9 @@ jQuery.noConflict();
 								if (vars.currentmarker!=null) vars.currentmarker.setMap(null);
 							})
 						)
-						.append(span.clone(true).text('経過日数を表示'));
-						if (vars.config["datespan"].length==0) vars.displaydatespan.css({'display':'none'});
-						else vars.displaydatespan.find('input[type=checkbox]').prop('checked',true);
+						.append(span.clone(true).text('ランクで色分け'));
+						if (vars.config["rank"].length==0) vars.displayrank.css({'display':'none'});
+						else vars.displayrank.find('input[type=checkbox]').prop('checked',false);
 						/* create displaypoi checkbox */
 						vars.displaypoi=checkbox.clone(true)
 						.append($('<input type="checkbox" id="poi">')
@@ -897,21 +766,7 @@ jQuery.noConflict();
 							})
 						)
 						.append(span.clone(true).text('施設を表示'));
-						/* create display map button */
-						vars.displaymap=$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/compass.svg" class="displaymap" alt="地図を表示" title="地図を表示" />').css({
-							'cursor':'pointer',
-							'display':'inline-block',
-							'height':'48px',
-							'margin':'0px 12px',
-							'vertical-align':'top',
-							'width':'48px'
-						})
-						.on('click',function(e){
-							functions.reloadmap(function(){
-								vars.isdisplaymap=true;
-								functions.centering();
-							});
-						});
+						/* append buttons */
 						vars.map.buttonblock
 						.prepend(
 							$('<button class="customview-menu">')
@@ -948,7 +803,7 @@ jQuery.noConflict();
 								.append(
 										$('<div class="customview-navicontents">')
 										.prepend(vars.displaypoi)
-										.prepend(vars.displaydatespan)
+										.prepend(vars.displayrank)
 										.prepend(vars.chaselocation)
 										.prepend(vars.currentlocation)
 								)
@@ -1048,6 +903,7 @@ jQuery.noConflict();
 								vars.fieldinfos[vars.config['modifier']],
 								vars.fieldinfos[vars.config['address']],
 								vars.fieldinfos[vars.config['information']],
+								vars.fieldinfos[vars.config['rank']],
 								vars.fieldinfos[vars.config['action']]
 							]
 						});
@@ -1077,14 +933,13 @@ jQuery.noConflict();
 				var datespan='';
 				if (lat+lng!=0)
 				{
-					if (vars.config["datespan"].length!=0)
-						if (record[vars.config['datespan']].value!=null)
-						{
-							var datefrom=new Date(record[vars.config['datespan']].value.dateformat());
-							var dateto=new Date();
-							var datediff=dateto.getTime()-datefrom.getTime();
-							datespan=Math.floor(datediff/(1000*60*60*24)).toString();
-						}
+					if (record[vars.config['datespan']].value!=null)
+					{
+						var datefrom=new Date(record[vars.config['datespan']].value.dateformat());
+						var dateto=new Date();
+						var datediff=dateto.getTime()-datefrom.getTime();
+						datespan=Math.floor(datediff/(1000*60*60*24)).toString();
+					}
 					label='';
 					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
 					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
@@ -1099,6 +954,7 @@ jQuery.noConflict();
 						size:vars.config['markersize'],
 						extensionindex:datespan,
 						datespan:record[vars.config['datespan']].value,
+						rank:record[vars.config['rank']].value,
 						modifier:record[vars.config['modifier']].value,
 						action:(record[vars.config['action']].value)?record[vars.config['action']].value:'更新'
 					});
@@ -1115,24 +971,25 @@ jQuery.noConflict();
 		/* swtich view of marker */
 		reloadmap:function(callback){
 			var iscurrentlocation=vars.currentlocation.find('input[type=checkbox]').prop('checked');
-			var isextensionindex=vars.displaydatespan.find('input[type=checkbox]').prop('checked');
+			var isrank=vars.displayrank.find('input[type=checkbox]').prop('checked');
 			var color='';
-			var colors=JSON.parse(vars.config['datespancolors']);
+			var colors=(isrank)?JSON.parse(vars.config['rankcolors']):JSON.parse(vars.config['datespancolors']);
 			var markers=$.extend(true,[],vars.markers);
 			/* setup zindex */
-			if (isextensionindex)
-			{
-				markers.sort(function(a,b){
-					if(parseFloat('0'+a.extensionindex)<parseFloat('0'+b.extensionindex)) return -1;
-					if(parseFloat('0'+a.extensionindex)>parseFloat('0'+b.extensionindex)) return 1;
-					if(parseInt(a.id)<parseInt(b.id)) return -1;
-					return 1;
-				});
-			}
+			markers.sort(function(a,b){
+				if(parseFloat('0'+a.extensionindex)<parseFloat('0'+b.extensionindex)) return -1;
+				if(parseFloat('0'+a.extensionindex)>parseFloat('0'+b.extensionindex)) return 1;
+				if(parseInt(a.id)<parseInt(b.id)) return -1;
+				return 1;
+			});
 			for (var i=0;i<markers.length;i++)
 			{
 				color=vars.config['defaultcolor'];
-				if (isextensionindex)
+				if (isrank)
+				{
+					if (markers[i].rank in colors) color=colors[markers[i].rank];
+				}
+				else
 				{
 					var datespan=markers[i].extensionindex;
 					$.each(colors,function(key,values){
@@ -1155,7 +1012,7 @@ jQuery.noConflict();
 					/* display map */
 					vars.map.reloadmap({
 						markers:markers,
-						isextensionindex:isextensionindex,
+						isextensionindex:true,
 						isopeninfowindow:false,
 						callback:function(){
 							for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
@@ -1169,7 +1026,7 @@ jQuery.noConflict();
 				/* display map */
 				vars.map.reloadmap({
 					markers:markers,
-					isextensionindex:isextensionindex,
+					isextensionindex:true,
 					isopeninfowindow:false,
 					callback:function(){
 						for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setZIndex(i+1);
@@ -1225,6 +1082,9 @@ jQuery.noConflict();
 		else
 		{
 			if (event.viewType.toUpperCase()=='CALENDAR') return event;
+			if (vars.keep.query==kintone.app.getQueryCondition() && vars.keep.viewId==event.viewId.toString()) return event;
+			vars.keep.query=kintone.app.getQueryCondition();
+			vars.keep.viewId=event.viewId.toString();
 		}
 		/* initialize valiable */
 		vars.markers=[];
@@ -1274,19 +1134,6 @@ jQuery.noConflict();
 					}
 					vars.viewlist.on('change',function(){
 						window.location.href='https://'+$(location).attr('host')+'/k/m/'+vars.config['app']+'/?view='+$('option:selected',$(this)).attr('id');
-						/*
-						if (vars.config['chasemode']=='1') vars.map.unwatchlocation();
-						vars.isdisplaymap=false;
-						vars.apps[vars.config['app']]=null;
-						vars.offset[vars.config['app']]=0;
-						functions.loaddatas($(this).val(),function(){
-							functions.reloadmap(function(){
-								vars.isdisplaymap=true;
-								functions.centering();
-								$('div.customview-navi').hide();
-							});
-						});
-						*/
 					});
 					if ($('option#'+event.viewId,vars.viewlist).size()) $('option#'+event.viewId,vars.viewlist).attr('selected',true);
 					functions.loaddatas(vars.viewlist.val(),function(){
@@ -1298,16 +1145,206 @@ jQuery.noConflict();
 					});
 				},function(error){if (vars.splash!=null) vars.splash.hide();});
 			}
-			else functions.loaddatas(kintone.app.getQuery().replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,''));
+			else
+			{
+				/* create buttons */
+				if ($('.displaymap').size()) $('.displaymap').remove();
+				vars.displaymap=$('<div class="waitingbutton displaymap">').css({
+					'cursor':'pointer',
+					'display':'inline-block',
+					'height':'48px',
+					'margin':'0px 12px',
+					'vertical-align':'top',
+					'width':'48px'
+				})
+				.on('click',function(e){
+					if ($(this).hasClass('waitingbutton')) return;
+					functions.reloadmap(function(){
+						vars.isdisplaymap=true;
+						functions.centering();
+					});
+				});
+				kintone.app.getHeaderMenuSpaceElement().appendChild(vars.displaymap[0]);
+				if (vars.config['usebarcode']=='1')
+				{
+					if ($('.createbarcode').size()) $('.createbarcode').remove();
+					vars.createbarcode=$('<div class="waitingbutton createbarcode">').css({
+						'cursor':'pointer',
+						'display':'inline-block',
+						'height':'48px',
+						'margin':'0px 12px',
+						'vertical-align':'top',
+						'width':'48px'
+					})
+					.on('click',function(e){
+						if ($(this).hasClass('waitingbutton')) return;
+						if (!confirm('表示中の一覧の条件に該当するすべてのレコードの郵便バーコードを生成します。宜しいですか？')) return;
+						var error=false;
+						var counter=0;
+						var exclude=[];
+						var records=[];
+						var barcoderegist=function(index){
+							if (index<vars.apps[vars.config['app']].length)
+							{
+								var record={};
+								var body={
+									app:vars.config['app'],
+									id:vars.apps[vars.config['app']][index]['$id'].value,
+									record:{}
+								};
+								$.each(vars.apps[vars.config['app']][index],function(key,values){
+									switch (values.type)
+									{
+										case 'CALC':
+										case 'CATEGORY':
+										case 'CREATED_TIME':
+										case 'CREATOR':
+										case 'MODIFIER':
+										case 'RECORD_NUMBER':
+										case 'STATUS':
+										case 'STATUS_ASSIGNEE':
+										case 'UPDATED_TIME':
+											break;
+										default:
+											record[key]=values;
+											break;
+									}
+								});
+								(function(record,body){
+									functions.createbarcode(record,'list',function(record){
+										if (record)
+										{
+											body.record=record;
+											records.push(body);
+										}
+										barcoderegist(index+1);
+									});
+								})(record,body);
+								progress(vars.apps[vars.config['app']].length,function(){});
+							}
+							else
+							{
+								counter=0;
+								vars.progress.find('.message').text('バーコードデータ登録中');
+								vars.progress.find('.progressbar').find('.progresscell').width(0);
+								vars.progress.show();
+								for (var i=0;i<records.length;i++)
+								{
+									if (error) break;
+									(function(body){
+										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+											progress(records.length,function(){
+												if (vars.config['usedestination']=='1')
+												{
+													counter=0;
+													vars.progress.find('.message').text('システムデータ更新中');
+													vars.progress.find('.progressbar').find('.progresscell').width(0);
+													vars.progress.show();
+													destinationregist(0);
+												}
+												else
+												{
+													alert('データを登録しました。');
+													location.reload(true);
+												}
+											});
+										},function(error){
+											vars.progress.hide();
+											alert(error.message);
+											error=true;
+										});
+									})(records[i]);
+								}
+							}
+						};
+						var destinationregist=function(index){
+							if (index<records.length)
+							{
+								if ($.inArray(records[index].id,exclude)<0)
+								{
+									delete records[index].record[vars.config['barcodeimage']];
+									functions.checkdestination(records[index].record,function(ids){
+										Array.prototype.push.apply(exclude,ids);
+										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',records[index],function(resp){
+											progress(records.length);
+											destinationregist(index+1);
+										},function(error){
+											vars.progress.hide();
+											alert(error.message);
+										});
+									});
+								}
+								else
+								{
+									progress(records.length);
+									destinationregist(index+1);
+								}
+							}
+						};
+						var progress=function(total,callback){
+							counter++;
+							if (counter<total)
+							{
+								vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/total));
+							}
+							else
+							{
+								vars.progress.hide();
+								if (callback) callback();
+								else
+								{
+									alert('データを登録しました。');
+									location.reload(true);
+								}
+							}
+						};
+						if (vars.apps[vars.config['app']].length==0)
+						{
+							vars.progress.hide();
+							alert('レコードがありません。');
+							return;
+						}
+						else
+						{
+							vars.progress.find('.message').text('バーコードデータ生成中');
+							vars.progress.find('.progressbar').find('.progresscell').width(0);
+							vars.progress.show();
+						}
+						barcoderegist(0);
+					});
+					vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
+					$('body').append(vars.progress);
+					kintone.app.getHeaderMenuSpaceElement().appendChild(vars.createbarcode[0]);
+				}
+				functions.loaddatas(vars.keep.query,function(){
+					vars.displaymap
+					.removeClass('waitingbutton')
+					.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/compass.svg" alt="地図を表示" title="地図を表示" />').css({'width':'100%'}));
+					if (vars.config['usebarcode']=='1')
+						vars.createbarcode
+						.removeClass('waitingbutton')
+						.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/barcode.svg" alt="郵便バーコード生成" title="郵便バーコード生成" />').css({'width':'100%'}));
+				});
+			}
 		},function(error){if (vars.splash!=null) vars.splash.hide();});
 		return event;
 	});
 	kintone.events.on(events.show,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return false;
+		/* check device */
+		vars.ismobile=event.type.match(/mobile/g);
 		/* hide elements  */
-		kintone.app.record.setFieldShown(vars.config['lat'],false);
-		kintone.app.record.setFieldShown(vars.config['lng'],false);
+		if (!vars.ismobile)
+		{
+			kintone.app.record.setFieldShown(vars.config['lat'],false);
+			kintone.app.record.setFieldShown(vars.config['lng'],false);
+		}
+		else
+		{
+			kintone.mobile.app.record.setFieldShown(vars.config['lat'],false);
+			kintone.mobile.app.record.setFieldShown(vars.config['lng'],false);
+		}
 		/* map action  */
 		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
 		/* the initial display when editing */
@@ -1341,8 +1378,12 @@ jQuery.noConflict();
 							zip=zip.replace(/[^0-9]/g,'');
 							if (zip.length==7)
 							{
-								record.record[vars.config['zip1']].value=zip.substring(0,3);
-								record.record[vars.config['zip2']].value=zip.substring(3,7);
+								record.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+									return String.fromCharCode(s.charCodeAt(0)+65248);
+								});
+								record.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+									return String.fromCharCode(s.charCodeAt(0)+65248);
+								});
 							}
 							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
 							else kintone.app.record.set(record);
@@ -1371,8 +1412,12 @@ jQuery.noConflict();
 						.replace(/[^0-9]/g,'');
 						if (zip.length==7)
 						{
-							record[vars.config['zip1']].value=zip.substring(0,3);
-							record[vars.config['zip2']].value=zip.substring(3,7);
+							record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+								return String.fromCharCode(s.charCodeAt(0)+65248);
+							});
+							record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+								return String.fromCharCode(s.charCodeAt(0)+65248);
+							});
 						}
 						if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
 						else kintone.app.record.set({'record':record});
@@ -1470,7 +1515,7 @@ jQuery.noConflict();
 				});
 			}
 		}
-		kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
+		if (!vars.ismobile) kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
 	});
 	kintone.events.on(events.save,function(event){
@@ -1506,7 +1551,9 @@ jQuery.noConflict();
 					app:vars.config['app'],
 					query:''
 				};
+				var mailingedit=false;
 				var error=false;
+				if (functions.isnull(event.record[vars.config['familyname']].value)) {resolve(event);return;}
 				body.query+=vars.config['barcodetext']+'="'+event.record[vars.config['barcodetext']].value+'"';
 				body.query+=' and '+vars.config['familyname']+'="'+event.record[vars.config['familyname']].value+'"';
 				body.query+=' and '+vars.config['mailing']+' not in ("'+mailingoptions[2].option+'","'+mailingoptions[3].option+'")';
@@ -1525,22 +1572,25 @@ jQuery.noConflict();
 										error=true;
 										reject(new Error('mailing select error'));
 									}
+									else mailingedit=true;
 							}
 					}
 					else
 					{
 						if (event.record[vars.config['mailing']].value==mailingoptions[1].option)
+						{
 							event.record[vars.config['mailing']].value=mailingoptions[0].option;
+							mailingedit=true;
+						}
 					}
 					if (!error) functions.checkdestination(event.record,function(){
+						if (event.type=='app.record.index.edit.submit' && mailingedit) alert('世帯内情報が変更されましたので、一覧を再読み込みしてください。');
 						resolve(event);
-						if (event.type=='app.record.index.edit.submit') location.reload(true);
 					});
 				},
 				function(error){
 					functions.checkdestination(event.record,function(){
 						resolve(event);
-						if (event.type=='app.record.index.edit.submit') location.reload(true);
 					});
 				});
 			};
@@ -1558,8 +1608,12 @@ jQuery.noConflict();
 					zip=zip.replace(/[^0-9]/g,'');
 					if (zip.length==7)
 					{
-						event.record[vars.config['zip1']].value=zip.substring(0,3);
-						event.record[vars.config['zip2']].value=zip.substring(3,7);
+						event.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+							return String.fromCharCode(s.charCodeAt(0)+65248);
+						});
+						event.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+							return String.fromCharCode(s.charCodeAt(0)+65248);
+						});
 					}
 					checkmailing();
 				},

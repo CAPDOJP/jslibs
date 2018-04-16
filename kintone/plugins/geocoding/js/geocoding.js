@@ -25,16 +25,12 @@ jQuery.noConflict();
 	};
 	var events={
 		lists:[
-			'app.record.index.show',
-			'mobile.app.record.index.show'
+			'app.record.index.show'
 		],
 		show:[
 			'app.record.create.show',
 			'app.record.edit.show',
-			'app.record.detail.show',
-			'mobile.app.record.create.show',
-			'mobile.app.record.edit.show',
-			'mobile.app.record.detail.show'
+			'app.record.detail.show'
 		]
 	};
 	var functions={

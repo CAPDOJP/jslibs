@@ -1,0 +1,20 @@
+/* individual style (common) */
+button.recordtransfer-button{
+	background-color:#f7f9fa;
+	border:1px solid #e3e7e8;
+	box-shadow:1px 1px 1px #fff inset;
+	box-sizing:border-box;
+	color:#3498db;
+	cursor:pointer;
+  	display:inline-block;
+	font-size:14px;
+	height:40px;
+	line-height:40px;
+	margin:3px 6px 0px 0px;
+	outline:none;
+	padding:0px 16px;
+	position:relative;
+	text-align:center;
+	vertical-align:top;
+	white-space:nowrap;
+}

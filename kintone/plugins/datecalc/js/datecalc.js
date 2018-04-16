@@ -193,32 +193,24 @@ jQuery.noConflict();
 			var calculation=vars.calculations[i];
 			var events=[];
 			events.push('app.record.create.change.'+calculation.fromdate);
-			events.push('mobile.app.record.create.change.'+calculation.fromdate);
 			events.push('app.record.edit.change.'+calculation.fromdate);
-			events.push('mobile.app.record.edit.change.'+calculation.fromdate);
 			events.push('app.record.index.edit.change.'+calculation.fromdate);
 			if (calculation.yearfield.length!=0)
 			{
 				events.push('app.record.create.change.'+calculation.yearfield);
-				events.push('mobile.app.record.create.change.'+calculation.yearfield);
 				events.push('app.record.edit.change.'+calculation.yearfield);
-				events.push('mobile.app.record.edit.change.'+calculation.yearfield);
 				events.push('app.record.index.edit.change.'+calculation.yearfield);
 			}
 			if (calculation.monthfield.length!=0)
 			{
 				events.push('app.record.create.change.'+calculation.monthfield);
-				events.push('mobile.app.record.create.change.'+calculation.monthfield);
 				events.push('app.record.edit.change.'+calculation.monthfield);
-				events.push('mobile.app.record.edit.change.'+calculation.monthfield);
 				events.push('app.record.index.edit.change.'+calculation.monthfield);
 			}
 			if (calculation.dayfield.length!=0)
 			{
 				events.push('app.record.create.change.'+calculation.dayfield);
-				events.push('mobile.app.record.create.change.'+calculation.dayfield);
 				events.push('app.record.edit.change.'+calculation.dayfield);
-				events.push('mobile.app.record.edit.change.'+calculation.dayfield);
 				events.push('app.record.index.edit.change.'+calculation.dayfield);
 			}
 			(function(events,calculation){

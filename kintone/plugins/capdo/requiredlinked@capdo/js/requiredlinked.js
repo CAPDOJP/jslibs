@@ -22,8 +22,6 @@ jQuery.noConflict();
 		save:[
 			'app.record.create.submit',
 			'app.record.edit.submit',
-			'mobile.app.record.create.submit',
-			'mobile.app.record.edit.submit',
 			'app.record.index.edit.submit'
 		]
 	};
@@ -49,9 +47,7 @@ jQuery.noConflict();
 					$.each(vars.relations,function(index){
 						error='';
 						if (!event.record[vars.relations[index].trigger].value) return true;
-						if (event.record[vars.relations[index].trigger].value.length==0) return true;
 						if (error.length==0 && !event.record[vars.relations[index].require].value) error='必須項目です。';
-						if (error.length==0 && event.record[vars.relations[index].require].value.length==0) error='必須項目です。';
 						if (error.length!=0)
 						{
 							event.record[vars.relations[index].require].error=error;

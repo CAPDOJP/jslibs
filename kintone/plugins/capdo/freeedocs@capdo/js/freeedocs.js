@@ -65,18 +65,24 @@ jQuery.noConflict();
 				{
 					var docitem={};
 					var row=record[tablecode].value[i].value;
+					var rowtypes=JSON.parse(vars.config['rowtypeoptions']);
 					var type=0;
-					var unitprice=functions.createrequestvalue(row,vars.config['unit_price'],'integer');
-					if (unitprice)
+					switch (Object.values(rowtypes).indexOf(row[vars.config['rowtype']].value))
 					{
-						if (unitprice>0) type=0;
-						else type=1;
+						case 0:
+							type=0;
+							break;
+						case 1:
+							type=1;
+							break;
+						case 2:
+							type=3;
+							break;
 					}
-					else type=3;
 					docitem['order']=i;
 					docitem['qty']=(type!=3)?functions.createrequestvalue(row,vars.config['qty'],'integer'):null;
 					docitem['unit']=(type!=3)?functions.createrequestvalue(row,vars.config['unit']):null;
-					docitem['unit_price']=unitprice;
+					docitem['unit_price']=functions.createrequestvalue(row,vars.config['unit_price'],'integer');
 					docitem['description']=functions.createrequestvalue(row,vars.config['breakdown']);
 					docitem['account_item_id']=(type!=3)?functions.createrequestvalue(row,vars.config['account_item_id'],'integer'):null;
 					docitem['item_name']=(type!=3)?functions.createrequestvalue(row,vars.config['item_name']):null;
@@ -85,13 +91,7 @@ jQuery.noConflict();
 					docitems.push(docitem);
 				}
 			}
-			request['doc_items']=$.grep(docitems,function(item,index){
-				var exists=0;
-				if (item['qty']) exists++;
-				if (item['unit_price']) exists++;
-				if (item['description']) exists++;
-				return exists==3;
-			});
+			request['doc_items']=docitems;
 			if (request['doc_items'].length==0) return null;
 			return request;
 		},

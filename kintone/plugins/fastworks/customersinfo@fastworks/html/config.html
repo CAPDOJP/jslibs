@@ -107,6 +107,15 @@
 			</div>
 		</div>
 	</div>
+	<div class="kintoneplugin-label">ランク指定フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">地図内のマーカーに表示するランク別カラーの対象となるフィールドを選択して下さい。【ラジオボタンフィールド】</div>
+	<div class="kintoneplugin-select-outer">
+		<div class="kintoneplugin-select">
+			<select id="rank">
+				<option value=""></option>
+			</select>
+		</div>
+	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">更新者フィールド<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">レコードの更新者フィールドを選択して下さい。【更新者フィールド】</div>
@@ -119,8 +128,22 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">マーカー色指定</div>
-		<table class="colors">
+		<div class="kintoneplugin-label">マーカーサイズ</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="markersize" class="kintoneplugin-input-text" value="" >
+		</div>
+		<span class="kintoneplugin-unit">px</span>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">マーカーフォントサイズ</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="markerfont" class="kintoneplugin-input-text" value="" >
+		</div>
+		<span class="kintoneplugin-unit">px</span>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">経過日数マーカー色指定</div>
+		<table class="datespancolors">
 			<thead>
 				<tr>
 					<td>
@@ -152,18 +175,27 @@
 		</table>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">マーカーサイズ</div>
-		<div class="kintoneplugin-input-outer">
-			<input type="text" id="markersize" class="kintoneplugin-input-text" value="" >
-		</div>
-		<span class="kintoneplugin-unit">px</span>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">マーカーフォントサイズ</div>
-		<div class="kintoneplugin-input-outer">
-			<input type="text" id="markerfont" class="kintoneplugin-input-text" value="" >
-		</div>
-		<span class="kintoneplugin-unit">px</span>
+		<div class="kintoneplugin-label">ランク別マーカー色指定</div>
+		<table class="rankcolors">
+			<thead>
+				<tr>
+					<th>選択値</th>
+					<th>マーカー色</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<span class="itemname"></span>
+						<input type="hidden" id="item">
+					</td>
+					<td>
+						<span id="rankcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="rankcolor" value="">
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">現在地追跡</div>

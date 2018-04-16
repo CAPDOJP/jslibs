@@ -22,9 +22,7 @@ jQuery.noConflict();
 	var events={
 		show:[
 			'app.record.create.show',
-			'app.record.edit.show',
-			'mobile.app.record.create.show',
-			'mobile.app.record.edit.show'
+			'app.record.edit.show'
 		]
 	};
 	var functions={
@@ -78,7 +76,7 @@ jQuery.noConflict();
 							var counter=0;
 							var param=[];
 							var relations=JSON.parse(vars.config['relation']);
-							var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+							var record=kintone.app.record.get();
 							$.each(relations,function(index){
 								var fieldinfo=vars.fieldinfos[relations[index].copyfrom];
 								var added=false;
@@ -139,8 +137,7 @@ jQuery.noConflict();
 										record.record[param[i].table].value.push(cells);
 									}
 								}
-								if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
-								else kintone.app.record.set(record);
+								kintone.app.record.set(record);
 							});
 						});
 						$('.gaia-argoui-app-edit-buttons').append(button);

@@ -57,6 +57,7 @@
 .kintoneplugin-caution {
   color: #d80000;
   margin-top:5px;
+  white-space:normal;
 }
 
 /* 必須項目 */

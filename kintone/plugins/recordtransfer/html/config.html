@@ -1,0 +1,82 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<table class="apps">
+			<tbody>
+				<tr class="app">
+					<td>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">コピー先アプリ</div>
+							<div class="kintoneplugin-select-outer">
+								<div class="kintoneplugin-select">
+									<select id="app">
+										<option value=""></option>
+									</select>
+								</div>
+							</div>
+							<div class="buttons">
+								<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addapp" alt="+" title="追加">
+								<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delapp" alt="x" title="削除">
+							</div>
+						</div>
+						<div class="kintoneplugin-caution">*コピー元/コピー先でコードと種類が一致しているフィールドに関しては自動的にコピーが行われます。</div>
+						<div class="kintoneplugin-caution">*コピー先にテーブル内フィールドが含まれる場合は、テーブル内のすべてのフィールドがコピーされるように指定して下さい。</div>
+						<div class="container">
+							<div class="kintoneplugin-row">
+								<div class="kintoneplugin-label">コピーボタンラベル</div>
+								<div class="kintoneplugin-desc">コピーボタンに表示するテキストを入力して下さい。</div>
+								<div class="kintoneplugin-input-outer">
+									<input type="text" id="buttonlabel" class="kintoneplugin-input-text" value="" >
+								</div>
+							</div>
+							<div class="kintoneplugin-row">
+								<div class="kintoneplugin-label">追加コピーフィールド設定</div>
+								<div class="kintoneplugin-desc">自動コピー以外にコピーしたいフィールドがある場合は、それらを指定して下さい。</div>
+								<table class="inner fields">
+									<thead>
+										<tr>
+											<th>コピー元フィールド</th>
+											<th>コピー先フィールド</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>
+												<div class="kintoneplugin-select-outer">
+													<div class="kintoneplugin-select">
+														<select id="fieldfrom">
+															<option value=""></option>
+														</select>
+													</div>
+												</div>
+											</td>
+											<td>
+												<div class="kintoneplugin-select-outer">
+													<div class="kintoneplugin-select">
+														<select id="fieldto">
+															<option value=""></option>
+														</select>
+													</div>
+												</div>
+											</td>
+											<td>
+												<div class="buttons">
+													<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addfield" alt="+" title="追加">
+													<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delfield" alt="x" title="削除">
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

@@ -30,18 +30,6 @@
             "css/sweetalert.css"
         ]
     },
-    "mobile":{
-        "js":[
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "js/sweetalert.min.js",
-            "js/referenceupdate.js"
-        ],
-        "css":[
-            "css/progress.css",
-            "css/sweetalert.css"
-        ]
-    },
     "config":{
         "html":"html/config.html",
         "js":[

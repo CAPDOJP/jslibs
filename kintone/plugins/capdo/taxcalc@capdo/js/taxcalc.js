@@ -42,8 +42,6 @@ jQuery.noConflict();
 						if (!(vars.config['taxdate'] in fieldinfos)) return;
 						vars.events.push('app.record.create.change.'+vars.config['taxdate']);
 						vars.events.push('app.record.edit.change.'+vars.config['taxdate']);
-						vars.events.push('mobile.app.record.create.change.'+vars.config['taxdate']);
-						vars.events.push('mobile.app.record.edit.change.'+vars.config['taxdate']);
 						for (var i=0;i<vars.relations.length;i++)
 						{
 							if (!(vars.relations[i].unitprice in fieldinfos)) continue;
@@ -52,17 +50,11 @@ jQuery.noConflict();
 							vars.events.push('app.record.edit.change.'+vars.relations[i].unitprice);
 							vars.events.push('app.record.create.change.'+vars.relations[i].taxsegment);
 							vars.events.push('app.record.edit.change.'+vars.relations[i].taxsegment);
-							vars.events.push('mobile.app.record.create.change.'+vars.relations[i].unitprice);
-							vars.events.push('mobile.app.record.edit.change.'+vars.relations[i].unitprice);
-							vars.events.push('mobile.app.record.create.change.'+vars.relations[i].taxsegment);
-							vars.events.push('mobile.app.record.edit.change.'+vars.relations[i].taxsegment);
 							if (vars.relations[i].quantity.length!=0)
 								if (vars.relations[i].quantity in fieldinfos)
 								{
 									vars.events.push('app.record.create.change.'+vars.relations[i].quantity);
 									vars.events.push('app.record.edit.change.'+vars.relations[i].quantity);
-									vars.events.push('mobile.app.record.create.change.'+vars.relations[i].quantity);
-									vars.events.push('mobile.app.record.edit.change.'+vars.relations[i].quantity);
 								}
 						}
 						kintone.events.on(vars.events,function(event){

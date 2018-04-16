@@ -24,9 +24,7 @@ jQuery.noConflict();
 		],
 		show:[
 			'app.record.create.show',
-			'app.record.edit.show',
-			'mobile.app.record.create.show',
-			'mobile.app.record.edit.show'
+			'app.record.edit.show'
 		]
 	};
 	var functions={

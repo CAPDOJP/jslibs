@@ -205,7 +205,13 @@ jQuery.noConflict();
         .append($('<button class="customview-button edit-button">').on('click',function(){
           var cell=$(this).closest('td');
           var index=$('input',cell).val();
-          if (index.length!=0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
+          var url='';
+          if (index.length!=0)
+          {
+            url='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
+            if (vars.config['windowopen']==1) window.open(url);
+            else window.location.href=url;
+          }
         }))
         .append($('<input type="hidden" value="">'))
       );

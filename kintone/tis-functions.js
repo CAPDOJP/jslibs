@@ -21,6 +21,12 @@ Date.prototype.calc=function(pattern){
 	var year=this.getFullYear();
 	var month=this.getMonth()+1;
 	var day=this.getDate();
+	//add hour
+	if (pattern.match(/^-?[0-9]+ hour/g)!=null) return new Date(this.setHours(this.getHours()+parseInt(pattern.match(/^-?[0-9]+/g))));
+	//add minute
+	if (pattern.match(/^-?[0-9]+ minute/g)!=null) return new Date(this.setMinutes(this.getMinutes()+parseInt(pattern.match(/^-?[0-9]+/g))));
+	//add second
+	if (pattern.match(/^-?[0-9]+ second/g)!=null) return new Date(this.setSeconds(this.getSeconds()+parseInt(pattern.match(/^-?[0-9]+/g))));
 	//add years
 	if (pattern.match(/^-?[0-9]+ year$/g)!=null) year+=parseInt(pattern.match(/^-?[0-9]+/g));
 	//add months

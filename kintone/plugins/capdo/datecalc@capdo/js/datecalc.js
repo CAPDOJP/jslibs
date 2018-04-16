@@ -39,9 +39,7 @@ jQuery.noConflict();
 					for (var i=0;i<vars.calculations.length;i++)
 					{
 						vars.events.push('app.record.create.change.'+vars.calculations[i].fromdate);
-						vars.events.push('mobile.app.record.create.change.'+vars.calculations[i].fromdate);
 						vars.events.push('app.record.edit.change.'+vars.calculations[i].fromdate);
-						vars.events.push('mobile.app.record.edit.change.'+vars.calculations[i].fromdate);
 						vars.events.push('app.record.index.edit.change.'+vars.calculations[i].fromdate);
 					}
 					if (vars.events)

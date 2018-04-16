@@ -167,3 +167,37 @@ label.customview-checkbox input:checked+span{
 		font-size:11px;
 	}
 }
+div.waitingbutton{
+	position:relative;
+}
+div.waitingbutton:after {
+  border-radius:50%;
+  content:'';
+  height:20px;
+  position:absolute;
+  top:calc(14px - 2.5em);
+  width:20px;
+  -webkit-animation-fill-mode:both;
+  animation-fill-mode:both;
+  -webkit-animation:waiting 2s infinite ease-in-out;
+  animation:waiting 2s infinite ease-in-out;
+}
+div.waitingbutton:after {
+  left:14px;
+}
+@-webkit-keyframes waiting {
+  0% {
+    box-shadow: 0 2.5em 0 -1.3em;
+  }
+  75% {
+    box-shadow: 0 2.5em 0 0;
+  }
+}
+@keyframes waiting {
+  0% {
+    box-shadow: 0 2.5em 0 -1.3em;
+  }
+  75% {
+    box-shadow: 0 2.5em 0 0;
+  }
+}

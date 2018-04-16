@@ -464,8 +464,10 @@
   transition: background-color 0s linear;
 }
 /* Custom */
-div.kintoneplugin-row table td{
+div.kintoneplugin-row table td,
+div.kintoneplugin-row table th{
   border-bottom:1px dotted #d6d1cc;
+  font-weight: normal;
   padding:3px;
   white-space:nowrap;
 }

@@ -1,0 +1,47 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone アプリ間レコードコピープラグイン",
+        "en":"kintone Record Transfer plug-in",
+        "zh":"kintone アプリ間レコードコピープラグイン"
+    },
+    "description":{
+        "ja":"表示中のレコードを別アプリの同一フィールドに一括コピーするプラグインです。",
+        "en":"This plug-in copies the record being displayed to the same field of another application in bulk",
+        "zh":"表示中のレコードを別アプリの同一フィールドに一括コピーするプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/recordtransfer.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/recordtransfer.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

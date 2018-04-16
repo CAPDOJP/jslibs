@@ -1,0 +1,46 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 項目選択フィールド連動フィールド非表示設定プラグイン@FW",
+        "en":"kintone Item-linked plug-in",
+        "zh":"kintone 項目選択フィールド連動フィールド非表示設定プラグイン@FW"
+    },
+    "description":{
+        "ja":"ドロップダウン・ラジオボタンの値に基づき、各フィールドの表示設定を行うプラグインです。",
+        "en":"This plug-in that performs display setting of each field based on the value of the drop-down/radio button",
+        "zh":"ドロップダウン・ラジオボタンの値に基づき、各フィールドの表示設定を行うプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "mobile":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/itemlinkedhidden.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

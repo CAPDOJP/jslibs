@@ -22,9 +22,7 @@ jQuery.noConflict();
 	var events={
 		show:[
 			'app.record.create.show',
-			'app.record.edit.show',
-			'mobile.app.record.create.show',
-			'mobile.app.record.edit.show'
+			'app.record.edit.show'
 		]
 	};
 	var limit=500;
@@ -138,9 +136,7 @@ jQuery.noConflict();
 						{
 							var events=[];
 							events.push('app.record.create.change.'+fieldinfo.tablecode);
-							events.push('mobile.app.record.create.change.'+fieldinfo.tablecode);
 							events.push('app.record.edit.change.'+fieldinfo.tablecode);
-							events.push('mobile.app.record.edit.change.'+fieldinfo.tablecode);
 							kintone.events.on(events,function(event){
 								functions.appendbuttons(fieldinfo.code);
 								return event;
