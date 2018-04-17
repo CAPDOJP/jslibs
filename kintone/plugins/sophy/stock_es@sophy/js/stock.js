@@ -99,16 +99,16 @@ jQuery.noConflict();
 							vars.table.insertrow(null,function(row){
 								var initem=0;
 								var outitem=0;
+								var record=null;
 								for (var i2=0;i2<vars.apps[kintone.app.getId()].length;i2++)
 									initem+=parseInt(vars.apps[kintone.app.getId()][i2]['quantity'].value);
 								for (var i2=0;i2<vars.apps[vars.config['order']].length;i2++)
-									for (var i3=0;i3<vars.apps[vars.config['order']][i2]['paytable'].value.length;i3++)
-									{
-										var orderrow=vars.apps[vars.config['order']][i2]['paytable'].value[i3].value;
-										if (orderrow['textbook'].value==textbook['code'].value)
-											if (orderrow['quantity'].value)
-												initem+=parseInt(orderrow['quantity'].value);
-									}
+								{
+									record=vars.apps[vars.config['order']][i2];
+									if (record['textbook'].value==textbook['code'].value)
+										if (record['quantity'].value)
+											initem+=parseInt(record['quantity'].value);
+								}
 								outitem=$.grep(vars.apps[vars.config['lecture']],function(item,index){
 									return (item['textbook'].value==textbook['code'].value);
 								}).length;

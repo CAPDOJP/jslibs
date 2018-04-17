@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "takebackreg -config.js-"
+* jQuery-Plugin "allocation -config.js-"
 * Version: 1.0
 * Copyright (c) 2016 TIS
 *
@@ -12,7 +12,6 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
-		informationtable:null,
 		colors:[],
 		fieldinfos:{}
 	};
@@ -40,7 +39,9 @@ jQuery.noConflict();
 			/* clear rows */
 			var target=$('select#status');
 			$('select#statusvalue').empty();
+			$('select#statusdenyvalue').empty();
 			$('select#statusvalue').append($('<option>').attr('value','').text(''));
+			$('select#statusdenyvalue').append($('<option>').attr('value','').text(''));
 			if (target.val().length!=0)
 			{
 				var fieldinfo=vars.fieldinfos[target.val()];
@@ -48,7 +49,11 @@ jQuery.noConflict();
 				$.each(fieldinfo.options,function(key,values){
 					options[values.index]=values.label;
 				});
-				for (var i=0;i<options.length;i++) $('select#statusvalue').append($('<option>').attr('value',options[i]).text(options[i]));
+				for (var i=0;i<options.length;i++)
+				{
+					$('select#statusvalue').append($('<option>').attr('value',options[i]).text(options[i]));
+					$('select#statusdenyvalue').append($('<option>').attr('value',options[i]).text(options[i]));
+				}
 			}
 			if (callback) callback();
 		}
@@ -82,9 +87,10 @@ jQuery.noConflict();
 								break;
 							case 'DROP_DOWN':
 							case 'RADIO_BUTTON':
+								$('select#transportation').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#destination').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#carownmove').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#status').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								$('select#information').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								break;
 							case 'NUMBER':
 								/* exclude lookup */
@@ -104,8 +110,8 @@ jQuery.noConflict();
 								if (!fieldinfo.lookup)
 								{
 									$('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									$('select#owner').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 									$('select#carcondition').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-									$('select#information').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								}
 								else $('select#car').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								break;
@@ -120,17 +126,9 @@ jQuery.noConflict();
 					}
 				});
 				/* initialize valiable */
-				vars.informationtable=$('.informations').adjustabletable({
-					add:'img.add',
-					del:'img.del'
-				});
-				var add=false;
-				var row=null;
-				var informations=[];
 				var markercolors=[];
 				if (Object.keys(config).length!==0)
 				{
-					informations=JSON.parse(config['informations']);
 					markercolors=JSON.parse(config['markercolors']);
 					$('select#targetview').val(config['targetview']);
 					$('select#address').val(config['address']);
@@ -140,24 +138,22 @@ jQuery.noConflict();
 					$('select#date').val(config['date']);
 					$('select#starttime').val(config['starttime']);
 					$('select#endtime').val(config['endtime']);
+					$('select#owner').val(config['owner']);
+					$('select#transportation').val(config['transportation']);
+					$('select#destination').val(config['destination']);
 					$('select#car').val(config['car']);
 					$('select#carownmove').val(config['carownmove']);
 					$('select#carcondition').val(config['carcondition']);
 					$('select#status').val(config['status']);
 					$('select#spacer').val(config['spacer']);
 					$('input#apikey').val(config['apikey']);
-					$.each(informations,function(index){
-						if (add) vars.informationtable.addrow();
-						else add=true;
-						row=vars.informationtable.rows.last();
-						$('select#information',row).val(informations[index]);
-					});
 					$.each($('.markercolors').find('tbody').find('tr'),function(index){
 						var row=$(this);
 						$('input#markercolor',row).val(markercolors[index]);
 					});
 					functions.reloadstatus(function(){
 						$('select#statusvalue').val(config['statusvalue']);
+						$('select#statusdenyvalue').val(config['statusdenyvalue']);
 					});
 				}
 				else $.each($('input#markercolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
@@ -175,7 +171,6 @@ jQuery.noConflict();
 		var error=false;
 		var row=null;
 		var config=[];
-		var informations=[];
 		var markercolors=[];
 		/* check values */
 		if ($('select#targetview').val()=='')
@@ -218,6 +213,21 @@ jQuery.noConflict();
 			swal('Error!','引取終了時刻フィールドを選択して下さい。','error');
 			return;
 		}
+		if ($('select#owner').val()=='')
+		{
+			swal('Error!','依頼元フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#transportation').val()=='')
+		{
+			swal('Error!','トラックフィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#destination').val()=='')
+		{
+			swal('Error!','搬入先フィールドを選択して下さい。','error');
+			return;
+		}
 		if ($('select#car').val()=='')
 		{
 			swal('Error!','引取車種フィールドを選択して下さい。','error');
@@ -225,17 +235,17 @@ jQuery.noConflict();
 		}
 		if ($('select#carownmove').val()=='')
 		{
-			swal('Error!','自走判定フィールドを選択して下さい。','error');
+			swal('Error!','自走区分フィールドを選択して下さい。','error');
 			return;
 		}
 		if ($('select#carcondition').val()=='')
 		{
-			swal('Error!','車両状態フィールドを選択して下さい。','error');
+			swal('Error!','車輌状態フィールドを選択して下さい。','error');
 			return;
 		}
 		if ($('select#status').val()=='')
 		{
-			swal('Error!','車種ステータスフィールドを選択して下さい。','error');
+			swal('Error!','車輌ステータスフィールドを選択して下さい。','error');
 			return;
 		}
 		if ($('select#statusvalue').val()=='')
@@ -243,10 +253,10 @@ jQuery.noConflict();
 			swal('Error!','引取指示選択値を選択して下さい。','error');
 			return;
 		}
-		for (var i=0;i<vars.informationtable.rows.length;i++)
+		if ($('select#statusdenyvalue').val()=='')
 		{
-			row=vars.informationtable.rows.eq(i);
-			if ($('select#information',row).val().length!=0) informations.push($('select#information',row).val());
+			swal('Error!','未引取選択値を選択して下さい。','error');
+			return;
 		}
 		if ($('select#spacer').val()=='')
 		{
@@ -272,14 +282,17 @@ jQuery.noConflict();
 		config['date']=$('select#date').val();
 		config['starttime']=$('select#starttime').val();
 		config['endtime']=$('select#endtime').val();
+		config['owner']=$('select#owner').val();
+		config['transportation']=$('select#transportation').val();
+		config['destination']=$('select#destination').val();
 		config['car']=$('select#car').val();
 		config['carownmove']=$('select#carownmove').val();
 		config['carcondition']=$('select#carcondition').val();
 		config['status']=$('select#status').val();
 		config['statusvalue']=$('select#statusvalue').val();
+		config['statusdenyvalue']=$('select#statusdenyvalue').val();
 		config['spacer']=$('select#spacer').val();
 		config['apikey']=$('input#apikey').val();
-		config['informations']=JSON.stringify(informations);
 		config['markercolors']=JSON.stringify(markercolors);
 		/* save config */
 		kintone.plugin.app.setConfig(config);

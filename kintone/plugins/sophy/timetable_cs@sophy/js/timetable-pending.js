@@ -271,7 +271,8 @@ jQuery.noConflict();
 					'coursename',
 					'date',
 					'starttime',
-					'hours'
+					'hours',
+					'transferlimit'
 				];
 				for (var i=0;i<columns.length;i++)
 				{

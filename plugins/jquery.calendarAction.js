@@ -344,15 +344,13 @@ Date.prototype.DateFormat = function(pattern){
 * -------------------------------------------------------------------
 */
 Date.prototype.TimeCalc = function(pattern){
-	var year=this.getFullYear();
-	var month=this.getMonth()+1;
-	var day=this.getDate();
+	var datetime=new Date(this.getTime());
 	//時間加算
-	if (pattern.match(/^-?[0-9]+ hour/g)!=null) return new Date(this.setHours(this.getHours()+parseInt(pattern.match(/^-?[0-9]+/g))));
+	if (pattern.match(/^-?[0-9]+ hour/g)!=null) return new Date(datetime.setHours(datetime.getHours()+parseInt(pattern.match(/^-?[0-9]+/g))));
 	//分加算
-	if (pattern.match(/^-?[0-9]+ minute/g)!=null) return new Date(this.setMinutes(this.getMinutes()+parseInt(pattern.match(/^-?[0-9]+/g))));
+	if (pattern.match(/^-?[0-9]+ minute/g)!=null) return new Date(datetime.setMinutes(datetime.getMinutes()+parseInt(pattern.match(/^-?[0-9]+/g))));
 	//秒加算
-	if (pattern.match(/^-?[0-9]+ second/g)!=null) return new Date(this.setSeconds(this.getSeconds()+parseInt(pattern.match(/^-?[0-9]+/g))));
+	if (pattern.match(/^-?[0-9]+ second/g)!=null) return new Date(datetime.setSeconds(datetime.getSeconds()+parseInt(pattern.match(/^-?[0-9]+/g))));
 }
 /*
 *--------------------------------------------------------------------

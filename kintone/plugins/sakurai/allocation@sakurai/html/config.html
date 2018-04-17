@@ -88,6 +88,39 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">依頼元フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">依頼元を指定するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="owner">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">トラックフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">トラックを指定するフィールドを選択して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="transportation">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">搬入先フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">搬入先を指定するフィールドを選択して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="destination">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">引取車種フィールド<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">引取車種を指定するフィールドを選択して下さい。【ルックアップフィールド】</div>
 		<div class="kintoneplugin-select-outer">
@@ -99,8 +132,8 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">自走判定フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">自走判定を指定するフィールドを選択して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
+		<div class="kintoneplugin-label">自走区分フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">自走区分を指定するフィールドを選択して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="carownmove">
@@ -110,8 +143,8 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">車両状態フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">車両状態を指定するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-label">車輌状態フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">車輌状態を指定するフィールドを選択して下さい。【文字列(1行)フィールド】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="carcondition">
@@ -121,8 +154,8 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">車種ステータスフィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">車種ステータスを指定するフィールドを選択して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
+		<div class="kintoneplugin-label">車輌ステータスフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">車輌ステータスを指定するフィールドを選択して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="status">
@@ -130,32 +163,35 @@
 				</select>
 			</div>
 		</div>
-		<span class="kintoneplugin-unit">引取指示選択値：</span>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="statusvalue">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">その他表示フィールド</div>
-		<div class="kintoneplugin-desc">情報ウインドウに表示するフィールドを選択して下さい。</div>
-		<table class="informations">
+		<table class="statusvalues">
 			<tbody>
 				<tr>
 					<td>
+						<span class="kintoneplugin-unit">引取指示選択値</span>
+					</td>
+					<td>
 						<div class="kintoneplugin-select-outer">
 							<div class="kintoneplugin-select">
-								<select id="information">
+								<select id="statusvalue">
 									<option value=""></option>
 								</select>
 							</div>
 						</div>
 					</td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">未引取選択値</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="statusdenyvalue">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
 				</tr>
 			</tbody>
 		</table>

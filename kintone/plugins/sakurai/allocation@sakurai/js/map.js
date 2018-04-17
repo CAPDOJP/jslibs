@@ -9,12 +9,6 @@
 * -------------------------------------------------------------------
 */
 (function($){
-/*
-*--------------------------------------------------------------------
-* parameters
-* apiikey	:google api key
-* -------------------------------------------------------------------
-*/
 var RouteMap=function(options){
 	var options=$.extend({
 		apiikey:'',
@@ -42,15 +36,8 @@ var RouteMap=function(options){
 		},1000);
 	};
 	/* append elements */
-	this.container=div.clone(true).css({
-		'background-color':'#FFFFFF',
-		'bottom':'-100%',
-		'height':'100%',
-		'left':'0px',
-		'position':'fixed',
-		'width':'100%',
-		'z-index':'999999'
-	}).attr('id','mapcontainer');
+	this.parent=options.container;
+	this.container=div.clone(true).addClass('mapcontainer');
 	this.contents=div.clone(true).css({
 		'height':'100%',
 		'left':'0px',
@@ -79,12 +66,12 @@ var RouteMap=function(options){
 			'padding':'0px',
 			'width':'48px'
 		})
-		.on('click',function(){my.container.css({'bottom':'-100%'});})
+		.on('click',function(){my.parent.css({'bottom':'-100%'});})
 		.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.svg" alt="閉じる" title="閉じる" />').css({'width':'100%'}))
 	);
 	this.container.append(this.contents);
 	this.container.append(this.buttonblock);
-	if (options.container!=null) options.container.append(this.container);
+	if (this.parent!=null) this.parent.append(this.container);
 	/* setup google map */
 	if (!options.isreload)
 	{
@@ -104,7 +91,7 @@ var RouteMap=function(options){
 	this.trafficLayer=null;
 	this.loaded=false;
 	/* loading wait */
-	if (options.container!=null) waitgoogle(function(){
+	if (this.parent!=null) waitgoogle(function(){
 		var latlng=new google.maps.LatLng(0,0);
 		var param={
 			center:latlng,
@@ -222,16 +209,26 @@ RouteMap.prototype={
 				color:0,
 				fontsize:11,
 				label:'',
-				latlng:new google.maps.LatLng(0,0),
-				size:34
+				latlng:new google.maps.LatLng(0,0)
 			},markeroptions);
 			var marker=new google.maps.Marker({
 				map:map,
 				position:markeroptions.latlng
 			});
-			var back=((markeroptions.color in colors)?colors[markeroptions.color].back:markeroptions.color);
-			var label=((markeroptions.label.length!=0)?markeroptions.label.toString():'');
-				marker.setIcon({url:'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.6|0|'+back+'|'+markeroptions.fontsize+'|_|'+label});
+			marker.setIcon({
+				anchor:new google.maps.Point(17,34),
+				fillColor:'#'+((markeroptions.color in colors)?colors[markeroptions.color].back:markeroptions.color),
+				fillOpacity:1,
+				labelOrigin:new google.maps.Point(17,11),
+				path:'M26.837,9.837C26.837,17.765,17,19.89,17,34 c0-14.11-9.837-16.235-9.837-24.163C7.163,4.404,11.567,0,17,0C22.432,0,26.837,4.404,26.837,9.837z',
+				scale:1,
+				strokeColor:"#696969",
+			});
+			marker.setLabel({
+				color:'#'+((markeroptions.color in colors)?colors[markeroptions.color].fore:'000000'),
+				text:markeroptions.label.toString(),
+				fontSize:markeroptions.fontsize+'px',
+			});
 			if (my.markerclickcallback!=null && markeroptions.id!=null)
 			{
 				google.maps.event.addListener(marker,'click',function(e){
@@ -243,6 +240,7 @@ RouteMap.prototype={
 		switch (options.markers.length)
 		{
 			case 0:
+				if (options.callback!=null) options.callback();
 				break;
 			case 1:
 				/* append markers */
@@ -250,15 +248,15 @@ RouteMap.prototype={
 					id:null,
 					colors:0,
 					fontsize:11,
-					label:'',
+					label:0,
 					lat:0,
-					lng:0,
-					size:34
+					lng:0
 				},options.markers[0]);
 				addmarker({
 					id:values.id,
 					color:values.colors,
-					label:((parseInt(values.label)>1)?values.label:''),
+					fontsize:values.fontsize,
+					label:((parseInt(values.label)>0)?values.label:''),
 					latlng:new google.maps.LatLng(values.lat,values.lng)
 				});
 				if (options.callback!=null) options.callback();
@@ -270,27 +268,27 @@ RouteMap.prototype={
 						id:null,
 						colors:0,
 						fontsize:11,
-						label:'',
+						label:0,
 						lat:0,
-						lng:0,
-						size:34
+						lng:0
 					},values);
 					addmarker({
 						id:values.id,
 						color:values.colors,
-						label:((parseInt(values.label)>1)?values.label:''),
+						fontsize:values.fontsize,
+						label:((parseInt(values.label)>0)?values.label:''),
 						latlng:new google.maps.LatLng(values.lat,values.lng)
 					});
 				});
 				if (options.callback!=null) options.callback();
 				break;
 		}
-		this.container.css({'bottom':'0px'});
+		this.parent.css({'bottom':'0px'});
 	},
 	/* reload traffic */
 	reloadtraffic:function(display){
-		if (display) trafficLayer.setMap(this.map);
-		else trafficLayer.setMap(null);
+		if (display) this.trafficLayer.setMap(this.map);
+		else this.trafficLayer.setMap(null);
 	},
 	/* search address */
 	inaddress:function(options){

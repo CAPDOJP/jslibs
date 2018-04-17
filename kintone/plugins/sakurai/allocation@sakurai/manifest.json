@@ -4,7 +4,7 @@
     "type":"APP",
     "name":{
         "ja":"kintone 引取指示プラグイン@SAKURAI",
-        "en":"kintone TakebackReg plug-in",
+        "en":"kintone Allocation plug-in",
         "zh":"kintone 引取指示プラグイン@SAKURAI"
     },
     "description":{
@@ -22,12 +22,14 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "js/input.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
             "js/map.js",
-            "js/takebackreg.js"
+            "js/allocation.js",
+            "js/sweetalert.min.js"
         ],
         "css":[
-            "css/takebackreg.css"
+            "css/allocation.css",
+            "css/sweetalert.css"
         ]
     },
     "config":{
