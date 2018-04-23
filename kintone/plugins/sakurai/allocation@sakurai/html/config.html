@@ -55,6 +55,17 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">担当者絞り込み組織<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">表示するドライバーの所属する組織を選択して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="organization">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">引取予定日フィールド<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">引取予定日を入力するフィールドを選択して下さい。【日付フィールド】</div>
 		<div class="kintoneplugin-select-outer">
@@ -167,20 +178,6 @@
 			<tbody>
 				<tr>
 					<td>
-						<span class="kintoneplugin-unit">引取指示選択値</span>
-					</td>
-					<td>
-						<div class="kintoneplugin-select-outer">
-							<div class="kintoneplugin-select">
-								<select id="statusvalue">
-									<option value=""></option>
-								</select>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
 						<span class="kintoneplugin-unit">未引取選択値</span>
 					</td>
 					<td>
@@ -191,6 +188,49 @@
 								</select>
 							</div>
 						</div>
+					</td>
+					<td colspan="2"></td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">引取指示選択値</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="statusallocatevalue">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<span class="kintoneplugin-unit">引取指示選択色</span>
+					</td>
+					<td>
+						<span id="statusallocatecolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="statusallocatecolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">引取中選択値</span>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="statusdonevalue">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<span class="kintoneplugin-unit">引取中選択色</span>
+					</td>
+					<td>
+						<span id="statusdonecolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="statusdonecolor" value="">
 					</td>
 				</tr>
 			</tbody>

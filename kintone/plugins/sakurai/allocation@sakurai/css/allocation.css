@@ -86,6 +86,12 @@ div.allocationcontainer div.usercontainer div.users div.cars span.car{
 	padding-left:30px;
 	padding-right:70px;
 }
+div.allocationcontainer div.usercontainer div.users div.cars span.car span{
+	border-top:none;
+	display:inline-block;
+	padding:0px 5px;
+	width:auto;
+}
 div.allocationcontainer div.usercontainer div.users div.cars span.car img{
 	cursor:pointer;
 	display:block;

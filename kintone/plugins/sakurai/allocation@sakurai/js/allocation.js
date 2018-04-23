@@ -194,7 +194,7 @@ jQuery.noConflict();
 		/* data load */
 		loaddatas:function(condition,callback){
 			var filters=((condition==null)?'':condition);
-			filters=filters.replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,'');
+			filters=filters.replace(new RegExp(vars.config['status']+' in \\([^)]+\\)( and )*','g'),'').replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,'');
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',{app:kintone.app.getId(),query:filters+' limit '+vars.limit.toString()+' offset '+vars.offset.toString()},function(resp){
 				Array.prototype.push.apply(vars.records,resp.records);
 				vars.offset+=vars.limit;
@@ -216,234 +216,155 @@ jQuery.noConflict();
 						$('body').append(vars.container);
 						$.loadusers(function(records){
 							records.sort(function(a,b){
-								if(parseInt(a.id)<parseInt(b.id)) return -1;
-								if(parseInt(a.id)>parseInt(b.id)) return 1;
+								if(a.code<b.code) return 1;
+								if(a.code>b.code) return -1;
 								return 0;
 							});
 							vars.users={};
-							for (var i=0;i<records.length;i++)
-							{
-								var container=$('<div class="users">')
-								.append(
-									$('<div class="user">')
-									.append($('<span class="name">').text(records[i].name))
-									.append($('<span class="count">'))
-								)
-								.append($('<div class="cars">'))
-								.append($('<input type="hidden" id="code">').val(records[i].code));
-								vars.users[records[i].code]={
-									code:records[i].code,
-									name:records[i].name,
-									container:container,
-									records:$.grep(vars.records,function(item,index){
-										var exists=false;
-										for (var i2=0;i2<item[vars.config['driver']].value.length;i2++)
-											if (item[vars.config['driver']].value[i2].code==records[i].code) exists=true;
-										return exists;
-									})
-								}
-								/* drag&drop events */
-								container.on('dragover',function(e){
-									var dragevent=e;
-									if(e.originalEvent) dragevent=e.originalEvent;
-									$(this).addClass('dragging');
-									e.stopPropagation();
-									e.preventDefault();
+							functions.setupuser(records,function(){
+								$.each(vars.users,function(key,values){
+									functions.setupuserdata(key);
 								});
-								container.on('dragleave',function(e){
-									var dragevent=e;
-									if(e.originalEvent) dragevent=e.originalEvent;
-									$(this).removeClass('dragging');
-									e.stopPropagation();
-									e.preventDefault();
-								});
-								container.on('drop',function(e){
-									/* upload */
-									var dragevent=e;
-									var body={
-										app:kintone.app.getId(),
-										id:'',
-										record:{}
-									};
-									var container=$(this);
-									var code=$('#code',container).val();
-									if(e.originalEvent) dragevent=e.originalEvent;
-									body.id=dragevent.dataTransfer.getData('id');
-									body.record[vars.config['driver']]={value:[{code:code}]};
-									body.record[vars.config['status']]={value:vars.config['statusvalue']};
-									kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-										var filter=$.grep(vars.records,function(item,index){
-											return item['$id'].value==body.id;
-										});
-										filter[0][vars.config['driver']].value=[{code:code,name:$('.name',container).text()}];
-										filter[0][vars.config['status']].value=vars.config['statusvalue'];
-										vars.users[code].records.push(filter[0]);
-										functions.setupuser(code,function(){
-											$('.cars',container).slideDown('fast');
-											functions.reloadmap(function(){
-												var row=null;
-												for (var i2=0;i2<vars.allocation.table.rows.length;i2++)
-												{
-													row=vars.allocation.table.rows.eq(i2);
-													if ($('#id',row).val()==body.id)
-													{
-														$('span#driver',row).text($('.name',container).text());
-														$('span#status',row).text(vars.config['statusvalue']);
-													}
-												}
+								vars.map=vars.container.routemap(vars.config['apikey'],function(){
+									/* create map */
+									vars.markers=functions.loadmarkers();
+									if (callback!=null) callback();
+									/* setup centering */
+									google.maps.event.addListener(vars.map.map,'idle',function(){
+										vars.centerLocation=vars.map.map.getCenter();
+									});
+									$(window).on('resize',function(e){
+										google.maps.event.trigger(vars.map.map,'resize');
+										vars.map.map.setCenter(vars.centerLocation);
+									});
+								},
+								isreload,
+								function(results,latlng){},
+								function(target){
+									var index=0;
+									var displaycars=function(callback){
+										var record=vars.markers[target].groups[index];
+										var row=null;
+										$('#datetime',vars.allocation.contents).find('.label').html(record[vars.config['date']]+'&nbsp;&nbsp;'+record[vars.config['starttime']]+' ～ '+record[vars.config['endtime']]);
+										$('#owner',vars.allocation.contents).find('.label').html(record[vars.config['owner']]+'&nbsp;('+record[vars.config['transportation']]+')');
+										vars.allocation.table.clearrows();
+										for (var i=0;i<record.records.length;i++)
+										{
+											vars.allocation.table.addrow();
+											row=vars.allocation.table.rows.last();
+											$('span#status',row).text(record.records[i][vars.config['status']].value);
+											$('span#car',row).text(record.records[i][vars.config['car']].value);
+											$('span#carownmove',row).text(record.records[i][vars.config['carownmove']].value);
+											$('span#carcondition',row).text(record.records[i][vars.config['carcondition']].value);
+											$('span#destination',row).text((record.records[i][vars.config['destination']].value)?record.records[i][vars.config['destination']].value:'');
+											$('input#id',row).val(record.records[i]['$id'].value);
+											if (record.records[i][vars.config['driver']].value.length==0) $('span#driver',row).text('');
+											else $('span#driver',row).text(record.records[i][vars.config['driver']].value[0].name);
+											$('.edit',row).on('click',function(){
+												window.open('https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$('#id',$(this).closest('td')).val()+'&mode=show');
 											});
-										});
-									},function(error){
-										swal('Error!',error.message,'error');
-									});
-									$(this).removeClass('dragging');
-									e.stopPropagation();
-									e.preventDefault();
-								});
-								$('.usercontainer',vars.container).append(container);
-							}
-							$.each(vars.users,function(key,values){
-								functions.setupuser(key);
-							});
-							vars.map=vars.container.routemap(vars.config['apikey'],function(){
-								/* create map */
-								vars.markers=functions.loadmarkers();
-								if (callback!=null) callback();
-								/* setup centering */
-								google.maps.event.addListener(vars.map.map,'idle',function(){
-									vars.centerLocation=vars.map.map.getCenter();
-								});
-								$(window).on('resize',function(e){
-									google.maps.event.trigger(vars.map.map,'resize');
-									vars.map.map.setCenter(vars.centerLocation);
-								});
-							},
-							isreload,
-							function(results,latlng){},
-							function(target){
-								var index=0;
-								var displaycars=function(callback){
-									var record=vars.markers[target].groups[index];
-									var row=null;
-									$('#datetime',vars.allocation.contents).find('.label').html(record[vars.config['date']]+'&nbsp;&nbsp;'+record[vars.config['starttime']]+' ～ '+record[vars.config['endtime']]);
-									$('#owner',vars.allocation.contents).find('.label').text(record[vars.config['owner']]);
-									vars.allocation.table.clearrows();
-									for (var i=0;i<record.records.length;i++)
-									{
-										vars.allocation.table.addrow();
-										row=vars.allocation.table.rows.last();
-										$('span#status',row).text(record.records[i][vars.config['status']].value);
-										$('span#car',row).text(record.records[i][vars.config['car']].value);
-										$('span#carownmove',row).text(record.records[i][vars.config['carownmove']].value);
-										$('span#carcondition',row).text(record.records[i][vars.config['carcondition']].value);
-										$('span#destination',row).text((record.records[i][vars.config['destination']].value)?record.records[i][vars.config['destination']].value:'');
-										$('input#id',row).val(record.records[i]['$id'].value);
-										if (record.records[i][vars.config['driver']].value.length==0) $('span#driver',row).text('');
-										else $('span#driver',row).text(record.records[i][vars.config['driver']].value[0].name);
-										$('.edit',row).on('click',function(){
-											window.open('https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$('#id',$(this).closest('td')).val()+'&mode=show');
-										});
-										row.on('dragstart',function(e){
-											var dragevent=e;
-											if (e.originalEvent) dragevent=e.originalEvent;
-											dragevent.dataTransfer.setData("id",$('input#id',$(this)).val());
-										});
-									}
-									if (callback) callback();
-								}
-								/* marker click */
-								if (!(target in vars.markers)) return;
-								displaycars(function(){
-									$('#prev',vars.allocation.buttonblock).prop('disabled',true);
-									$('#next',vars.allocation.buttonblock).prop('disabled',(vars.markers[target].groups.length==1));
-									vars.allocation.show({
-										buttons:{
-											prev:function(){
-												index--;
-												displaycars(function(){
-													$('#prev',vars.allocation.buttonblock).prop('disabled',(index==0));
-													$('#next',vars.allocation.buttonblock).prop('disabled',false);
-												});
-											},
-											next:function(){
-												index++;
-												displaycars(function(){
-													$('#prev',vars.allocation.buttonblock).prop('disabled',false);
-													$('#next',vars.allocation.buttonblock).prop('disabled',(index==vars.markers[target].groups.length-1));
-												});
-											}
+											row.on('dragstart',function(e){
+												var dragevent=e;
+												if (e.originalEvent) dragevent=e.originalEvent;
+												dragevent.dataTransfer.setData("id",$('input#id',$(this)).val());
+											});
 										}
+										if (callback) callback();
+									}
+									/* marker click */
+									if (!(target in vars.markers)) return;
+									displaycars(function(){
+										$('#prev',vars.allocation.buttonblock).prop('disabled',true);
+										$('#next',vars.allocation.buttonblock).prop('disabled',(vars.markers[target].groups.length==1));
+										vars.allocation.show({
+											buttons:{
+												prev:function(){
+													index--;
+													displaycars(function(){
+														$('#prev',vars.allocation.buttonblock).prop('disabled',(index==0));
+														$('#next',vars.allocation.buttonblock).prop('disabled',false);
+													});
+												},
+												next:function(){
+													index++;
+													displaycars(function(){
+														$('#prev',vars.allocation.buttonblock).prop('disabled',false);
+														$('#next',vars.allocation.buttonblock).prop('disabled',(index==vars.markers[target].groups.length-1));
+													});
+												}
+											}
+										});
 									});
 								});
-							});
-							/* create displaytraffic checkbox */
-							vars.displaytraffic=checkbox.clone(true)
-							.append($('<input type="checkbox">')
-								.on('change',function(e){
-									/* swtich view of menu */
-									if ($('.customview-menu').is(':visible'))
-									{
-										if (vars.ismobile) $('div.customview-navi').hide();
-										else $('div.customview-navi').removeClass('show');
-									}
-									/* swtich view of traffic */
-									vars.map.reloadtraffic($(this).prop('checked'));
-								})
-							)
-							.append(span.clone(true).text('交通状況表示'));
-							vars.displaytraffic.find('input[type=checkbox]').prop('checked',false);
-							/* create displaymarkers checkbox */
-							vars.displaymarkers=checkbox.clone(true)
-							.append($('<input type="checkbox" id="poi">')
-								.on('change',function(e){
-									/* swtich view of menu */
-									if ($('.customview-menu').is(':visible'))
-									{
-										if (vars.ismobile) $('div.customview-navi').hide();
-										else $('div.customview-navi').removeClass('show');
-									}
-									/* swtich view of makrers */
-									for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setVisible($(this).prop('checked'));
-								})
-							)
-							.append(span.clone(true).text('マーカー表示'));
-							vars.displaymarkers.find('input[type=checkbox]').prop('checked',true);
-							/* append buttons */
-							vars.map.buttonblock
-							.prepend(
-								$('<button class="customview-menu">')
-								.append(
-									$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/menu.svg" alt="メニュー" title="メニュー" />')
-									.css({'width':'100%'})
-									)
-								.on('click',function(){
-									if (vars.ismobile) $('div.customview-navi').show();
-									else $('div.customview-navi').addClass('show');
-								})
-							)
-							.prepend(
-								$('<div class="customview-navi">')
-								.append(
-									$('<div class="customview-navicontainer">')
-									.append(
-											$('<button class="customview-menuclose">')
-											.append(
-												$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.svg" alt="閉じる" title="閉じる" />')
-												.css({'height':'100%'})
-												.on('click',function(){
-													if (vars.ismobile) $('div.customview-navi').hide();
-													else $('div.customview-navi').removeClass('show');
-												})
-											)
-									)
-									.append(
-											$('<div class="customview-navicontents">')
-											.prepend(vars.displaytraffic)
-											.prepend(vars.displaymarkers)
-									)
+								/* create displaytraffic checkbox */
+								vars.displaytraffic=checkbox.clone(true)
+								.append($('<input type="checkbox">')
+									.on('change',function(e){
+										/* swtich view of menu */
+										if ($('.customview-menu').is(':visible'))
+										{
+											if (vars.ismobile) $('div.customview-navi').hide();
+											else $('div.customview-navi').removeClass('show');
+										}
+										/* swtich view of traffic */
+										vars.map.reloadtraffic($(this).prop('checked'));
+									})
 								)
-							);
-							vars.allocation=new allocationdialog();
+								.append(span.clone(true).text('交通状況表示'));
+								vars.displaytraffic.find('input[type=checkbox]').prop('checked',false);
+								/* create displaymarkers checkbox */
+								vars.displaymarkers=checkbox.clone(true)
+								.append($('<input type="checkbox" id="poi">')
+									.on('change',function(e){
+										/* swtich view of menu */
+										if ($('.customview-menu').is(':visible'))
+										{
+											if (vars.ismobile) $('div.customview-navi').hide();
+											else $('div.customview-navi').removeClass('show');
+										}
+										/* swtich view of makrers */
+										for (var i=0;i<vars.map.markers.length;i++) vars.map.markers[i].setVisible($(this).prop('checked'));
+									})
+								)
+								.append(span.clone(true).text('マーカー表示'));
+								vars.displaymarkers.find('input[type=checkbox]').prop('checked',true);
+								/* append buttons */
+								vars.map.buttonblock
+								.prepend(
+									$('<button class="customview-menu">')
+									.append(
+										$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/menu.svg" alt="メニュー" title="メニュー" />')
+										.css({'width':'100%'})
+										)
+									.on('click',function(){
+										if (vars.ismobile) $('div.customview-navi').show();
+										else $('div.customview-navi').addClass('show');
+									})
+								)
+								.prepend(
+									$('<div class="customview-navi">')
+									.append(
+										$('<div class="customview-navicontainer">')
+										.append(
+												$('<button class="customview-menuclose">')
+												.append(
+													$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.svg" alt="閉じる" title="閉じる" />')
+													.css({'height':'100%'})
+													.on('click',function(){
+														if (vars.ismobile) $('div.customview-navi').hide();
+														else $('div.customview-navi').removeClass('show');
+													})
+												)
+										)
+										.append(
+												$('<div class="customview-navicontents">')
+												.prepend(vars.displaytraffic)
+												.prepend(vars.displaymarkers)
+										)
+									)
+								);
+								vars.allocation=new allocationdialog();
+							});
 						});
 					}
 				}
@@ -466,6 +387,7 @@ jQuery.noConflict();
 					group[vars.config['starttime']]=record[vars.config['starttime']].value;
 					group[vars.config['endtime']]=record[vars.config['endtime']].value;
 					group[vars.config['owner']]=record[vars.config['owner']].value;
+					group[vars.config['transportation']]=record[vars.config['transportation']].value;
 					group['records']=[record];
 					if (latlng in markers)
 					{
@@ -503,8 +425,8 @@ jQuery.noConflict();
 				var check=0;
 				var color=vars.markercolors[0];
 				var now=new Date();
-				var starttime=new Date((values.groups[0].date+'T'+values.groups[0].starttime+':00+0900').dateformat());
-				var endtime=new Date((values.groups[0].date+'T'+values.groups[0].endtime+':00+0900').dateformat());
+				var starttime=new Date((values.groups[0][vars.config['date']]+'T'+values.groups[0][vars.config['starttime']]+':00+0900').dateformat());
+				var endtime=new Date((values.groups[0][vars.config['date']]+'T'+values.groups[0][vars.config['endtime']]+':00+0900').dateformat());
 				if (now>starttime) color=vars.markercolors[1];
 				if (now>starttime && now>endtime.calc('-3 hour')) color=vars.markercolors[2];
 				if (now>starttime && now>endtime.calc('-1 hour')) color=vars.markercolors[3];
@@ -534,14 +456,125 @@ jQuery.noConflict();
 				}
 			});
 		},
+		/* setup user list */
+		setupuser:function(records,callback){
+			var counter=records.length;
+			for (var i=0;i<records.length;i++)
+			{
+				var container=$('<div class="users">')
+				.append(
+					$('<div class="user">')
+					.append($('<span class="name">'))
+					.append($('<span class="count">'))
+				)
+				.append($('<div class="cars">'))
+				.append($('<input type="hidden" id="code">'));
+				$('.usercontainer',vars.container).append(container);
+				(function(record,container,success,fail){
+					kintone.api(kintone.api.url('/v1/user/organizations',true),'GET',{code:record.code},function(resp){
+						var exists=false;
+						for (var i2=0;i2<resp.organizationTitles.length;i2++)
+							if (resp.organizationTitles[i2].organization.code==vars.config['organization']) exists=true;
+						if (exists) success(record,container);
+						else fail(container);
+					},function(error){fail(container);});
+				})(records[i],container,function(record,container){
+					$('.name',container).text(record.name);
+					$('#code',container).val(record.code);
+					vars.users[record.code]={
+						code:record.code,
+						name:record.name,
+						container:container,
+						records:$.grep(vars.records,function(item,index){
+							var exists=false;
+							for (var i2=0;i2<item[vars.config['driver']].value.length;i2++)
+							{
+								var hit=0;
+								if (item[vars.config['driver']].value[i2].code==record.code) hit++;
+								if (item[vars.config['status']].value==vars.config['statusallocatevalue']) hit++;
+								if (item[vars.config['status']].value==vars.config['statusdonevalue']) hit++;
+								if (hit==2) exists=true;
+							}
+							return exists;
+						})
+					}
+					/* drag&drop events */
+					container.on('dragover',function(e){
+						var dragevent=e;
+						if(e.originalEvent) dragevent=e.originalEvent;
+						$(this).addClass('dragging');
+						e.stopPropagation();
+						e.preventDefault();
+					});
+					container.on('dragleave',function(e){
+						var dragevent=e;
+						if(e.originalEvent) dragevent=e.originalEvent;
+						$(this).removeClass('dragging');
+						e.stopPropagation();
+						e.preventDefault();
+					});
+					container.on('drop',function(e){
+						/* upload */
+						var dragevent=e;
+						var body={
+							app:kintone.app.getId(),
+							id:'',
+							record:{}
+						};
+						var container=$(this);
+						var code=$('#code',container).val();
+						if(e.originalEvent) dragevent=e.originalEvent;
+						body.id=dragevent.dataTransfer.getData('id');
+						body.record[vars.config['driver']]={value:[{code:code}]};
+						body.record[vars.config['status']]={value:vars.config['statusallocatevalue']};
+						kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+							var filter=$.grep(vars.records,function(item,index){
+								return item['$id'].value==body.id;
+							});
+							filter[0][vars.config['driver']].value=[{code:code,name:$('.name',container).text()}];
+							filter[0][vars.config['status']].value=vars.config['statusallocatevalue'];
+							vars.users[code].records.push(filter[0]);
+							functions.setupuserdata(code,function(){
+								$('.cars',container).slideDown('fast');
+								functions.reloadmap(function(){
+									var row=null;
+									for (var i2=0;i2<vars.allocation.table.rows.length;i2++)
+									{
+										row=vars.allocation.table.rows.eq(i2);
+										if ($('#id',row).val()==body.id)
+										{
+											$('span#driver',row).text($('.name',container).text());
+											$('span#status',row).text(vars.config['statusallocatevalue']);
+										}
+									}
+								});
+							});
+						},function(error){
+							swal('Error!',error.message,'error');
+						});
+						$(this).removeClass('dragging');
+						e.stopPropagation();
+						e.preventDefault();
+					});
+					counter--;
+					if (counter==0) callback();
+				},function(container){
+					container.remove();
+					counter--;
+					if (counter==0) callback();
+				});
+			}
+		},
 		/* setup user information */
-		setupuser:function(code,callback){
+		setupuserdata:function(code,callback){
 			var container=vars.users[code].container;
 			var records=vars.users[code].records;
 			var owner='';
+			var car={};
+			var cars=[];
 			records.sort(function(a,b){
-				if(a[vars.config['owner']].value<b[vars.config['owner']].value) return -1;
-				if(a[vars.config['owner']].value>b[vars.config['owner']].value) return 1;
+				if(a[vars.config['owner']].value<b[vars.config['owner']].value) return 1;
+				if(a[vars.config['owner']].value>b[vars.config['owner']].value) return -1;
 				return 0;
 			});
 			$('.cars',container).empty();
@@ -550,60 +583,101 @@ jQuery.noConflict();
 				if (owner!=records[i][vars.config['owner']].value)
 				{
 					owner=records[i][vars.config['owner']].value;
+					var filter=$.grep(cars,function(item,index){
+						return item.owner==owner;
+					});
+					if (filter.length==0)
+					{
+						car={
+							owner:owner,
+							records:[]
+						};
+						cars.push(car);
+					}
+					else car=filter[0];
+				}
+				car.records.push(records[i]);
+			}
+			cars.sort(function(a,b){
+				var fromdone=0;
+				var todone=0;
+				for (var i=0;i<a.records.length;i++) if (a.records[i][vars.config['status']].value==vars.config['statusdonevalue']) fromdone++;
+				for (var i=0;i<b.records.length;i++) if (b.records[i][vars.config['status']].value==vars.config['statusdonevalue']) todone++;
+				if(fromdone<todone) return -1;
+				if(fromdone>todone) return 1;
+				return 0;
+			});
+			for (var i=0;i<cars.length;i++)
+			{
+				cars[i].records.sort(function(a,b){
+					if(a[vars.config['status']].value<b[vars.config['status']].value) return 1;
+					if(a[vars.config['status']].value>b[vars.config['status']].value) return -1;
+					return 0;
+				});
+				$('.cars',container).append(
+					$('<span class="owner">').html(cars[i].owner)
+				);
+				for (var i2=0;i2<cars[i].records.length;i2++)
+				{
+					var color='';
+					var style='';
+					if (cars[i].records[i2][vars.config['status']].value==vars.config['statusallocatevalue']) color=vars.config['statusallocatecolor'];
+					else
+					{
+						color=vars.config['statusdonecolor'];
+						style='style="visibility:hidden"';
+					}
 					$('.cars',container).append(
-						$('<span class="owner">').text(owner)
+						$('<span class="car">').html('<span style="color:#'+color+'">●</span><span>'+cars[i].records[i2][vars.config['car']].value+'</span>')
+						.append(
+							$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png" class="edit">')
+							.on('click',function(){
+								window.open('https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$('#id',$(this).closest('.car')).val()+'&mode=show');
+							})
+						)
+						.append(
+							$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="clear" '+style+'>')
+							.on('click',function(){
+								var body={
+									app:kintone.app.getId(),
+									id:'',
+									record:{}
+								};
+								body.id=$('#id',$(this).closest('.car')).val();
+								body.record[vars.config['driver']]={value:[]};
+								body.record[vars.config['status']]={value:vars.config['statusdenyvalue']};
+								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+									var filter=$.grep(vars.records,function(item,index){
+										return item['$id'].value==body.id;
+									});
+									filter[0][vars.config['driver']].value=[];
+									filter[0][vars.config['status']].value=vars.config['statusdenyvalue'];
+									vars.users[code].records=$.grep(vars.users[code].records,function(item,index){
+										return item['$id'].value!=body.id;
+									});
+									functions.setupuserdata(code,function(){
+										$('.cars',container).slideDown('fast');
+										functions.reloadmap(function(){
+											var row=null;
+											for (var i3=0;i3<vars.allocation.table.rows.length;i3++)
+											{
+												row=vars.allocation.table.rows.eq(i3);
+												if ($('#id',row).val()==body.id)
+												{
+													$('span#driver',row).text('');
+													$('span#status',row).text(vars.config['statusdenyvalue']);
+												}
+											}
+										});
+									});
+								},function(error){
+									swal('Error!',error.message,'error');
+								});
+							})
+						)
+						.append($('<input type="hidden" id="id">').val(cars[i].records[i2]['$id'].value))
 					);
 				}
-				$('.cars',container).append(
-					$('<span class="car">').html('●&nbsp;'+records[i][vars.config['car']].value)
-					.append(
-						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png" class="edit">')
-						.on('click',function(){
-							window.open('https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$('#id',$(this).closest('.car')).val()+'&mode=show');
-						})
-					)
-					.append(
-						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="clear">')
-						.on('click',function(){
-							var body={
-								app:kintone.app.getId(),
-								id:'',
-								record:{}
-							};
-							body.id=$('#id',$(this).closest('.car')).val();
-							body.record[vars.config['driver']]={value:[]};
-							body.record[vars.config['status']]={value:vars.config['statusdenyvalue']};
-							kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-								var filter=$.grep(vars.records,function(item,index){
-									return item['$id'].value==body.id;
-								});
-								filter[0][vars.config['driver']].value=[];
-								filter[0][vars.config['status']].value=vars.config['statusdenyvalue'];
-								vars.users[code].records=$.grep(vars.users[code].records,function(item,index){
-									return item['$id'].value!=body.id;
-								});
-								functions.setupuser(code,function(){
-									$('.cars',container).slideDown('fast');
-									functions.reloadmap(function(){
-										var row=null;
-										for (var i2=0;i2<vars.allocation.table.rows.length;i2++)
-										{
-											row=vars.allocation.table.rows.eq(i2);
-											if ($('#id',row).val()==body.id)
-											{
-												$('span#driver',row).text('');
-												$('span#status',row).text(vars.config['statusdenyvalue']);
-											}
-										}
-									});
-								});
-							},function(error){
-								swal('Error!',error.message,'error');
-							});
-						})
-					)
-					.append($('<input type="hidden" id="id">').val(records[i]['$id'].value))
-				);
 			}
 			$('.count',container).text(records.length.toString()+'台');
 			$('.user',container).off('click').on('click',function(e){
@@ -641,12 +715,7 @@ jQuery.noConflict();
 				.on('click',function(e){
 					if ($(this).hasClass('waitingbutton')) return;
 					functions.reloadmap(function(){
-						if (!vars.isopened)
-						{
-							vars.map.currentlocation({callback:function(latlng){
-								vars.map.map.setCenter(latlng);
-							}});
-						}
+						if (!vars.isopened) vars.map.allmarkersview();
 						vars.isopened=true;
 					});
 				})[0]
@@ -679,7 +748,7 @@ jQuery.noConflict();
 		/* map action  */
 		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
 		/* the initial display when editing */
-		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record.lat.value+','+event.record.lng.value});
+		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
 		if (!vars.ismobile) kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		if ('address' in vars.config)
 		{

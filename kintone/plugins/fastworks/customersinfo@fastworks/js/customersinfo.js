@@ -1348,7 +1348,7 @@ jQuery.noConflict();
 		/* map action  */
 		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
 		/* the initial display when editing */
-		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record.lat.value+','+event.record.lng.value});
+		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
 		/* display map in value change event */
 		if (event.type.match(/(create|edit)/g)!=null)
 		{

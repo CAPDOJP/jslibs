@@ -1,0 +1,66 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">合計金額フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">合計金額を設定するフィールドを指定して下さい。【数値/計算フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="total">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">粗利金額フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">粗利金額を設定するフィールドを指定して下さい。【数値/計算フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="benefit">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">粗利内訳フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">粗利内訳を設定するフィールドを指定して下さい。【ラジオボタン・ドロップダウンフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="benefitsegment">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">一覧内レコード集計一覧</div>
+		<div class="kintoneplugin-desc">表示中のフィールド値が同一のレコードを集計表示する一覧をリストより選択して下さい。</div>
+		<table class="summaryviews">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="summaryview">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

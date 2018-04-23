@@ -131,6 +131,12 @@ var RouteMap=function(options){
 	});
 };
 RouteMap.prototype={
+	/* set bounds contain all markers */
+	allmarkersview:function(){
+		var bounds=new google.maps.LatLngBounds();
+		for (var i=0;i<this.markers.length;i++) bounds.extend(this.markers[i].position);
+		this.map.fitBounds(bounds);
+	},
 	/* get currentlocation */
 	currentlocation:function(options){
 		var options=$.extend({
@@ -202,7 +208,7 @@ RouteMap.prototype={
 		markers=this.markers;
 		/* initialize renderer */
 		renderer.setMap(null);
-		var addmarker=function(markeroptions){
+		var addmarker=function(markeroptions,callback){
 			/* append markers */
 			var markeroptions=$.extend({
 				id:null,
@@ -236,6 +242,7 @@ RouteMap.prototype={
 				});
 			}
 			markers.push(marker);
+			callback();
 		};
 		switch (options.markers.length)
 		{
@@ -258,8 +265,9 @@ RouteMap.prototype={
 					fontsize:values.fontsize,
 					label:((parseInt(values.label)>0)?values.label:''),
 					latlng:new google.maps.LatLng(values.lat,values.lng)
+				},function(){
+					if (options.callback!=null) options.callback();
 				});
-				if (options.callback!=null) options.callback();
 				break;
 			default:
 				/* append markers */
@@ -278,9 +286,11 @@ RouteMap.prototype={
 						fontsize:values.fontsize,
 						label:((parseInt(values.label)>0)?values.label:''),
 						latlng:new google.maps.LatLng(values.lat,values.lng)
+					},function(){
+						if (index==options.markers.length-1)
+							if (options.callback!=null) options.callback();
 					});
 				});
-				if (options.callback!=null) options.callback();
 				break;
 		}
 		this.parent.css({'bottom':'0px'});

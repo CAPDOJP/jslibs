@@ -36,8 +36,8 @@ jQuery.noConflict();
 				switch (param[counter].appname)
 				{
 					case '洋書テキスト選択':
-						if (!('shipmentdate' in fieldinfos)) error='発送日';
 						if (!('textbook' in fieldinfos)) error='テキスト';
+						if (!('cancel' in fieldinfos)) error='受講キャンセル';
 						break;
 					case 'テキスト発注':
 						if (!('arrivaldate' in fieldinfos)) error='入荷日';
@@ -47,6 +47,7 @@ jQuery.noConflict();
 					case '受講テキスト':
 						if (!('code' in fieldinfos)) error='コード';
 						if (!('name' in fieldinfos)) error='テキスト名';
+						if (!('safetystock' in fieldinfos)) error='適正在庫数';
 						break;
 				}
 				if (error.length!=0)
@@ -110,12 +111,22 @@ jQuery.noConflict();
 											initem+=parseInt(record['quantity'].value);
 								}
 								outitem=$.grep(vars.apps[vars.config['lecture']],function(item,index){
-									return (item['textbook'].value==textbook['code'].value);
+									var exists=0;
+									if (item['textbook'].value==textbook['code'].value) exists++;
+									if (item['cancel'].value)
+									{
+										if (item['cancel'].value.match(/買取/g)==null) exists++;
+									}
+									else exists++;
+									return exists==2;
 								}).length;
 								$('.textbook',row).text(textbook['code'].value);
 								$('.textbookname',row).text(textbook['name'].value);
 								$('.stock',row).text((initem-outitem).toString());
 								$('#quantity',row).val('');
+								if (textbook['safetystock'].value)
+									if (parseInt(textbook['safetystock'].value)>initem-outitem)
+										$('.stock',row).css({'background-color':'#b71c1c','color':'#ffffff'});
 							});
 						}
 						vars.splash.addClass('hide');
@@ -150,7 +161,6 @@ jQuery.noConflict();
 				app:vars.config['lecture'],
 				query:''
 			};
-			query+='shipmentdate<"'+vars.date.calc('1 day').format('Y-m-d')+'" and shipmentdate!=""';
 			query+=' order by $id asc limit '+limit.toString()+' offset '+vars.offset[vars.config['lecture']].toString();
 			body.query+=query;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){

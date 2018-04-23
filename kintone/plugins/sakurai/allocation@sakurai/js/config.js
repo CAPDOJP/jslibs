@@ -38,10 +38,12 @@ jQuery.noConflict();
 		reloadstatus:function(callback){
 			/* clear rows */
 			var target=$('select#status');
-			$('select#statusvalue').empty();
 			$('select#statusdenyvalue').empty();
-			$('select#statusvalue').append($('<option>').attr('value','').text(''));
+			$('select#statusallocatevalue').empty();
+			$('select#statusdonevalue').empty();
 			$('select#statusdenyvalue').append($('<option>').attr('value','').text(''));
+			$('select#statusallocatevalue').append($('<option>').attr('value','').text(''));
+			$('select#statusdonevalue').append($('<option>').attr('value','').text(''));
 			if (target.val().length!=0)
 			{
 				var fieldinfo=vars.fieldinfos[target.val()];
@@ -51,8 +53,9 @@ jQuery.noConflict();
 				});
 				for (var i=0;i<options.length;i++)
 				{
-					$('select#statusvalue').append($('<option>').attr('value',options[i]).text(options[i]));
 					$('select#statusdenyvalue').append($('<option>').attr('value',options[i]).text(options[i]));
+					$('select#statusallocatevalue').append($('<option>').attr('value',options[i]).text(options[i]));
+					$('select#statusdonevalue').append($('<option>').attr('value',options[i]).text(options[i]));
 				}
 			}
 			if (callback) callback();
@@ -65,104 +68,127 @@ jQuery.noConflict();
 		$.each(resp.views,function(key,values){
 			$('select#targetview').append($('<option>').attr('value',values.id).text(key));
 		});
-		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
-			var sorted=functions.fieldsort(resp.layout);
-			/* get fieldinfo */
-			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
-				var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-				vars.fieldinfos=$.fieldparallelize(resp.properties);
-				/* setup colorfields lists */
-				vars.colors=[];
-				$.each($.markercolors(),function(index,values){vars.colors.push('#'+values.back);});
-				/* initialize valiable */
-				$.each(sorted,function(index){
-					if (sorted[index] in vars.fieldinfos)
-					{
-						var fieldinfo=vars.fieldinfos[sorted[index]];
-						/* check field type */
-						switch (fieldinfo.type)
-						{
-							case 'DATE':
-								$('select#date').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								break;
-							case 'DROP_DOWN':
-							case 'RADIO_BUTTON':
-								$('select#transportation').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								$('select#destination').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								$('select#carownmove').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								$('select#status').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								break;
-							case 'NUMBER':
-								/* exclude lookup */
-								if (!fieldinfo.lookup)
-								{
-									/* check scale */
-									if (fieldinfo.displayScale)
-										if (fieldinfo.displayScale>8)
-										{
-											$('select#lat').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-											$('select#lng').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-										}
-								}
-								break;
-							case 'SINGLE_LINE_TEXT':
-								/* exclude lookup */
-								if (!fieldinfo.lookup)
-								{
-									$('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-									$('select#owner').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-									$('select#carcondition').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								}
-								else $('select#car').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								break;
-							case 'TIME':
-								$('select#starttime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								$('select#endtime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								break;
-							case 'USER_SELECT':
-								$('select#driver').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-								break;
-						}
-					}
-				});
-				/* initialize valiable */
-				var markercolors=[];
-				if (Object.keys(config).length!==0)
-				{
-					markercolors=JSON.parse(config['markercolors']);
-					$('select#targetview').val(config['targetview']);
-					$('select#address').val(config['address']);
-					$('select#lat').val(config['lat']);
-					$('select#lng').val(config['lng']);
-					$('select#driver').val(config['driver']);
-					$('select#date').val(config['date']);
-					$('select#starttime').val(config['starttime']);
-					$('select#endtime').val(config['endtime']);
-					$('select#owner').val(config['owner']);
-					$('select#transportation').val(config['transportation']);
-					$('select#destination').val(config['destination']);
-					$('select#car').val(config['car']);
-					$('select#carownmove').val(config['carownmove']);
-					$('select#carcondition').val(config['carcondition']);
-					$('select#status').val(config['status']);
-					$('select#spacer').val(config['spacer']);
-					$('input#apikey').val(config['apikey']);
-					$.each($('.markercolors').find('tbody').find('tr'),function(index){
-						var row=$(this);
-						$('input#markercolor',row).val(markercolors[index]);
-					});
-					functions.reloadstatus(function(){
-						$('select#statusvalue').val(config['statusvalue']);
-						$('select#statusdenyvalue').val(config['statusdenyvalue']);
-					});
-				}
-				else $.each($('input#markercolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
-				$('select#status').on('change',function(){functions.reloadstatus()});
-				$.each($('span#markercolor'),function(index){
-					$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#markercolor'));
-				});
+		$.loadorganizations(function(records){
+			records.sort(function(a,b){
+				if(parseInt(a.id)<parseInt(b.id)) return -1;
+				if(parseInt(a.id)>parseInt(b.id)) return 1;
+				return 0;
 			});
-		},function(error){});
+			$.each(records,function(index,values){
+				$('select#organization').append($('<option>').attr('value',values.code).text(values.name));
+			});
+			kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
+				var sorted=functions.fieldsort(resp.layout);
+				/* get fieldinfo */
+				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+					var config=kintone.plugin.app.getConfig(PLUGIN_ID);
+					vars.fieldinfos=$.fieldparallelize(resp.properties);
+					/* setup colorfields lists */
+					vars.colors=[];
+					$.each($.markercolors(),function(index,values){vars.colors.push('#'+values.back);});
+					/* initialize valiable */
+					$.each(sorted,function(index){
+						if (sorted[index] in vars.fieldinfos)
+						{
+							var fieldinfo=vars.fieldinfos[sorted[index]];
+							/* check field type */
+							switch (fieldinfo.type)
+							{
+								case 'DATE':
+									$('select#date').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
+								case 'DROP_DOWN':
+								case 'RADIO_BUTTON':
+									$('select#transportation').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									$('select#destination').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									$('select#carownmove').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									$('select#status').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
+								case 'NUMBER':
+									/* exclude lookup */
+									if (!fieldinfo.lookup)
+									{
+										/* check scale */
+										if (fieldinfo.displayScale)
+											if (fieldinfo.displayScale>8)
+											{
+												$('select#lat').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+												$('select#lng').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+											}
+									}
+									break;
+								case 'SINGLE_LINE_TEXT':
+									/* exclude lookup */
+									if (!fieldinfo.lookup)
+									{
+										$('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										$('select#owner').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										$('select#carcondition').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									}
+									else $('select#car').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
+								case 'TIME':
+									$('select#starttime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									$('select#endtime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
+								case 'USER_SELECT':
+									$('select#driver').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
+							}
+						}
+					});
+					/* initialize valiable */
+					var markercolors=[];
+					if (Object.keys(config).length!==0)
+					{
+						markercolors=JSON.parse(config['markercolors']);
+						$('select#targetview').val(config['targetview']);
+						$('select#address').val(config['address']);
+						$('select#lat').val(config['lat']);
+						$('select#lng').val(config['lng']);
+						$('select#driver').val(config['driver']);
+						$('select#organization').val(config['organization']);
+						$('select#date').val(config['date']);
+						$('select#starttime').val(config['starttime']);
+						$('select#endtime').val(config['endtime']);
+						$('select#owner').val(config['owner']);
+						$('select#transportation').val(config['transportation']);
+						$('select#destination').val(config['destination']);
+						$('select#car').val(config['car']);
+						$('select#carownmove').val(config['carownmove']);
+						$('select#carcondition').val(config['carcondition']);
+						$('select#status').val(config['status']);
+						$('select#spacer').val(config['spacer']);
+						if ('statusallocatecolor' in config) $('input#statusallocatecolor').val(config['statusallocatecolor']);
+						else $('input#statusallocatecolor').val(vars.colors[0].replace('#',''));
+						if ('statusdonecolor' in config) $('input#statusdonecolor').val(config['statusdonecolor']);
+						else $('input#statusdonecolor').val(vars.colors[0].replace('#',''));
+						$('input#apikey').val(config['apikey']);
+						$.each($('.markercolors').find('tbody').find('tr'),function(index){
+							var row=$(this);
+							$('input#markercolor',row).val(markercolors[index]);
+						});
+						functions.reloadstatus(function(){
+							$('select#statusdenyvalue').val(config['statusdenyvalue']);
+							$('select#statusallocatevalue').val(config['statusallocatevalue']);
+							$('select#statusdonevalue').val(config['statusdonevalue']);
+						});
+					}
+					else
+					{
+						$('input#statusallocatecolor').val(vars.colors[0].replace('#',''));
+						$('input#statusdonecolor').val(vars.colors[0].replace('#',''));
+						$.each($('input#markercolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
+					}
+					$('select#status').on('change',function(){functions.reloadstatus()});
+					$('span#statusallocatecolor').colorSelector(vars.colors,$('input#statusallocatecolor'));
+					$('span#statusdonecolor').colorSelector(vars.colors,$('input#statusdonecolor'));
+					$.each($('span#markercolor'),function(index){
+						$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#markercolor'));
+					});
+				});
+			},function(error){});
+		});
 	});
 	/*---------------------------------------------------------------
 	 button events
@@ -196,6 +222,11 @@ jQuery.noConflict();
 		if ($('select#driver').val()=='')
 		{
 			swal('Error!','担当者フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#organization').val()=='')
+		{
+			swal('Error!','担当者絞り込み組織を選択して下さい。','error');
 			return;
 		}
 		if ($('select#date').val()=='')
@@ -248,15 +279,30 @@ jQuery.noConflict();
 			swal('Error!','車輌ステータスフィールドを選択して下さい。','error');
 			return;
 		}
-		if ($('select#statusvalue').val()=='')
-		{
-			swal('Error!','引取指示選択値を選択して下さい。','error');
-			return;
-		}
 		if ($('select#statusdenyvalue').val()=='')
 		{
 			swal('Error!','未引取選択値を選択して下さい。','error');
 			return;
+		}
+		if ($('select#statusallocatevalue').val()=='')
+		{
+			swal('Error!','引取指示選択値を選択して下さい。','error');
+			return;
+		}
+		if ($('input#statusallocatecolor').val()=='')
+		{
+			swal('Error!','引取指示選択色を選択して下さい。','error');
+			error=true;
+		}
+		if ($('select#statusdonevalue').val()=='')
+		{
+			swal('Error!','引取中選択値を選択して下さい。','error');
+			return;
+		}
+		if ($('input#statusdonecolor').val()=='')
+		{
+			swal('Error!','引取中選択色を選択して下さい。','error');
+			error=true;
 		}
 		if ($('select#spacer').val()=='')
 		{
@@ -279,6 +325,7 @@ jQuery.noConflict();
 		config['lat']=$('select#lat').val();
 		config['lng']=$('select#lng').val();
 		config['driver']=$('select#driver').val();
+		config['organization']=$('select#organization').val();
 		config['date']=$('select#date').val();
 		config['starttime']=$('select#starttime').val();
 		config['endtime']=$('select#endtime').val();
@@ -289,8 +336,11 @@ jQuery.noConflict();
 		config['carownmove']=$('select#carownmove').val();
 		config['carcondition']=$('select#carcondition').val();
 		config['status']=$('select#status').val();
-		config['statusvalue']=$('select#statusvalue').val();
 		config['statusdenyvalue']=$('select#statusdenyvalue').val();
+		config['statusallocatevalue']=$('select#statusallocatevalue').val();
+		config['statusallocatecolor']=$('input#statusallocatecolor').val();
+		config['statusdonevalue']=$('select#statusdonevalue').val();
+		config['statusdonecolor']=$('input#statusdonecolor').val();
 		config['spacer']=$('select#spacer').val();
 		config['apikey']=$('input#apikey').val();
 		config['markercolors']=JSON.stringify(markercolors);
