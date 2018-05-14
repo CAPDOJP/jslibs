@@ -27,7 +27,7 @@
         ],
         "css":[
             "css/sweetalert.css",
-            "css/desktop/applist.css"
+            "css/applist.css"
         ]
     },
     "config":{

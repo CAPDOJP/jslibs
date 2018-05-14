@@ -68,7 +68,7 @@ jQuery.extend({
 				baserecordid:{value:baserecordid},
 				transfered:{value:0},
 				transfertimes:{value:transfertimes},
-				transferpending:{value:0},
+				transferpending:{value:((transferpending in terms[i])?terms[i].transferpending:0)},
 				transferlimit:{value:$('#transferlimit',cell).val()}
 			});
 		return res;
@@ -86,6 +86,7 @@ jQuery.extend({
 					{
 						var row=student['coursetable'].value[i].value;
 						if (!row['courseenddate'].value) row['courseenddate'].value='9999-12-31';
+						if (row['courseenddate'].value.length==0) row['courseenddate'].value='9999-12-31';
 						if (day>new Date(row['coursestartdate'].value.dateformat()).calc('-1 day') && day<new Date(row['courseenddate'].value.dateformat()).calc('1 day')) res=row;
 					}
 					return res;

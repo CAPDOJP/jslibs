@@ -345,6 +345,7 @@ jQuery.noConflict();
 								if ('$id' in record) $('input',$('.buttoncell',row)).first().val(record['$id'].value);
 								return baserow;
 							};
+							vars.columns=[];
 							vars.fieldinfos=resp.properties;
 							/* setup columninfos */
 							for (var i=0;i<values.fields.length;i++)

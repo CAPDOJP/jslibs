@@ -158,6 +158,7 @@ jQuery.noConflict();
 			$('select#lng').val(config['lng']);
 			$('input#scalefixedwidth').val(config['scalefixedwidth']);
 			$('input#apikey').val(config['apikey']);
+			if (config['registeredonly']=='1') $('input#registeredonly').prop('checked',true);
 			if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
 			if (config['route']=='1') $('input#route').prop('checked',true);
 			$.each(segments,function(key,values){
@@ -322,6 +323,7 @@ jQuery.noConflict();
 		config['lng']=$('select#lng').val();
 		config['scalefixedwidth']=$('input#scalefixedwidth').val();
 		config['apikey']=$('input#apikey').val();
+		config['registeredonly']=($('input#registeredonly').prop('checked'))?'1':'0';
 		config['scalefixed']=($('input#scalefixed').prop('checked'))?'1':'0';
 		config['route']=($('input#route').prop('checked'))?'1':'0';
 		/* get view lists */

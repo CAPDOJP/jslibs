@@ -366,6 +366,7 @@ jQuery.extend({
 		if (!('billdate' in fieldinfos)) error='請求日';
 		if (!('customer' in fieldinfos)) error='保護者番号';
 		if (!('customername' in fieldinfos)) error='保護者氏名';
+		if (!('nss' in fieldinfos)) error='NSS加入者番号';
 		if (!('subbill' in fieldinfos)) error='小計';
 		if (!('tax' in fieldinfos)) error='消費税';
 		if (!('bill' in fieldinfos)) error='請求金額';

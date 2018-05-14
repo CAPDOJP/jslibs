@@ -230,11 +230,12 @@ RouteMap.prototype={
 				scale:1,
 				strokeColor:"#696969",
 			});
-			marker.setLabel({
-				color:'#'+((markeroptions.color in colors)?colors[markeroptions.color].fore:'000000'),
-				text:markeroptions.label.toString(),
-				fontSize:markeroptions.fontsize+'px',
-			});
+			if (markeroptions.label.length!=0)
+				marker.setLabel({
+					color:'#'+((markeroptions.color in colors)?colors[markeroptions.color].fore:'000000'),
+					text:markeroptions.label.toString(),
+					fontSize:markeroptions.fontsize+'px',
+				});
 			if (my.markerclickcallback!=null && markeroptions.id!=null)
 			{
 				google.maps.event.addListener(marker,'click',function(e){

@@ -66,7 +66,8 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
 		$.each(resp.views,function(key,values){
-			$('select#targetview').append($('<option>').attr('value',values.id).text(key));
+			$('select#allocationview').append($('<option>').attr('value',values.id).text(key));
+			$('select#requestview').append($('<option>').attr('value',values.id).text(key));
 		});
 		$.loadorganizations(function(records){
 			records.sort(function(a,b){
@@ -104,6 +105,10 @@ jQuery.noConflict();
 									$('select#carownmove').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 									$('select#status').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 									break;
+								case 'LINK':
+									if (fieldinfo.protocol.toUpperCase()=='CALL')
+										$('select#tel').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
 								case 'NUMBER':
 									/* exclude lookup */
 									if (!fieldinfo.lookup)
@@ -123,6 +128,7 @@ jQuery.noConflict();
 									{
 										$('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#owner').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										$('select#tel').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#carcondition').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 									}
 									else $('select#car').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
@@ -138,11 +144,14 @@ jQuery.noConflict();
 						}
 					});
 					/* initialize valiable */
-					var markercolors=[];
+					var allocationcolors=[];
+					var requestcolors=[];
 					if (Object.keys(config).length!==0)
 					{
-						markercolors=JSON.parse(config['markercolors']);
-						$('select#targetview').val(config['targetview']);
+						allocationcolors=JSON.parse(config['allocationcolors']);
+						requestcolors=JSON.parse(config['requestcolors']);
+						$('select#allocationview').val(config['allocationview']);
+						$('select#requestview').val(config['requestview']);
 						$('select#address').val(config['address']);
 						$('select#lat').val(config['lat']);
 						$('select#lng').val(config['lng']);
@@ -152,6 +161,7 @@ jQuery.noConflict();
 						$('select#starttime').val(config['starttime']);
 						$('select#endtime').val(config['endtime']);
 						$('select#owner').val(config['owner']);
+						$('select#tel').val(config['tel']);
 						$('select#transportation').val(config['transportation']);
 						$('select#destination').val(config['destination']);
 						$('select#car').val(config['car']);
@@ -164,9 +174,13 @@ jQuery.noConflict();
 						if ('statusdonecolor' in config) $('input#statusdonecolor').val(config['statusdonecolor']);
 						else $('input#statusdonecolor').val(vars.colors[0].replace('#',''));
 						$('input#apikey').val(config['apikey']);
-						$.each($('.markercolors').find('tbody').find('tr'),function(index){
+						$.each($('.allocationcolors').find('tbody').find('tr'),function(index){
 							var row=$(this);
-							$('input#markercolor',row).val(markercolors[index]);
+							$('input#allocationcolor',row).val(allocationcolors[index]);
+						});
+						$.each($('.requestcolors').find('tbody').find('tr'),function(index){
+							var row=$(this);
+							$('input#requestcolor',row).val(requestcolors[index]);
 						});
 						functions.reloadstatus(function(){
 							$('select#statusdenyvalue').val(config['statusdenyvalue']);
@@ -178,13 +192,17 @@ jQuery.noConflict();
 					{
 						$('input#statusallocatecolor').val(vars.colors[0].replace('#',''));
 						$('input#statusdonecolor').val(vars.colors[0].replace('#',''));
-						$.each($('input#markercolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
+						$.each($('input#allocationcolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
+						$.each($('input#requestcolor'),function(){$(this).val(vars.colors[0].replace('#',''))});
 					}
 					$('select#status').on('change',function(){functions.reloadstatus()});
 					$('span#statusallocatecolor').colorSelector(vars.colors,$('input#statusallocatecolor'));
 					$('span#statusdonecolor').colorSelector(vars.colors,$('input#statusdonecolor'));
-					$.each($('span#markercolor'),function(index){
-						$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#markercolor'));
+					$.each($('span#allocationcolor'),function(index){
+						$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#allocationcolor'));
+					});
+					$.each($('span#requestcolor'),function(index){
+						$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#requestcolor'));
 					});
 				});
 			},function(error){});
@@ -197,11 +215,17 @@ jQuery.noConflict();
 		var error=false;
 		var row=null;
 		var config=[];
-		var markercolors=[];
+		var allocationcolors=[];
+		var requestcolors=[];
 		/* check values */
-		if ($('select#targetview').val()=='')
+		if ($('select#allocationview').val()=='')
 		{
-			swal('Error!','使用一覧を選択して下さい。','error');
+			swal('Error!','引取指示使用一覧を選択して下さい。','error');
+			return;
+		}
+		if ($('select#requestview').val()=='')
+		{
+			swal('Error!','引取依頼確認使用一覧を選択して下さい。','error');
 			return;
 		}
 		if ($('select#address').val()=='')
@@ -247,6 +271,11 @@ jQuery.noConflict();
 		if ($('select#owner').val()=='')
 		{
 			swal('Error!','依頼元フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#tel').val()=='')
+		{
+			swal('Error!','電話番号フィールドを選択して下さい。','error');
 			return;
 		}
 		if ($('select#transportation').val()=='')
@@ -309,18 +338,28 @@ jQuery.noConflict();
 			swal('Error!','地図表示フィールドを選択して下さい。','error');
 			return;
 		}
-		$.each($('.markercolors').find('tbody').find('tr'),function(index){
+		$.each($('.allocationcolors').find('tbody').find('tr'),function(index){
 			var row=$(this);
-			if ($('input#markercolor',row).val()=='')
+			if ($('input#allocationcolor',row).val()=='')
 			{
-				swal('Error!','マーカー色を選択して下さい。','error');
+				swal('Error!','引取指示用マーカー色を選択して下さい。','error');
 				error=true;
 			}
-			markercolors.push($('input#markercolor',row).val());
+			allocationcolors.push($('input#allocationcolor',row).val());
+		})
+		$.each($('.requestcolors').find('tbody').find('tr'),function(index){
+			var row=$(this);
+			if ($('input#requestcolor',row).val()=='')
+			{
+				swal('Error!','引取依頼確認用マーカー色を選択して下さい。','error');
+				error=true;
+			}
+			requestcolors.push($('input#requestcolor',row).val());
 		})
 		if (error) return;
 		/* setup config */
-		config['targetview']=$('select#targetview').val();
+		config['allocationview']=$('select#allocationview').val();
+		config['requestview']=$('select#requestview').val();
 		config['address']=$('select#address').val();
 		config['lat']=$('select#lat').val();
 		config['lng']=$('select#lng').val();
@@ -330,6 +369,7 @@ jQuery.noConflict();
 		config['starttime']=$('select#starttime').val();
 		config['endtime']=$('select#endtime').val();
 		config['owner']=$('select#owner').val();
+		config['tel']=$('select#tel').val();
 		config['transportation']=$('select#transportation').val();
 		config['destination']=$('select#destination').val();
 		config['car']=$('select#car').val();
@@ -343,7 +383,8 @@ jQuery.noConflict();
 		config['statusdonecolor']=$('input#statusdonecolor').val();
 		config['spacer']=$('select#spacer').val();
 		config['apikey']=$('input#apikey').val();
-		config['markercolors']=JSON.stringify(markercolors);
+		config['allocationcolors']=JSON.stringify(allocationcolors);
+		config['requestcolors']=JSON.stringify(requestcolors);
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

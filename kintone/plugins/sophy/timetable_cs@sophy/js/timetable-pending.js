@@ -315,14 +315,26 @@ jQuery.noConflict();
 											}
 											if (hours!=parseFloat($('#hours',cell).val()))
 											{
-												swal({
-													title:'Error!',
-													text:'振替前と振替後の時間が合いません。',
-													type:'error'
-												},function(){
-													vars.termselect.unhide();
-												});
-												return;
+												if (hours>parseFloat($('#hours',cell).val()))
+												{
+													swal({
+														title:'Error!',
+														text:'振替前と振替後の時間が合いません。',
+														type:'error'
+													},function(){
+														vars.termselect.unhide();
+													});
+													return;
+												}
+												else
+												{
+													selection.push({
+														date:$('#date',cell).val(),
+														starttime:$('#starttime',cell).val(),
+														hours:parseFloat($('#hours',cell).val())-hours,
+														transferpending:$('#transferpending',cell).val()
+													});
+												}
 											}
 											/* entry transfers */
 											$.entrytransfers(cell,selection,vars.progress,vars.apps[kintone.app.getId()],function(){

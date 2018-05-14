@@ -1,0 +1,21 @@
+/* individual style (common) */
+button.wl-button{
+	background-color:#f7f9fa;
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/mail.png');
+	background-position:center center;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	border:1px solid #e3e7e8;
+	box-sizing:border-box;
+	cursor:pointer;
+	display:inline-block;
+	font-size:13px;
+	height:48px;
+	margin:0px;
+	margin-right:8px;
+	outline:none;
+	padding:0px;
+	position:relative;
+	vertical-align:top;
+	width:48px;
+}

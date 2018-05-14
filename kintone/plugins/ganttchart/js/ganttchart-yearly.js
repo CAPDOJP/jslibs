@@ -42,6 +42,7 @@ jQuery.noConflict();
 	var functions={
 		/* rebuild view */
 		build:function(filter,heads,colorindex){
+			if (vars.config['registeredonly']=='1' && filter.length==0) return;
 			var color=vars.colors[colorindex%vars.colors.length];
 			/* insert row */
 			vars.table.insertrow(null,function(row){
@@ -107,6 +108,9 @@ jQuery.noConflict();
 			/* cell value switching */
 			row.find('td').eq(from).append($('<p>').addClass('ganttchart-merge-p').html($.fieldvalue(filter[vars.config['display']])));
 			row.find('td').eq(from).append($('<span>').addClass('ganttchart-merge-span').css({'background-color':'#'+color}));
+			if (vars.config['registeredonly']=='1') row.find('td').on('click',function(){
+				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$(this).find('input#\\$id').val()+'&mode=show';
+			});
 			$.each(filter,function(key,values){
 				if (values!=null)
 					if (values.value!=null)
@@ -177,7 +181,7 @@ jQuery.noConflict();
 					head:head,
 					template:template,
 					dragclass:'ganttchart-drag',
-					merge:true,
+					merge:(vars.config['registeredonly']!='1'),
 					mergeexclude:mergeexclude,
 					mergeclass:'ganttchart-merge',
 					mergetrigger:function(caller,cell,rowindex,cellfrom,cellto){

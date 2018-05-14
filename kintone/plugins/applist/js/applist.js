@@ -28,8 +28,15 @@ jQuery.noConflict();
 		createcategory:function(caption){
 			return $('<div>').addClass('category').append($('<p>').addClass('categorycaption').text(caption));
 		},
-		createlink:function(app){
-			return $('<a href="https://'+$(location).attr('host')+'/k/'+app.appId+'" target="_blank">').text(app.name);
+		createlink:function(appid,appname,viewid,viewname){
+			var extendurl='';
+			var extendname='';
+			if (viewid)
+			{
+				extendurl='/?view='+viewid;
+				extendname=viewname+'@';
+			}
+			return $('<a href="https://'+$(location).attr('host')+'/k/'+appid+extendurl+'" target="_blank">').text(extendname+appname);
 		},
 		loadapps:function(callback){
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
@@ -51,46 +58,30 @@ jQuery.noConflict();
 		/* initialize valiable */
 		var container=$('div#applist-container').addClass('categorycontainer').empty();
 		var categories=JSON.parse(vars.config['category']);
-		functions.loadapps(function(){
-			var added=[];
-			/* sort */
-			vars.apps.sort(function(a,b){
-				if(a.appId<b.appId) return -1;
-				if(a.appId>b.appId) return 1;
-				return 0;
-			});
-			/* append links */
-			for (var i=0;i<categories.length;i++)
+		var added=[];
+		/* append links */
+		for (var i=0;i<categories.length;i++)
+		{
+			var category=categories[i];
+			var contents=functions.createcategory(category.name);
+			for (var i2=0;i2<category.apps.length;i2++)
 			{
-				var category=categories[i];
-				var apps=[];
-				for (var i2=0;i2<category.apps.length;i2++)
-				{
-					var filter=$.grep(vars.apps,function(item,index){
-						return item.appId==category.apps[i2];
-					});
-					if (filter.length!=0) Array.prototype.push.apply(apps,filter);
-				}
-				var contents=functions.createcategory(category.name);
-				if (apps.length!=0)
-				{
-					for (var i2=0;i2<apps.length;i2++)
-					{
-						contents.append(functions.createlink(apps[i2]));
-						added.push(apps[i2].appId);
-					}
-				}
-				container.append(contents);
+				var apps=category.apps[i2];
+				contents.append(functions.createlink(apps.app.id,apps.app.name,apps.view.id,apps.view.name));
+				added.push(apps.app.id);
 			}
-			if (vars.config['addothers']=='1')
+			container.append(contents);
+		}
+		if (vars.config['addothers']=='1')
+			functions.loadapps(function(){
 				if (vars.apps.length!=added.length)
 				{
 					var contents=functions.createcategory('その他');
 					for (var i=0;i<vars.apps.length;i++)
-						if (added.indexOf(vars.apps[i].appId)<0) contents.append(functions.createlink(vars.apps[i]));
+						if (added.indexOf(vars.apps[i].appId)<0) contents.append(functions.createlink(vars.apps[i].appId,vars.apps[i].name));
 					container.append(contents);
 				}
-		});
+			});
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

@@ -1,0 +1,43 @@
+/* individual style */
+table#carereportviewer tr.odd{
+	background-color:#FFFFFF;
+}
+table#carereportviewer tr.even{
+	background-color:#EFFAFE;
+}
+table#carereportviewer tr td,
+table#carereportviewer tr th{
+	padding:0px;
+	font-size:14px;
+	height:auto;
+	line-height:30px;
+	vertical-align:top;
+}
+table#carereportviewer tr td.adjust,
+table#carereportviewer tr th.adjust{
+	cursor:col-resize;
+}
+table#carereportviewer tr td.buttoncell{
+	width:30px;
+}
+table#carereportviewer tr td div,
+table#carereportviewer tr th div{
+	box-sizing:border-box;
+    overflow:hidden;
+	padding:0px 3px;
+	text-overflow:'';
+	vertical-align:top;
+    white-space:nowrap;
+	width:100%;
+}
+table#carereportviewer tr td a,
+table#carereportviewer tr td span,
+table#carereportviewer tr td img{
+	display:block;
+}
+table#carereportviewer img.carereportviewer-thumbnail{
+	border:none;
+	cursor:pointer;
+	margin:3px 0px;
+	height:54px;
+}

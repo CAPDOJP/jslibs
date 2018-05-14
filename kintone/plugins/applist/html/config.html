@@ -5,19 +5,11 @@
 	</div>
 	<div class="kintoneplugin-row">
 		<table class="categories">
-			<thead>
-				<tr>
-					<th>カテゴリー名</th>
-					<th></th>
-					<th></th>
-					<th>カテゴリー内アプリ</th>
-				</tr>
-			</thead>
 			<tbody>
 				<tr>
 					<td class="single">
 						<div class="kintoneplugin-input-outer">
-							<input type="text" id="category" class="kintoneplugin-input-text" value="" >
+							<input type="text" id="category" class="kintoneplugin-input-text" value="" placeholder="カテゴリー名を入力" >
 						</div>
 					</td>
 					<td class="button single"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addcategory" alt="+" title="追加"></td>
@@ -30,6 +22,15 @@
 										<div class="kintoneplugin-select-outer">
 											<div class="kintoneplugin-select">
 												<select id="app">
+													<option value="アプリを選択"></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="view">
 													<option value=""></option>
 												</select>
 											</div>
@@ -44,7 +45,8 @@
 				</tr>
 			</tbody>
 		</table>
-		<div class="kintoneplugin-caution">*アプリの並び順はカテゴリー内アプリの設定順となります。</div>
+		<div class="kintoneplugin-caution">*アプリの並び順は選択順となります。</div>
+		<div class="kintoneplugin-caution">*表示一覧の選択は任意です。</div>
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">設定外アプリ</div>

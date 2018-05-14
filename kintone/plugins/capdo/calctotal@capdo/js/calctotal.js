@@ -102,7 +102,7 @@ jQuery.noConflict();
 				app:kintone.app.getId(),
 				query:kintone.app.getQuery().replace(/ limit [0-9]+/g,'').replace(/ offset [0-9]+/g,'')
 			};
-			body.query=' limit '+vars.limit.toString()+' offset '+vars.offset.toString();
+			body.query+=' limit '+vars.limit.toString()+' offset '+vars.offset.toString();
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				Array.prototype.push.apply(vars.records,resp.records);
 				vars.offset+=vars.limit;

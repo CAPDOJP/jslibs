@@ -1,10 +1,21 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">使用一覧<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-label">引取指示使用一覧<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">引取指示を行う一覧をリストより選択して下さい。</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
-				<select id="targetview">
+				<select id="allocationview">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">引取依頼確認使用一覧<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">引取依頼確認を行う一覧をリストより選択して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="requestview">
 					<option value=""></option>
 				</select>
 			</div>
@@ -104,6 +115,17 @@
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="owner">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">電話番号フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">電話番号を指定するフィールドを選択して下さい。【文字列(1行)・リンクフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="tel">
 					<option value=""></option>
 				</select>
 			</div>
@@ -248,8 +270,8 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">マーカー色指定</div>
-		<table class="markercolors">
+		<div class="kintoneplugin-label">引取指示用マーカー色指定</div>
+		<table class="allocationcolors">
 			<thead>
 				<tr>
 					<th>条件</th>
@@ -262,8 +284,8 @@
 						<span class="kintoneplugin-unit">通常</span>
 					</td>
 					<td>
-						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
-						<input type="hidden" id="markercolor" value="">
+						<span id="allocationcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="allocationcolor" value="">
 					</td>
 				</tr>
 				<tr>
@@ -271,8 +293,8 @@
 						<span class="kintoneplugin-unit">引取開始時刻超過</span>
 					</td>
 					<td>
-						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
-						<input type="hidden" id="markercolor" value="">
+						<span id="allocationcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="allocationcolor" value="">
 					</td>
 				</tr>
 				<tr>
@@ -280,8 +302,8 @@
 						<span class="kintoneplugin-unit">引取終了時刻まであと3時間</span>
 					</td>
 					<td>
-						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
-						<input type="hidden" id="markercolor" value="">
+						<span id="allocationcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="allocationcolor" value="">
 					</td>
 				</tr>
 				<tr>
@@ -289,8 +311,8 @@
 						<span class="kintoneplugin-unit">引取終了時刻まであと1時間</span>
 					</td>
 					<td>
-						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
-						<input type="hidden" id="markercolor" value="">
+						<span id="allocationcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="allocationcolor" value="">
 					</td>
 				</tr>
 				<tr>
@@ -298,8 +320,102 @@
 						<span class="kintoneplugin-unit">引取終了時刻超過</span>
 					</td>
 					<td>
-						<span id="markercolor" class="kintoneplugin-unit color">&nbsp;</span>
-						<input type="hidden" id="markercolor" value="">
+						<span id="allocationcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="allocationcolor" value="">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">引取依頼確認用マーカー色指定</div>
+		<table class="requestcolors">
+			<thead>
+				<tr>
+					<th>条件</th>
+					<th>指定色</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">当日</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">翌日</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">翌々日</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">3日後</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">4日後</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">5日後</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">6日後</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">7日後以降</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">複数日付</span>
+					</td>
+					<td>
+						<span id="requestcolor" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="requestcolor" value="">
 					</td>
 				</tr>
 			</tbody>

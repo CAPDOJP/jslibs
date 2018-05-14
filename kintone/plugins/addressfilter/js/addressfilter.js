@@ -200,7 +200,7 @@ jQuery.noConflict();
 		setupfilter:function(setting,records,create){
 			$.each($('body').fields(setting.prefecture),function(index){
 				var target=$(this);
-				var container=(setting.tablecode.length!=0)?target.closest('tr'):$('body');
+				var container=(setting.tablecode.length==0)?$('body'):target.closest('tr');
 				var prefecture={
 					container:null,
 					input:null,
@@ -259,31 +259,48 @@ jQuery.noConflict();
 				.on('change',function(){
 					functions.resetfields($('select',street.list),prefecture,city,street,address,zip,3,function(){
 						var addressvalue='';
+						var update=kintone.app.record.get();
 						if (setting.address.length!=0)
 						{
 							addressvalue+=$('select option:selected',prefecture.list).val();
 							addressvalue+=$('select option:selected',city.list).val();
 							addressvalue+=$('select option:selected',street.list).val();
-							address.input.val(addressvalue);
+							if (setting.tablecode.length==0) update.record[setting.address].value=addressvalue;
+							else update.record[setting.tablecode].value[index].value[setting.address].value=addressvalue;
 						}
 						if (setting.zip.length!=0)
 						{
 							var zipvalue=JSON.parse($.data($('select',street.list)[0],'zips'))[$('select',street.list).val()];
-							zip.input.val(zipvalue.substr(0,3)+'-'+zipvalue.substr(3));
+							if (setting.tablecode.length==0) update.record[setting.zip].value=zipvalue.substr(0,3)+'-'+zipvalue.substr(3);
+							else update.record[setting.tablecode].value[index].value[setting.zip].value=zipvalue.substr(0,3)+'-'+zipvalue.substr(3);
 						}
+						kintone.app.record.set(update);
 					});
 				});
 				zip.input.on('change',function(){
 					functions.reloadzip(zip.input.val(),function(record){
 						functions.resetfields(null,prefecture,city,street,address,zip,0,function(){
+							var update=kintone.app.record.get();
 							functions.reloadprefecture($('select',prefecture.list),record.prefecturename);
 							functions.reloadcity($('select',city.list),record.prefecturename,record.cityname);
 							functions.reloadstreet($('select',street.list),record.prefecturename,record.cityname,record.streetname);
-							prefecture.input.val(record.prefecturename);
-							city.input.val(record.cityname);
-							street.input.val(record.streetname);
-							if (setting.address.length!=0) address.input.val(record.name);
-							if (setting.zip.length!=0) zip.input.val(record.id.substr(0,3)+'-'+record.id.substr(3));
+							if (setting.tablecode.length==0)
+							{
+								update.record[setting.prefecture].value=record.prefecturename;
+								update.record[setting.city].value=record.cityname;
+								update.record[setting.street].value=record.streetname;
+								if (setting.address.length!=0) update.record[setting.address].value=record.name;
+								if (setting.zip.length!=0) update.record[setting.zip].value=record.id.substr(0,3)+'-'+record.id.substr(3);
+							}
+							else
+							{
+								update.record[setting.tablecode].value[index].value[setting.prefecture].value=record.prefecturename;
+								update.record[setting.tablecode].value[index].value[setting.city].value=record.cityname;
+								update.record[setting.tablecode].value[index].value[setting.street].value=record.streetname;
+								if (setting.address.length!=0) update.record[setting.tablecode].value[index].value[setting.address].value=record.name;
+								if (setting.zip.length!=0) update.record[setting.tablecode].value[index].value[setting.zip].value=record.id.substr(0,3)+'-'+record.id.substr(3);
+							}
+							kintone.app.record.set(update);
 						});
 					});
 				});

@@ -31,97 +31,6 @@ button.customview-menuclose{
 button.customview-menuclose img{
 	height:100%;
 }
-div.allocationcontainer{
-	background-color:#FFFFFF;
-	bottom:-100%;
-	height:100%;
-	left:0px;
-	position:fixed;
-	width:100%;
-	z-index:999999;
-}
-div.allocationcontainer div.mapcontainer{
-	height:100%;
-	left:0px;
-	position:absolute;
-	top:0px;
-	width:80%;
-	z-index:1;
-}
-div.allocationcontainer div.usercontainer{
-	height:100%;
-	overflow-x:hidden;
-	overflow-y:auto;
-	position:absolute;
-	right:0px;
-	top:0px;
-	width:20%;
-	z-index:2;
-}
-div.allocationcontainer div.usercontainer *{
-	box-sizing:border-box;
-	display:block;
-	margin:0px;
-	padding:0px;
-	position:relative;
-	width:100%;
-}
-div.allocationcontainer div.usercontainer div.users.dragging{
-	background-color:#F7ECE1;
-    box-shadow:0.5px 0.5px 2px 2px #7BDFF2;
-}
-div.allocationcontainer div.usercontainer div.users div.cars{
-	display:none;
-	font-size:11px;
-}
-div.allocationcontainer div.usercontainer div.users div.cars span{
-	border-top:1px dotted #C9C9C9;
-	line-height:20px;
-	padding:5px;
-}
-div.allocationcontainer div.usercontainer div.users div.cars span.owner{
-	padding-left:15px;
-}
-div.allocationcontainer div.usercontainer div.users div.cars span.car{
-	padding-left:30px;
-	padding-right:70px;
-}
-div.allocationcontainer div.usercontainer div.users div.cars span.car span{
-	border-top:none;
-	display:inline-block;
-	padding:0px 5px;
-	width:auto;
-}
-div.allocationcontainer div.usercontainer div.users div.cars span.car img{
-	cursor:pointer;
-	display:block;
-	position:absolute;
-	top:0px;
-	width:30px;
-}
-div.allocationcontainer div.usercontainer div.users div.cars span.car img.edit{
-	right:35px;
-}
-div.allocationcontainer div.usercontainer div.users div.cars span.car img.clear{
-	right:5px;
-}
-div.allocationcontainer div.usercontainer div.users div.user{
-	border-top:1px solid #C9C9C9;
-	cursor:pointer;
-	padding:5px;
-}
-div.allocationcontainer div.usercontainer div.users div.user span.name{
-	font-size:15px;
-	line-height:25px;
-	padding-right:50px;
-}
-div.allocationcontainer div.usercontainer div.users div.user span.count{
-	line-height:25px;
-	position:absolute;
-	right:5px;
-	text-align:right;
-	top:5px;
-}
 div.customview-dialog,
 div.customview-dialog div{
 	box-sizing:border-box;
@@ -137,8 +46,13 @@ div.customview-dialog{
 	left:0px;
 	position:fixed;
 	top:0px;
-	width:80%;
 	z-index:999999;
+}
+div.customview-dialog.allocation{
+	width:80%;
+}
+div.customview-dialog.request{
+	width:100%;
 }
 div.customview-dialog *{
 	font-size:13px;
@@ -402,4 +316,112 @@ div.waitingbutton:after {
   75% {
     box-shadow: 0 2.5em 0 0;
   }
+}
+div.allocationcontainer{
+	background-color:#FFFFFF;
+	bottom:-100%;
+	height:100%;
+	left:0px;
+	position:fixed;
+	width:100%;
+	z-index:999999;
+}
+div.allocationcontainer div.mapcontainer{
+	height:100%;
+	left:0px;
+	position:absolute;
+	top:0px;
+	width:80%;
+	z-index:1;
+}
+div.allocationcontainer div.usercontainer{
+	height:100%;
+	overflow-x:hidden;
+	overflow-y:auto;
+	position:absolute;
+	right:0px;
+	top:0px;
+	width:20%;
+	z-index:2;
+}
+div.allocationcontainer div.usercontainer *{
+	box-sizing:border-box;
+	display:block;
+	margin:0px;
+	padding:0px;
+	position:relative;
+	width:100%;
+}
+div.allocationcontainer div.usercontainer div.users.dragging{
+	background-color:#F7ECE1;
+    box-shadow:0.5px 0.5px 2px 2px #7BDFF2;
+}
+div.allocationcontainer div.usercontainer div.users div.cars{
+	display:none;
+	font-size:11px;
+}
+div.allocationcontainer div.usercontainer div.users div.cars span{
+	border-top:1px dotted #C9C9C9;
+	line-height:20px;
+	padding:5px;
+}
+div.allocationcontainer div.usercontainer div.users div.cars span.owner{
+	padding-left:15px;
+}
+div.allocationcontainer div.usercontainer div.users div.cars span.car{
+	padding-left:30px;
+	padding-right:70px;
+}
+div.allocationcontainer div.usercontainer div.users div.cars span.car span{
+	border-top:none;
+	display:inline-block;
+	padding:0px 5px;
+	width:auto;
+}
+div.allocationcontainer div.usercontainer div.users div.cars span.car img{
+	cursor:pointer;
+	display:block;
+	position:absolute;
+	top:0px;
+	width:30px;
+}
+div.allocationcontainer div.usercontainer div.users div.cars span.car img.edit{
+	right:35px;
+}
+div.allocationcontainer div.usercontainer div.users div.cars span.car img.clear{
+	right:5px;
+}
+div.allocationcontainer div.usercontainer div.users div.user{
+	border-top:1px solid #C9C9C9;
+	cursor:pointer;
+	padding:5px;
+}
+div.allocationcontainer div.usercontainer div.users div.user span.name{
+	font-size:15px;
+	line-height:25px;
+	padding-right:50px;
+}
+div.allocationcontainer div.usercontainer div.users div.user span.count{
+	line-height:25px;
+	position:absolute;
+	right:5px;
+	text-align:right;
+	top:5px;
+}
+div.requestcontainer{
+	background-color:#FFFFFF;
+	bottom:-100%;
+	height:100%;
+	left:0px;
+	position:fixed;
+	width:100%;
+	z-index:999999;
+}
+div.requestcontainer div.mapcontainer{
+	height:100%;
+	left:0px;
+	position:absolute;
+	top:0px;
+	width:100%;
+	z-index:1;
 }

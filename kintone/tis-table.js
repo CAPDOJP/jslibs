@@ -31,6 +31,7 @@ var Table=function(options){
 		container:null,
 		table:null,
 		head:null,
+		foot:null,
 		template:null,
 		dragclass:'drag',
 		merge:false,
@@ -48,6 +49,7 @@ var Table=function(options){
 	this.container=options.table;
 	this.head=$('<thead>').append(options.head);
 	this.contents=$('<tbody>');
+	this.foot=(options.foot)?$('<tfoot>').append(options.foot):null;
 	this.template=options.template;
 	this.dragclass=options.dragclass;
 	this.mergeclass=options.mergeclass;
@@ -55,6 +57,7 @@ var Table=function(options){
 	/* append elements */
 	this.container.append(this.head);
 	this.container.append(this.contents);
+	if (this.foot) this.container.append(this.foot);
 	if (options.container!=null) options.container.append(this.container);
 	/* initialize valiable */
 	this.rows=this.contents.children('tr');

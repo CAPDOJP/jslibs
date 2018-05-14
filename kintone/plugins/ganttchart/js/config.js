@@ -136,6 +136,7 @@ jQuery.noConflict();
 			$('select#todate').val(config['todate']);
 			$('select#display').val(config['display']);
 			$('input#scalefixedwidth').val(config['scalefixedwidth']);
+			if (config['registeredonly']=='1') $('input#registeredonly').prop('checked',true);
 			if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
 			$.each(segments,function(key,values){
 				if (add) vars.segmenttable.addrow();
@@ -249,6 +250,7 @@ jQuery.noConflict();
 		config['segment']=JSON.stringify(segments);
 		config['segmentcolors']=segmentcolors.join(',');
 		config['scalefixedwidth']=$('input#scalefixedwidth').val();
+		config['registeredonly']=($('input#registeredonly').prop('checked'))?'1':'0';
 		config['scalefixed']=($('input#scalefixed').prop('checked'))?'1':'0';
 		/* get view lists */
 		kintone.api(kintone.api.url('/k/v1/preview/app/views',true),'GET',{app:kintone.app.getId()},function(resp){

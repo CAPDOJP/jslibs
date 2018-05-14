@@ -1,0 +1,98 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">除外一覧</div>
+		<div class="kintoneplugin-desc">本プラグインを使用しない一覧があれば、その一覧をリストより選択して下さい。</div>
+		<table class="excludeviews">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="excludeview">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">除外フィールド</div>
+		<div class="kintoneplugin-desc">非表示にしたいテーブル内フィールドがあれば、そのフィールドをリストより選択して下さい。</div>
+		<table class="excludefields">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="excludefield">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">バイタルフィールド</div>
+		<div class="kintoneplugin-desc">条件書式を設定したいテーブル内フィールドがあれば、そのフィールドをリストより選択して下さい。</div>
+		<table class="verifyfields">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="verifyfield">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-input-outer">
+							<input type="text" id="verifyvalue" class="kintoneplugin-input-text" value="" placeholder="比較値" >
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="verifydecision">
+									<option value="0">以上</option>
+									<option value="1">以下</option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<span id="verifyforecolor" class="kintoneplugin-unit color">前景色</span>
+						<input type="hidden" id="verifyforecolor" value="">
+					</td>
+					<td>
+						<span id="verifybackcolor" class="kintoneplugin-unit color">背景色</span>
+						<input type="hidden" id="verifybackcolor" value="">
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ライセンス認証URL</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="license" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

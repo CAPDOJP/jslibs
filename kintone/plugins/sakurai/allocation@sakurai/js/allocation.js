@@ -28,7 +28,7 @@ jQuery.noConflict();
 		markers:{},
 		users:{},
 		events:[],
-		markercolors:[],
+		allocationcolors:[],
 		records:[]
 	};
 	var events={
@@ -81,13 +81,14 @@ jQuery.noConflict();
 		);
 		var dataview=$('<div class="dataview">').append($('<span class="label">'));
 		/* append elements */
-		this.cover=$('<div class="customview-dialog">');
+		this.cover=$('<div class="customview-dialog allocation">');
 		this.container=$('<div class="customview-dialog-container">');
 		this.contents=$('<div class="customview-dialog-contents">');
 		this.buttonblock=$('<div class="customview-dialog-buttons">');
 		this.table=table.clone(true).adjustabletable();
 		this.contents.append(dataview.clone(true).attr('id','datetime'));
 		this.contents.append(dataview.clone(true).attr('id','owner'));
+		this.contents.append(dataview.clone(true).attr('id','tel'));
 		this.contents.append(this.table.container);
 		this.buttonblock.append(
 			$('<button>')
@@ -247,6 +248,7 @@ jQuery.noConflict();
 										var row=null;
 										$('#datetime',vars.allocation.contents).find('.label').html(record[vars.config['date']]+'&nbsp;&nbsp;'+record[vars.config['starttime']]+' ～ '+record[vars.config['endtime']]);
 										$('#owner',vars.allocation.contents).find('.label').html(record[vars.config['owner']]+'&nbsp;('+record[vars.config['transportation']]+')');
+										$('#tel',vars.allocation.contents).find('.label').html(record[vars.config['tel']]);
 										vars.allocation.table.clearrows();
 										for (var i=0;i<record.records.length;i++)
 										{
@@ -387,6 +389,7 @@ jQuery.noConflict();
 					group[vars.config['starttime']]=record[vars.config['starttime']].value;
 					group[vars.config['endtime']]=record[vars.config['endtime']].value;
 					group[vars.config['owner']]=record[vars.config['owner']].value;
+					group[vars.config['tel']]=record[vars.config['tel']].value;
 					group[vars.config['transportation']]=record[vars.config['transportation']].value;
 					group['records']=[record];
 					if (latlng in markers)
@@ -406,7 +409,7 @@ jQuery.noConflict();
 					{
 						var marker={
 							id:latlng,
-							colors:vars.markercolors[0],
+							colors:vars.allocationcolors[0],
 							lat:lat,
 							lng:lng,
 							groups:[group]
@@ -423,14 +426,14 @@ jQuery.noConflict();
 			/* setup color */
 			$.each(vars.markers,function(key,values){
 				var check=0;
-				var color=vars.markercolors[0];
+				var color=vars.allocationcolors[0];
 				var now=new Date();
 				var starttime=new Date((values.groups[0][vars.config['date']]+'T'+values.groups[0][vars.config['starttime']]+':00+0900').dateformat());
 				var endtime=new Date((values.groups[0][vars.config['date']]+'T'+values.groups[0][vars.config['endtime']]+':00+0900').dateformat());
-				if (now>starttime) color=vars.markercolors[1];
-				if (now>starttime && now>endtime.calc('-3 hour')) color=vars.markercolors[2];
-				if (now>starttime && now>endtime.calc('-1 hour')) color=vars.markercolors[3];
-				if (now>starttime && now>endtime) color=vars.markercolors[4];
+				if (now>starttime) color=vars.allocationcolors[1];
+				if (now>starttime && now>endtime.calc('-3 hour')) color=vars.allocationcolors[2];
+				if (now>starttime && now>endtime.calc('-1 hour')) color=vars.allocationcolors[3];
+				if (now>starttime && now>endtime) color=vars.allocationcolors[4];
 				for (var i=0;i<values.groups.length;i++)
 				{
 					var group=values.groups[i];
@@ -693,14 +696,14 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return event;
 		/* check viewid */
-		if (event.viewId!=vars.config['targetview']) return;
+		if (event.viewId!=vars.config['allocationview']) return;
 		/* initialize valiable */
 		vars.offset=0;
 		vars.records=[];
 		/* get fields of app */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fieldinfos=resp.properties;
-			vars.markercolors=JSON.parse(vars.config['markercolors']);
+			vars.allocationcolors=JSON.parse(vars.config['allocationcolors']);
 			/* create buttons */
 			if ($('.displaymap').size()) $('.displaymap').remove();
 			kintone.app.getHeaderMenuSpaceElement().appendChild(

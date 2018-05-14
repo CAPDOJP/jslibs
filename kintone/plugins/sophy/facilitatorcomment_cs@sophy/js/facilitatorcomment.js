@@ -23,6 +23,7 @@ jQuery.noConflict();
 		header:null,
 		rows:null,
 		template:null,
+		studentselect:null,
 		apps:{},
 		config:{},
 		offset:{},
@@ -76,6 +77,7 @@ jQuery.noConflict();
 				query+='date>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'"';
 				query+=' and date<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
 				query+=' and absence=0';
+				if ($('.searchstudent').val()) query+=' and studentcode="'+$('.searchstudent').val()+'"';
 				query+=' order by studentcode asc,date asc,starttime asc';
 				vars.apps[vars.config['history']]=null;
 				vars.offset[vars.config['history']]=0;
@@ -266,10 +268,11 @@ jQuery.noConflict();
 		/* check viewid */
 		if (event.viewId!=vars.config.facilitatorslist) return;
 		/* initialize valiable */
-		var feed=$('<div class="facilitatorcomment-dayfeed">');
+		var feed=$('<div class="facilitatorcomment-dayfeed custom-elements">');
 		var week=$('<span id="week" class="customview-span">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
+		var search=$('<button class="kintoneplugin-button-dialog-ok searchstudentbutton">');
 		/* append elements */
 		feed.append(prev);
 		feed.append(week);
@@ -279,8 +282,46 @@ jQuery.noConflict();
 			.append($('<input type="checkbox" name="checkbox" value="0" id="inputdeny" checked="checked">'))
 			.append($('<label for="inputdeny">').text('コメント入力済みは表示しない'))
 		);
-		if ($('.facilitatorcomment-dayfeed').size()) $('.facilitatorcomment-dayfeed').remove();
+		if ($('.custom-elements').size()) $('.custom-elements').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(
+			search.addClass('custom-elements')
+			.text('生徒選択')
+			.on('click',function(e){
+				vars.studentselect.show({
+					buttons:{
+						cancel:function(){
+							/* close the reference box */
+							vars.studentselect.hide();
+						}
+					},
+					callback:function(row){
+						/* close the reference box */
+						vars.studentselect.hide();
+						$('.searchstudent').val(row.find('#\\$id').val());
+						$('.searchstudentname').text(row.find('#name').val());
+						$('.searchstudentname').closest('div').show();
+						/* reload view */
+						functions.load();
+					}
+				});
+			})[0]
+		);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(
+			$('<div>').addClass('facilitatorcomment-dayfeed custom-elements').css({'display':'none'})
+			.append($('<span class="customview-span searchstudentname">').css({'padding':'0px 5px 0px 15px'}))
+			.append(
+				$('<button class="customview-button close-button clearstudentbutton">')
+				.on('click',function(e){
+					$('.searchstudent').val('');
+					$('.searchstudentname').text('');
+					$('.searchstudentname').closest('div').hide();
+					/* reload view */
+					functions.load();
+				})
+			)
+			.append($('<input type="hidden" class="searchstudent">'))[0]
+		);
 		/* setup date value */
 		vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);
 		vars.todate=vars.fromdate.calc('6 day');
@@ -299,144 +340,175 @@ jQuery.noConflict();
 		$('input#inputdeny').on('change',function(){functions.load();});
 		if (!$('.facilitatorcomment').size())
 		{
-			/* create table */
-			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
-				vars.container=$('div#facilitatorcomment-container');
-				vars.table=$('<table id="facilitatorcomment" class="customview-table">');
-				vars.header=$('<tr>');
-				vars.rows=$('<tbody>');
-				vars.template=$('<tr>');
-				vars.fieldinfos=resp.properties;
-				/* create inputform */
-				var fields=[];
-				fields.push(vars.fieldinfos[vars.config.facilitator]);
-				fields.push(vars.fieldinfos[vars.config.facilitatorcomment]);
-				fields.push(vars.fieldinfos[vars.config.pending]);
-				vars.inputform=$('body').fieldsform({
-					buttons:{
-						ok:{
-							text:'OK'
-						},
-						cancel:{
+			vars.apps[vars.config['student']]=null;
+			vars.offset[vars.config['student']]=0;
+			functions.loaddatas(vars.config['student'],' status not in ("退塾") order by $id asc',function(){
+				/* create studentselect box */
+				vars.studentselect=$('body').referer({
+					datasource:vars.apps[vars.config['student']],
+					displaytext:['gradename','name'],
+					buttons:[
+						{
+							id:'cancel',
 							text:'キャンセル'
 						}
-					},
-					fields:fields
+					],
+					searches:[
+						{
+							id:'gradecode',
+							class:'referer-select',
+							label:'学年',
+							type:'select',
+							param:{app:vars.config['grade']},
+							value:'code',
+							text:'name',
+							callback:function(row){
+								vars.studentselect.search();
+							}
+						}
+					]
 				});
-				/* append button column */
-				vars.header.append($('<th>').text(''));
-				vars.template.append($('<td class="buttoncell">')
-					.append($('<button class="customview-button edit-button">').on('click',function(){
-						var row=$(this).closest('tr');
-						var index=row.find('td').first().find('input#id').val();
-						var values={};
-						values[vars.config.facilitator]={
-							type:vars.fieldinfos[vars.config.facilitator].type,
-							value:row.find('td').first().find('input#'+vars.config.facilitator).val()
-						};
-						values[vars.config.facilitatorcomment]={
-							type:vars.fieldinfos[vars.config.facilitatorcomment].type,
-							value:row.find('td').first().find('input#'+vars.config.facilitatorcomment).val()
-						};
-						values[vars.config.pending]={
-							type:vars.fieldinfos[vars.config.pending].type,
-							value:row.find('td').first().find('input#'+vars.config.pending).val()
-						};
-						vars.inputform.show({
-							buttons:{
-								ok:function(){
-									/* close inputform */
-									vars.inputform.hide();
-									var record={
-										studentcode:{value:row.find('td').first().find('input#studentcode').val()},
-										studentname:{value:row.find('td').first().find('input#studentname').val()},
-										weekfrom:{value:vars.fromdate.format('Y-m-d')},
-										weekto:{value:vars.todate.format('Y-m-d')}
-									};
-									for (var i=0;i<fields.length;i++)
-									{
-										var fieldinfo=fields[i];
-										var contents=$('#'+fieldinfo.code,vars.inputform.contents);
-										var receivevalue='';
-										if (fieldinfo.code==vars.config.pending)
+				vars.studentselect.searchblock.find('select').closest('label').css({'width':'100%'});
+				vars.studentselect.searchblock.find('button').hide();
+				/* create table */
+				kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+					vars.container=$('div#facilitatorcomment-container');
+					vars.table=$('<table id="facilitatorcomment" class="customview-table">');
+					vars.header=$('<tr>');
+					vars.rows=$('<tbody>');
+					vars.template=$('<tr>');
+					vars.fieldinfos=resp.properties;
+					/* create inputform */
+					var fields=[];
+					fields.push(vars.fieldinfos[vars.config.facilitator]);
+					fields.push(vars.fieldinfos[vars.config.facilitatorcomment]);
+					fields.push(vars.fieldinfos[vars.config.pending]);
+					vars.inputform=$('body').fieldsform({
+						buttons:{
+							ok:{
+								text:'OK'
+							},
+							cancel:{
+								text:'キャンセル'
+							}
+						},
+						fields:fields
+					});
+					/* append button column */
+					vars.header.append($('<th>').text(''));
+					vars.template.append($('<td class="buttoncell">')
+						.append($('<button class="customview-button edit-button">').on('click',function(){
+							var row=$(this).closest('tr');
+							var index=row.find('td').first().find('input#id').val();
+							var values={};
+							values[vars.config.facilitator]={
+								type:vars.fieldinfos[vars.config.facilitator].type,
+								value:row.find('td').first().find('input#'+vars.config.facilitator).val()
+							};
+							values[vars.config.facilitatorcomment]={
+								type:vars.fieldinfos[vars.config.facilitatorcomment].type,
+								value:row.find('td').first().find('input#'+vars.config.facilitatorcomment).val()
+							};
+							values[vars.config.pending]={
+								type:vars.fieldinfos[vars.config.pending].type,
+								value:row.find('td').first().find('input#'+vars.config.pending).val()
+							};
+							vars.inputform.show({
+								buttons:{
+									ok:function(){
+										/* close inputform */
+										vars.inputform.hide();
+										var record={
+											studentcode:{value:row.find('td').first().find('input#studentcode').val()},
+											studentname:{value:row.find('td').first().find('input#studentname').val()},
+											weekfrom:{value:vars.fromdate.format('Y-m-d')},
+											weekto:{value:vars.todate.format('Y-m-d')}
+										};
+										for (var i=0;i<fields.length;i++)
 										{
-											receivevalue=contents.find('[name='+fieldinfo.code+']:checked').val();
-											if (receivevalue.length==0)
+											var fieldinfo=fields[i];
+											var contents=$('#'+fieldinfo.code,vars.inputform.contents);
+											var receivevalue='';
+											if (fieldinfo.code==vars.config.pending)
 											{
-												swal('Error!',contents.find('.title').text()+'を選択して下さい','error');
-												return;
+												receivevalue=contents.find('[name='+fieldinfo.code+']:checked').val();
+												if (receivevalue.length==0)
+												{
+													swal('Error!',contents.find('.title').text()+'を選択して下さい','error');
+													return;
+												}
+												else record[fieldinfo.code]={value:receivevalue};
 											}
-											else record[fieldinfo.code]={value:receivevalue};
+											else
+											{
+												receivevalue=contents.find('.receiver').val();
+												if (receivevalue.length==0)
+												{
+													swal('Error!',contents.find('.title').text()+'を入力して下さい。','error');
+													return;
+												}
+												else record[fieldinfo.code]={value:receivevalue};
+											}
+										}
+										if (index.length==0)
+										{
+											var body={
+												app:kintone.app.getId(),
+												record:record
+											};
+											kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
+												/* reload view */
+												functions.load();
+											},function(error){
+												swal('Error!',error.message,'error');
+											});
 										}
 										else
 										{
-											receivevalue=contents.find('.receiver').val();
-											if (receivevalue.length==0)
-											{
-												swal('Error!',contents.find('.title').text()+'を入力して下さい。','error');
-												return;
-											}
-											else record[fieldinfo.code]={value:receivevalue};
+											var body={
+												app:kintone.app.getId(),
+												id:index,
+												record:record
+											};
+											kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+												/* reload view */
+												functions.load();
+											},function(error){
+												swal('Error!',error.message,'error');
+											});
 										}
-									}
-									if (index.length==0)
-									{
-										var body={
-											app:kintone.app.getId(),
-											record:record
-										};
-										kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-											/* reload view */
-											functions.load();
-										},function(error){
-											swal('Error!',error.message,'error');
-										});
-									}
-									else
-									{
-										var body={
-											app:kintone.app.getId(),
-											id:index,
-											record:record
-										};
-										kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
-											/* reload view */
-											functions.load();
-										},function(error){
-											swal('Error!',error.message,'error');
-										});
+									},
+									cancel:function(){
+										/* close inputform */
+										vars.inputform.hide();
 									}
 								},
-								cancel:function(){
-									/* close inputform */
-									vars.inputform.hide();
-								}
-							},
-							values:values
-						});
-					}))
-					.append($('<input type="hidden" id="id" value="">'))
-					.append($('<input type="hidden" id="studentcode" value="">'))
-					.append($('<input type="hidden" id="studentname" value="">'))
-					.append($('<input type="hidden" id="'+vars.config.facilitator+'" value="">'))
-					.append($('<input type="hidden" id="'+vars.config.facilitatorcomment+'" value="">'))
-					.append($('<input type="hidden" id="'+vars.config.pending+'" value="'+vars.fieldinfos[vars.config.pending].defaultValue+'">'))
-				);
-				/* append columns */
-				$.each(vars.fields.my,function(key,values){
-					vars.header.append($('<th>').addClass(key).text(values));
-					vars.template.append($('<td>').addClass(key));
-				});
-				$.each(vars.fields.history,function(key,values){
-					vars.header.append($('<th>').addClass(key).text(values));
-					vars.template.append($('<td>').addClass(key));
-				});
-				/* append elements */
-				vars.table.append($('<thead>').append(vars.header));
-				vars.table.append(vars.rows);
-				vars.container.empty().append(vars.table);
-				/* reload view */
-				functions.load();
+								values:values
+							});
+						}))
+						.append($('<input type="hidden" id="id" value="">'))
+						.append($('<input type="hidden" id="studentcode" value="">'))
+						.append($('<input type="hidden" id="studentname" value="">'))
+						.append($('<input type="hidden" id="'+vars.config.facilitator+'" value="">'))
+						.append($('<input type="hidden" id="'+vars.config.facilitatorcomment+'" value="">'))
+						.append($('<input type="hidden" id="'+vars.config.pending+'" value="'+vars.fieldinfos[vars.config.pending].defaultValue+'">'))
+					);
+					/* append columns */
+					$.each(vars.fields.my,function(key,values){
+						vars.header.append($('<th>').addClass(key).text(values));
+						vars.template.append($('<td>').addClass(key));
+					});
+					$.each(vars.fields.history,function(key,values){
+						vars.header.append($('<th>').addClass(key).text(values));
+						vars.template.append($('<td>').addClass(key));
+					});
+					/* append elements */
+					vars.table.append($('<thead>').append(vars.header));
+					vars.table.append(vars.rows);
+					vars.container.empty().append(vars.table);
+					/* reload view */
+					functions.load();
+				},function(error){});
 			},function(error){});
 		}
 	});

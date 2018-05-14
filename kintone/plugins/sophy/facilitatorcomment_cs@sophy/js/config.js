@@ -45,7 +45,12 @@ jQuery.noConflict();
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
 				/* setup app lists */
 				$.each(resp.apps,function(index,values){
-					if (values.appId!=kintone.app.getId()) $('select#history').append($('<option>').attr('value',values.appId).text(values.name));
+					if (values.appId!=kintone.app.getId())
+					{
+						$('select#grade').append($('<option>').attr('value',values.appId).text(values.name));
+						$('select#student').append($('<option>').attr('value',values.appId).text(values.name));
+						$('select#history').append($('<option>').attr('value',values.appId).text(values.name));
+					}
 				})
 				vars.offset+=100;
 				if (resp.apps.length==100) functions.loadapps(callback);
@@ -91,6 +96,8 @@ jQuery.noConflict();
 				var row=null;
 				if (Object.keys(config).length!==0)
 				{
+					$('select#grade').val(config['grade']);
+					$('select#student').val(config['student']);
 					$('select#history').val(config['history']);
 					$('select#facilitator').val(config['facilitator']);
 					$('select#facilitatorcomment').val(config['facilitatorcomment']);
@@ -106,6 +113,16 @@ jQuery.noConflict();
 		var row=null;
 		var config=[];
 		/* check values */
+		if ($('select#grade').val()=='')
+		{
+			swal('Error!','学年アプリを選択して下さい。','error');
+			return;
+		}
+		if ($('select#student').val()=='')
+		{
+			swal('Error!','生徒情報アプリを選択して下さい。','error');
+			return;
+		}
 		if ($('select#history').val()=='')
 		{
 			swal('Error!','受講履歴アプリを選択して下さい。','error');
@@ -127,6 +144,8 @@ jQuery.noConflict();
 			return;
 		}
 		/* setup config */
+		config['grade']=$('select#grade').val();
+		config['student']=$('select#student').val();
 		config['history']=$('select#history').val();
 		config['facilitator']=$('select#facilitator').val();
 		config['facilitatorcomment']=$('select#facilitatorcomment').val();

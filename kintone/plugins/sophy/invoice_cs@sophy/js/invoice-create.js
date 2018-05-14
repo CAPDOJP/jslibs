@@ -911,7 +911,19 @@ jQuery.noConflict();
 		$('body').append(splash);
 		$('.createinvoicebutton')
 		.text('請求書作成')
-		.on('click',function(e){functions.createinvoice();});
+		.on('click',function(e){
+			swal({
+				title:'確認',
+				text:'請求書を作成します。\n宜しいですか?',
+				type:'warning',
+				showCancelButton:true,
+				confirmButtonText:'OK',
+				cancelButtonText:"キャンセル"
+			},
+			function(){
+				functions.createinvoice();
+			});
+		});
 		$('.downloadjournalizingbutton')
 		.text('仕訳作成')
 		.on('click',function(e){functions.downloadjournalizing();});
@@ -1046,6 +1058,7 @@ jQuery.noConflict();
 				var columns=[
 					'billdate',
 					'customername',
+					'nss',
 					'subbill',
 					'tax',
 					'bill',

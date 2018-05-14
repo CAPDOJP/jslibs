@@ -25,6 +25,7 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
             "js/map.js",
             "js/allocation.js",
+            "js/request.js",
             "js/sweetalert.min.js"
         ],
         "css":[

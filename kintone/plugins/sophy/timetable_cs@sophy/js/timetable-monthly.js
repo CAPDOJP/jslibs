@@ -22,6 +22,7 @@ jQuery.noConflict();
 		table:null,
 		minilecselect:null,
 		termselect:null,
+		studentselect:null,
 		apps:{},
 		lectures:{},
 		config:{},
@@ -348,11 +349,16 @@ jQuery.noConflict();
 							}).length==0) exists++;
 							return exists==2;
 						});
+						var studentrecords=$.grep(vars.apps[vars.config['student']],function(item,index){
+							if ($('.searchstudent').val().length==0) return true;
+							if (item['$id'].value==$('.searchstudent').val()) return true;
+							else return false;
+						});
 						/* append recoed of schedule */
 						if (day>new Date(new Date().format('Y-m-d')).calc('-1 day'))
 						{
 							var schedule=$.createschedule(
-								vars.apps[vars.config['student']],
+								studentrecords,
 								vars.apps[vars.lecturekeys[0]],
 								filter,
 								vars.lecturekeys[0],
@@ -396,6 +402,7 @@ jQuery.noConflict();
 			};
 			query+=((query.length!=0)?' and ':'');
 			query+='date>"'+vars.fromdate.calc('-1 day').format('Y-m-d')+'" and date<"'+vars.todate.calc('1 day').format('Y-m-d')+'"';
+			if ($('.searchstudent').val()) query+=' and studentcode="'+$('.searchstudent').val()+'"';
 			query+=' order by date asc,starttime asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -430,10 +437,11 @@ jQuery.noConflict();
 		if (event.viewId!=vars.config.monthtimetable) return;
 		/* initialize valiable */
 		var container=$('div#timetable-container').css({'padding-bottom':'100px'});
-		var feed=$('<div class="timetable-headermenucontents">');
+		var feed=$('<div class="timetable-headermenucontents custom-elements">');
 		var month=$('<span id="month" class="customview-span">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
+		var search=$('<button class="kintoneplugin-button-dialog-ok searchstudentbutton">');
 		var splash=$('<div id="splash">');
 		vars.graphlegend=$('<div class="timetable-graphlegend">');
 		vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
@@ -450,8 +458,46 @@ jQuery.noConflict();
 		feed.append(prev);
 		feed.append(month);
 		feed.append(next);
-		if ($('.timetable-headermenucontents').size()) $('.timetable-headermenucontents').remove();
+		if ($('.custom-elements').size()) $('.custom-elements').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(
+			search.addClass('custom-elements')
+			.text('生徒選択')
+			.on('click',function(e){
+				vars.studentselect.show({
+					buttons:{
+						cancel:function(){
+							/* close the reference box */
+							vars.studentselect.hide();
+						}
+					},
+					callback:function(row){
+						/* close the reference box */
+						vars.studentselect.hide();
+						$('.searchstudent').val(row.find('#\\$id').val());
+						$('.searchstudentname').text(row.find('#name').val());
+						$('.searchstudentname').closest('div').show();
+						/* reload view */
+						functions.load();
+					}
+				});
+			})[0]
+		);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(
+			$('<div>').addClass('timetable-headermenucontents custom-elements').css({'display':'none'})
+			.append($('<span class="customview-span searchstudentname">').css({'padding':'0px 5px 0px 15px'}))
+			.append(
+				$('<button class="customview-button close-button clearstudentbutton">')
+				.on('click',function(e){
+					$('.searchstudent').val('');
+					$('.searchstudentname').text('');
+					$('.searchstudentname').closest('div').hide();
+					/* reload view */
+					functions.load();
+				})
+			)
+			.append($('<input type="hidden" class="searchstudent">'))[0]
+		);
 		$('body').append(vars.progress);
 		$('body').append(splash);
 		/* setup date value */
@@ -541,6 +587,33 @@ jQuery.noConflict();
 					}
 				}
 			});
+			/* create studentselect box */
+			vars.studentselect=$('body').referer({
+				datasource:vars.apps[vars.config['student']],
+				displaytext:['gradename','name'],
+				buttons:[
+					{
+						id:'cancel',
+						text:'キャンセル'
+					}
+				],
+				searches:[
+					{
+						id:'gradecode',
+						class:'referer-select',
+						label:'学年',
+						type:'select',
+						param:{app:vars.config['grade']},
+						value:'code',
+						text:'name',
+						callback:function(row){
+							vars.studentselect.search();
+						}
+					}
+				]
+			});
+			vars.studentselect.searchblock.find('select').closest('label').css({'width':'100%'});
+			vars.studentselect.searchblock.find('button').hide();
 			/* append graph legend */
 			$.each(vars.lectures,function(key,values){
 				vars.graphlegend

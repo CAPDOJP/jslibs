@@ -29,6 +29,36 @@ jQuery.noConflict();
 				else callback();
 			},function(error){});
 		},
+		loadviews:function(row,callback){
+			var graphs=[];
+			var views=[];
+			$('select#view',row).empty();
+			$('select#view',row).append($('<option>').attr('value','').html('表示一覧を選択'));
+			if ($('select#app',row).val())
+			{
+				kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:$('select#app',row).val()},function(resp){
+					/* setup view lists */
+					$.each(resp.views,function(key,values){
+						views.push({
+							index:values.index,
+							id:values.id,
+							name:values.name
+						});
+					});
+					views.sort(function(a,b){
+						if(a.index<b.index) return -1;
+						if(a.index>b.index) return 1;
+						return 0;
+					});
+					for (var i=0;i<views.length;i++) $('select#view',row).append($('<option>').attr('value',views[i].id).text(views[i].name));
+					if (callback) callback();
+				});
+			}
+			else
+			{
+				if (callback) callback();
+			}
+		}
 	};
 	/*---------------------------------------------------------------
 	 initialize fields
@@ -43,7 +73,10 @@ jQuery.noConflict();
 				vars.apptable.push(
 					$('.apps',row).adjustabletable({
 						add:'img.addapp',
-						del:'img.delapp'
+						del:'img.delapp',
+						addcallback:function(row){
+							$('select#app',row).on('change',function(){functions.loadviews(row)});
+						}
 					})
 				);
 			}
@@ -70,7 +103,12 @@ jQuery.noConflict();
 					if (addapps) vars.apptable[i].addrow();
 					else addapps=true;
 					rowapps=vars.apptable[i].rows.eq(i2);
-					$('select#app',rowapps).val(category.apps[i2]);
+					$('select#app',rowapps).val(category.apps[i2].app.id);
+					(function(row,view){
+						functions.loadviews(row,function(){
+							$('select#view',row).val(view);
+						});
+					})(rowapps,category.apps[i2].view.id)
 				}
 			}
 		}
@@ -91,8 +129,17 @@ jQuery.noConflict();
 				for (var i2=0;i2<vars.apptable[i].rows.length;i2++)
 				{
 					row=vars.apptable[i].rows.eq(i2);
-					if ($('select#app',row).val().length==0) continue;
-					apps.push($('select#app',row).val());
+					if (!$('select#app',row).val()) continue;
+					apps.push({
+						app:{
+							id:$('select#app',row).val(),
+							name:$('select#app option:selected',row).text()
+						},
+						view:{
+							id:$('select#view',row).val(),
+							name:$('select#view option:selected',row).text()
+						}
+					});
 				}
 				if (apps.length==0)
 				{
