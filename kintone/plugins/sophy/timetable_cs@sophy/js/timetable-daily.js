@@ -428,6 +428,26 @@ jQuery.noConflict();
 						vars.table.contents.find('tr').eq(rowspans.index).find('td').eq(0).attr('rowspan',rowspans.span);
 						for (var i=rowspans.index+1;i<index+1;i++) vars.table.contents.find('tr').eq(i).find('td').eq(0).hide();
 					}
+					/* calc attendance number */
+					var starttime=new Date((vars.date.format('Y-m-d')+'T'+'00:00:00+09:00').dateformat());
+					var endtime=new Date((vars.date.format('Y-m-d')+'T'+'00:00:00+09:00').dateformat());
+					var span=60/parseInt(vars.config['scale']);
+					for (var i=0;i<24;i++)
+					{
+						for (var i2=0;i2<parseInt(vars.config['scale']);i2++)
+						{
+							var cell=vars.table.foot.find('th').eq(i*parseInt(vars.config['scale'])+i2+1);
+							endtime=starttime.calc(span.toString()+' minute');
+							cell.text(
+								$.grep(records,function(item,index){
+									var fromtime=new Date((vars.date.format('Y-m-d')+'T'+item['starttime'].value+':00+09:00').dateformat());
+									var totime=new Date(fromtime.getTime()+(parseFloat(item['hours'].value)*1000*60*60));
+									return (fromtime<=starttime && totime>=endtime);
+								}).length.toString()
+							);
+							starttime=starttime.calc(span.toString()+' minute');
+						}
+					}
 				});
 			});
 		},

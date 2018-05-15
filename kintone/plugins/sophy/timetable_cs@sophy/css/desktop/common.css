@@ -86,7 +86,8 @@ table.customview-table{
 	min-width:100%;
 	padding:0px;
 }
-table.customview-table thead th{
+table.customview-table thead th,
+table.customview-table tfoot th{
 	background-color:#EFEFEF;
 	border:1px solid #C9C9C9;
 	font-weight:normal;

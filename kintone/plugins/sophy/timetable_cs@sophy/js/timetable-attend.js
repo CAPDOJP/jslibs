@@ -514,8 +514,8 @@ jQuery.noConflict();
 			var head=$('<tr></tr><tr></tr>');
 			var template=$('<tr>');
 			var spacer=$('<span>');
-			head.eq(0).append($('<th class="timetable-cellhead">'));
-			head.eq(1).append($('<th class="timetable-cellhead">'));
+			head.eq(0).append($('<th class="timetable-cellhead">').append($('<p>').addClass('customview-p').html('&nbsp;')));
+			head.eq(1).append($('<th class="timetable-cellhead">').append($('<p>').addClass('customview-p').html('&nbsp;')));
 			template.append($('<td class="timetable-cellhead">'));
 			if (vars.config['scalefixed']=='1') spacer.css({'display':'block','height':'1px','width':vars.config['scalefixedwidth']+'px'});
 			for (var i=0;i<24;i++)

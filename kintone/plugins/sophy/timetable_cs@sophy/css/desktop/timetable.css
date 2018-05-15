@@ -369,13 +369,28 @@ table.timetable-attend{
   table-layout:fixed;
   width:100%;
 }
-table.timetable-attend *.timetable-cellhead{
+table.timetable-attend .timetable-cellhead{
+  background-color:#EFEFEF;
+  left:0;
+  padding:0px;
+  position:-webkit-sticky;
+  position:sticky;
   width:10em;
+  z-index:2;
+}
+table.timetable-attend .timetable-cellhead p{
+  border-right:1px solid #C9C9C9;
+  margin:0px;
+  padding:2px 0.5em;
+}
+table.timetable-attend .timetable-cellhead p.timetable-datacell span.grade{
+  left:0.5em;
+  top:2px;
 }
 table.timetable-attend.cellfixed{
   table-layout:auto;
 }
-table.timetable-attend.cellfixed *.timetable-cellhead{
+table.timetable-attend.cellfixed .timetable-cellhead{
   white-space:nowrap;
   width:auto;
 }
