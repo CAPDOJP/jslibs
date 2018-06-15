@@ -343,7 +343,7 @@ jQuery.noConflict();
 													if (vars.apps[kintone.app.getId()][i]['$id'].value==$('#\\$id',cell).val()) {index=i;break;}
 												if (index>-1) vars.apps[kintone.app.getId()].splice(index,1);
 												/* reload view */
-												functions.load();
+												location.reload(true);;
 											});
 										},
 										cancel:function(){

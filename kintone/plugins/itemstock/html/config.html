@@ -1,0 +1,173 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">商品アプリ<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">入出庫アプリの双方に関連付けられている商品アプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="itemapp">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<table class="itemcolumns">
+			<thead>
+				<tr>
+					<th>表示フィールド</th>
+					<th colspan="2"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="itemcolumn">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">適正在庫数フィールド</div>
+		<div class="kintoneplugin-desc">商品アプリに発注点/適正在庫等のフィールドがある場合は、そのフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="itemsafety">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">出庫アプリ<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">商品の出庫情報を保持しているアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="shipmentapp">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">出庫日フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">出庫日が入力されたフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="shipmentdate">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">出庫商品フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">商品アプリが指定されているフィールドを指定して下さい。【ルックアップフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="shipmentitem">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">出庫数量フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">商品の出庫数が入力されたフィールドを指定して下さい。【数値/計算フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="shipmentquantity">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">入庫アプリ<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">商品の入庫情報を保持しているアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="arrivalapp">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">入庫日フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">入庫日が入力されたフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="arrivaldate">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">入庫商品フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">商品アプリが指定されているフィールドを指定して下さい。【ルックアップフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="arrivalitem">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">入庫数量フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">商品の入庫数が入力されたフィールドを指定して下さい。【数値/計算フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="arrivalquantity">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">棚卸日フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">棚卸日を入力するフィールドを指定して下さい。【日付フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="inventorydate">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">棚卸商品フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">商品アプリが指定されているフィールドを指定して下さい。【ルックアップフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="inventoryitem">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">棚卸数量フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">棚卸時の在庫差異を入力するフィールドを指定して下さい。【数値フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="inventoryquantity">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

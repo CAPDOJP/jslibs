@@ -387,9 +387,9 @@ jQuery.noConflict();
 		loadlevels:function(callback){
 			var body={
 				app:vars.settings.app,
-				query:''
+				query:vars.fieldinfos[vars.settings.lookup].lookup.filterCond
 			};
-			body.query+='order by ';
+			body.query+=' order by ';
 			for (var i=0;i<vars.settings.levels.length;i++) body.query+=vars.settings.levels[i]+' asc,';
 			body.query=body.query.replace(/,$/g,'');
 			body.query+=' limit '+limit.toString()+' offset '+vars.offset.toString()

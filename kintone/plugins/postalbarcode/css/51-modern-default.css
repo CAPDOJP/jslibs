@@ -314,7 +314,7 @@
   overflow: hidden;
   box-sizing: border-box;
   margin-right: 8px;
-  padding: 0 32px 0 8px;
+  padding: 0 0 0 8px;
   min-width: 80px;
   max-width: 280px;
   height: 48px;
@@ -356,6 +356,7 @@
   color: #3498db;
   font-size: 13px;
   cursor: pointer;
+  padding-right: 32px;
   -moz-appearance: none;
   -webkit-appearance: none;
   -ms-appearance: none;

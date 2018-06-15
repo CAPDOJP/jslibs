@@ -18,6 +18,7 @@ jQuery.noConflict();
 		template:null,
 		apps:{},
 		config:{},
+		fieldinfos:{},
 		lookups:{}
 	};
 	var events={
@@ -57,7 +58,7 @@ jQuery.noConflict();
 			var conditions={};
 			var filter=[];
 			var options=[];
-			var records=vars.apps[vars.lookups[fieldcode].app];
+			var records=vars.apps[fieldcode];
 			var segments=vars.lookups[fieldcode].segments;
 			for (var i=0;i<segments.length;i++)
 			{
@@ -91,7 +92,6 @@ jQuery.noConflict();
 						var option=$.fieldvalue(filter[i2][segments[i]]);
 						if ($.inArray(option,options)<0) options.push(option);
 					}
-					options.sort();
 					list.empty().append($('<option>').attr('value','').text(''));
 					for (var i2=0;i2<options.length;i2++) list.append($('<option>').attr('value',options[i2]).html('&nbsp;'+options[i2]+'&nbsp;'));
 					listcover.show();
@@ -161,7 +161,7 @@ jQuery.noConflict();
 				functions.reloadsegments(fieldcode,container,-1);
 				if (records.length>index)
 					(function(fieldcode,container,record){
-						var records=$.grep(vars.apps[vars.lookups[fieldcode].app],function(item,index){return item[vars.lookups[fieldcode].relatedkey].value==record[fieldcode].value;});
+						var records=$.grep(vars.apps[fieldcode],function(item,index){return item[vars.lookups[fieldcode].relatedkey].value==record[fieldcode].value;});
 						var segments=vars.lookups[fieldcode].segments;
 						if (records.length!=0)
 						{
@@ -182,42 +182,46 @@ jQuery.noConflict();
 		/* initialize valiable */
 		vars.template=$('<div class="kintoneplugin-select-outer lookupfilter">').append($('<div class="kintoneplugin-select">').append($('<select>')));
 		vars.lookups=JSON.parse(vars.config['lookup']);
-		var counter=0;
-		var params=[];
-		$.each(vars.lookups,function(key,values){
-			if ($.grep(params,function(item,index){return item.app==values.app;}).length==0)
+		/* get fields of app */
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+			vars.fieldinfos=$.fieldparallelize(resp.properties);
+			var counter=0;
+			var params=[];
+			$.each(vars.lookups,function(key,values){
 				params.push({
 					app:values.app,
-					condition:values.filtercond,
-					sort:values.sort,
+					code:key,
+					condition:vars.fieldinfos[key].lookup.filterCond,
+					sort:vars.fieldinfos[key].lookup.sort,
 					limit:limit,
 					offset:0,
 					records:[]
 				});
-		});
-		if (params.length==0) return event;
-		functions.loaddatas(counter,params,function(){
-			for (var i=0;i<params.length;i++) vars.apps[params[i].app]=params[i].records;
-			$.each(vars.lookups,function(key,values){
-				var records=[event.record];
-				if (values.tablecode.length!=0)
-				{
-					records=[];
-					for (var i=0;i<event.record[values.tablecode].value.length;i++) records.push(event.record[values.tablecode].value[i].value);
-				}
-				/* setup segments */
-				functions.setupsegments(key,records);
-				if (values.tablecode.length!=0)
-				{
-					var events=[];
-					events.push('app.record.create.change.'+values.tablecode);
-					events.push('app.record.edit.change.'+values.tablecode);
-					kintone.events.on(events,function(event){
-						functions.setupsegments(key,[]);
-						return event;
-					});
-				}
 			});
-		});
+			if (params.length==0) return event;
+			functions.loaddatas(counter,params,function(){
+				for (var i=0;i<params.length;i++) vars.apps[params[i].code]=params[i].records;
+				$.each(vars.lookups,function(key,values){
+					var records=[event.record];
+					if (values.tablecode.length!=0)
+					{
+						records=[];
+						for (var i=0;i<event.record[values.tablecode].value.length;i++) records.push(event.record[values.tablecode].value[i].value);
+					}
+					/* setup segments */
+					functions.setupsegments(key,records);
+					if (values.tablecode.length!=0)
+					{
+						var events=[];
+						events.push('app.record.create.change.'+values.tablecode);
+						events.push('app.record.edit.change.'+values.tablecode);
+						kintone.events.on(events,function(event){
+							functions.setupsegments(key,[]);
+							return event;
+						});
+					}
+				});
+			});
+		},function(error){});
 	});
 })(jQuery,kintone.$PLUGIN_ID);

@@ -99,7 +99,7 @@ jQuery.extend({
 			default:
 				var body={
 					app:fieldinfo.lookup.relatedApp.app,
-					query:'order by '+fieldinfo.lookup.relatedKeyField+' '+config['employeesort']+' limit '+limit.toString()+' offset '+offset['employee'].toString()
+					query:fieldinfo.lookup.filterCond+' order by '+fieldinfo.lookup.relatedKeyField+' '+config['employeesort']+' limit '+limit.toString()+' offset '+offset['employee'].toString()
 				};
 				kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 					$.each(resp.records,function(index,values){

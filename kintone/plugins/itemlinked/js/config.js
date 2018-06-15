@@ -72,15 +72,18 @@ jQuery.noConflict();
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			var config=kintone.plugin.app.getConfig(PLUGIN_ID);
 			var mappings=[];
-			/* append lookup mappings fields and group fields */
+			/* append group fields */
 			$.each(resp.properties,function(key,values){
+				if ($.inArray(values.code,vars.groups)>-1) $('select#groupfield').append($('<option>').attr('value',values.code).text(values.label));
+			});
+			/* append lookup mappings fields */
+			vars.fieldinfos=$.fieldparallelize(resp.properties);
+			$.each(vars.fieldinfos,function(key,values){
 				if (values.lookup)
 					$.each(values.lookup.fieldMappings,function(index,values){
 						mappings.push(values.field);
 					});
-				if ($.inArray(values.code,vars.groups)>-1) $('select#groupfield').append($('<option>').attr('value',values.code).text(values.label));
 			});
-			vars.fieldinfos=$.fieldparallelize(resp.properties);
 			$.each(sorted,function(index){
 				if (sorted[index] in vars.fieldinfos)
 				{

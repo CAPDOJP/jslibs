@@ -370,7 +370,7 @@ jQuery.noConflict();
     loadlevels:function(param,callback){
       var body={
         app:param.app,
-        query:'order by '+param.field+' '+param.sort+' limit '+limit.toString()+' offset '+param.offset.toString()
+        query:vars.fieldinfos[param.code].lookup.filterCond+' order by '+param.field+' '+param.sort+' limit '+limit.toString()+' offset '+param.offset.toString()
       };
       kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
         var records=[]

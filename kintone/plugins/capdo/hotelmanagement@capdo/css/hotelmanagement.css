@@ -1,0 +1,192 @@
+/* individual style (common) */
+*.hide{
+	display:none;
+}
+div.hotelmanagement-dayfeed{
+	display:inline-block;
+	line-height:30px;
+	padding-top:9px;
+}
+div.hotelmanagement-dayfeed *{
+	vertical-align:top;
+}
+/* individual style (daily) */
+table.dailyschedule{
+	background-color:#FFFFFF;
+	table-layout:fixed;
+	width:100%;
+}
+table.dailyschedule .dailyschedule-cellhead{
+	background-color:#EFEFEF;
+	left:0;
+	padding:0px;
+	position:-webkit-sticky;
+	position:sticky;
+	width:10em;
+	z-index:2;
+}
+table.dailyschedule .dailyschedule-cellhead p{
+	border-right:1px solid #C9C9C9;
+	font-size:13px;
+	line-height:26px;
+	margin:0px;
+	padding:2px 0.5em;
+}
+table.dailyschedule.cellfixed{
+	table-layout:auto;
+}
+table.dailyschedule.cellfixed .dailyschedule-cellhead{
+	white-space:nowrap;
+	width:auto;
+}
+table.dailyschedule thead tr:nth-of-type(1) th{
+	border-bottom:none;
+	text-align:left;
+}
+table.dailyschedule thead tr:nth-of-type(2) th{
+	border-top:none;
+	border-bottom:none;
+}
+table.dailyschedule thead tr:nth-of-type(3) th{
+	border-top:none;
+}
+table.dailyschedule thead tr:nth-of-type(3) th p.customview-p{
+	font-size:10px;
+    line-height:10px;
+}
+table.dailyschedule tbody tr td.dailyschedule-merge{
+	padding:2px;
+	position:relative;
+	vertical-align:top;
+}
+table.dailyschedule tbody tr td.dailyschedule-merge p{
+	background-color:#7DC87D;
+	background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAFMN540AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAYhJREFUeNpiYMAF/v//Px+FA8Tvsan6DxBADMSJAsUEgNgAqy0AAYSiFbuhaOaCjEOWYwIRjECAJKYANWw+AzEAIIAII6BRMCOxBoUATm/hDR2YAFZjcQUOI1FGYwMAAUT1sFBAEisgygn4FOGSY0JifwDZhEUjKPgSiXX+/P8IkIAcvGSlGDQDKTYE7CKAABokCOic/Wh+KyBW43uQZiyJuJ+QRgNc2QFf4oElkgAgbiTVm8gpTICSwPqPo+z7T0oCMIDyE2B85JxGKFveh2raDxXrx1WuMpLqHeQilpGc8IAZwESMZrQCHWRYA1kxQrWSESDABgwRE1OgNOOAlnovAINwAyUWM+HLoNBwBaUzfVDBDLIQqqSfoqKQQDm0nwi1CUgOUKDE0gJSfQENHRC4T0lQw+JxI9GJhJERFvwU+TiAVNcjBfd+SuO4AL1ixqEOVKSeh6o7T83Krv8/YXAeqYimfkonsuWFDcynteXzCYTMgDugYKAcEEBSxUhJDoGWDRSX7VQDANmGedd/Xx4pAAAAAElFTkSuQmCC');
+	background-position:2px center;
+	background-repeat:no-repeat;
+	background-size:20px 20px;
+	border-radius:2px;
+	box-sizing:border-box;
+	cursor:pointer;
+	font-size:13px;
+	line-height:26px;
+	margin:0px;
+	overflow:hidden;
+	padding:0px 2px 0px 24px;
+	position:relative;
+	text-overflow:ellipsis;
+	vertical-align:top;
+	white-space:nowrap;
+	width:100%;
+}
+/* individual style (monthly) */
+div.monthlyschedule-days{
+	padding:3px 0px;
+}
+div.monthlyschedule-days:after{
+	clear:both;
+	content:'';
+	display:table;
+}
+div.monthlyschedule-days span{
+	display:inline-block;
+	font-size:18px;
+	float:left;
+	line-height:30px;
+	text-align:center;
+	width:30px;
+}
+div.monthlyschedule-days button{
+	float:right;
+}
+div.monthlyschedule-cell{
+	background-color:#7DC87D;
+	border-radius:5px;
+	box-sizing:border-box;
+	cursor:pointer;
+	margin:0px 0px 3px 0px;
+	padding:3px;
+	width:100%;
+}
+div.monthlyschedule-cell span{
+	display:inline-block;
+	padding:0px 5px;
+	vertical-align:top;
+}
+div.monthlyschedule-cell span:first-of-type{
+	background-color:#ffffff;
+	border-radius:5px;
+}
+table.monthlyschedule tbody tr td{
+	padding:3px;
+	vertical-align:top;
+}
+/* individual style (catering) */
+table.catering{
+	background-color:#FFFFFF;
+	table-layout:fixed;
+	width:100%;
+}
+table.catering .catering-cellhead{
+	background-color:#EFEFEF;
+	left:0;
+	padding:0px;
+	position:-webkit-sticky;
+	position:sticky;
+	width:10em;
+	z-index:2;
+}
+table.catering .catering-cellhead p{
+	border-right:1px solid #C9C9C9;
+	font-size:13px;
+	line-height:26px;
+	margin:0px;
+	padding:2px 0.5em;
+}
+table.catering.cellfixed{
+	table-layout:auto;
+}
+table.catering.cellfixed .catering-cellhead{
+	white-space:nowrap;
+	width:auto;
+}
+table.catering thead tr:nth-of-type(1) th{
+	border-bottom:none;
+	text-align:left;
+}
+table.catering thead tr:nth-of-type(2) th{
+	border-top:none;
+	border-bottom:none;
+}
+table.catering thead tr:nth-of-type(3) th{
+	border-top:none;
+}
+table.catering thead tr:nth-of-type(3) th p.customview-p{
+	font-size:10px;
+    line-height:10px;
+}
+table.catering tbody tr td.catering-merge{
+	padding:2px;
+	position:relative;
+	vertical-align:top;
+}
+table.catering tbody tr td.catering-merge p{
+	background-color:#7DC87D;
+	background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAFMN540AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAYhJREFUeNpiYMAF/v//Px+FA8Tvsan6DxBADMSJAsUEgNgAqy0AAYSiFbuhaOaCjEOWYwIRjECAJKYANWw+AzEAIIAII6BRMCOxBoUATm/hDR2YAFZjcQUOI1FGYwMAAUT1sFBAEisgygn4FOGSY0JifwDZhEUjKPgSiXX+/P8IkIAcvGSlGDQDKTYE7CKAABokCOic/Wh+KyBW43uQZiyJuJ+QRgNc2QFf4oElkgAgbiTVm8gpTICSwPqPo+z7T0oCMIDyE2B85JxGKFveh2raDxXrx1WuMpLqHeQilpGc8IAZwESMZrQCHWRYA1kxQrWSESDABgwRE1OgNOOAlnovAINwAyUWM+HLoNBwBaUzfVDBDLIQqqSfoqKQQDm0nwi1CUgOUKDE0gJSfQENHRC4T0lQw+JxI9GJhJERFvwU+TiAVNcjBfd+SuO4AL1ixqEOVKSeh6o7T83Krv8/YXAeqYimfkonsuWFDcynteXzCYTMgDugYKAcEEBSxUhJDoGWDRSX7VQDANmGedd/Xx4pAAAAAElFTkSuQmCC');
+	background-position:2px center;
+	background-repeat:no-repeat;
+	background-size:20px 20px;
+	border-radius:2px;
+	box-sizing:border-box;
+	cursor:pointer;
+	font-size:13px;
+	line-height:26px;
+	margin:0px;
+	overflow:hidden;
+	padding:0px 2px 0px 24px;
+	position:relative;
+	text-overflow:ellipsis;
+	vertical-align:top;
+	white-space:nowrap;
+	width:100%;
+}

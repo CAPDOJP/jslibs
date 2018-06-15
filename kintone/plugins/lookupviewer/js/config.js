@@ -186,7 +186,6 @@ jQuery.noConflict();
 			lookup:'',
 			app:'',
 			relatedkey:'',
-			filtercond:'',
 			sort:'',
 			type:'',
 			levels:[]
@@ -203,7 +202,6 @@ jQuery.noConflict();
 			settings.lookup=fieldinfo.code;
 			settings.app=fieldinfo.lookup.relatedApp.app;
 			settings.relatedkey=fieldinfo.lookup.relatedKeyField;
-			settings.filtercond=fieldinfo.lookup.filterCond;
 			settings.sort=fieldinfo.lookup.sort;
 			settings.type=fieldinfo.type;
 			if (fieldinfo.type=='CALC') settings.format=fieldinfo.format;

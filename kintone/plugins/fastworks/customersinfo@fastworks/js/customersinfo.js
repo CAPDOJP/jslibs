@@ -373,6 +373,15 @@ jQuery.noConflict();
 			if (!value) return true;
 			return false;
 		},
+		ismakeable:function(record){
+			if (!(vars.config['address'] in record)) return false;
+			if (!(vars.config['zip'] in record)) return false;
+			if (!(vars.config['barcodeimage'] in record)) return false;
+			var address=(record[vars.config.address].value)?record[vars.config.address].value:'';
+			var zip=(record[vars.config.zip].value)?record[vars.config.zip].value:'';
+			if (zip.match(/00$/g)) zip='';
+			return (address.length!=0 && zip.length!=0);
+		},
 		/* data load */
 		loaddatas:function(condition,callback){
 			var filters=((condition==null)?'':condition);
@@ -1403,26 +1412,29 @@ jQuery.noConflict();
 			events.push('mobile.app.record.edit.change.'+vars.config['address']);
 			events.push('app.record.index.edit.change.'+vars.config['address']);
 			kintone.events.on(events,function(event){
-				functions.createbarcode(event.record,'show',function(record){
-					if (record)
-					{
-						var zip=record[vars.config['zip']].value.replace(/[０-９]/g,function(s){
-							return String.fromCharCode(s.charCodeAt(0)-65248);
-						})
-						.replace(/[^0-9]/g,'');
-						if (zip.length==7)
+				if (functions.ismakeable(event.record))
+				{
+					functions.createbarcode(event.record,'show',function(record){
+						if (record)
 						{
-							record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
-								return String.fromCharCode(s.charCodeAt(0)+65248);
-							});
-							record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
-								return String.fromCharCode(s.charCodeAt(0)+65248);
-							});
+							var zip=record[vars.config['zip']].value.replace(/[０-９]/g,function(s){
+								return String.fromCharCode(s.charCodeAt(0)-65248);
+							})
+							.replace(/[^0-9]/g,'');
+							if (zip.length==7)
+							{
+								record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+									return String.fromCharCode(s.charCodeAt(0)+65248);
+								});
+								record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+									return String.fromCharCode(s.charCodeAt(0)+65248);
+								});
+							}
+							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
+							else kintone.app.record.set({'record':record});
 						}
-						if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
-						else kintone.app.record.set({'record':record});
-					}
-				});
+					});
+				}
 				return event;
 			});
 			var mailingoptions=JSON.parse(vars.config['mailingoptions']);

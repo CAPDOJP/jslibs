@@ -1,0 +1,44 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 一覧テキスト絞り込み検索プラグイン",
+        "en":"kintone Text-Search plug-in",
+        "zh":"kintone 一覧テキスト絞り込み検索プラグイン"
+    },
+    "description":{
+        "ja":"一覧画面上で検索窓によるレコードの絞り込みを行うプラグインです。",
+        "en":"This plug-in narrows down the record by the search window on the list screen",
+        "zh":"一覧画面上で検索窓によるレコードの絞り込みを行うプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/textsearch.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/51-modern-default.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css"
+        ]
+    }
+}

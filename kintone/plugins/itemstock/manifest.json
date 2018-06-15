@@ -1,0 +1,50 @@
+{
+	"manifest_version":1,
+	"version":1,
+	"type":"APP",
+	"name":{
+		"ja":"kintone 在庫管理プラグイン",
+		"en":"kintone Item-Stock plug-in",
+		"zh":"kintone 在庫管理プラグイン"
+	},
+	"description":{
+		"ja":"入出庫情報を元に現在庫の表示と在庫の調整を行うプラグインです。",
+		"en":"This plug-in displays the current stock and adjusts the inventory based on the goods receipt and delivery information",
+		"zh":"入出庫情報を元に現在庫の表示と在庫の調整を行うプラグインです。"
+	},
+	"icon": "image/icon.png",
+	"homepage_url":{
+		"ja":"http://www.tis2010.jp/",
+		"en":"http://www.tis2010.jp/",
+		"zh":"http://www.tis2010.jp/"
+	},
+	"desktop":{
+		"js":[
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+			"js/itemstock.js"
+		],
+		"css":[
+            "css/sweetalert.css",
+            "css/common.css",
+            "css/itemstock.css"
+		]
+	},
+	"config":{
+		"html":"html/config.html",
+		"js":[
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+			"js/sweetalert.min.js",
+			"js/config.js"
+		],
+		"css":[
+			"css/51-jp-default.css",
+			"css/sweetalert.css"
+		]
+	}
+}

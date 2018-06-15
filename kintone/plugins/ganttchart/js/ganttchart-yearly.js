@@ -27,7 +27,8 @@ jQuery.noConflict();
 		segments:{},
 		colors:[],
 		fields:[],
-		segmentkeys:[]
+		segmentkeys:[],
+		fieldinfos:{}
 	};
 	var events={
 		lists:[
@@ -328,7 +329,7 @@ jQuery.noConflict();
 		loadsegments:function(param,callback){
 			var body={
 				app:param.app,
-				query:'order by '+param.field+' '+param.sort+' limit '+limit.toString()+' offset '+param.offset.toString()
+				query:vars.fieldinfos[param.code].lookup.filterCond+' order by '+param.field+' '+param.sort+' limit '+limit.toString()+' offset '+param.offset.toString()
 			};
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				var records=[]
@@ -431,12 +432,14 @@ jQuery.noConflict();
 		/* get fields of app */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fields=['$id'];
+			vars.fieldinfos=resp.properties;
 			$.each(resp.properties,function(key,values){
 				vars.fields.push(values.code);
 			});
 			/* get datas of segment */
 			$.each(vars.segments,function(key,values){
 				var param=values;
+				param.code=key;
 				param.loaded=0;
 				param.offset=0;
 				param.records=[];

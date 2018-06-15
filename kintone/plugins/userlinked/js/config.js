@@ -105,13 +105,13 @@ jQuery.noConflict();
 				var config=kintone.plugin.app.getConfig(PLUGIN_ID);
 				var mappings=[];
 				/* append lookup mappings fields */
-				$.each(resp.properties,function(key,values){
+				vars.fieldinfos=$.fieldparallelize(resp.properties);
+				$.each(vars.fieldinfos,function(key,values){
 					if (values.lookup)
 						$.each(values.lookup.fieldMappings,function(index,values){
 							mappings.push(values.field);
 						});
 				});
-				vars.fieldinfos=$.fieldparallelize(resp.properties);
 				$.each(sorted,function(index){
 					if (sorted[index] in vars.fieldinfos)
 					{

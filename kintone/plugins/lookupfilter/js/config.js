@@ -117,8 +117,6 @@ jQuery.noConflict();
 						$('input#lookupapp',row).val(fieldinfo.lookup.relatedApp.app);
 						$('input#lookupcode',row).val(fieldinfo.code);
 						$('input#lookuprelatedkey',row).val(fieldinfo.lookup.relatedKeyField);
-						$('input#lookupfiltercond',row).val(fieldinfo.lookup.filterCond);
-						$('input#lookupsort',row).val(fieldinfo.lookup.sort);
 						$('input#tablecode',row).val(fieldinfo.tablecode);
 						$('span.lookupname',row).text(fieldinfo.label);
 					}
@@ -170,8 +168,6 @@ jQuery.noConflict();
 				app:$('input#lookupapp',rowlookup).val(),
 				display:$('select#display',rowlookup).val(),
 				relatedkey:$('input#lookuprelatedkey',rowlookup).val(),
-				filtercond:$('input#lookupfiltercond',rowlookup).val(),
-				sort:$('input#lookupsort',rowlookup).val(),
 				tablecode:$('input#tablecode',rowlookup).val(),
 				segments:segments
 			};

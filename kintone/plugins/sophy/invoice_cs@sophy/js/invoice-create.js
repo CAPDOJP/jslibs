@@ -477,8 +477,11 @@ jQuery.noConflict();
 					for (var i2=0;i2<entryvalue.billtable.value.length;i2++)
 					{
 						var row=entryvalue.billtable.value[i2].value;
-						if (row.taxsegment.value=='課税') able+=parseFloat('0'+row.billprice.value.replace(/,/g,''));
-						else free+=parseFloat('0'+row.billprice.value.replace(/,/g,''));
+						if (row.billprice.value)
+						{
+							if (row.taxsegment.value=='課税') able+=parseFloat(row.billprice.value.replace(/,/g,''));
+							else free+=parseFloat(row.billprice.value.replace(/,/g,''));
+						}
 					}
 					var calc=$.calculatetax({
 						able:able,
@@ -708,7 +711,7 @@ jQuery.noConflict();
 								case 'bill':
 								case 'subbill':
 								case 'tax':
-									$(this).css({'text-align':'right'}).text(parseInt('0'+$.fieldvalue(vars.displayrecords[i][code])).format()+'円');
+									$(this).css({'text-align':'right'}).text(parseInt($.fieldvalue(vars.displayrecords[i][code])).format()+'円');
 									break;
 								case 'collectdate':
 									$('input',$(this)).val($.fieldvalue(vars.displayrecords[i][code]));
@@ -1271,7 +1274,7 @@ jQuery.noConflict();
 				{
 					var row=event.record['billtable'].value[i2];
 					unitprice=0;
-					unitprice=(row.value['billprice'].value)?parseFloat('0'+row.value['billprice'].value.replace(/,/g,'')):0;
+					unitprice=(row.value['billprice'].value)?parseFloat(row.value['billprice'].value.replace(/,/g,'')):0;
 					if (row.value['taxsegment'].value=='課税') able+=unitprice;
 					else free+=unitprice;
 				}

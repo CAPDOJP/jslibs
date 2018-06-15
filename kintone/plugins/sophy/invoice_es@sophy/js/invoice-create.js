@@ -108,6 +108,7 @@ jQuery.noConflict();
 			if (!('subbill' in fieldinfos)) error='小計';
 			if (!('tax' in fieldinfos)) error='消費税';
 			if (!('bill' in fieldinfos)) error='請求金額';
+			if (!('collectlimit' in fieldinfos)) error='支払期限';
 			if (!('collectdate' in fieldinfos)) error='入金日';
 			if (!('collecttrading' in fieldinfos)) error='入金方法';
 			if (!('lectureids' in fieldinfos)) error='洋書テキスト選択ID';
@@ -159,6 +160,7 @@ jQuery.noConflict();
 								subbill:{value:0},
 								tax:{value:0},
 								bill:{value:0},
+								collectlimit:{value:''},
 								collectdate:{value:''},
 								collecttrading:{value:student['collecttrading'].value},
 								lectureids:{value:''},
@@ -484,6 +486,7 @@ jQuery.noConflict();
 								case 'tax':
 									$(this).css({'text-align':'right'}).text(((value)?parseInt(value).format()+'円':''));
 									break;
+								case 'collectlimit':
 								case 'collectdate':
 									$('input',$(this)).val(value);
 									break;
@@ -818,7 +821,7 @@ jQuery.noConflict();
 			})[0]
 		);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(
-			$('<button class="kintoneplugin-button-dialog-ok">').addClass('custom-elements').text('NSSデータ書出')
+			$('<button class="kintoneplugin-button-dialog-ok">').addClass('custom-elements').text('NSS書出')
 			.on('click',function(e){
 				var output='';
 				for (var i=0;i<vars.apps[kintone.app.getId()].length;i++)
@@ -882,7 +885,33 @@ jQuery.noConflict();
 			})[0]
 		);
 		kintone.app.getHeaderMenuSpaceElement().appendChild(
-			$('<button class="kintoneplugin-button-dialog-ok">').addClass('custom-elements').text('NSSデータ読込')
+			$('<button class="kintoneplugin-button-dialog-ok">').addClass('custom-elements').text('CVS振替')
+			.on('click',function(e){
+				var output='';
+				for (var i=0;i<vars.apps[kintone.app.getId()].length;i++)
+				{
+					var record=vars.apps[kintone.app.getId()][i];
+					if (record['collecttrading'].value!='コンビニ') continue;
+					if (!record['collectlimit'].value)
+					{
+						swal('Error!','支払期限を入力して下さい。','error');
+						return;
+					}
+					var student=$.grep(vars.apps[vars.config['student']],function(item,index){
+						return (item['$id'].value==record['student'].value);
+					})[0];
+					output+=student['$id'].value+',';
+					output+='"'+student['name'].value+'",';
+					output+='"'+student['phonetic'].value+'",';
+					output+=record['bill'].value+',';
+					output+='"'+record['collectlimit'].value.replace(/\//g,'')+'",';
+					output+=record['tax'].value+'\n';
+				}
+				$.downloadtext(output,'SJIS','cvs.csv');
+			})[0]
+		);
+		kintone.app.getHeaderMenuSpaceElement().appendChild(
+			$('<button class="kintoneplugin-button-dialog-ok">').addClass('custom-elements').text('NSS読込')
 			.append(
 				$('<input type="file" class="nssfile">')
 				.on('change',function(){
@@ -1071,6 +1100,7 @@ jQuery.noConflict();
 					'subbill',
 					'tax',
 					'bill',
+					'collectlimit',
 					'collectdate',
 					'collecttrading'
 				];
@@ -1083,6 +1113,28 @@ jQuery.noConflict();
 					head.append($('<th>').text(fieldinfo.label));
 					switch (columns[i])
 					{
+						case 'collectlimit':
+							cell=$('<input type="text" id="'+fieldinfo.code+'" class="center" placeholder="ex) '+(new Date().format('Y-m-d'))+'">').css({'width':'100%'})
+							.on('change',function(){
+								var id=$('#\\$id',$(this).closest('tr')).val();
+								var ids=$('#lectureids',$(this).closest('tr')).val();
+								var value=$(this).val();
+								var body={
+									app:kintone.app.getId(),
+									id:id,
+									record:{collectlimit:{value:value}}
+								};
+								kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+									var filter=$.grep(vars.apps[kintone.app.getId()],function(item,index){
+										return (item['$id'].value==id);
+									});
+									if (filter.length!=0) filter[0]['collectlimit'].value=value;
+								},function(error){
+									swal('Error!',error.message,'error');
+								});
+							});
+							template.append($('<td class="'+fieldinfo.code+'">').css({'padding':'0px','width':'125px'}).append(cell));
+							break;
 						case 'collectdate':
 							cell=$('<input type="text" id="'+fieldinfo.code+'" class="center" placeholder="ex) '+(new Date().format('Y-m-d'))+'">').css({'width':'100%'})
 							.on('change',function(){

@@ -68,7 +68,7 @@ jQuery.extend({
 				baserecordid:{value:baserecordid},
 				transfered:{value:0},
 				transfertimes:{value:transfertimes},
-				transferpending:{value:((transferpending in terms[i])?terms[i].transferpending:0)},
+				transferpending:{value:(('transferpending' in terms[i])?terms[i].transferpending:0)},
 				transferlimit:{value:$('#transferlimit',cell).val()}
 			});
 		return res;
@@ -296,7 +296,10 @@ jQuery.extend({
 			}
 		};
 		kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-			$.entrytransfers(cell,terms,progress,entries,callback);
+			var filter=$.grep(terms,function(item,index){
+				return (item['hours']!=0);
+			});
+			if (filter.length!=0) $.entrytransfers(cell,filter,progress,entries,callback);
 		},function(error){
 			swal('Error!',error.message,'error');
 		});
