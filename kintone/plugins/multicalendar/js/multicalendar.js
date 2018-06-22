@@ -146,5 +146,6 @@ jQuery.noConflict();
 				});
 			},function(error){});
 		},function(error){});
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

@@ -868,8 +868,8 @@ jQuery.noConflict();
 					.append($('<button class="customview-button edit-button">').on('click',function(){
 						var row=$(this).closest('tr');
 						var index=row.find('td').first().find('label').text();
-						if (index.length==0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?';
-						else window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index+'&mode=edit';
+						if (index.length==0) window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?';
+						else window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+index+'&mode=edit';
 					}))
 					.append($('<button class="customview-button close-button">').on('click',function(){
 						var row=$(this).closest('tr');
@@ -948,5 +948,6 @@ jQuery.noConflict();
 				vars.loaded=true;
 			},function(error){});
 		},function(error){});
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

@@ -50,7 +50,7 @@ jQuery.noConflict();
 						})(records[i])))
 						.append($('<span>').html(records[i][vars.config['visitor']].value))
 						.on('click',function(){
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
+							window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
 						})
 						.append($('<input type="hidden">').attr('id','id').val(records[i]['$id'].value))
 					);
@@ -77,13 +77,13 @@ jQuery.noConflict();
 							var query='';
 							query+='view='+vars.config.dailyschedule;
 							query+='&'+vars.config['fromtime']+'='+day.format('Y-m-d');
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+							window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?'+query;
 						}))
 						.append($('<button class="customview-button time-button">').text('食事提供一覧を表示').on('click',function(){
 							var query='';
 							query+='view='+vars.config.catering;
 							query+='&date='+day.format('Y-m-d');
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+							window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?'+query;
 						}))
 					);
 					switch ((index+1)%7)

@@ -267,5 +267,6 @@ jQuery.noConflict();
 		/* append elements */
 		if ($('.copybutton').size()) $('.copybutton').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.copybutton[0]);
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

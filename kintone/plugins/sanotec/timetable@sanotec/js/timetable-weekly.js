@@ -85,7 +85,7 @@ jQuery.noConflict();
 						'left':(vars.cellwidth*position)+'px'
 					})
 					.on('click',function(){
-						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
+						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
 					})
 					.append($('<input type="hidden">').attr('id','id').val(filter[i]['$id'].value));
 					cells.push(cell);
@@ -167,7 +167,7 @@ jQuery.noConflict();
 						var query='';
 						query+='view='+vars.config.datetimetable;
 						query+='&'+vars.config['fromtime']+'='+$(this).closest('th').find('p').text();
-						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?'+query;
 					}));
 					/* place the segment data */
 					for (var i2=0;i2<legends.length;i2++)

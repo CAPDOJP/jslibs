@@ -174,10 +174,10 @@ jQuery.noConflict();
 						query+='&'+vars.config['fromdate']+'='+vars.fromdate.calc(frommonth.toString()+' month').format('Y-m-d');
 						query+='&'+vars.config['todate']+'='+vars.fromdate.calc((tomonth+1).toString()+' month').calc('-1 day').format('Y-m-d');
 						for (var i=0;i<vars.segments.length;i++) query+='&'+vars.segments[i]+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(i).find('input#segment').val();
-						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
+						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
 					},
 					unmergetrigger:function(caller,cell,rowindex,cellindex){
-						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
+						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
 					},
 					callback:{
 						guidestart:function(e,caller,table,rowindex,cellindex){

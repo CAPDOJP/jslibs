@@ -21,6 +21,7 @@ jQuery.noConflict();
 		columns:[],
 		excludefields:[],
 		excludeviews:[],
+		fields:[],
 		levels:[],
 		config:{},
 		settings:{},
@@ -193,7 +194,7 @@ jQuery.noConflict();
 					var url='';
 					if (index.length!=0)
 					{
-						url='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
+						url=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+index;
 						if (vars.config['windowopen']==1) window.open(url);
 						else window.location.href=url;
 					}
@@ -337,7 +338,8 @@ jQuery.noConflict();
 			var query=kintone.app.getQueryCondition();
 			var body={
 				app:kintone.app.getId(),
-				query:''
+				query:'',
+				fields:vars.fields
 			};
 			var filter=$.grep(vars.levels,function(item,index){
 				var exists=0;
@@ -706,7 +708,12 @@ jQuery.noConflict();
 							vars.fieldinfos=resp.properties;
 							kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.settings.app},function(resp){
 								/* append level columns */
-								for (var i=0;i<vars.settings.levels.length;i++) vars.columns.push(resp.properties[vars.settings.levels[i]]);
+								vars.fields.push('$id');
+								for (var i=0;i<vars.settings.levels.length;i++)
+								{
+									vars.columns.push(resp.properties[vars.settings.levels[i]]);
+									vars.fields.push(vars.settings.levels[i]);
+								}
 								/* append columns */
 								for (var i=0;i<values.fields.length;i++)
 								{
@@ -719,6 +726,7 @@ jQuery.noConflict();
 									{
 										if (fieldinfo.code!=vars.settings.lookup) vars.columns.push(fieldinfo);
 									}
+									vars.fields.push(fieldinfo.code);
 								}
 								/* initialize valiable */
 								vars.fieldinfos=$.fieldparallelize(vars.fieldinfos);
@@ -730,6 +738,6 @@ jQuery.noConflict();
 				}
 			})
 		});
-		return;
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

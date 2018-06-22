@@ -223,5 +223,6 @@ jQuery.noConflict();
 				});
 			});
 		},function(error){});
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

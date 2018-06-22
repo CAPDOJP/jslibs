@@ -176,10 +176,10 @@ jQuery.noConflict();
 						query+='&'+vars.config['fromdate']+'='+vars.fromdate.calc(frommonth.toString()+' month').format('Y-m-d');
 						query+='&'+vars.config['months']+'='+(tomonth-frommonth).toString();
 						for (var i=0;i<vars.groups.length;i++) query+='&'+vars.groups[i]+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(i).find('input#group').val();
-						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
+						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
 					},
 					unmergetrigger:function(caller,cell,rowindex,cellindex){
-						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
+						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
 					},
 					callback:{
 						guidestart:function(e,caller,table,rowindex,cellindex){

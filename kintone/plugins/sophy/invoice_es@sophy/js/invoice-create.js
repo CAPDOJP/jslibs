@@ -1200,7 +1200,7 @@ jQuery.noConflict();
 						$('<button class="customview-button edit-button">').on('click',function(){
 							var cell=$(this).closest('td');
 							var index=cell.find('#\\$id').val();
-							if (index.length!=0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
+							if (index.length!=0) window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+index;
 						})
 					)
 					.append($('<input type="hidden" value="">'))

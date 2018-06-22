@@ -107,7 +107,7 @@ jQuery.noConflict();
 			})
 			/* mouse events */
 			cell.on('click',function(){
-				window.open('https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show');
+				window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show');
 			});
 		},
 		/* reload view */

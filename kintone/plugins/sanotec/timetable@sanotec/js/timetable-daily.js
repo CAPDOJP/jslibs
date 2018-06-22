@@ -118,7 +118,7 @@ jQuery.noConflict();
 			$.data(cell[0],'balloon',balloon);
 			/* mouse events */
 			cell.on({
-				'click':function(){window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';},
+				'click':function(){window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';},
 				'mouseenter':function(){$.data($(this)[0],'balloon').addClass('timetable-daily-balloon-show');},
 				'mouseleave':function(){$.data($(this)[0],'balloon').removeClass('timetable-daily-balloon-show');}
 			});

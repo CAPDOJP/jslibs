@@ -1,0 +1,56 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">計算式設定</div>
+		<table class="calculations">
+			<thead>
+				<tr>
+					<th>基準フィールド</th>
+					<th>結果表示フィールド</th>
+					<th colspan="2"></th>
+				</tr>
+			</tbody>
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="date">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="holiday">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">一括更新</div>
+		<div class="kintoneplugin-desc">一覧画面から一括更新を行いたい場合は、チェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="bulk" value="0">一覧画面に一括更新ボタンを配置する</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Google Calendar APIキー</div>
+		<div class="kintoneplugin-desc">Google Calendar APIキーを取得し、取得したキーを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

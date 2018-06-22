@@ -36,7 +36,7 @@ jQuery.noConflict();
 				extendurl='/?view='+viewid;
 				extendname=viewname+'@';
 			}
-			return $('<a href="https://'+$(location).attr('host')+'/k/'+appid+extendurl+'" target="_blank">').text(extendname+appname);
+			return $('<a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+appid+extendurl+'" target="_blank">').text(extendname+appname);
 		},
 		loadapps:function(callback){
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){

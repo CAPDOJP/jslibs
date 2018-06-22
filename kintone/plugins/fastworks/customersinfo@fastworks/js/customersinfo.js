@@ -102,54 +102,78 @@ jQuery.noConflict();
 					kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 						if (resp.records.length!=0)
 						{
-							var returnvalues=[];
-							var updatevalues=[];
-							for (var i=0;i<resp.records.length;i++)
+							var filter=$.grep(resp.records,function(item,index){
+								return item[vars.config['mailing']].value==mailingoptions[0].option;
+							});
+							if (filter.length==0)
 							{
+								var returnvalues=[];
 								var updatevalue={
 									app:vars.config['app'],
-									id:resp.records[i]['$id'].value,
-									record:{}
+									records:[]
 								};
-								singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
-								switch (record[vars.config['mailing']].value)
+								for (var i=0;i<resp.records.length;i++)
 								{
-									case mailingoptions[0].option:
-										updatevalue.record[vars.config['mailing']]={value:mailingoptions[1].option};
-										updatevalue.record[vars.config['destination']]={value:familydestination};
-										break;
-									case mailingoptions[1].option:
-										updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
-										updatevalue.record[vars.config['destination']]={value:familydestination};
-										break;
-									case mailingoptions[2].option:
-									case mailingoptions[3].option:
-										updatevalue.record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
-										if (resp.records.length==1) updatevalue.record[vars.config['destination']]={value:singledestination};
-										else updatevalue.record[vars.config['destination']]={value:familydestination};
-										break;
+									var record={};
+									singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
+									switch (record[vars.config['mailing']].value)
+									{
+										case mailingoptions[0].option:
+											record[vars.config['mailing']]={value:mailingoptions[1].option};
+											record[vars.config['destination']]={value:familydestination};
+											break;
+										case mailingoptions[1].option:
+											record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+											record[vars.config['destination']]={value:familydestination};
+											break;
+										case mailingoptions[2].option:
+										case mailingoptions[3].option:
+											record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+											if (resp.records.length==1) record[vars.config['destination']]={value:singledestination};
+											else record[vars.config['destination']]={value:familydestination};
+											break;
+									}
+									updatevalue.records.push({
+										id:resp.records[i]['$id'].value,
+										record:record
+									});
+									returnvalues.push(resp.records[i]['$id'].value);
 								}
-								updatevalues.push(updatevalue);
-								returnvalues.push(updatevalue.id);
+								kintone.api(kintone.api.url('/k/v1/records',true),'PUT',updatevalue,function(resp){
+									record[vars.config['destination']].value=familydestination;
+									callback(returnvalues);
+								},function(error){
+									callback([]);
+								});
 							}
-							(function(values,callback){
-								var counter=values.length;
-								var error=false;
-								for (var i=0;i<values.length;i++)
+							else
+							{
+								if (record[vars.config['mailing']].value==mailingoptions[0].option)
 								{
-									if (error) callback(true);
-									kintone.api(kintone.api.url('/k/v1/record',true),'PUT',values[i],function(resp){
-										counter--;
-										if (counter==0) callback(false);
+									var returnvalues=[];
+									var updatevalue={
+										app:vars.config['app'],
+										records:[]
+									};
+									for (var i=0;i<filter.length;i++)
+									{
+										var record={};
+										record[vars.config['mailing']]={value:mailingoptions[1].option};
+										updatevalue.records.push({
+											id:filter[i]['$id'].value,
+											record:record
+										});
+										returnvalues.push(filter[i]['$id'].value);
+									}
+									kintone.api(kintone.api.url('/k/v1/records',true),'PUT',updatevalue,function(resp){
+										record[vars.config['destination']].value=familydestination;
+										callback(returnvalues);
 									},function(error){
-										error=true;
+										callback([]);
 									});
 								}
-							})(updatevalues,function(error){
-								record[vars.config['destination']].value=familydestination;
-								if (error) callback([]);
-								else callback(returnvalues);
-							});
+								else callback([]);
+							}
 						}
 						else
 						{
@@ -491,7 +515,7 @@ jQuery.noConflict();
 											var callback=function(resp){
 												var label='';
 												label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
-												label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
+												label+='<br><a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+vars.config['app']+'/show#record='+resp.id+'" target="_blank">詳細画面へ</a>';
 												vars.markers.push({
 													id:resp.id,
 													address:$('#'+vars.config['address'],vars.editor.contents).find('.receiver').val().replace(/\r?\n/g,''),
@@ -618,7 +642,7 @@ jQuery.noConflict();
 													{
 														vars.markers[index].label='';
 														vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
-														vars.markers[index].label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
+														vars.markers[index].label+='<br><a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
 														vars.markers[index].extensionindex='0';
 														vars.markers[index].datespan=new Date().format('Y-m-d');
 														vars.markers[index].rank=$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val();
@@ -951,7 +975,7 @@ jQuery.noConflict();
 					}
 					label='';
 					label+=(vars.config['information'])?record[vars.config['information']].value:record[vars.config['address']].value;
-					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
+					label+='<br><a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+vars.config['app']+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					markers.push({
 						id:record['$id'].value,
 						address:record[vars.config['address']].value,
@@ -1412,29 +1436,60 @@ jQuery.noConflict();
 			events.push('mobile.app.record.edit.change.'+vars.config['address']);
 			events.push('app.record.index.edit.change.'+vars.config['address']);
 			kintone.events.on(events,function(event){
-				if (functions.ismakeable(event.record))
+				if (event.changes.field.value)
 				{
-					functions.createbarcode(event.record,'show',function(record){
-						if (record)
-						{
-							var zip=record[vars.config['zip']].value.replace(/[０-９]/g,function(s){
-								return String.fromCharCode(s.charCodeAt(0)-65248);
-							})
-							.replace(/[^0-9]/g,'');
+					functions.displaymap({
+						address:event.changes.field.value,
+						callback:function(json){
+							var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+							var zip='';
+							for (var i=0;i<json.results[0].address_components.length;i++)
+								if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
+							record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
+							record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
+							record.record[vars.config['zip']].value=zip;
+							zip=zip.replace(/[^0-9]/g,'');
 							if (zip.length==7)
 							{
-								record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+								record.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
 									return String.fromCharCode(s.charCodeAt(0)+65248);
 								});
-								record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+								record.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
 									return String.fromCharCode(s.charCodeAt(0)+65248);
 								});
 							}
-							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
-							else kintone.app.record.set({'record':record});
+							functions.createbarcode(record.record,'show',function(record){
+								if (record)
+								{
+									var zip=record[vars.config['zip']].value.replace(/[０-９]/g,function(s){
+										return String.fromCharCode(s.charCodeAt(0)-65248);
+									})
+									.replace(/[^0-9]/g,'');
+									if (zip.length==7)
+									{
+										record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+											return String.fromCharCode(s.charCodeAt(0)+65248);
+										});
+										record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+											return String.fromCharCode(s.charCodeAt(0)+65248);
+										});
+									}
+									if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
+									else kintone.app.record.set({'record':record});
+								}
+							});
 						}
 					});
 				}
+				else
+				{
+					event.record[vars.config['lat']].value=null;
+					event.record[vars.config['lng']].value=null;
+					event.record[vars.config['zip']].value=null;
+					event.record[vars.config['zip1']].value=null;
+					event.record[vars.config['zip2']].value=null;
+				}
+				return event;
 				return event;
 			});
 			var mailingoptions=JSON.parse(vars.config['mailingoptions']);

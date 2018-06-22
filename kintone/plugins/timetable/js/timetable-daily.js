@@ -143,8 +143,8 @@ jQuery.noConflict();
 			/* cell value switching */
 			row.find('td').eq(from).append($('<p>').addClass('timetable-daily-merge-p').html($.fieldvalue(filter[vars.config['display']])));
 			row.find('td').eq(from).append($('<span>').addClass('timetable-daily-merge-span').css({'background-color':'#'+color}));
-			if (vars.config['registeredonly']=='1') row.find('td').on('click',function(){
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$(this).find('input#\\$id').val()+'&mode=show';
+			if (vars.config['registeredonly']=='1') row.find('td').eq(from).on('click',function(){
+				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#\\$id').val()+'&mode=show';
 			});
 			$.each(filter,function(key,values){
 				if (values!=null)
@@ -427,10 +427,10 @@ jQuery.noConflict();
 				query+='&'+vars.config['fromtime']+'='+fromhour.toString().lpad('0',2)+':'+fromminute.toString().lpad('0',2);
 				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
 				for (var i=0;i<vars.segmentkeys.length;i++) query+='&'+vars.segmentkeys[i]+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(i).find('input#segment').val();
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
+				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
-				window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
+				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
 			},
 			callback:{
 				guidestart:function(e,caller,table,rowindex,cellindex){
@@ -492,7 +492,7 @@ jQuery.noConflict();
 			});
 			functions.checkloaded();
 		},function(error){});
-		return;
+		return event;
 	});
 	kintone.events.on(events.show,function(event){
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);

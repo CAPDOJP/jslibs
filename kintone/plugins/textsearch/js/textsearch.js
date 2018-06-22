@@ -207,9 +207,9 @@ jQuery.noConflict();
 										if (query.length!=0) queries.push('('+query.join(' or ')+')');
 									}
 								}
-								if (queries.length!=0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?view='+event.viewId+'&keyword='+target.val()+'&query='+encodeURIComponent(queries.join(' and '));
+								if (queries.length!=0) window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?view='+event.viewId+'&keyword='+target.val()+'&query='+encodeURIComponent(queries.join(' and '));
 							}
-							else window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?view='+event.viewId;
+							else window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?view='+event.viewId;
 						})
 					)[0]
 				);

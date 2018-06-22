@@ -40,7 +40,6 @@ jQuery.noConflict();
 					baseapp:values['baseapp'],
 					baseappfield:values['baseappfield'],
 					basetype:values['basetype'],
-					istable:(values['istable']=='1')?true:false,
 					relations:[]
 				};
 				var relations=[];
@@ -60,7 +59,7 @@ jQuery.noConflict();
 			});
 			$.each(vars.params,function(key,values){
 				setInterval(function(){
-					$.each($('body').fields(key),function(){
+					$.each($('body').fields(key),function(index){
 						var base={
 							container:$('body'),
 							target:$(this),
@@ -72,7 +71,6 @@ jQuery.noConflict();
 						$.data(base.target[0],'value',base.value);
 						if (base.value.length!=0)
 						{
-							if (values.istable) base.container=base.target.closest('tr');
 							var body={
 								app:values.baseapp,
 								query:''
@@ -89,43 +87,49 @@ jQuery.noConflict();
 							}
 							kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 								if (resp.records.length==0) return;
-								for (var i=0;i<values.relations.length;i++)
-								{
-									var exclude=false;
-									var relation=values.relations[i];
-									var field=base.container.fields(relation.relationfield)[0];
-									if (!relation.rewrite)
+								var counter=0;
+								var update=function(myrecord,baserecord,tablecode){
+									var relation=values.relations[counter];
+									var field=(tablecode)?myrecord.record[tablecode].value[index].value[relation.relationfield]:myrecord.record[relation.relationfield];
+									var body={
+										app:relation.relationapp,
+										query:''
+									};
+									switch (relation.relationtype)
 									{
-										if (field.val())
-											if (field.val().toString().length!=0) exclude=true;
+										case 'NUMBER':
+										case 'RECORD_NUMBER':
+											body.query=relation.relationcode+'='+baserecord[relation.basecode].value;
+											break;
+										case 'DROP_DOWN':
+										case 'RADIO_BUTTON':
+											body.query=relation.relationcode+' in ("'+baserecord[relation.basecode].value+'")';
+											break;
+										default:
+											body.query=relation.relationcode+'="'+baserecord[relation.basecode].value+'"';
+											break;
 									}
-									if (!exclude)
-									{
-										(function(record,relation,field){
-											var body={
-												app:relation.relationapp,
-												query:''
-											};
-											switch (relation.relationtype)
-											{
-												case 'NUMBER':
-												case 'RECORD_NUMBER':
-													body.query=relation.relationcode+'='+record[relation.basecode].value;
-													break;
-												case 'SINGLE_LINE_TEXT':
-													body.query=relation.relationcode+'="'+record[relation.basecode].value+'"';
-													break;
-											}
-											kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-												if (resp.records.length==0) return;
-												field.val(resp.records[0][relation.relationappfield].value);
-												if (relation.lookup) field.parent().parent().find('button').eq(0).trigger('click');
-											},function(error){
-												swal('Error!',error.message,'error');
-											});
-										})(resp.records[0],relation,field);
-									}
-								}
+									kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+										var exclude=false;
+										if (resp.records.length==0) exclude=true;
+										else
+										{
+											if (!relation.rewrite)
+												if (field.value) exclude=true;
+										}
+										if (!exclude)
+										{
+											field.value=resp.records[0][relation.relationappfield].value;
+											if (relation.lookup) field.lookup=true;
+										}
+										counter++;
+										if (counter<values.relations.length) update(myrecord,baserecord,tablecode);
+										else kintone.app.record.set(myrecord);
+									},function(error){
+										swal('Error!',error.message,'error');
+									});
+								};
+								update(kintone.app.record.get(),resp.records[0],vars.fieldinfos[key].tablecode);
 							},function(error){
 								swal('Error!',error.message,'error');
 							});

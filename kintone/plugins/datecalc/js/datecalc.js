@@ -20,11 +20,16 @@ jQuery.noConflict();
 		progress:null,
 		records:[],
 		calculations:[],
-		config:{}
+		config:{},
+		fieldinfos:{}
 	};
 	var events={
 		lists:[
 			'app.record.index.show'
+		],
+		show:[
+			'app.record.create.show',
+			'app.record.edit.show'
 		]
 	};
 	var functions={
@@ -79,10 +84,19 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
-	vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
-	if ('calculation' in vars.config)
-	{
-		kintone.events.on(events.lists,function(event){
+	kintone.events.on(events.lists,function(event){
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if (!vars.config) return event;
+		if (!('calculation' in vars.config)) return event;
+		else
+		{
+			if (vars.config['bulk']!='1') return event;
+		}
+		/* initialize valiable */
+		vars.calculations=JSON.parse(vars.config['calculation']);
+		/* get fields of app */
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+			vars.fieldinfos=$.fieldparallelize(resp.properties);
 			/* clear elements */
 			if ($('.custom-elements-datecalc').size()) $('.custom-elements-datecalc').remove();
 			/* append elements */
@@ -162,10 +176,11 @@ jQuery.noConflict();
 									for (var i2=0;i2<vars.calculations.length;i2++)
 									{
 										var calculation=vars.calculations[i2];
-										if (calculation.tablecode.length!=0)
+										var tablecode=vars.fieldinfos[calculation.fromdate].tablecode;
+										if (tablecode)
 										{
-											for (var i3=0;i3<record[calculation.tablecode].value.length;i3++)
-												functions.datecalc(record[calculation.tablecode].value[i3].value,calculation);
+											for (var i3=0;i3<record[tablecode].value.length;i3++)
+												functions.datecalc(record[tablecode].value[i3].value,calculation);
 										}
 										else functions.datecalc(record,calculation);
 									}
@@ -183,43 +198,74 @@ jQuery.noConflict();
 					});
 				})[0]
 			);
-			vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
-			$('body').append(vars.progress);
-			return event;
+		},function(error){
+			swal('Error!',error.message,'error');
 		});
+		vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
+		$('body').append(vars.progress);
+		return event;
+	});
+	kintone.events.on(events.show,function(event){
+		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
+		if (!vars.config) return event;
+		if (!('calculation' in vars.config)) return event;
+		/* initialize valiable */
 		vars.calculations=JSON.parse(vars.config['calculation']);
-		for (var i=0;i<vars.calculations.length;i++)
-		{
-			var calculation=vars.calculations[i];
-			var events=[];
-			events.push('app.record.create.change.'+calculation.fromdate);
-			events.push('app.record.edit.change.'+calculation.fromdate);
-			events.push('app.record.index.edit.change.'+calculation.fromdate);
-			if (calculation.yearfield.length!=0)
-			{
-				events.push('app.record.create.change.'+calculation.yearfield);
-				events.push('app.record.edit.change.'+calculation.yearfield);
-				events.push('app.record.index.edit.change.'+calculation.yearfield);
-			}
-			if (calculation.monthfield.length!=0)
-			{
-				events.push('app.record.create.change.'+calculation.monthfield);
-				events.push('app.record.edit.change.'+calculation.monthfield);
-				events.push('app.record.index.edit.change.'+calculation.monthfield);
-			}
-			if (calculation.dayfield.length!=0)
-			{
-				events.push('app.record.create.change.'+calculation.dayfield);
-				events.push('app.record.edit.change.'+calculation.dayfield);
-				events.push('app.record.index.edit.change.'+calculation.dayfield);
-			}
-			(function(events,calculation){
-				kintone.events.on(events,function(event){
-					var record=(calculation.tablecode.length!=0)?event.changes.row.value:event.record;
-					functions.datecalc(record,calculation);
-					return event;
-				});
-			})(events,calculation);
-		}
-	}
+		/* get fields of app */
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+			vars.fieldinfos=$.fieldparallelize(resp.properties);
+			var record=kintone.app.record.get();
+			for (var i=0;i<vars.calculations.length;i++)
+				(function(calculation,record){
+					var events=[];
+					var tablecode=vars.fieldinfos[calculation.fromdate].tablecode;
+					if (tablecode)
+					{
+						for (var i2=0;i2<record[tablecode].value.length;i2++)
+							functions.datecalc(record[tablecode].value[i2].value,calculation);
+						events=[];
+						events.push('app.record.create.change.'+tablecode);
+						events.push('app.record.edit.change.'+tablecode);
+						(function(events){
+							kintone.events.on(events,function(event){
+								if (event.changes.row) functions.datecalc(event.changes.row.value,calculation);
+								return event;
+							});
+						})(events)
+					}
+					else functions.datecalc(record,calculation);
+					events=[];
+					events.push('app.record.create.change.'+calculation.fromdate);
+					events.push('app.record.edit.change.'+calculation.fromdate);
+					events.push('app.record.index.edit.change.'+calculation.fromdate);
+					if (calculation.yearfield)
+					{
+						events.push('app.record.create.change.'+calculation.yearfield);
+						events.push('app.record.edit.change.'+calculation.yearfield);
+						events.push('app.record.index.edit.change.'+calculation.yearfield);
+					}
+					if (calculation.monthfield)
+					{
+						events.push('app.record.create.change.'+calculation.monthfield);
+						events.push('app.record.edit.change.'+calculation.monthfield);
+						events.push('app.record.index.edit.change.'+calculation.monthfield);
+					}
+					if (calculation.dayfield)
+					{
+						events.push('app.record.create.change.'+calculation.dayfield);
+						events.push('app.record.edit.change.'+calculation.dayfield);
+						events.push('app.record.index.edit.change.'+calculation.dayfield);
+					}
+					kintone.events.on(events,function(event){
+						var record=(tablecode)?event.changes.row.value:event.record;
+						functions.datecalc(record,calculation);
+						return event;
+					});
+				})(vars.calculations[i],record.record);
+			kintone.app.record.set(record);
+		},function(error){
+			swal('Error!',error.message,'error');
+		});
+		return event;
+	});
 })(jQuery,kintone.$PLUGIN_ID);

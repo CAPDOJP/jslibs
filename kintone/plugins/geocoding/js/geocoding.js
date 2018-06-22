@@ -162,7 +162,7 @@ jQuery.noConflict();
 						for (var i=0;i<informations.length;i++) label+=record[informations[i]].value+'<br>';
 						label=label.replace(/\<br\>$/g,'');
 					}
-					label+='<br><a href="https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
+					label+='<br><a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					vars.markers.push({
 						colors:6,
 						label:label,
@@ -182,7 +182,7 @@ jQuery.noConflict();
 			query+=vars.config['address']+'='+results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
 			query+='&'+vars.config['lat']+'='+latlng.lat();
 			query+='&'+vars.config['lng']+'='+latlng.lng();
-			window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/edit?'+query;
+			window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
 		});
 		/* append elements */
 		if ($('.customview-checkbox').size()) $('.customview-checkbox').remove();

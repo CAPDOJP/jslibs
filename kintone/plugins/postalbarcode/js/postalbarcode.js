@@ -349,5 +349,6 @@ jQuery.noConflict();
 			if (functions.ismakeable(event.record)) functions.createbarcode(event.record,'show');
 			else return event;
 		});
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

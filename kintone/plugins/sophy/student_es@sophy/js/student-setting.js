@@ -359,7 +359,7 @@ jQuery.noConflict();
 								body.record['student']={value:record['$id'].value};
 								body.record['event']={value:$('select',historylist).val()};
 								kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-									window.open('https://'+$(location).attr('host')+'/k/'+vars.config['history']+'/show#record='+resp.id+'&mode=show');
+									window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+vars.config['history']+'/show#record='+resp.id+'&mode=show');
 								},function(error){
 									swal('Error!',error.message,'error');
 								});
@@ -381,7 +381,7 @@ jQuery.noConflict();
 								body.record['event']={value:$('select',eventlist).val()};
 								body.record['student']={value:record['$id'].value};
 								kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-									window.open('https://'+$(location).attr('host')+'/k/'+vars.config['participant']+'/show#record='+resp.id+'&mode=show');
+									window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+vars.config['participant']+'/show#record='+resp.id+'&mode=show');
 								},function(error){
 									swal('Error!',error.message,'error');
 								});

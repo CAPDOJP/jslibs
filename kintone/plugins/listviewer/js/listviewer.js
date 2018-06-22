@@ -157,15 +157,19 @@ jQuery.noConflict();
 										value.push($('<a href="./">'+values[index].name+'</a>')
 											.on('click',function(e){
 												functions.download(values[index].fileKey).then(function(blob){
-													var url=window.URL || window.webkitURL;
-													var a=document.createElement('a');
-													a.setAttribute('href',url.createObjectURL(blob));
-													a.setAttribute('target','_blank');
-													a.setAttribute('download',values[index].name);
-													a.style.display='none';
-													document.body.appendChild(a);
-													a.click();
-													document.body.removeChild(a);
+													if (window.navigator.msSaveBlob) window.navigator.msSaveOrOpenBlob(blob,values[index].name);	
+													else
+													{
+														var url=window.URL || window.webkitURL;
+														var a=document.createElement('a');
+														a.setAttribute('href',url.createObjectURL(blob));
+														a.setAttribute('target','_blank');
+														a.setAttribute('download',values[index].name);
+														a.style.display='none';
+														document.body.appendChild(a);
+														a.click();
+														document.body.removeChild(a);
+													}
 												});
 												return false;
 											})
@@ -375,7 +379,7 @@ jQuery.noConflict();
 								.append($('<button class="customview-button edit-button">').on('click',function(){
 									var cell=$(this).closest('td');
 									var index=$('input',cell).val();
-									if (index.length!=0) window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index;
+									if (index.length!=0) window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+index;
 								}))
 								.append($('<input type="hidden" value="">'))
 							);
@@ -412,7 +416,11 @@ jQuery.noConflict();
 												var rowindex=vars.table.rows.index(row);
 												var rowspan=parseInt('0'+$('td',row).first().attr('rowspan'));
 												if (rowspan==0) rowspan=1;
-												for (var i=rowindex;i<rowindex+rowspan;i++) vars.table.rows.eq(rowindex).remove();
+												for (var i=rowindex;i<rowindex+rowspan;i++)
+												{
+													vars.table.rows.eq(rowindex).remove();
+													vars.table.rows=vars.table.contents.children('tr');
+												}
 											},function(error){});
 										});
 									}
@@ -429,6 +437,11 @@ jQuery.noConflict();
 							for (var i=0;i<event.records.length;i++)
 							{
 								var record=event.records[i];
+								(function(fields){
+									$.each(record,function(key,values){
+										if (fields.indexOf(key)<0 && key!='$id') delete record[key];
+									});
+								})(values.fields);
 								vars.table.insertrow(null,function(row){
 									setvalues(row,((i%2==0)?'odd':'even'),record);
 								});
@@ -531,5 +544,6 @@ jQuery.noConflict();
 				}
 			})
 		});
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

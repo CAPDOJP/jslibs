@@ -245,8 +245,6 @@ jQuery.extend({
 	},
 	downloadtext:function(values,character,filename){
 		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}
-		var a=document.createElement('a');
-		var url=window.URL || window.webkitURL;
 		var strtoarray=function(str){
 			var arr=[];
 			for (var i=0;i<str.length;i++)
@@ -255,13 +253,19 @@ jQuery.extend({
 		};
 		var array=strtoarray(values.replace(/\n$/g,''));
 		var blob=new Blob([new Uint8Array(Encoding.convert(array,character,Encoding.detect(array)))],{'type':'text/plain'});
-		a.setAttribute('href',url.createObjectURL(blob));
-		a.setAttribute('target','_blank');
-		a.setAttribute('download',filename);
-		a.style.display='none';
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
+		if (window.navigator.msSaveBlob) window.navigator.msSaveOrOpenBlob(blob,filename);
+		else
+		{
+			var a=document.createElement('a');
+			var url=window.URL || window.webkitURL;
+			a.setAttribute('href',url.createObjectURL(blob));
+			a.setAttribute('target','_blank');
+			a.setAttribute('download',filename);
+			a.style.display='none';
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+		}
   	},
 	uploadtext:function(file,character,success,error){
 		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}

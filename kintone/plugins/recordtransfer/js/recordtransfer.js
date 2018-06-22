@@ -217,7 +217,7 @@ jQuery.noConflict();
 									if (Object.keys(body.record).length!==0)
 									{
 										kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-											window.open('https://'+$(location).attr('host')+'/k/'+app.app+'/show#record='+resp.id+'&mode=edit');
+											window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+app.app+'/show#record='+resp.id+'&mode=edit');
 										},function(error){
 											swal('Error!',error.message,'error');
 										});

@@ -96,7 +96,7 @@ jQuery.noConflict();
 							ids:[record['$id'].value]
 						};
 						kintone.api(kintone.api.url('/k/v1/records',true),'DELETE',body,function(resp){
-							window.location.href='https://'+$(location).attr('host')+'/k/'+vars.config['lecture']+'/show#record='+id+'&mode=show';
+							window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+vars.config['lecture']+'/show#record='+id+'&mode=show';
 						},function(error){
 							swal('Error!',error.message,'error');
 						});

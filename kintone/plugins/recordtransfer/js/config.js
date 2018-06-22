@@ -232,16 +232,18 @@ jQuery.noConflict();
 			for (var i2=0;i2<vars.appparams[i].fields.rows.length;i2++)
 			{
 				row=vars.appparams[i].fields.rows.eq(i2);
-				if ($('select#fieldfrom',row).val()=='')
+				if (!$('select#fieldfrom',row).val() && $('select#fieldto',row).val())
 				{
 					swal('Error!','コピー元フィールドを選択して下さい。','error');
 					return;
 				}
-				if ($('select#fieldto',row).val()=='')
+				if ($('select#fieldfrom',row).val() && !$('select#fieldto',row).val())
 				{
 					swal('Error!','コピー先フィールドを選択して下さい。','error');
 					return;
 				}
+				if (!$('select#fieldfrom',row).val()) continue;
+				if (!$('select#fieldto',row).val()) continue;
 				if (!$.isvalidtype(vars.fieldinfos[$('select#fieldfrom',row).val()],vars.appparams[i].fieldinfos[$('select#fieldto',row).val()]))
 				{
 					swal('Error!','コピーフィールドに指定したフィールド同士の形式が一致しません。','error');

@@ -70,7 +70,7 @@ jQuery.noConflict();
 								fieldinfos[vars.fieldinfos[field].lookup.relatedKeyField]['value']=target.val();
 								body.query=vars.fieldinfos[field].lookup.relatedKeyField+$.fieldquery(fieldinfos[vars.fieldinfos[field].lookup.relatedKeyField]);
 								kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-									if (resp.records.length!=0) window.open('https://'+$(location).attr('host')+'/k/'+body.app+'/show#record='+resp.records[0]['$id'].value.toString()+'&mode=edit');
+									if (resp.records.length!=0) window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+body.app+'/show#record='+resp.records[0]['$id'].value.toString()+'&mode=edit');
 								},function(error){
 									swal('Error!',error.message,'error');
 								});
@@ -78,7 +78,7 @@ jQuery.noConflict();
 								swal('Error!',error.message,'error');
 							});
 						}
-						else window.open('https://'+$(location).attr('host')+'/k/'+body.app+'/edit');
+						else window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+body.app+'/edit');
 					})
 				);
 			});

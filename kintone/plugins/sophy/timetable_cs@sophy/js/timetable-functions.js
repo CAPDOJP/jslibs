@@ -296,10 +296,7 @@ jQuery.extend({
 			}
 		};
 		kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
-			var filter=$.grep(terms,function(item,index){
-				return (item['hours']!=0);
-			});
-			if (filter.length!=0) $.entrytransfers(cell,filter,progress,entries,callback);
+			$.entrytransfers(cell,terms,progress,entries,callback);
 		},function(error){
 			swal('Error!',error.message,'error');
 		});

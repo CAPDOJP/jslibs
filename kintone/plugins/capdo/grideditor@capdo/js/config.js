@@ -70,7 +70,7 @@ jQuery.noConflict();
 							{
 								case 'NUMBER':
 									/* exclude lookup */
-									if (!fieldinfo.lookup.relatedApp)
+									if (!fieldinfo.lookup)
 									{
 										/* check scale */
 										if (fieldinfo.displayScale)
@@ -83,7 +83,7 @@ jQuery.noConflict();
 									break;
 								case 'SINGLE_LINE_TEXT':
 									/* exclude lookup */
-									if (!fieldinfo.lookup.relatedApp) $('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									if (!fieldinfo.lookup) $('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 									break;
 							}
 							break;

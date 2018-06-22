@@ -319,7 +319,7 @@ jQuery.noConflict();
 							.append($('<button class="customview-button time-button">').text('タイムテーブルを表示').on('click',function(){
 								var query='';
 								query+='view='+vars.config.datetimetable+'&date='+day.format('Y-m-d');
-								window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+								window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?'+query;
 							}))
 						);
 						switch ((index+1)%7)

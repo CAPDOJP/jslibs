@@ -56,7 +56,7 @@ jQuery.noConflict();
 						})
 						.html(inner)
 						.on('click',function(){
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
+							window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
 						})
 						.append($('<input type="hidden">').attr('id','id').val(filter[i]['$id'].value))
 					);
@@ -102,7 +102,7 @@ jQuery.noConflict();
 							var query='';
 							query+='view='+vars.config.datetimetable;
 							query+='&'+vars.config['fromtime']+'='+day.format('Y-m-d');
-							window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/?'+query;
+							window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?'+query;
 						}))
 					);
 					switch ((index+1)%7)

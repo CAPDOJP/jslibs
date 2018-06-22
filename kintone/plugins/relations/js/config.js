@@ -168,13 +168,13 @@ jQuery.noConflict();
 													});
 													$.data(listappfield[0],'fieldinfos',fieldinfos);
 													if ($.hasData(listappfield[0]))
-														if ($.data(listappfield[0],'initialdata').length!=0)
+														if ($.data(listappfield[0],'initialdata'))
 														{
 															listappfield.val($.data(listappfield[0],'initialdata'));
 															$.data(listappfield[0],'initialdata','');
 														}
 													if ($.hasData(listcode[0]))
-														if ($.data(listcode[0],'initialdata').length!=0)
+														if ($.data(listcode[0],'initialdata'))
 														{
 															listcode.val($.data(listcode[0],'initialdata'));
 															$.data(listcode[0],'initialdata','');
@@ -255,7 +255,6 @@ jQuery.noConflict();
 			values['baseapp']=vars.fieldinfos[$('select#basefield',rowrelations).val()].lookup.relatedApp.app;
 			values['baseappfield']=vars.fieldinfos[$('select#basefield',rowrelations).val()].lookup.relatedKeyField;
 			values['basetype']=vars.fieldinfos[$('select#basefield',rowrelations).val()].type;
-			values['istable']=(tablecode.length!=0)?'1':'0';
 			values['relations']=[];
 			for (var i2=0;i2<vars.fieldtable[i].rows.length;i2++)
 			{

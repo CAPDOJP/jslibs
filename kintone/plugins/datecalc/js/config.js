@@ -101,6 +101,7 @@ jQuery.noConflict();
 			if (Object.keys(config).length!==0)
 			{
 				calculations=JSON.parse(config['calculation']);
+				if (config['bulk']=='1') $('input#bulk').prop('checked',true);
 				$.each(calculations,function(index){
 					if (add) vars.calculationtable.addrow();
 					else add=true;
@@ -187,11 +188,11 @@ jQuery.noConflict();
 				month:$('input#month',row).val(),
 				monthfield:$('select#monthfield',row).val(),
 				day:$('input#day',row).val(),
-				dayfield:$('select#dayfield',row).val(),
-				tablecode:vars.fieldinfos[$('select#fromdate',row).val()].tablecode
+				dayfield:$('select#dayfield',row).val()
 			});
 		}
 		/* setup config */
+		config['bulk']=($('input#bulk').prop('checked'))?'1':'0';
 		config['calculation']=JSON.stringify(calculations);
 		/* save config */
 		kintone.plugin.app.setConfig(config);

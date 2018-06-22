@@ -372,5 +372,6 @@ jQuery.noConflict();
 				});
 			}
 		}
+		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

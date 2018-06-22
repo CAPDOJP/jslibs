@@ -241,7 +241,7 @@ jQuery.noConflict();
 									if (record.records[i][vars.config['driver']].value.length==0) $('span#driver',row).text('');
 									else $('span#driver',row).text(record.records[i][vars.config['driver']].value[0].name);
 									$('.edit',row).on('click',function(){
-										window.open('https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+$('#id',$(this).closest('td')).val()+'&mode=show');
+										window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$('#id',$(this).closest('td')).val()+'&mode=show');
 									});
 								}
 								if (callback) callback();

@@ -150,7 +150,7 @@ jQuery.noConflict();
 					.append($('<button class="customview-button edit-button">').on('click',function(){
 						var cell=$(this).closest('th');
 						var index=$('input#id',cell).val();
-						window.location.href='https://'+$(location).attr('host')+'/k/'+kintone.app.getId()+'/show#record='+index+'&mode=show';
+						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+index+'&mode=show';
 					}))
 					.append($('<input type="hidden" id="id" value="'+records[i]['$id'].value+'">'))
 				);
