@@ -585,15 +585,19 @@ var FileSelect=function(options){
 			$('<a href="" id="link">').on('click',function(e){
 				var list=$(this).closest('tr');
 				my.download(list.find('input#fileKey').val()).then(function(blob){
-					var url=window.URL || window.webkitURL;
-					var a=document.createElement('a');
-					a.setAttribute('href',url.createObjectURL(blob));
-					a.setAttribute('target','_blank');
-					a.setAttribute('download',list.find('input#name').val());
-					a.style.display='none';
-					document.body.appendChild(a);
-					a.click();
-					document.body.removeChild(a);
+					if (window.navigator.msSaveBlob) window.navigator.msSaveOrOpenBlob(blob,list.find('input#name').val());
+					else
+					{
+						var url=window.URL || window.webkitURL;
+						var a=document.createElement('a');
+						a.setAttribute('href',url.createObjectURL(blob));
+						a.setAttribute('target','_blank');
+						a.setAttribute('download',list.find('input#name').val());
+						a.style.display='none';
+						document.body.appendChild(a);
+						a.click();
+						document.body.removeChild(a);
+					}
 				});
 				e.preventDefault();
 				e.stopPropagation();
