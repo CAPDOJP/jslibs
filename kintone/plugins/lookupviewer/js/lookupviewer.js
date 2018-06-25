@@ -518,15 +518,19 @@ jQuery.noConflict();
 										value.push($('<a href="./">'+values[index].name+'</a>')
 											.on('click',function(e){
 												functions.download(values[index].fileKey).then(function(blob){
-													var url=window.URL || window.webkitURL;
-													var a=document.createElement('a');
-													a.setAttribute('href',url.createObjectURL(blob));
-													a.setAttribute('target','_blank');
-													a.setAttribute('download',values[index].name);
-													a.style.display='none';
-													document.body.appendChild(a);
-													a.click();
-													document.body.removeChild(a);
+													if (window.navigator.msSaveBlob) window.navigator.msSaveOrOpenBlob(blob,values[index].name);
+													else
+													{
+														var url=window.URL || window.webkitURL;
+														var a=document.createElement('a');
+														a.setAttribute('href',url.createObjectURL(blob));
+														a.setAttribute('target','_blank');
+														a.setAttribute('download',values[index].name);
+														a.style.display='none';
+														document.body.appendChild(a);
+														a.click();
+														document.body.removeChild(a);
+													}
 												});
 												return false;
 											})

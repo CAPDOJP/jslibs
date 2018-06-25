@@ -76,6 +76,22 @@ jQuery.noConflict();
 				vars.progress.hide();
 				swal('Error!',error.message,'error');
 			});
+		},
+		/* loaded datas update */
+		loadedupdate:function(record){
+			var update=kintone.app.record.get();
+			for (var i=0;i<vars.calculations.length;i++)
+			{
+				var calculation=vars.calculations[i];
+				var tablecode=vars.fieldinfos[calculation.date].tablecode;
+				if (tablecode)
+				{
+					for (var i2=0;i2<record[tablecode].value.length;i2++)
+						update.record[tablecode].value[i2].value[calculation.week].value=record[tablecode].value[i2].value[calculation.week].value;
+				}
+				else update.record[calculation.week].value=record[calculation.week].value;
+			}
+			kintone.app.record.set(update);
 		}
 	};
 	/*---------------------------------------------------------------
@@ -211,16 +227,21 @@ jQuery.noConflict();
 		/* get fields of app */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fieldinfos=$.fieldparallelize(resp.properties);
+			var counter=vars.calculations.length;
 			var record=kintone.app.record.get();
 			for (var i=0;i<vars.calculations.length;i++)
-			{
 				(function(calculation,record){
 					var events=[];
 					var tablecode=vars.fieldinfos[calculation.date].tablecode;
 					if (tablecode)
 					{
+						counter+=record[tablecode].value.length-1;
 						for (var i2=0;i2<record[tablecode].value.length;i2++)
+						{
 							functions.weekcalc(record[tablecode].value[i2].value,calculation);
+							counter--;
+							if (counter==0) functions.loadedupdate(record);
+						}
 						events=[];
 						events.push('app.record.create.change.'+tablecode);
 						events.push('app.record.edit.change.'+tablecode);
@@ -231,7 +252,12 @@ jQuery.noConflict();
 							});
 						})(events)
 					}
-					else functions.weekcalc(record,calculation);
+					else
+					{
+						functions.weekcalc(record,calculation);
+						counter--;
+						if (counter==0) functions.loadedupdate(record);
+					}
 					events=[];
 					events.push('app.record.create.change.'+calculation.date);
 					events.push('app.record.edit.change.'+calculation.date);
@@ -242,8 +268,6 @@ jQuery.noConflict();
 						return event;
 					});
 				})(vars.calculations[i],record.record);
-			}
-			kintone.app.record.set(record);
 		},function(error){
 			swal('Error!',error.message,'error');
 		});

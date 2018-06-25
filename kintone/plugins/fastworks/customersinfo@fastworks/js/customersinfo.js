@@ -114,28 +114,28 @@ jQuery.noConflict();
 								};
 								for (var i=0;i<resp.records.length;i++)
 								{
-									var record={};
+									var updates={};
 									singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
 									switch (record[vars.config['mailing']].value)
 									{
 										case mailingoptions[0].option:
-											record[vars.config['mailing']]={value:mailingoptions[1].option};
-											record[vars.config['destination']]={value:familydestination};
+											updates[vars.config['mailing']]={value:mailingoptions[1].option};
+											updates[vars.config['destination']]={value:familydestination};
 											break;
 										case mailingoptions[1].option:
-											record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
-											record[vars.config['destination']]={value:familydestination};
+											updates[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+											updates[vars.config['destination']]={value:familydestination};
 											break;
 										case mailingoptions[2].option:
 										case mailingoptions[3].option:
-											record[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
-											if (resp.records.length==1) record[vars.config['destination']]={value:singledestination};
-											else record[vars.config['destination']]={value:familydestination};
+											updates[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+											if (resp.records.length==1) updates[vars.config['destination']]={value:singledestination};
+											else updates[vars.config['destination']]={value:familydestination};
 											break;
 									}
 									updatevalue.records.push({
 										id:resp.records[i]['$id'].value,
-										record:record
+										record:updates
 									});
 									returnvalues.push(resp.records[i]['$id'].value);
 								}
@@ -157,11 +157,11 @@ jQuery.noConflict();
 									};
 									for (var i=0;i<filter.length;i++)
 									{
-										var record={};
-										record[vars.config['mailing']]={value:mailingoptions[1].option};
+										var updates={};
+										updates[vars.config['mailing']]={value:mailingoptions[1].option};
 										updatevalue.records.push({
 											id:filter[i]['$id'].value,
-											record:record
+											record:updates
 										});
 										returnvalues.push(filter[i]['$id'].value);
 									}
@@ -172,7 +172,11 @@ jQuery.noConflict();
 										callback([]);
 									});
 								}
-								else callback([]);
+								else
+								{
+									record[vars.config['destination']].value=familydestination;
+									callback([]);
+								}
 							}
 						}
 						else
@@ -1661,34 +1665,30 @@ jQuery.noConflict();
 					});
 				});
 			};
-			if (parseFloat('0'+event.record[vars.config['lat']].value)+parseFloat('0'+event.record[vars.config['lng']].value)==0)
-			{
-				getlatlng(encodeURIComponent(event.record[vars.config['address']].value),function(json){
-					var lat=json.results[0].geometry.location.lat
-					var lng=json.results[0].geometry.location.lng;
-					var zip='';
-					for (var i=0;i<json.results[0].address_components.length;i++)
-						if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
-					event.record[vars.config['lat']].value=lat;
-					event.record[vars.config['lng']].value=lng;
-					event.record[vars.config['zip']].value=zip;
-					zip=zip.replace(/[^0-9]/g,'');
-					if (zip.length==7)
-					{
-						event.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
-							return String.fromCharCode(s.charCodeAt(0)+65248);
-						});
-						event.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
-							return String.fromCharCode(s.charCodeAt(0)+65248);
-						});
-					}
-					checkmailing();
-				},
-				function(){
-					checkmailing();
-				});
-			}
-			else checkmailing();
+			getlatlng(encodeURIComponent(event.record[vars.config['address']].value),function(json){
+				var lat=json.results[0].geometry.location.lat
+				var lng=json.results[0].geometry.location.lng;
+				var zip='';
+				for (var i=0;i<json.results[0].address_components.length;i++)
+					if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
+				event.record[vars.config['lat']].value=lat;
+				event.record[vars.config['lng']].value=lng;
+				event.record[vars.config['zip']].value=zip;
+				zip=zip.replace(/[^0-9]/g,'');
+				if (zip.length==7)
+				{
+					event.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+						return String.fromCharCode(s.charCodeAt(0)+65248);
+					});
+					event.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+						return String.fromCharCode(s.charCodeAt(0)+65248);
+					});
+				}
+				checkmailing();
+			},
+			function(){
+				checkmailing();
+			});
 		});
 	});
 	kintone.events.on(events.delete,function(event){

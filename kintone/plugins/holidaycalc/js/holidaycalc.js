@@ -87,6 +87,22 @@ jQuery.noConflict();
 				vars.progress.hide();
 				swal('Error!',error.message,'error');
 			});
+		},
+		/* loaded datas update */
+		loadedupdate:function(record){
+			var update=kintone.app.record.get();
+			for (var i=0;i<vars.calculations.length;i++)
+			{
+				var calculation=vars.calculations[i];
+				var tablecode=vars.fieldinfos[calculation.date].tablecode;
+				if (tablecode)
+				{
+					for (var i2=0;i2<record[tablecode].value.length;i2++)
+						update.record[tablecode].value[i2].value[calculation.holiday].value=record[tablecode].value[i2].value[calculation.holiday].value;
+				}
+				else update.record[calculation.holiday].value=record[calculation.holiday].value;
+			}
+			kintone.app.record.set(update);
 		}
 	};
 	/*---------------------------------------------------------------
@@ -245,7 +261,6 @@ jQuery.noConflict();
 			var counter=vars.calculations.length;
 			var record=kintone.app.record.get();
 			for (var i=0;i<vars.calculations.length;i++)
-			{
 				(function(calculation,record){
 					var events=[];
 					var tablecode=vars.fieldinfos[calculation.date].tablecode;
@@ -255,7 +270,7 @@ jQuery.noConflict();
 						for (var i2=0;i2<record.record[tablecode].value.length;i2++)
 							functions.holidaycalc(record.record[tablecode].value[i2].value,calculation,function(){
 								counter--;
-								if (counter==0) kintone.app.record.set(record);
+								if (counter==0) functions.loadedupdate(record.record);
 							});
 						events=[];
 						events.push('app.record.create.change.'+tablecode);
@@ -280,7 +295,7 @@ jQuery.noConflict();
 					}
 					else functions.holidaycalc(record.record,calculation,function(){
 						counter--;
-						if (counter==0) kintone.app.record.set(record);
+						if (counter==0) functions.loadedupdate(record.record);
 					});
 					events=[];
 					events.push('app.record.create.change.'+calculation.date);
@@ -312,7 +327,6 @@ jQuery.noConflict();
 						return event;
 					});
 				})(vars.calculations[i],record);
-			}
 		},function(error){
 			swal('Error!',error.message,'error');
 		});

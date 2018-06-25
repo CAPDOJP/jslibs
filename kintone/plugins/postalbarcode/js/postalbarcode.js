@@ -170,15 +170,19 @@ jQuery.noConflict();
 										{
 											if (vars.config.denydownload!='1')
 											{
-												var url=window.URL || window.webkitURL;
-												var a=document.createElement('a');
-												a.setAttribute('href',url.createObjectURL(blob));
-												a.setAttribute('target','_blank');
-												a.setAttribute('download','barcode.png');
-												a.style.display='none';
-												document.body.appendChild(a);
-												a.click();
-												document.body.removeChild(a);
+												if (window.navigator.msSaveBlob) window.navigator.msSaveOrOpenBlob(blob,'barcode.png');
+												else
+												{
+													var url=window.URL || window.webkitURL;
+													var a=document.createElement('a');
+													a.setAttribute('href',url.createObjectURL(blob));
+													a.setAttribute('target','_blank');
+													a.setAttribute('download','barcode.png');
+													a.style.display='none';
+													document.body.appendChild(a);
+													a.click();
+													document.body.removeChild(a);
+												}
 											}
 											if (callback) callback(record);
 										}
