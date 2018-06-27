@@ -1,7 +1,7 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">送信先メールアドレスフィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">送信先メールアドレスを設定するフィールドを指定して下さい。【リンクフィールド】</div>
+		<div class="kintoneplugin-label">送信先(To)フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">メールの送信先(To)が入力されたフィールドを指定して下さい。【リンク(メールアドレスのみ)】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="mailto">
@@ -11,32 +11,105 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">件名フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">件名を設定するフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-label">送信先(CC)フィールド</div>
+		<div class="kintoneplugin-desc">メールの送信先(CC)が入力されたフィールドを指定して下さい。【リンク(メールアドレスのみ)】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
-				<select id="subject">
+				<select id="mailcc">
 					<option value=""></option>
 				</select>
 			</div>
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">本文フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">本文を設定するフィールドを指定して下さい。【文字列(複数行)/リッチエディターフィールド】</div>
+		<div class="kintoneplugin-label">送信先(BCC)フィールド</div>
+		<div class="kintoneplugin-desc">メールの送信先(BCC)が入力されたフィールドを指定して下さい。【リンク(メールアドレスのみ)】</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
-				<select id="body">
+				<select id="mailbcc">
 					<option value=""></option>
 				</select>
 			</div>
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">Google Gmail APIキー</div>
-		<div class="kintoneplugin-desc">Google Gmail APIキーを取得し、取得したキーを入力して下さい。</div>
+		<div class="kintoneplugin-label">添付ファイルフィールド</div>
+		<div class="kintoneplugin-desc">添付ファイルが指定されたフィールドを指定して下さい。【添付ファイル】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="attachment">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">テンプレートアプリ<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">メール送信時のテンプレートとなるレコードが登録されたアプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="templateapp">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">テンプレート名フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">テンプレート指定リストに表示するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="templatename">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">テンプレート件名フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">メール送信時の件名に表示するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="templatesubject">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">テンプレート本文フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">メール送信時の本文に表示するフィールドを指定して下さい。【文字列(複数行)・リッチエディター】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="templatebody">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">履歴フィールド</div>
+	    <div class="kintoneplugin-desc">送信先(To)フィールドに設定したメールアドレスとのメール履歴を表示する場合は、スペースを指定して下さい。【スペース】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="histories">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">送信設定</div>
+		<div class="kintoneplugin-desc">メールを直接送信せず、下書きとして一時保存する場合は、チェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<label><input type="checkbox" id="draft" value="0">下書きメールとして一時保存する</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Google OAuth クライアントID</div>
+		<div class="kintoneplugin-desc">Google OAuth クライアントIDを取得し、取得したIDを入力して下さい。</div>
 		<div class="kintoneplugin-input-outer">
-			<input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
+			<input type="text" id="client_id" class="kintoneplugin-input-text" value="" >
 		</div>
 	</div>
 </div>

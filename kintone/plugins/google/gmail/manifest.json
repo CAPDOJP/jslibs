@@ -8,9 +8,9 @@
         "zh":"kintone GMail連携プラグイン"
     },
     "description":{
-        "ja":"Gmailの送信と受信したGmailの取得を行うプラグインです。",
+        "ja":"Gmailの送信と受信メールの取得を行うプラグインです。",
         "en":"This plug-in sends Gmail and acquires incoming mail.",
-        "zh":"Gmailの送信と受信したGmailの取得を行うプラグインです。"
+        "zh":"Gmailの送信と受信メールの取得を行うプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -22,11 +22,13 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
             "https://apis.google.com/js/api.js",
             "js/sweetalert.min.js",
             "js/gmail.js"
         ],
         "css":[
+            "css/51-modern-default.css",
             "css/progress.css",
             "css/sweetalert.css"
         ]
