@@ -499,6 +499,7 @@ jQuery.noConflict();
 		/* get field value */
 		fieldvalue:function(cell,fieldinfo){
 			var fieldvalue=null;
+			var hasdefault=fieldinfo.defaultValue;
 			switch (fieldinfo.type)
 			{
 				case 'CHECK_BOX':
@@ -508,6 +509,7 @@ jQuery.noConflict();
 				case 'ORGANIZATION_SELECT':
 				case 'USER_SELECT':
 					fieldvalue=[];
+					if (fieldinfo.type!='FILE') hasdefault=fieldinfo.defaultValue.length;
 					break;
 			}
 			if (cell.val())
@@ -585,13 +587,13 @@ jQuery.noConflict();
 				if (fieldinfo.required)
 				{
 					/* check default value */
-					if (fieldinfo.defaultValue)
+					if (hasdefault)
 					{
 						switch (fieldinfo.type)
 						{
 							case 'CHECK_BOX':
 							case 'MULTI_SELECT':
-								fieldvalue=[fieldinfo.defaultValue];
+								fieldvalue=fieldinfo.defaultValue;
 								break;
 							case 'GROUP_SELECT':
 							case 'ORGANIZATION_SELECT':
@@ -620,11 +622,11 @@ jQuery.noConflict();
 								fieldvalue=cell.find('option').eq(1).val();
 								break;
 							case 'DATE':
-								if (fieldinfo.defaultExpression) fieldvalue=date.format('Y-m-d');
+								if (fieldinfo.defaultNowValue) fieldvalue=date.format('Y-m-d');
 								else fieldvalue='1000-01-01';
 								break;
 							case 'DATETIME':
-								if (fieldinfo.defaultExpression)
+								if (fieldinfo.defaultNowValue)
 								{
 									fieldvalue='';
 									fieldvalue+=date.format('Y-m-d');
@@ -649,7 +651,7 @@ jQuery.noConflict();
 								fieldvalue=[{code:vars.exports.organizations[0].value}];
 								break;
 							case 'TIME':
-								if (fieldinfo.defaultExpression) fieldvalue=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
+								if (fieldinfo.defaultNowValue) fieldvalue=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
 								else fieldvalue='00:00';
 								break;
 							case 'USER_SELECT':

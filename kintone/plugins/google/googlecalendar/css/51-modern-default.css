@@ -657,18 +657,7 @@
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAACi0lEQVQ4jZ2UT0hUQRzHp0uHDtFVk0QqTGtdddXVN/Pe7ubuuu3Me7sY2s1jRZcOQX+kQC+dkrr15xAIElhIEBSZloKHPHTMIlHS9r2ZNdvUNK1Evh3S1WVdNX/wuf1+H+bHzHcIyVET4ZoiJViLjLKrjmBtUtBrdpSetwVzE0L25JrLKBlkh6RgHZJTWwmGLDidk5x2qYhWvaXIidKQ5Gx0U8kGkoJBCfpTcXZpU5HNNS45+7WdaKNwJmZgJORtz1wtqhVKQSd3Klpj2tSRMg28NtzhdZlgHf8rUoJBCoZZy8B4Q+27+578fWQiXFMkOfu6W5kSFL8bA3hQUWwRJVhLdqMOZW7Daq/NKVaa6tFdV9ZJJKetGRLLgBOogENL4bAc0FI4QQ+UZUByipSpIylYP3EEa0vLIrWQfjcWeh5hOTGBP2OfshkfxfLkZ8zduw1HOwZlGZgSOuZjvgGiOL2Rlp2qg6yvxNzdDiwNvsJi3/Ns+l9gaaAX329eh2OcgDR1TJs6Zi3jDVFcuyA3rhnzwa4tRsKVj4S7IJuyAiRcB+Hox6HifticYrHRj7eBqh6SiHjLFGcLGRdgGVAxP1TMlwP/vx7BYEcpcCaEO+6j59Zi1L2bp5HgFPNxH2Ysw24tKcwjhBDyJaJVJ9OZ2xkOp1CCAc1BdFaXXMyI1CTXrkybOr6ZOuQOTpRcFY2E6540EbI3K+zvQ972pGBIWQaSpg6bU0i+/todTmFzioW4D2iux8eG2p6n5eUHcn5Dw4Gq6FhEG0qZOlZOBzAb8yG5GuqlRj/QHMSU0Me7akoub/mfpYXeI/uHfJXmM8318EPY2/sj7h+ctfS+4ZOex7dch8++9JTkbTb3FyHXv8RgEtykAAAAAElFTkSuQmCC) center center no-repeat;
 }
 /* Custom */
-.kintoneplugin-select-outer .kintoneplugin-select select{
-  min-width:auto;
-  width:auto;
-}
-.kintoneplugin-select-outer .kintoneplugin-select select option{
-  color: #3498db;
-  line-height: 20px;
-  padding:0px 5px;
-  -webkit-appearance:none;
-  -moz-appearance:none;
-}
-.button-gmail{
+.button-googlecalendar{
   cursor:pointer;
   display:inline-block;
   height:48px;
@@ -676,29 +665,24 @@
   vertical-align:top;
   width:48px;
 }
-.feed-gmail{
+.dayfeed-googlecalendar{
   display:inline-block;
-  margin:0.5em;
+  line-height:30px;
+  padding-top:9px;
+}
+.dayfeed-googlecalendar *{
   vertical-align:top;
 }
-.table-gmail{
-  margin:0.5em 0px;
+.dayfeed-googlecalendar .button-googlecalendar{
+  height:30px;
+  margin:0px 12px 0px 0px;
+  width:30px;
 }
-.table-gmail img{
-  display:block;
-  height:2em;
-  width:2em;
-}
-.table-gmail span{
+.dayfeed-googlecalendar .span-googlecalendar{
+  box-sizing:border-box;
   display:inline-block;
-  line-height:1em;
-  padding:0.5em;
+  line-height:30px;
+  margin:0px;
+  padding:0px 3px;
 }
-.table-gmail td{
-  padding:0px;
-  vertical-align:top;
-}
-.table-gmail th{
-  padding:0px 0.5em;
-  text-align:center;
-}
+

@@ -102,82 +102,47 @@ jQuery.noConflict();
 					kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 						if (resp.records.length!=0)
 						{
-							var filter=$.grep(resp.records,function(item,index){
+							var returnvalues=[];
+							var updatevalue={
+								app:vars.config['app'],
+								records:[]
+							};
+							var head=($.grep(resp.records,function(item,index){
 								return item[vars.config['mailing']].value==mailingoptions[0].option;
-							});
-							if (filter.length==0)
+							}).length!=0);
+							for (var i=0;i<resp.records.length;i++)
 							{
-								var returnvalues=[];
-								var updatevalue={
-									app:vars.config['app'],
-									records:[]
-								};
-								for (var i=0;i<resp.records.length;i++)
+								var updates={};
+								singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
+								switch (record[vars.config['mailing']].value)
 								{
-									var updates={};
-									singledestination=resp.records[i][vars.config['familyname']].value+resp.records[i][vars.config['givenname']].value+'様';
-									switch (record[vars.config['mailing']].value)
-									{
-										case mailingoptions[0].option:
-											updates[vars.config['mailing']]={value:mailingoptions[1].option};
-											updates[vars.config['destination']]={value:familydestination};
-											break;
-										case mailingoptions[1].option:
-											updates[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
-											updates[vars.config['destination']]={value:familydestination};
-											break;
-										case mailingoptions[2].option:
-										case mailingoptions[3].option:
-											updates[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
-											if (resp.records.length==1) updates[vars.config['destination']]={value:singledestination};
-											else updates[vars.config['destination']]={value:familydestination};
-											break;
-									}
-									updatevalue.records.push({
-										id:resp.records[i]['$id'].value,
-										record:updates
-									});
-									returnvalues.push(resp.records[i]['$id'].value);
-								}
-								kintone.api(kintone.api.url('/k/v1/records',true),'PUT',updatevalue,function(resp){
-									record[vars.config['destination']].value=familydestination;
-									callback(returnvalues);
-								},function(error){
-									callback([]);
-								});
-							}
-							else
-							{
-								if (record[vars.config['mailing']].value==mailingoptions[0].option)
-								{
-									var returnvalues=[];
-									var updatevalue={
-										app:vars.config['app'],
-										records:[]
-									};
-									for (var i=0;i<filter.length;i++)
-									{
-										var updates={};
+									case mailingoptions[0].option:
 										updates[vars.config['mailing']]={value:mailingoptions[1].option};
-										updatevalue.records.push({
-											id:filter[i]['$id'].value,
-											record:updates
-										});
-										returnvalues.push(filter[i]['$id'].value);
-									}
-									kintone.api(kintone.api.url('/k/v1/records',true),'PUT',updatevalue,function(resp){
-										record[vars.config['destination']].value=familydestination;
-										callback(returnvalues);
-									},function(error){
-										callback([]);
-									});
+										updates[vars.config['destination']]={value:familydestination};
+										break;
+									case mailingoptions[1].option:
+										if (!head) updates[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+										updates[vars.config['destination']]={value:familydestination};
+										break;
+									case mailingoptions[2].option:
+									case mailingoptions[3].option:
+										if (!head) updates[vars.config['mailing']]={value:(i==0)?mailingoptions[0].option:mailingoptions[1].option};
+										if (resp.records.length==1) updates[vars.config['destination']]={value:singledestination};
+										else updates[vars.config['destination']]={value:familydestination};
+										break;
 								}
-								else
-								{
-									record[vars.config['destination']].value=familydestination;
-									callback([]);
-								}
+								updatevalue.records.push({
+									id:resp.records[i]['$id'].value,
+									record:updates
+								});
+								returnvalues.push(resp.records[i]['$id'].value);
 							}
+							kintone.api(kintone.api.url('/k/v1/records',true),'PUT',updatevalue,function(resp){
+								record[vars.config['destination']].value=familydestination;
+								callback(returnvalues);
+							},function(error){
+								callback([]);
+							});
 						}
 						else
 						{

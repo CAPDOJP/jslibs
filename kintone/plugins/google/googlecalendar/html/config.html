@@ -1,0 +1,86 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">イベントIDフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">登録または取得したGoogleカレンダーイベントIDを格納するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="eventid">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">イベントタイトルフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">イベントタイトルを入力するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="summary">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">イベント開始日時フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">イベント開始日時を入力するフィールドを指定して下さい。【日付・日時】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="start">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">イベント終了日時フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">イベント終了日時を入力するフィールドを指定して下さい。【日付・日時】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="end">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">イベント開催場所フィールド</div>
+		<div class="kintoneplugin-desc">イベント開催場所を入力するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="location">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">イベント説明フィールド</div>
+		<div class="kintoneplugin-desc">イベント説明を入力するフィールドを指定して下さい。【文字列(複数行)・リッチエディター】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="description">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Google カレンダーID</div>
+		<div class="kintoneplugin-desc">登録先のカレンダーIDを取得し、取得したIDを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="calendarid" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">Google OAuth クライアントID</div>
+		<div class="kintoneplugin-desc">Google OAuth クライアントIDを取得し、取得したIDを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="client_id" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

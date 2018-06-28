@@ -13,7 +13,8 @@ jQuery.noConflict();
 	"use strict";
 	var vars={
 		excludeviewtable:null,
-		informationtable:null
+		informationtable:null,
+		colors:[]
 	};
 	/*---------------------------------------------------------------
 	 initialize fields
@@ -24,6 +25,10 @@ jQuery.noConflict();
 		});
 		kintone.api(kintone.api.url('/k/v1/form',true),'GET',{app:kintone.app.getId()},function(resp){
 			var config=kintone.plugin.app.getConfig(PLUGIN_ID);
+			/* setup colorfields lists */
+			vars.colors=[];
+			$.each($.markercolors(),function(index,values){vars.colors.push('#'+values.back);});
+			/* initialize valiable */
 			$.each(resp.properties,function(index,values){
 				/* check field type */
 				switch (values.type)
@@ -76,6 +81,7 @@ jQuery.noConflict();
 				$('select#lng').val(config['lng']);
 				$('select#spacer').val(config['spacer']);
 				$('input#mapheight').val(config['mapheight']);
+				$('input#color').val(config['color']);
 				$('input#apikey').val(config['apikey']);
 				if (config['map']=='1') $('input#map').prop('checked',true);
 				if (config['usegeocoder']=='1') $('input#usegeocoder').prop('checked',true);
@@ -94,7 +100,12 @@ jQuery.noConflict();
 					$('select#information',row).val(informations[index]);
 				});
 			}
-			else $('input#mapheight').val('50');
+			else
+			{
+				$('input#mapheight').val('50');
+				$('input#color').val('0079c2');
+			}
+			$('span#color').colorSelector(vars.colors,$('span#color').closest('tr').find('input#color'));
 		},function(error){});
 	});
 	/*---------------------------------------------------------------
@@ -162,6 +173,7 @@ jQuery.noConflict();
 		config['spacer']=$('select#spacer').val();
 		config['map']=($('input#map').prop('checked'))?'1':'0';
 		config['mapheight']=$('input#mapheight').val();
+		config['color']=$('input#color').val();
 		config['usegeocoder']=($('input#usegeocoder').prop('checked'))?'1':'0';
 		config['apikey']=$('input#apikey').val();
 		config['excludeview']=JSON.stringify(excludeviews);

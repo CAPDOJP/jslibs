@@ -16,7 +16,7 @@ jQuery.noConflict();
 	---------------------------------------------------------------*/
 	var vars={
 		auth:false,
-		detail:false,
+		list:false,
 		limit:500,
 		offset:0,
 		progress:null,
@@ -51,11 +51,23 @@ jQuery.noConflict();
 			}).then(function(){
 				gapi.auth2.getAuthInstance().isSignedIn.listen(function(isSignedIn){
 					vars.auth=isSignedIn;
-					if (vars.auth) functions.mailget(true);
+					if (vars.auth)
+					{
+						functions.setupelements(function(){
+							functions.mailget(true);
+							$('.auth-gmail').attr('src','https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/unlink.svg');
+						});
+					}
 				});
 				vars.auth=gapi.auth2.getAuthInstance().isSignedIn.get();
 				if (!vars.auth) gapi.auth2.getAuthInstance().signIn();
-				else functions.mailget(true);
+				else
+				{
+					functions.setupelements(function(){
+						functions.mailget(true);
+						$('.auth-gmail').attr('src','https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/unlink.svg');
+					});
+				}
 			},function(reason){
 				swal('Error!',reason.result.error.message,'error');
 			});
@@ -105,7 +117,7 @@ jQuery.noConflict();
 					else vars.history.container.hide();
 				});
 			};
-			if (vars.detail)
+			if (!vars.list)
 			{
 				if (init)
 				{
@@ -174,7 +186,7 @@ jQuery.noConflict();
 					swal({
 						title:'送信エラー',
 						text:resp.error.message,
-						type:'success'
+						type:'error'
 					},function(){if (fail) fail();});
 				}
 			};
@@ -305,6 +317,136 @@ jQuery.noConflict();
 				vars.progress.hide();
 				swal('Error!',error.message,'error');
 			});
+		},
+		setupelements:function(callback){
+			if ($('.custom-elements-gmail').size()) $('.custom-elements-gmail').remove();
+			vars.offset=0;
+			functions.loaddatas(vars.config['templateapp'],'',[],function(records){
+				vars.templates=records;
+				if (vars.list)
+				{
+					kintone.app.getHeaderMenuSpaceElement().appendChild(
+						$('<div class="kintoneplugin-select-outer custom-elements-gmail">')
+						.append(
+							$('<div class="kintoneplugin-select">')
+							.append($('<select id="template-gmail">'))
+						)[0]
+					);
+					kintone.app.getHeaderMenuSpaceElement().appendChild(
+						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/mail.svg" class="button-gmail custom-elements-gmail" alt="メール送信" title="メール送信" />')
+						.on('click',function(e){
+							if (!vars.auth) return;
+							swal({
+								title:'確認',
+								text:'表示中の一覧の条件に該当するすべてのレコードを送信します。宜しいですか？',
+								type:'info',
+								showCancelButton:true,
+								cancelButtonText:'Cancel'
+							},
+							function(){
+								vars.offset=0;
+								vars.progress.find('.message').text('一覧データ取得中');
+								vars.progress.find('.progressbar').find('.progresscell').width(0);
+								vars.progress.show();
+								functions.loaddatas(kintone.app.getId(),kintone.app.getQueryCondition(),[],function(records){
+									var error=false;
+									var counter=0;
+									var progress=function(){
+										counter++;
+										if (counter<records.length)
+										{
+											vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/records.length));
+										}
+										else
+										{
+											vars.progress.hide();
+											swal({
+												title:'送信完了',
+												text:'メールを送信しました。',
+												type:'success'
+											},function(){location.reload(true);});
+										}
+									};
+									if (records.length==0)
+									{
+										vars.progress.hide();
+										setTimeout(function(){
+											swal('Error!','レコードがありません。','error');
+										},500);
+										return;
+									}
+									else vars.progress.find('.message').text('メール送信中');
+									for (var i=0;i<records.length;i++)
+									{
+										if (error) break;
+										functions.mailsend(records[i],function(){progress();},function(){error=true;});
+									}
+								});
+							});
+						})[0]
+					);
+					kintone.app.getHeaderMenuSpaceElement().appendChild(
+						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg" class="auth-gmail button-gmail custom-elements-gmail" alt="認証" title="認証" />')
+						.on('click',function(e){
+							if ($(this).attr('src').match(/unlink.svg$/g))
+							{
+								gapi.auth2.getAuthInstance().signOut();
+								$(this).attr('src','https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg');
+								vars.auth=false;
+							}
+							else gapi.auth2.getAuthInstance().signIn();
+						})[0]
+					);
+					for(var i=0;i<vars.templates.length;i++) $('#template-gmail').append($('<option>').html('&nbsp;'+vars.templates[i][vars.config['templatename']].value+'&nbsp;').val(vars.templates[i]['$id'].value));
+				}
+				else
+				{
+					$('.gaia-argoui-app-toolbar-statusmenu')
+					.append(
+						$('<div class="kintoneplugin-select-outer custom-elements-gmail">')
+						.append(
+							$('<div class="kintoneplugin-select">')
+							.append($('<select id="template-gmail">'))
+						)
+					)
+					.append(
+						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/mail.svg" class="button-gmail custom-elements-gmail" alt="メール送信" title="メール送信" />')
+						.on('click',function(e){
+							if (!vars.auth) return;
+							swal({
+								title:'確認',
+								text:'メールを送信します。宜しいですか？',
+								type:'info',
+								showCancelButton:true,
+								cancelButtonText:'Cancel'
+							},
+							function(){
+								functions.mailsend(kintone.app.record.get().record,function(){
+									swal({
+										title:'送信完了',
+										text:'メールを送信しました。',
+										type:'success'
+									},function(){location.reload(true);});
+								});
+							});
+						})
+					)
+					.append(
+						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg" class="auth-gmail button-gmail custom-elements-gmail" alt="認証" title="認証" />')
+						.on('click',function(e){
+							if ($(this).attr('src').match(/unlink.svg$/g))
+							{
+								gapi.auth2.getAuthInstance().signOut();
+								$(this).attr('src','https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg');
+								vars.auth=false;
+							}
+							else gapi.auth2.getAuthInstance().signIn();
+						})
+					);
+					for(var i=0;i<vars.templates.length;i++) $('#template-gmail').append($('<option>').html('&nbsp;'+vars.templates[i][vars.config['templatename']].value+'&nbsp;').val(vars.templates[i]['$id'].value));
+				}
+				if (callback) callback();
+			});
 		}
 	};
 	/*---------------------------------------------------------------
@@ -315,76 +457,8 @@ jQuery.noConflict();
 		if (!vars.config) return event;
 		if (!('mailto' in vars.config)) return event;
 		/* initialize valiable */
-		vars.detail=false;
-		/* clear elements */
-		if ($('.custom-elements-gmail').size()) $('.custom-elements-gmail').remove();
-		else gapi.load('client:auth2',functions.apiloaded);
-		/* load templates */
-		vars.offset=0;
-		functions.loaddatas(vars.config['templateapp'],'',[],function(records){
-			vars.templates=records;
-			/* append elements */
-			kintone.app.getHeaderMenuSpaceElement().appendChild(
-				$('<div class="kintoneplugin-select-outer custom-elements-gmail">')
-				.append(
-					$('<div class="kintoneplugin-select">')
-					.append($('<select id="template-gmail">'))
-				)[0]
-			);
-			kintone.app.getHeaderMenuSpaceElement().appendChild(
-				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/mail.svg" class="mailsend-gmail custom-elements-gmail" alt="メール送信" title="メール送信" />')
-				.on('click',function(e){
-					swal({
-						title:'確認',
-						text:'表示中の一覧の条件に該当するすべてのレコードを送信します。宜しいですか？',
-						type:'info',
-						showCancelButton:true,
-						cancelButtonText:'Cancel'
-					},
-					function(){
-						vars.offset=0;
-						vars.progress.find('.message').text('一覧データ取得中');
-						vars.progress.find('.progressbar').find('.progresscell').width(0);
-						vars.progress.show();
-						functions.loaddatas(kintone.app.getId(),kintone.app.getQueryCondition(),[],function(records){
-							var error=false;
-							var counter=0;
-							var progress=function(){
-								counter++;
-								if (counter<records.length)
-								{
-									vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/records.length));
-								}
-								else
-								{
-									vars.progress.hide();
-									swal({
-										title:'送信完了',
-										text:'メールを送信しました。',
-										type:'success'
-									},function(){location.reload(true);});
-								}
-							};
-							if (records.length==0)
-							{
-								vars.progress.hide();
-								setTimeout(function(){
-									swal('Error!','レコードがありません。','error');
-								},500);
-								return;
-							}
-							else vars.progress.find('.message').text('メール送信中');
-							for (var i=0;i<records.length;i++)
-							{
-								if (error) break;
-								functions.mailsend(records[i],function(){progress();},function(){error=true;});
-							}
-						});
-					});
-				})[0]
-			);
-			for(var i=0;i<vars.templates.length;i++) $('#template-gmail').append($('<option>').html('&nbsp;'+vars.templates[i][vars.config['templatename']].value+'&nbsp;').val(vars.templates[i]['$id'].value));
-		});
+		vars.list=true;
+		gapi.load('client:auth2',functions.apiloaded);
 		vars.progress=$('<div id="progress">').append($('<div class="message">')).append($('<div class="progressbar">').append($('<div class="progresscell">')));
 		$('body').append(vars.progress);
 		return event;
@@ -394,46 +468,8 @@ jQuery.noConflict();
 		if (!vars.config) return event;
 		if (!('mailto' in vars.config)) return event;
 		/* initialize valiable */
-		vars.detail=true;
-		/* clear elements */
-		if ($('.custom-elements-gmail').size()) $('.custom-elements-gmail').remove();
-		else gapi.load('client:auth2',functions.apiloaded);
-		/* load templates */
-		vars.offset=0;
-		functions.loaddatas(vars.config['templateapp'],'',[],function(records){
-			vars.templates=records;
-			/* append elements */
-			$('.gaia-argoui-app-toolbar-statusmenu')
-			.append(
-				$('<div class="kintoneplugin-select-outer custom-elements-gmail">')
-				.append(
-					$('<div class="kintoneplugin-select">')
-					.append($('<select id="template-gmail">'))
-				)
-			)
-			.append(
-				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/mail.svg" class="mailsend-gmail custom-elements-gmail" alt="メール送信" title="メール送信" />')
-				.on('click',function(e){
-					swal({
-						title:'確認',
-						text:'メールを送信します。宜しいですか？',
-						type:'info',
-						showCancelButton:true,
-						cancelButtonText:'Cancel'
-					},
-					function(){
-						functions.mailsend(kintone.app.record.get().record,function(){
-							swal({
-								title:'送信完了',
-								text:'メールを送信しました。',
-								type:'success'
-							},function(){location.reload(true);});
-						});
-					});
-				})
-			);
-			for(var i=0;i<vars.templates.length;i++) $('#template-gmail').append($('<option>').html('&nbsp;'+vars.templates[i][vars.config['templatename']].value+'&nbsp;').val(vars.templates[i]['$id'].value));
-		});
+		vars.list=false;
+		gapi.load('client:auth2',functions.apiloaded);
 		/* create history */
 		vars.history={
 			page:1,

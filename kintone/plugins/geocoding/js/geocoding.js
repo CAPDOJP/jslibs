@@ -164,7 +164,7 @@ jQuery.noConflict();
 					}
 					label+='<br><a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
 					vars.markers.push({
-						colors:6,
+						colors:vars.config['color'],
 						label:label,
 						lat:lat,
 						lng:lng

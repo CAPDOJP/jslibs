@@ -1,0 +1,48 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone Googleカレンダー連携プラグイン",
+        "en":"kintone Google Calendar linkage plug-in",
+        "zh":"kintone Googleカレンダー連携プラグイン"
+    },
+    "description":{
+        "ja":"Googleカレンダーへの登録と予定の取得を行うプラグインです。",
+        "en":"This plug-in registers and schedules Google Calendar.",
+        "zh":"Googleカレンダーへの登録と予定の取得を行うプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://apis.google.com/js/api.js",
+            "js/sweetalert.min.js",
+            "js/googlecalendar.js"
+        ],
+        "css":[
+            "css/51-modern-default.css",
+            "css/progress.css",
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}
