@@ -51,6 +51,10 @@ jQuery.fn.imgBrowser = function(options){
 		});
 		var contents=$('<div>').css({
 			'box-sizing':'border-box',
+			'display':'-webkit-flex',
+			'display':'flex',
+			'-webkit-align-items':'center',
+			'align-items':'center',
 			'height':'100%',
 			'padding':'1em 0px',
 			'position':'relative',
