@@ -661,7 +661,7 @@
   cursor:pointer;
   display:inline-block;
   height:48px;
-  margin:0px 12px 0px 0px;
+  margin:0px;
   vertical-align:top;
   width:48px;
 }
@@ -675,7 +675,6 @@
 }
 .dayfeed-googlecalendar .button-googlecalendar{
   height:30px;
-  margin:0px 12px 0px 0px;
   width:30px;
 }
 .dayfeed-googlecalendar .span-googlecalendar{

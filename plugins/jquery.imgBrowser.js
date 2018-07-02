@@ -45,14 +45,12 @@ jQuery.fn.imgBrowser = function(options){
 		.empty();
 		var container=$('<div>').css({
 			'box-sizing':'border-box',
-			'display':'table',
 			'height':'calc(100% - 3em)',
 			'margin':'0px auto',
 			'position':'relative'
 		});
 		var contents=$('<div>').css({
 			'box-sizing':'border-box',
-			'display':'table-cell',
 			'height':'100%',
 			'padding':'1em 0px',
 			'position':'relative',

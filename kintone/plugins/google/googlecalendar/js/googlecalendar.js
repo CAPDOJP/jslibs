@@ -71,7 +71,7 @@ jQuery.noConflict();
 			});
 		},
 		/* googlecalendar get */
-		calendarget:function(record,token,callback){
+		calendarget:function(records,token,callback){
 			var params={};
 			if (token)
 			{
@@ -85,9 +85,9 @@ jQuery.noConflict();
 				params['timeMax']=vars.todate.format('Y-m-d')+'T23:59:00+0900';
 				params['showDeleted']=false;
 				params['singleEvents']=true;
-				params['orderBy']='startTime';
+				params['orderBy']='starttime';
 			}
-			gapi.client.calendar.events.list({param}).then(function(resp){
+			gapi.client.calendar.events.list(params).then(function(resp){
 				Array.prototype.push.apply(records,resp.result.items);
 				if (resp.nextPageToken) functions.calendarget(records,resp.nextPageToken,callback);
 				else callback(records);
@@ -107,11 +107,13 @@ jQuery.noConflict();
 						title:'エラー',
 						text:resp.error.message,
 						type:'error'
-					},function(){if (fail) fail();});
+					},function(){fail();});
 				}
 			};
 			if (vars.auth)
 			{
+				var starttime=null;
+				var endtime=null;
 				var event={
 					summary:'',
 					location:'',
@@ -124,24 +126,25 @@ jQuery.noConflict();
 					}
 				};
 				if (record[vars.config['summary']].value) event.summary=record[vars.config['summary']].value;
-				switch (vars.fieldinfos[vars.config['start']].type)
+				if (record[vars.config['start']].value)
 				{
-					case 'DATE':
-						event.start['date']=record[vars.config['start']].value;
-						break;
-					case 'DATETIME':
-						event.start['datetime']=record[vars.config['start']].value;
-						break;
+					starttime=record[vars.config['start']].value;
+					endtime=starttime;
+					if (vars.config['end'])
+						if (record[vars.config['end']].value) endtime=record[vars.config['end']].value;
+					switch (vars.fieldinfos[vars.config['start']].type)
+					{
+						case 'DATE':
+							event.start['date']=starttime;
+							event.end['date']=endtime;
+							break;
+						case 'DATETIME':
+							event.start['dateTime']=starttime;
+							event.end['dateTime']=endtime;
+							break;
+					}
 				}
-				switch (vars.fieldinfos[vars.config['end']].type)
-				{
-					case 'DATE':
-						event.end['date']=record[vars.config['end']].value;
-						break;
-					case 'DATETIME':
-						event.end['datetime']=record[vars.config['end']].value;
-						break;
-				}
+				else success();
 				if (vars.config['location'])
 					if (record[vars.config['location']].value) event.location=record[vars.config['location']].value;
 				if (vars.config['description'])
@@ -149,7 +152,7 @@ jQuery.noConflict();
 				if (record[vars.config['eventid']].value)
 				{
 					gapi.client.calendar.events.update({
-						'calendarId':vars.config['calendarid']
+						'calendarId':vars.config['calendarid'],
 						'eventId':record[vars.config['eventid']].value,
 						'resource':event
 					}).execute(function(resp){callback(resp);});
@@ -157,15 +160,12 @@ jQuery.noConflict();
 				else
 				{
 					gapi.client.calendar.events.insert({
-						'calendarId':vars.config['calendarid']
+						'calendarId':vars.config['calendarid'],
 						'resource':event
 					}).execute(function(resp){callback(resp);});
 				}
 			}
-			else
-			{
-				if (fail) fail();
-			}
+			else fail();
 		},
 		/* load app datas */
 		loaddatas:function(appkey,filter,records,callback){
@@ -205,24 +205,17 @@ jQuery.noConflict();
 					vars.fromcalendar=$('body').calendar({
 						selected:function(target,value){
 							vars.fromdate=new Date(value.dateformat());
-							fromdate.text(vars.fromdate.format('Y-m'));
+							fromdate.text(vars.fromdate.format('Y-m-d'));
 						}
 					});
 					frombutton.on('click',function(){vars.fromcalendar.show({activedate:vars.fromdate});});
 					vars.tocalendar=$('body').calendar({
 						selected:function(target,value){
 							vars.todate=new Date(value.dateformat());
-							todate.text(vars.todate.format('Y-m'));
+							todate.text(vars.todate.format('Y-m-d'));
 						}
 					});
 					tobutton.on('click',function(){vars.tocalendar.show({activedate:vars.todate});});
-					kintone.app.getHeaderMenuSpaceElement().appendChild(
-						$('<div class="kintoneplugin-select-outer custom-elements-googlecalendar">')
-						.append(
-							$('<div class="kintoneplugin-select">')
-							.append($('<select id="template-googlecalendar">'))
-						)[0]
-					);
 					/* append elements */
 					feed.append(fromdate);
 					feed.append(frombutton);
@@ -242,16 +235,13 @@ jQuery.noConflict();
 								cancelButtonText:'Cancel'
 							},
 							function(){
-								var records={
-									google:[],
-									kintone:[]
-								}
 								vars.offset=0;
 								vars.progress.find('.message').text('一覧データ取得中');
 								vars.progress.find('.progressbar').find('.progresscell').width(0);
 								vars.progress.show();
-								functions.loaddatas(kintone.app.getId(),'',records.kintone,function(records){
-									functions.calendarget(records.google,'',function(records){
+								functions.loaddatas(kintone.app.getId(),'',[],function(records){
+									var updates=records;
+									functions.calendarget([],'',function(records){
 										var error=false;
 										var counter=0;
 										var progress=function(){
@@ -270,35 +260,35 @@ jQuery.noConflict();
 												},function(){location.reload(true);});
 											}
 										};
-										var setuprecord=function(record){
+										var setuprecord=function(record,event){
+											var starttime=event.start.date || event.start.dateTime;
+											var endtime=event.end.date || event.end.dateTime;
+											if (!starttime.match(/T/g)) starttime+='T00:00:00+09:00'
+											if (!endtime.match(/T/g)) endtime+='T00:00:00+09:00'
+											record[vars.config['eventid']]={value:event.id};
 											record[vars.config['summary']]={value:event.summary};
 											switch (vars.fieldinfos[vars.config['start']].type)
 											{
 												case 'DATE':
-													record[vars.config['start']]={value:event.start.date};
+													record[vars.config['start']]={value:starttime.replace(/T.*$/g,'')};
+													if (vars.config['end'])
+														if (vars.fieldinfos[vars.config['end']].type=='DATE')
+															record[vars.config['end']]={value:endtime.replace(/T.*$/g,'')};
 													break;
 												case 'DATETIME':
-													record[vars.config['start']]={value:event.start.datetime};
-													break;
-											}
-											switch (vars.fieldinfos[vars.config['end']].type)
-											{
-												case 'DATE':
-													record[vars.config['end']]={value:event.end.date};
-													break;
-												case 'DATETIME':
-													record[vars.config['end']]={value:event.end.datetime};
+													record[vars.config['start']]={value:starttime};
+													if (vars.config['end'])
+														if (vars.fieldinfos[vars.config['end']].type=='DATETIME')
+															record[vars.config['end']]={value:endtime};
 													break;
 											}
 											if (vars.config['location'])
 												record[vars.config['location']]={value:event.location};
 											if (vars.config['description'])
 												record[vars.config['description']]={value:event.description};
-											if ('$id' in record) delete record['$id'];
-											if ('$revision' in record) delete record['$revision'];
 											return record;
 										};
-										if (records.google.length==0)
+										if (records.length==0)
 										{
 											vars.progress.hide();
 											setTimeout(function(){
@@ -307,23 +297,46 @@ jQuery.noConflict();
 											return;
 										}
 										else vars.progress.find('.message').text('予定登録中');
-										for (var i=0;i<records.google.length;i++)
+										for (var i=0;i<records.length;i++)
 										{
 											if (error) break;
 											(function(event){
-												var filter=$.grep(records.kintone,function(item,index){
-													return item[vars.config['eventid']].value=event.id;
+												var filter=$.grep(updates,function(item,index){
+													return item[vars.config['eventid']].value==event.id;
 												});
 												if (filter.length!=0)
 												{
 													var body={
 														app:kintone.app.getId(),
 														id:filter[0]['$id'].value,
-														record:setuprecord(filter[0])
+														record:setuprecord((function(filter){
+															var record={};
+															$.each(filter,function(key,values){
+																switch (values.type)
+																{
+																	case 'CALC':
+																	case 'CATEGORY':
+																	case 'CREATED_TIME':
+																	case 'CREATOR':
+																	case 'FILE':
+																	case 'MODIFIER':
+																	case 'RECORD_NUMBER':
+																	case 'STATUS':
+																	case 'STATUS_ASSIGNEE':
+																	case 'UPDATED_TIME':
+																		break;
+																	default:
+																		record[key]=values;
+																		break;
+																}
+															});
+															return record;
+														})(filter[0]),event)
 													};
 													kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
 														progress();
 													},function(error){
+														vars.progress.hide();
 														swal('Error!',error.message,'error');
 														error=true;
 													});
@@ -332,16 +345,17 @@ jQuery.noConflict();
 												{
 													var body={
 														app:kintone.app.getId(),
-														record:setuprecord({})
+														record:setuprecord({},event)
 													};
 													kintone.api(kintone.api.url('/k/v1/record',true),'POST',body,function(resp){
 														progress();
 													},function(error){
+														vars.progress.hide();
 														swal('Error!',error.message,'error');
 														error=true;
 													});
 												}
-											})(records.google[i]);
+											})(records[i]);
 										}
 									});
 								});
@@ -416,7 +430,7 @@ jQuery.noConflict();
 						})[0]
 					);
 					kintone.app.getHeaderMenuSpaceElement().appendChild(
-						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg" class="auth-googlecalendar custom-elements-googlecalendar" alt="認証" title="認証" />')
+						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg" class="auth-googlecalendar button-googlecalendar custom-elements-googlecalendar" alt="認証" title="認証" />')
 						.on('click',function(e){
 							if ($(this).attr('src').match(/unlink.svg$/g))
 							{
@@ -427,13 +441,12 @@ jQuery.noConflict();
 							else gapi.auth2.getAuthInstance().signIn();
 						})[0]
 					);
-					for(var i=0;i<12;i++) $('#template-googlecalendar').append($('<option>').html('月').val(vars.templates[i]['$id'].value));
 				}
 				else
 				{
 					$('.gaia-argoui-app-toolbar-statusmenu')
 					.append(
-						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg" class="auth-googlecalendar custom-elements-googlecalendar" alt="認証" title="認証" />')
+						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg" class="auth-googlecalendar button-googlecalendar custom-elements-googlecalendar" alt="認証" title="認証" />')
 						.on('click',function(e){
 							if ($(this).attr('src').match(/unlink.svg$/g))
 							{

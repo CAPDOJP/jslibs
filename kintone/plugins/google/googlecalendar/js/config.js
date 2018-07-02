@@ -42,13 +42,23 @@ jQuery.noConflict();
 		/* get fieldinfo */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			var config=kintone.plugin.app.getConfig(PLUGIN_ID);
+			vars.fieldinfos=resp.properties;
 			$.each(sorted,function(index){
-				if (sorted[index] in resp.properties)
+				if (sorted[index] in vars.fieldinfos)
 				{
-					var fieldinfo=resp.properties[sorted[index]];
+					var fieldinfo=vars.fieldinfos[sorted[index]];
 					/* check field type */
 					switch (fieldinfo.type)
 					{
+						case 'CALC':
+							switch (fieldinfo.format)
+							{
+								case 'DATE':
+								case 'DATETIME':
+									$('select#end').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
+							}
+							break;
 						case 'DATE':
 						case 'DATETIME':
 							$('select#start').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
@@ -84,6 +94,7 @@ jQuery.noConflict();
 	 button events
 	---------------------------------------------------------------*/
 	$('button#submit').on('click',function(e){
+		var error=false;
 		var config=[];
 		/* check values */
 		if ($('select#eventid').val()=='')
@@ -101,9 +112,54 @@ jQuery.noConflict();
 			swal('Error!','イベント開始日時フィールドを選択して下さい。','error');
 			return;
 		}
-		if ($('select#end').val()=='')
+		/* check field type */
+		if ($('select#end').val()!='')
+			switch (vars.fieldinfos[$('select#start').val()].type)
+			{
+				case 'DATE':
+					switch (vars.fieldinfos[$('select#end').val()].type)
+					{
+						case 'CALC':
+							switch (vars.fieldinfos[$('select#end').val()].format)
+							{
+								case 'DATE':
+									break;
+								default:
+									error=true;
+									break;
+							}
+							break;
+						case 'DATE':
+							break;
+						default:
+							error=true;
+							break;
+					}
+					break;
+				case 'DATETIME':
+					switch (vars.fieldinfos[$('select#end').val()].type)
+					{
+						case 'CALC':
+							switch (vars.fieldinfos[$('select#end').val()].format)
+							{
+								case 'DATETIME':
+									break;
+								default:
+									error=true;
+									break;
+							}
+							break;
+						case 'DATETIME':
+							break;
+						default:
+							error=true;
+							break;
+					}
+					break;
+			}
+		if (error)
 		{
-			swal('Error!','イベント終了日時フィールドを選択して下さい。','error');
+			swal('Error!','イベント開始日時とイベント終了日時のフィールド形式が一致しません。','error');
 			return;
 		}
 		if ($('input#calendarid').val()=='')
