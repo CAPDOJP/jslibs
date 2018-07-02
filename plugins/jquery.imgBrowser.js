@@ -51,10 +51,6 @@ jQuery.fn.imgBrowser = function(options){
 		});
 		var contents=$('<div>').css({
 			'box-sizing':'border-box',
-			'display':'-webkit-flex',
-			'display':'flex',
-			'-webkit-align-items':'center',
-			'align-items':'center',
 			'height':'100%',
 			'padding':'1em 0px',
 			'position':'relative',
@@ -102,6 +98,15 @@ jQuery.fn.imgBrowser = function(options){
 						'vertical-align':'middle'
 					});
 					contents.find('img').last().css('margin-right','0px');
+					contents.append(
+						$('<div>').css({
+							'box-sizing':'border-box',
+							'display':'inline-block',
+							'height':'100%',
+							'vertical-align':'middle',
+							'width':'0px'
+						})
+					);
 					//表示
 					target.fadeIn(250,function(){
 						contents.children().each(function(){
