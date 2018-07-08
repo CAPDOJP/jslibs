@@ -709,7 +709,7 @@ MultiSelect.prototype={
 		this.dialog.lists.find('tbody').empty();
 		this.selection={};
 		$.each(options.datasource,function(index){
-			var list=this.template.clone(true);
+			var list=my.template.clone(true);
 			var listtext=options.datasource[index].text;
 			var listvalue=options.datasource[index].value;
 			$('span',list).html(listtext);
