@@ -184,7 +184,7 @@ var createdialog=function(height,width){
 			'z-index':'1'
 		}),
 		header:div.clone(true).css({
-			'background-color':'1px solid #3498db',
+			'background-color':'#3498db',
 			'left':'0px',
 			'padding':'5px',
 			'position':'absolute',
@@ -194,7 +194,7 @@ var createdialog=function(height,width){
 			'z-index':'3'
 		}),
 		footer:div.clone(true).css({
-			'background-color':'1px solid #3498db',
+			'background-color':'#3498db',
 			'bottom':'0px',
 			'left':'0px',
 			'padding':'5px',
