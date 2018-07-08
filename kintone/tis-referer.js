@@ -1317,7 +1317,7 @@ var FieldsForm=function(options){
 	options.container.append(this.dialog.cover);
 	/* adjust container height */
 	$(window).on('load resize',function(){
-		my.dialog.container.css({'height':(my.dialog.contents.outerHeight()+45).toString()+'px'});
+		my.dialog.container.css({'height':(my.dialog.contents[0].scrollHeight+45).toString()+'px'});
 	});
 	/* create filebox */
 	this.filebox=$('body').fileselect();
@@ -1479,7 +1479,7 @@ FieldsForm.prototype={
 		});
 		this.dialog.cover.show();
 		/* adjust container height */
-		this.dialog.container.css({'height':(this.dialog.contents.outerHeight()+45).toString()+'px'});
+		this.dialog.container.css({'height':(this.dialog.contents[0].scrollHeight+45).toString()+'px'});
 	},
 	/* hide form */
 	hide:function(){
@@ -1882,7 +1882,7 @@ var ConditionsForm=function(options){
 	options.container.append(this.dialog.cover);
 	/* adjust container height */
 	$(window).on('load resize',function(){
-		my.dialog.container.css({'height':(my.dialog.contents.outerHeight()+45).toString()+'px'});
+		my.dialog.container.css({'height':(my.dialog.contents[0].scrollHeight+45).toString()+'px'});
 	});
 	/* create selectbox */
 	this.selectbox=$('body').multiselect();
@@ -2062,7 +2062,7 @@ ConditionsForm.prototype={
 		});
 		this.dialog.cover.show();
 		/* adjust container height */
-		this.dialog.container.css({'height':(this.dialog.contents.outerHeight()+45).toString()+'px'});
+		this.dialog.container.css({'height':(this.dialog.contents[0].scrollHeight+45).toString()+'px'});
 	},
 	/* hide form */
 	hide:function(){
