@@ -41,7 +41,7 @@ var button=$('<button>').css({
 	'width':'auto'
 });
 var cell=$('<td>').css({
-	'border':'1px dotted #C9C9C9',
+	'border':'1px solid #C9C9C9',
 	'cursor':'pointer'
 });
 var checkbox=$('<label>').css({
