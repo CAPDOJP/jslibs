@@ -675,6 +675,8 @@ var MultiSelect=function(options){
 	this.template=$('<tr>')
 	.append(
 		cell.clone(true).css({'padding':'5px'})
+		.append($('<span>'))
+		.append($('<input type="hidden">'))
 		.on('click',function(){
 			if ($(this).find('input').val() in my.selection)
 			{
