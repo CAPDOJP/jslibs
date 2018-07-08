@@ -765,7 +765,7 @@ var TermSelect=function(options){
 	this.isdatepick=options.isdatepick;
 	this.issingle=options.issingle;
 	this.istimeonly=options.istimeonly;
-	this.dialog=createdialog(500,(((!options.issingle)?500:320)+pluswidth));
+	this.dialog=createdialog(500,(((!options.issingle)?545:365)+pluswidth));
 	/* append elements */
 	this.dialog.container.append(this.dialog.contents);
 	this.dialog.container.append(
@@ -780,6 +780,7 @@ var TermSelect=function(options){
 	this.minute=select.clone(true);
 	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)))
 	this.template=div.clone(true).addClass('term').css({
+		'border-bottom':'1px dotted #3498db',
 		'padding':'5px 0px',
 		'width':'100%'
 	})
