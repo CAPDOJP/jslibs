@@ -18,7 +18,6 @@ var div=$('<div>').css({
 });
 var span=$('<span>').css({
 	'box-sizing':'border-box',
-	'color':'#3498db',
 	'display':'inline-block',
 	'line-height':'30px',
 	'margin':'0px',
@@ -41,7 +40,7 @@ var button=$('<button>').css({
 	'width':'auto'
 });
 var cell=$('<td>').css({
-	'border':'1px solid #3498db',
+	'border-bottom':'1px dotted #e3e7e8',
 	'cursor':'pointer'
 });
 var checkbox=$('<label>').css({
@@ -93,10 +92,9 @@ var referer=div.clone(true).css({
 	.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png">').css({'width':'100%'}))
 );
 var select=$('<select>').css({
-	'border':'1px solid #3498db',
+	'border':'1px solid #e3e7e8',
 	'border-radius':'3px',
 	'box-sizing':'border-box',
-	'color':'#3498db',
 	'display':'inline-block',
 	'height':'30px',
 	'line-height':'30px',
@@ -106,7 +104,7 @@ var select=$('<select>').css({
 	'width':'auto'
 });
 var textarea=$('<textarea>').css({
-	'border':'1px solid #3498db',
+	'border':'1px solid #e3e7e8',
 	'border-radius':'3px',
 	'box-sizing':'border-box',
 	'display':'block',
@@ -117,7 +115,7 @@ var textarea=$('<textarea>').css({
 	'width':'100%'
 });
 var textline=$('<input type="text">').css({
-	'border':'1px solid #3498db',
+	'border':'1px solid #e3e7e8',
 	'border-radius':'3px',
 	'box-sizing':'border-box',
 	'display':'inline-block',
@@ -138,7 +136,7 @@ for (var i=0;i<24;i++) $('.receiverhour',time).append($('<option>').attr('value'
 for (var i=0;i<60;i++) $('.receiverminute',time).append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)));
 var title=$('<label class="title">').css({
 	'box-sizing':'border-box',
-	'border-left':'5px solid #3498db',
+	'border-left':'5px solid #e3e7e8',
 	'display':'block',
 	'line-height':'25px',
 	'margin':'5px 0px',
@@ -185,7 +183,7 @@ var createdialog=function(height,width){
 			'z-index':'1'
 		}),
 		header:div.clone(true).css({
-			'border-bottom':'1px solid #3498db',
+			'border-bottom':'1px solid #e3e7e8',
 			'left':'0px',
 			'padding':'5px',
 			'position':'absolute',
@@ -195,7 +193,7 @@ var createdialog=function(height,width){
 			'z-index':'3'
 		}),
 		footer:div.clone(true).css({
-			'border-top':'1px solid #3498db',
+			'border-top':'1px solid #e3e7e8',
 			'bottom':'0px',
 			'left':'0px',
 			'padding':'5px',
@@ -506,11 +504,7 @@ var FileSelect=function(options){
 	/* create template */
 	this.template=$('<tr>')
 	.append(
-		cell.clone(true).css({
-			'border':'none',
-			'border-bottom':'1px dotted #3498db',
-			'padding':'0px 5px'
-		})
+		cell.clone(true).css({'padding':'0px 5px'})
 		.append(
 			$('<a href="" id="link">').on('click',function(e){
 				var list=$(this).closest('tr');
@@ -539,11 +533,7 @@ var FileSelect=function(options){
 		.append($('<input type="hidden" id="name">'))
 	)
 	.append(
-		cell.clone(true).css({
-			'border':'none',
-			'border-bottom':'1px dotted #3498db',
-			'width':'30px'
-		})
+		cell.clone(true).css({'width':'30px'})
 		.append(
 			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">')
 			.css({'vertical-align':'middle;','width':'100%'})
@@ -782,7 +772,7 @@ var TermSelect=function(options){
 	this.minute=select.clone(true);
 	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)))
 	this.template=div.clone(true).addClass('term').css({
-		'border-bottom':'1px dotted #3498db',
+		'border-bottom':'1px dotted #e3e7e8',
 		'padding':'5px 0px',
 		'width':'100%'
 	})
@@ -1963,8 +1953,9 @@ ConditionsForm.prototype={
 						case 'MODIFIER':
 						case 'ORGANIZATION_SELECT':
 						case 'USER_SELECT':
+							var names=container.find('.label').val().split(',');
 							var values=receivevalue.split(',');
-							for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2]});
+							for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2],name:names[i2]});
 							res.push({
 								field:container.attr('id'),
 								comp:$('.comp',container).val(),
@@ -2089,5 +2080,333 @@ jQuery.fn.conditionsform=function(options){
 	},options);
 	options.container=this;
 	return new ConditionsForm(options);
+};
+jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
+	var match=true;
+	for (var i=0;i<conditions.length;i++)
+	{
+		var condition=conditions[i];
+		if (condition.field in record)
+		{
+			var fieldinfo=fieldinfos[condition.field];
+			var value=record[condition.field].value;
+			switch (fieldinfo.type)
+			{
+				case 'CALC':
+					switch(fieldinfo.format.toUpperCase())
+					{
+						case 'NUMBER':
+						case 'NUMBER_DIGIT':
+							switch (condition.comp)
+							{
+								case '0':
+									if (!value) value=='';
+									if (value!=condition.value) match=false;
+									break;
+								case '1':
+									if (!value) value=='';
+									if (value==condition.value) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (value>condition.value) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (value<condition.value) match=false;
+									}
+									break;
+							}
+							break;
+						case 'DATE':
+						case 'DATETIME':
+						case 'DAY_HOUR_MINUTE':
+							switch (condition.comp)
+							{
+								case '0':
+									if (!value) value=='';
+									if (value.deteformat()!=condition.value.deteformat()) match=false;
+									break;
+								case '1':
+									if (!value) value=='';
+									if (value.deteformat()==condition.value.deteformat()) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())>new Date(condition.value)) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
+									}
+									break;
+								case '4':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())<new Date(condition.value)) match=false;
+									}
+									break;
+								case '5':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
+									}
+									break;
+							}
+							break;
+						case 'HOUR_MINUTE':
+						case 'TIME':
+							var date=new Date().format('Y-m-d')+' ';
+							switch (condition.comp)
+							{
+								case '0':
+									if (!value) value=='';
+									if (value!=condition.value) match=false;
+									break;
+								case '1':
+									if (!value) value=='';
+									if (value==condition.value) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')>new Date(date+condition.value+':00')) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')>=new Date(date+condition.value+':00')) match=false;
+									}
+									break;
+								case '4':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')<new Date(date+condition.value+':00')) match=false;
+									}
+									break;
+								case '5':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')<=new Date(date+condition.value+':00')) match=false;
+									}
+									break;
+							}
+							break;
+					}
+					break;
+				case 'CHECK_BOX':
+				case 'MULTI_SELECT':
+					var hit=0;
+					for (var i2=0;i2<value.length;i2++) if (condition.value.indexOf(value[i2])>-1) hit++;
+					switch (condition.comp)
+					{
+						case '0':
+							if (hit<1) match=false;
+							break;
+						case '1':
+							if (hit>0) match=false;
+							break;
+					}
+					break;
+				case 'DROP_DOWN':
+				case 'RADIO_BUTTON':
+					if (!value) value=='';
+					switch (condition.comp)
+					{
+						case '0':
+							if (condition.value.indexOf(value)<0) match=false;
+							break;
+						case '1':
+							if (condition.value.indexOf(value)>-1) match=false;
+							break;
+					}
+					break;
+				case 'CREATED_TIME':
+				case 'DATE':
+				case 'DATETIME':
+				case 'UPDATED_TIME':
+					switch (condition.comp)
+					{
+						case '0':
+							if (!value) value=='';
+							if (value.deteformat()!=condition.value.deteformat()) match=false;
+							break;
+						case '1':
+							if (!value) value=='';
+							if (value.deteformat()==condition.value.deteformat()) match=false;
+							break;
+						case '2':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(value.dateformat())>new Date(condition.value)) match=false;
+							}
+							break;
+						case '3':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
+							}
+							break;
+						case '4':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(value.dateformat())<new Date(condition.value)) match=false;
+							}
+							break;
+						case '5':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
+							}
+							break;
+					}
+					break;
+				case 'CREATOR':
+				case 'GROUP_SELECT':
+				case 'MODIFIER':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					switch (condition.comp)
+					{
+						case '0':
+							if ($.grep(value,function(item,index){
+								var code=item.code;
+								return $.grep(condition.value,function(item,index){return item.code==code}).length!=0;
+							}).length==0) match=false;
+							break;
+						case '1':
+							if ($.grep(value,function(item,index){
+								var code=item.code;
+								return $.grep(condition.value,function(item,index){return item.code==code}).length!=0;
+							}).length!=0) match=false;
+							break;
+					}
+					break;
+				case 'LINK':
+				case 'SINGLE_LINE_TEXT':
+					if (!value) value=='';
+					switch (condition.comp)
+					{
+						case '0':
+							if (value!=condition.value) match=false;
+							break;
+						case '1':
+							if (value==condition.value) match=false;
+							break;
+						case '2':
+							if (!value.match(new RegExp(condition.value,'g'))) match=false;
+							break;
+						case '3':
+							if (value.match(new RegExp(condition.value,'g'))) match=false;
+							break;
+					}
+					break;
+				case 'MULTI_LINE_TEXT':
+				case 'RICH_TEXT':
+					if (!value) value=='';
+					switch (condition.comp)
+					{
+						case '0':
+							if (!value.match(new RegExp(condition.value,'g'))) match=false;
+							break;
+						case '1':
+							if (value.match(new RegExp(condition.value,'g'))) match=false;
+							break;
+					}
+					break;
+				case 'NUMBER':
+					switch (condition.comp)
+					{
+						case '0':
+							if (!value) value=='';
+							if (value!=condition.value) match=false;
+							break;
+						case '1':
+							if (!value) value=='';
+							if (value==condition.value) match=false;
+							break;
+						case '2':
+							if (!value) match=false;
+							else
+							{
+								if (value>condition.value) match=false;
+							}
+							break;
+						case '3':
+							if (!value) match=false;
+							else
+							{
+								if (value<condition.value) match=false;
+							}
+							break;
+					}
+					break;
+				case 'TIME':
+					var date=new Date().format('Y-m-d')+' ';
+					switch (condition.comp)
+					{
+						case '0':
+							if (!value) value=='';
+							if (value!=condition.value) match=false;
+							break;
+						case '1':
+							if (!value) value=='';
+							if (value==condition.value) match=false;
+							break;
+						case '2':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(date+value+':00')>new Date(date+condition.value+':00')) match=false;
+							}
+							break;
+						case '3':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(date+value+':00')>=new Date(date+condition.value+':00')) match=false;
+							}
+							break;
+						case '4':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(date+value+':00')<new Date(date+condition.value+':00')) match=false;
+							}
+							break;
+						case '5':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(date+value+':00')<=new Date(date+condition.value+':00')) match=false;
+							}
+							break;
+					}
+					break;
+			}
+		}
+	}
+	return match;
 };
 })(jQuery);
