@@ -355,6 +355,7 @@ jQuery.noConflict();
 													.on('click',function(){
 														if (vars.ismobile) $('div.customview-navi').hide();
 														else $('div.customview-navi').removeClass('show');
+														vars.allocation.hide();
 													})
 												)
 										)
@@ -738,50 +739,58 @@ jQuery.noConflict();
 		/* check device */
 		vars.ismobile=event.type.match(/mobile/g);
 		/* hide elements  */
-		if (!vars.ismobile)
-		{
-			kintone.app.record.setFieldShown(vars.config['lat'],false);
-			kintone.app.record.setFieldShown(vars.config['lng'],false);
-		}
-		else
-		{
-			kintone.mobile.app.record.setFieldShown(vars.config['lat'],false);
-			kintone.mobile.app.record.setFieldShown(vars.config['lng'],false);
-		}
-		/* map action  */
-		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
-		/* the initial display when editing */
-		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
-		if (!vars.ismobile) kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
-		if ('address' in vars.config)
-		{
-			vars.events.push('app.record.create.change.'+vars.config['address']);
-			vars.events.push('mobile.app.record.create.change.'+vars.config['address']);
-			vars.events.push('app.record.edit.change.'+vars.config['address']);
-			vars.events.push('mobile.app.record.edit.change.'+vars.config['address']);
-			/* display map in value change event */
-			kintone.events.on(vars.events,function(event){
-				if (event.changes.field.value)
-				{
-					functions.displaymap({
-						address:event.changes.field.value,
-						callback:function(json){
-							var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
-							record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
-							record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
-							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
-							else kintone.app.record.set(record);
-						}
-					});
-				}
-				else
-				{
-					event.record[vars.config['lat']].value=null;
-					event.record[vars.config['lng']].value=null;
-				}
-				return event;
-			});
-		}
+		var excludeusers=JSON.parse(vars.config['excludeuser']);
+		var excludeorganizations=JSON.parse(vars.config['excludeorganization']);
+		var spacer=$(kintone.app.record.getSpaceElement(vars.config['spacer']));
+		kintone.api(kintone.api.url('/v1/user/organizations',true),'GET',{code:kintone.getLoginUser().code},function(resp){
+			for (var i=0;i<resp.organizationTitles.length;i++)
+				if (excludeorganizations.indexOf(resp.organizationTitles[i].organization.code)>-1) spacer.closest('.control-spacer-field-gaia').hide();
+			if (excludeusers.indexOf(kintone.getLoginUser().code)>-1) spacer.closest('.control-spacer-field-gaia').hide();
+			if (!vars.ismobile)
+			{
+				kintone.app.record.setFieldShown(vars.config['lat'],false);
+				kintone.app.record.setFieldShown(vars.config['lng'],false);
+			}
+			else
+			{
+				kintone.mobile.app.record.setFieldShown(vars.config['lat'],false);
+				kintone.mobile.app.record.setFieldShown(vars.config['lng'],false);
+			}
+			/* map action  */
+			vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
+			/* the initial display when editing */
+			if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
+			if (!vars.ismobile) spacer.append(vars.map);
+			if ('address' in vars.config)
+			{
+				vars.events.push('app.record.create.change.'+vars.config['address']);
+				vars.events.push('mobile.app.record.create.change.'+vars.config['address']);
+				vars.events.push('app.record.edit.change.'+vars.config['address']);
+				vars.events.push('mobile.app.record.edit.change.'+vars.config['address']);
+				/* display map in value change event */
+				kintone.events.on(vars.events,function(event){
+					if (event.changes.field.value)
+					{
+						functions.displaymap({
+							address:event.changes.field.value,
+							callback:function(json){
+								var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+								record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
+								record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
+								if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
+								else kintone.app.record.set(record);
+							}
+						});
+					}
+					else
+					{
+						event.record[vars.config['lat']].value=null;
+						event.record[vars.config['lng']].value=null;
+					}
+					return event;
+				});
+			}
+		},function(error){});
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

@@ -23,8 +23,10 @@ jQuery.noConflict();
 	var events={
 		show:[
 			'app.record.create.show',
+			'app.record.detail.show',
 			'app.record.edit.show',
 			'mobile.app.record.create.show',
+			'mobile.app.record.detail.show',
 			'mobile.app.record.edit.show'
 		],
 		save:[
@@ -37,7 +39,7 @@ jQuery.noConflict();
 	};
 	var functions={
 		/* setting check */
-		checksetting:function(event){
+		checksetting:function(event,isdetail){
 			for (var i=0;i<vars.fields.length;i++)
 			{
 				var items=[];
@@ -54,28 +56,29 @@ jQuery.noConflict();
 						items.push(event.record[vars.fields[i]['field']].value);
 						break;
 				}
-				for (var i2=0;i2<items.length;i2++)
-					if (items[i2] in settings)
-					{
-						for (var i3=0;i3<settings[items[i2]].autos.length;i3++)
+				if (!isdetail)
+					for (var i2=0;i2<items.length;i2++)
+						if (items[i2] in settings)
 						{
-							var field=settings[items[i2]].autos[i3];
-							if (field.field in event.record)
+							for (var i3=0;i3<settings[items[i2]].autos.length;i3++)
 							{
-								switch (event.record[field.field].type)
+								var field=settings[items[i2]].autos[i3];
+								if (field.field in event.record)
 								{
-									case 'CHECK_BOX':
-									case 'MULTI_SELECT':
-										if ($.inArray(field.value,event.record[field.field].value)<0) event.record[field.field].value.push(field.value);
-										break;
-									default:
-										event.record[field.field].value=field.value;
-										event.record[field.field].lookup=true;
-										break;
+									switch (event.record[field.field].type)
+									{
+										case 'CHECK_BOX':
+										case 'MULTI_SELECT':
+											if ($.inArray(field.value,event.record[field.field].value)<0) event.record[field.field].value.push(field.value);
+											break;
+										default:
+											event.record[field.field].value=field.value;
+											event.record[field.field].lookup=true;
+											break;
+									}
 								}
 							}
 						}
-					}
 				$.each(vars.groups,function(key,values){
 					for (var i2=0;i2<values.length;i2++)
 					{
@@ -134,7 +137,7 @@ jQuery.noConflict();
 					vars.groups[key].push($('.group-label-gaia',$('body').fields(values.groups[i2],true)[0]));
 			});
 		}
-		return functions.checksetting(event);
+		return functions.checksetting(event,event.type.match(/detail/g));
 	});
 	kintone.events.on(events.save,function(event){
 		if (!vars.config) return event;

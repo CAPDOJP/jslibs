@@ -675,18 +675,9 @@ jQuery.noConflict();
 					vars.referer[fieldinfo.code]=$('body').referer({
 						datasource:vars.apps[appkey],
 						displaytext:fieldinfo.lookup.lookupPickerFields,
-						searchbuttonclass:'customview-button search-button referer-button-search',
-						searchbuttontext:'',
-						buttons:[
-							{
-								id:'cancel',
-								text:'キャンセル'
-							}
-						],
 						searches:[
 							{
 								id:'multi',
-								class:'referer-input-multi',
 								label:'',
 								type:'multi'
 							}
@@ -774,27 +765,9 @@ jQuery.noConflict();
 						vars.container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
 					});
 					/* create filebox */
-					vars.filebox=$('body').fileselect({
-						buttons:{
-							ok:{
-								text:'OK'
-							},
-							cancel:{
-								text:'キャンセル'
-							}
-						}
-					});
+					vars.filebox=$('body').fileselect();
 					/* create selectbox */
-					vars.selectbox=$('body').multiselect({
-						buttons:{
-							ok:{
-								text:'OK'
-							},
-							cancel:{
-								text:'キャンセル'
-							}
-						}
-					});
+					vars.selectbox=$('body').multiselect();
 					/* get layout */
 					kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
 						var sorted=functions.fieldsort(resp.layout);

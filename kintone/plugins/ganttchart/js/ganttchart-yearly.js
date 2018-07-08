@@ -23,9 +23,11 @@ jQuery.noConflict();
 		table:null,
 		apps:{},
 		config:{},
+		levels:{},
 		offset:{},
 		segments:{},
 		colors:[],
+		displays:[],
 		fields:[],
 		segmentkeys:[],
 		fieldinfos:{}
@@ -49,12 +51,23 @@ jQuery.noConflict();
 			vars.table.insertrow(null,function(row){
 				var baserow=row;
 				var index=0;
-				$.each(heads,function(key,values){
-					baserow.find('td').eq(index)
-					.append($('<p>').addClass('customview-p').html(values.display))
-					.append($('<input type="hidden" id="segment">').val(values.field));
-					index++;
-				});
+				if (vars.levels.lookup)
+				{
+					for (var i=0;i<vars.segmentkeys.length;i++)
+					{
+						baserow.find('td').eq(i).append($('<p>').addClass('customview-p').html($.fieldvalue(heads[vars.segmentkeys[i]])));
+						if (i==0) baserow.find('td').eq(i).append($('<input type="hidden" id="segment">').val($.fieldvalue(heads[vars.levels.relatedkey])));
+					}
+				}
+				else
+				{
+					$.each(heads,function(key,values){
+						baserow.find('td').eq(index)
+						.append($('<p>').addClass('customview-p').html(values.display))
+						.append($('<input type="hidden" id="segment">').val(values.field));
+						index++;
+					});
+				}
 				if (filter.length!=0)
 				{
 					for (var i=0;i<filter.length;i++)
@@ -101,13 +114,16 @@ jQuery.noConflict();
 		},
 		/* setup merge cell value */
 		mergeaftervalue:function(row,from,to,filter,color){
+			var cell=row.find('td').eq(from);
 			vars.table.mergecell(
-				row.find('td').eq(from),
+				cell,
 				from,
 				to
 			);
 			/* cell value switching */
-			row.find('td').eq(from).append($('<p>').addClass('ganttchart-merge-p').html($.fieldvalue(filter[vars.config['display']])));
+			var displays=$('<p>').addClass('ganttchart-merge-p');
+			for (var i=0;i<vars.displays.length;i++) displays.append($('<span>').html($.fieldvalue(filter[vars.displays[i]])));
+			row.find('td').eq(from).append(displays);
 			row.find('td').eq(from).append($('<span>').addClass('ganttchart-merge-span').css({'background-color':'#'+color}));
 			if (vars.config['registeredonly']=='1') row.find('td').eq(from).on('click',function(){
 				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#\\$id').val()+'&mode=show';
@@ -116,12 +132,30 @@ jQuery.noConflict();
 				if (values!=null)
 					if (values.value!=null)
 						row.find('td').eq(from).append($('<input type="hidden">').attr('id',key).val(values.value));
-			})
+			});
+			/* append balloon */
+			var balloon=$('<div class="ganttchart-balloon">');
+			var inner='';
+			inner+='<p>';
+			for (var i=0;i<vars.displays.length;i++) inner+='<p>'+$.fieldvalue(filter[vars.displays[i]])+'</p>';
+			$('body').append(
+				balloon.css({
+					'z-index':(vars.apps[kintone.app.getId()].length+$('div.ganttchart-balloon').length+1).toString()
+				})
+				.html(inner)
+			);
+			/* setup cell datas */
+			$.data(cell[0],'balloon',balloon);
+			/* mouse events */
+			cell.on({
+				'mouseenter':function(){$.data($(this)[0],'balloon').addClass('ganttchart-balloon-show');},
+				'mouseleave':function(){$.data($(this)[0],'balloon').removeClass('ganttchart-balloon-show');}
+			});
 		},
 		/* reload view */
 		load:function(){
 			/* after apprecords acquisition,rebuild view */
-			vars.apps[kintone.app.getId()]=null;
+			vars.apps[kintone.app.getId()]=[];
 			vars.offset[kintone.app.getId()]=0;
 			functions.loaddatas(kintone.app.getId(),function(){
 				var records=vars.apps[kintone.app.getId()];
@@ -131,20 +165,26 @@ jQuery.noConflict();
 					total:1,
 					values:[]
 				};
+				/* clear balloon */
+				$('div.ganttchart-balloon').remove();
 				/* create rowheads */
-				$.each(vars.segments,function(key,values){heads.total*=values.records.length;});
-				for (var i=0;i<heads.total;i++) heads.values.push({});
-				$.each(vars.segments,function(key,values){
-					heads.index=0;
-					for (var i=0;i<heads.prev;i++)
-						for (var i2=0;i2<values.records.length;i2++)
-							for (var i3=0;i3<heads.total/heads.prev/values.records.length;i3++)
-							{
-								heads.values[heads.index][key]=values.records[i2];
-								heads.index++;
-							}
-					heads.prev*=values.records.length;
-				});
+				if (vars.levels.lookup) heads.values=vars.apps[vars.levels.app];
+				else
+				{
+					$.each(vars.segments,function(key,values){heads.total*=values.records.length;});
+					for (var i=0;i<heads.total;i++) heads.values.push({});
+					$.each(vars.segments,function(key,values){
+						heads.index=0;
+						for (var i=0;i<heads.prev;i++)
+							for (var i2=0;i2<values.records.length;i2++)
+								for (var i3=0;i3<heads.total/heads.prev/values.records.length;i3++)
+								{
+									heads.values[heads.index][key]=values.records[i2];
+									heads.index++;
+								}
+						heads.prev*=values.records.length;
+					});
+				}
 				/* create table */
 				var container=$('div#ganttchart-container').empty();
 				var head=$('<tr></tr><tr></tr>');
@@ -191,7 +231,8 @@ jQuery.noConflict();
 						var tomonth=caller.cellindex(cell.parent(),cellto)-vars.segmentkeys.length;
 						query+='&'+vars.config['fromdate']+'='+vars.fromdate.calc(frommonth.toString()+' month').format('Y-m-d');
 						query+='&'+vars.config['todate']+'='+vars.fromdate.calc((tomonth+1).toString()+' month').calc('-1 day').format('Y-m-d');
-						for (var i=0;i<vars.segmentkeys.length;i++) query+='&'+vars.segmentkeys[i]+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(i).find('input#segment').val();
+						if (vars.levels.lookup) query+='&'+vars.levels.lookup+'='+caller.contents.find('tr').eq(rowindex).find('td').first().find('input#segment').val();
+						else for (var i=0;i<vars.segmentkeys.length;i++) query+='&'+vars.segmentkeys[i]+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(i).find('input#segment').val();
 						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
 					},
 					unmergetrigger:function(caller,cell,rowindex,cellindex){
@@ -226,9 +267,20 @@ jQuery.noConflict();
 						}
 					}
 				});
-				if (heads.values.length!=0)
+				/* place the segment data */
+				if (vars.levels.lookup)
 				{
-					/* place the segment data */
+					for (var i=0;i<heads.values.length;i++)
+					{
+						var filter=$.grep(records,function(item,index){
+							return item[vars.levels.lookup].value==heads.values[i][vars.levels.relatedkey].value;
+						});
+						/* rebuild view */
+						functions.build(filter,heads.values[i],i);
+					}
+				}
+				else
+				{
 					for (var i=0;i<heads.values.length;i++)
 					{
 						var filter=$.grep(records,function(item,index){
@@ -239,12 +291,6 @@ jQuery.noConflict();
 						/* rebuild view */
 						functions.build(filter,heads.values[i],i);
 					}
-				}
-				else
-				{
-					var filter=$.grep(records,function(item,index){return true;});
-					/* rebuild view */
-					functions.build(filter,0);
 				}
 				/* merge row */
 				var rowspans=[];
@@ -291,8 +337,15 @@ jQuery.noConflict();
 						for (var i2=rowspans[i].index+1;i2<index+1;i2++) vars.table.contents.find('tr').eq(i2).find('td').eq(i).hide();
 					}
 				}
-				$.each($('.ganttchart-merge'),function(){
-					$(this).css({'padding-top':$(this).find('.ganttchart-merge-p').outerHeight(true).toString()+'px'});
+				$.each(vars.table.contents.find('tr'),function(index){
+					var height=0;
+					var row=vars.table.contents.find('tr').eq(index);
+					$.each($('.ganttchart-merge',row),function(){
+						if (height<$(this).find('.ganttchart-merge-p').outerHeight(true)) height=$(this).find('.ganttchart-merge-p').outerHeight(true);
+					});
+					$.each($('.ganttchart-merge',row),function(){
+						$(this).css({'padding-top':height.toString()+'px'});
+					});
 				});
 			});
 		},
@@ -318,10 +371,26 @@ jQuery.noConflict();
 			sort+=vars.config['fromdate']+' asc limit '+limit.toString()+' offset '+vars.offset[appkey].toString();
 			body.query+=query+sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
-				if (vars.apps[appkey]==null) vars.apps[appkey]=resp.records;
-				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
+				Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
+				else callback();
+			},function(error){});
+		},
+		/* reload datas of level */
+		loadlevels:function(callback){
+			var body={
+				app:vars.levels.app,
+				query:vars.fieldinfos[vars.levels.lookup].lookup.filterCond
+			};
+			body.query+=' order by ';
+			for (var i=0;i<vars.segmentkeys.length;i++) body.query+=vars.segmentkeys[i]+' asc,';
+			body.query=body.query.replace(/,$/g,'');
+			body.query+=' limit '+limit.toString()+' offset '+vars.offset[vars.levels.app].toString();
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+				Array.prototype.push.apply(vars.apps[vars.levels.app],resp.records);
+				vars.offset[vars.levels.app]+=limit;
+				if (resp.records.length==limit) functions.loadlevels(callback);
 				else callback();
 			},function(error){});
 		},
@@ -352,6 +421,16 @@ jQuery.noConflict();
 		}
 	};
 	/*---------------------------------------------------------------
+	 mouse events
+	---------------------------------------------------------------*/
+	$(window).on('mousemove',function(e){
+		/* move balloon */
+		$('div.ganttchart-balloon').css({
+		  'left':e.clientX,
+		  'top':e.clientY
+		});
+	});
+	/*---------------------------------------------------------------
 	 kintone events
 	---------------------------------------------------------------*/
 	kintone.events.on(events.lists,function(event){
@@ -360,7 +439,7 @@ jQuery.noConflict();
 		/* check viewid */
 		if (event.viewId!=vars.config.yearganttchart) return;
 		/* initialize valiable */
-		var container=$('div#ganttchart-container');
+		var container=$('div#ganttchart-container').css({'padding-bottom':'100px'});
 		var feed=$('<div class="ganttchart-dayfeed">');
 		var fromdate=$('<span id="date" class="customview-span">');
 		var fromprev=$('<button id="prev" class="customview-button prev-button">');
@@ -426,9 +505,14 @@ jQuery.noConflict();
 		});
 		/* setup colors value */
 		vars.colors=vars.config['segmentcolors'].split(',');
+		/* setup displays value */
+		vars.displays=vars.config['displays'].split(',');
+		/* setup lookups value */
+		vars.levels=JSON.parse(vars.config['levels']);
 		/* setup segments value */
 		vars.segments=JSON.parse(vars.config['segment']);
-		vars.segmentkeys=Object.keys(vars.segments);
+		if (vars.levels.lookup) vars.segmentkeys=vars.levels.levels;
+		else vars.segmentkeys=Object.keys(vars.segments);
 		/* get fields of app */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fields=['$id'];
@@ -437,23 +521,32 @@ jQuery.noConflict();
 				vars.fields.push(values.code);
 			});
 			/* get datas of segment */
-			$.each(vars.segments,function(key,values){
-				var param=values;
-				param.code=key;
-				param.loaded=0;
-				param.offset=0;
-				param.records=[];
-				if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
-				else
-				{
-					param.records=[resp.properties[key].options.length];
-					$.each(resp.properties[key].options,function(key,values){
-						param.records[values.index]={display:values.label,field:values.label};
-					});
-					param.loaded=1;
-				}
-			});
-			functions.checkloaded();
+			if (vars.levels.lookup)
+			{
+				vars.apps[vars.levels.app]=[];
+				vars.offset[vars.levels.app]=0;
+				functions.loadlevels(function(){functions.load();});
+			}
+			else
+			{
+				$.each(vars.segments,function(key,values){
+					var param=values;
+					param.code=key;
+					param.loaded=0;
+					param.offset=0;
+					param.records=[];
+					if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
+					else
+					{
+						param.records=[resp.properties[key].options.length];
+						$.each(resp.properties[key].options,function(key,values){
+							param.records[values.index]={display:values.label,field:values.label};
+						});
+						param.loaded=1;
+					}
+				});
+				functions.checkloaded();
+			}
 		},function(error){});
 		return event;
 	});
@@ -464,14 +557,26 @@ jQuery.noConflict();
 		var queries=$.queries();
 		if (vars.config['fromdate'] in queries) event.record[vars.config['fromdate']].value=queries[vars.config['fromdate']];
 		if (vars.config['todate'] in queries) event.record[vars.config['todate']].value=queries[vars.config['todate']];
+		vars.levels=JSON.parse(vars.config['levels']);
 		vars.segments=JSON.parse(vars.config['segment']);
-		$.each(vars.segments,function(key,values){
-			if (key in queries)
+		if (vars.levels.lookup)
+		{
+			if (vars.levels.lookup in queries)
 			{
-				event.record[key].value=queries[key];
-				event.record[key].lookup=true;
+				event.record[vars.levels.lookup].value=queries[vars.levels.lookup];
+				event.record[vars.levels.lookup].lookup=true;
 			}
-		});
+		}
+		else
+		{
+			$.each(vars.segments,function(key,values){
+				if (key in queries)
+				{
+					event.record[key].value=queries[key];
+					event.record[key].lookup=true;
+				}
+			});
+		}
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

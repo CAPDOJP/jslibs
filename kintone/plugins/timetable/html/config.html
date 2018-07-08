@@ -35,53 +35,14 @@
   <div class="kintoneplugin-row">
     <div class="kintoneplugin-label">表示フィールド<span class="kintoneplugin-require">*</span></div>
     <div class="kintoneplugin-desc">タイムテーブル内のセルに表示するフィールドを選択して下さい。</div>
-    <div class="kintoneplugin-select-outer">
-      <div class="kintoneplugin-select">
-        <select id="display">
-          <option value=""></option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div class="kintoneplugin-row">
-    <div class="kintoneplugin-label">区分フィールド【ルックアップ・ラジオボタン・ドロップダウン】<span class="kintoneplugin-require">*</span></div>
-    <div class="kintoneplugin-desc">区分毎に表示するフィールドを選択して下さい。</div>
-    <div class="kintoneplugin-caution">ルックアップフィールドを選択した場合、その表示レコードは「絞り込みの初期設定」に準じた内容になります。</div>
-    <table class="segments">
-      <thead>
-        <tr>
-          <th>区分フィールド</th>
-          <th>区分名フィールド</th>
-          <th>並び順</th>
-          <th colspan="2"></th>
-        </tr>
-      </thead>
+    <table class="displays">
       <tbody>
         <tr>
           <td>
             <div class="kintoneplugin-select-outer">
               <div class="kintoneplugin-select">
-                <select id="segment">
+                <select id="display">
                   <option value=""></option>
-                </select>
-              </div>
-            </div>
-          </td>
-          <td>
-            <div class="kintoneplugin-select-outer">
-              <div class="kintoneplugin-select">
-                <select id="segmentdisplay">
-                  <option value=""></option>
-                </select>
-              </div>
-            </div>
-          </td>
-          <td>
-            <div class="kintoneplugin-select-outer">
-              <div class="kintoneplugin-select">
-                <select id="segmentsort">
-                  <option value="asc">昇順</option>
-                  <option value="desc">降順</option>
                 </select>
               </div>
             </div>
@@ -91,9 +52,93 @@
         </tr>
       </tbody>
     </table>
-    <div class="kintoneplugin-caution">表組みに使用する区分を使用済みのものに限定し、ドラッグ操作からの新規レコード登録を行わない場合は、下記チェックボックスにチェックを付けて下さい。</div>
-    <div class="kintoneplugin-input-checkbox-item">
-      <label><input type="checkbox" id="registeredonly" value="0">表組みを登録済みレコードに限定する</label>
+  </div>
+  <div class="kintoneplugin-row">
+    <div class="kintoneplugin-label">区分フィールド【ルックアップ・ラジオボタン・ドロップダウン】<span class="kintoneplugin-require">*</span></div>
+    <div class="kintoneplugin-caution">ルックアップフィールドを選択した場合、その表示レコードは「絞り込みの初期設定」に準じた内容になります。</div>
+    <div class="segmentsblock">
+      <div class="kintoneplugin-desc">区分毎に表示するフィールドを選択して下さい。</div>
+      <table class="segments">
+        <thead>
+          <tr>
+            <th>区分フィールド</th>
+            <th>区分名フィールド</th>
+            <th>並び順</th>
+            <th colspan="2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="kintoneplugin-select-outer">
+                <div class="kintoneplugin-select">
+                  <select id="segment">
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="kintoneplugin-select-outer">
+                <div class="kintoneplugin-select">
+                  <select id="segmentdisplay">
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="kintoneplugin-select-outer">
+                <div class="kintoneplugin-select">
+                  <select id="segmentsort">
+                    <option value="asc">昇順</option>
+                    <option value="desc">降順</option>
+                  </select>
+                </div>
+              </div>
+            </td>
+            <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+            <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="kintoneplugin-caution">表組みに使用する区分を使用済みのものに限定し、ドラッグ操作からの新規レコード登録を行わない場合は、下記チェックボックスにチェックを付けて下さい。</div>
+      <div class="kintoneplugin-input-checkbox-item">
+        <label><input type="checkbox" id="registeredonly" value="0">表組みを登録済みレコードに限定する</label>
+      </div>
+    </div>
+    <div class="kintoneplugin-caution">ルックアップフィールドの関連付けるアプリ内のフィールドで区分を作成する場合は、対象となるルックアップフィールドを選択して下さい。</div>
+    <div class="kintoneplugin-select-outer">
+      <div class="kintoneplugin-select">
+        <select id="lookup">
+          <option value=""></option>
+        </select>
+      </div>
+    </div>
+    <div class="levelsblock">
+      <table class="levels">
+        <thead>
+          <tr>
+            <th>階層</th>
+            <th colspan="2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="kintoneplugin-select-outer">
+                <div class="kintoneplugin-select">
+                  <select id="level">
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+            </td>
+            <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+            <td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
   <div class="kintoneplugin-row">

@@ -565,42 +565,21 @@ jQuery.noConflict();
 			/* create minilecselect */
 			vars.minilecselect=$('body').referer({
 				datasource:null,
-				displaytext:['name'],
-				buttons:[
-					{
-						id:'cancel',
-						text:'Cancel'
-					}
-				]
+				displaytext:['name']
 			});
 			/* create termselect */
 			vars.termselect=$('body').termselect({
 				minutespan:15,
 				isadd:true,
-				isdatepick:true,
-				buttons:{
-					ok:{
-						text:'OK'
-					},
-					cancel:{
-						text:'Cancel'
-					}
-				}
+				isdatepick:true
 			});
 			/* create studentselect box */
 			vars.studentselect=$('body').referer({
 				datasource:vars.apps[vars.config['student']],
 				displaytext:['gradename','name'],
-				buttons:[
-					{
-						id:'cancel',
-						text:'キャンセル'
-					}
-				],
 				searches:[
 					{
 						id:'gradecode',
-						class:'referer-select',
 						label:'学年',
 						type:'select',
 						param:{app:vars.config['grade']},

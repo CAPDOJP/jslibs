@@ -1,6 +1,6 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">引取指示使用一覧<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-label">引取指示使用一覧</div>
 		<div class="kintoneplugin-desc">引取指示を行う一覧をリストより選択して下さい。</div>
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
@@ -11,15 +11,25 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">引取依頼確認使用一覧<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-label">引取依頼確認使用一覧</div>
 		<div class="kintoneplugin-desc">引取依頼確認を行う一覧をリストより選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="requestview">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
+		<table class="requestviews">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="requestview">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">引取先住所入力フィールド<span class="kintoneplugin-require">*</span></div>
@@ -268,6 +278,48 @@
 				</select>
 			</div>
 		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">地図非表示ユーザー</div>
+		<div class="kintoneplugin-desc">編集画面に地図を表示させないユーザーを選択して下さい。</div>
+		<table class="excludeusers">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="excludeuser">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">地図非表示組織</div>
+		<div class="kintoneplugin-desc">編集画面に地図を表示させない組織を選択して下さい。</div>
+		<table class="excludeorganizations">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="excludeorganization">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">引取指示用マーカー色指定</div>

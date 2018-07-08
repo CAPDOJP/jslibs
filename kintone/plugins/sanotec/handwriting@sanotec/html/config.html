@@ -1,0 +1,36 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">署名フィールド</div>
+	    <div class="kintoneplugin-desc">署名するスペースを指定して下さい。【スペース】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="space">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">添付ファイルフィールド</div>
+		<div class="kintoneplugin-desc">署名画像を保存するフィールドを指定して下さい。【添付ファイル】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="file">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">透かし画像</div>
+		<div class="kintoneplugin-desc">署名画像の背景として利用する画像を指定して下さい。【JPEGのみ】</div>
+		<input type="file" accept="image/*" value="画像を参照" />
+		<div class="image"></div>
+		<button type="button" id="delete" class="kintoneplugin-button-dialog-cancel">削除</button>
+		<input type="hidden" id="image" />
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

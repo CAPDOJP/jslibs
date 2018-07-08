@@ -2,6 +2,32 @@
 *.hide{
   display:none;
 }
+div.timetable-balloon{
+  background-color:#F3F3F3;
+  border:1px solid #C9C9C9;
+  border-radius:5px;
+  box-shadow:0px 0px 3px rgba(0,0,0,0.25);
+  display:none;
+  font-size:13px;
+  margin:15px 0px 0px 15px;
+  padding:5px;
+  position:fixed;
+}
+div.timetable-balloon p{
+  font-size:11px;
+  line-height:15px;
+  margin:0px;
+  padding:0px 3px;
+}
+div.timetable-balloon p span{
+  padding-right:3px;
+}
+div.timetable-balloon p span:last-of type{
+  padding-right:0px;
+}
+div.timetable-balloon-show{
+  display:block;
+}
 div.timetable-dayfeed{
   display:inline-block;
   line-height:30px;
@@ -100,21 +126,26 @@ table.timetable-daily tbody tr td.timetable-daily-merge p.timetable-daily-merge-
   background-repeat:no-repeat;
   background-size:20px 20px;
   box-sizing:border-box;
-  font-size:13px;
   left:0px;
-  line-height:30px;
   margin:0px;
-  overflow:hidden;
   padding:3px 3px 0px 23px;
   position:absolute;
-  text-overflow:ellipsis;
   top:50%;
   vertical-align:top;
-  white-space:nowrap;
   width:100%;
   -webkit-transform:translate(0%,calc(-50% - 6.5px));
   -ms-transform:translate(0%,calc(-50% - 6.5px));
   transform:translate(0%,calc(-50% - 6.5px));
+}
+table.timetable-daily tbody tr td.timetable-daily-merge p.timetable-daily-merge-p span{
+  box-sizing:border-box;
+  display:block;
+  font-size:13px;
+  line-height:26px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  width:100%;
 }
 table.timetable-daily tbody tr td.timetable-daily-merge span.timetable-daily-merge-span{
   background-color:transparent;
@@ -162,20 +193,6 @@ div.guideto{
   z-index:999;
 }
 /* individual style (weekly) */
-div.timetable-weekly-balloon{
-  background-color:#F3F3F3;
-  border:1px solid #C9C9C9;
-  border-radius:5px;
-  box-shadow:0px 0px 3px rgba(0,0,0,0.25);
-  display:none;
-  font-size:13px;
-  margin:15px 0px 0px 15px;
-  padding:5px;
-  position:fixed;
-}
-div.timetable-weekly-balloon-show{
-  display:block;
-}
 div.timetable-weekly-cell{
   border-radius:5px;
   cursor:pointer;

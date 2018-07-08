@@ -44,11 +44,12 @@ jQuery.noConflict();
 	var functions={
 		/* adjust pickup dates */
 		adjustdates:function(){
+			var week=['日','月','火','水','木','金','土'];
 			switch ($('select.viewtype').val())
 			{
 				case '0':
 					vars.todate=new Date(vars.fromdate.format('Y-m-d').dateformat());
-					$('.datedisplay').css({'display':'inline-block'}).text(vars.fromdate.format('Y-m-d'));
+					$('.datedisplay').css({'display':'inline-block'}).text(vars.fromdate.format('Y-m-d')+' ('+week[vars.fromdate.getDay()]+')');
 					$('.weekdisplay').css({'display':'none'});
 					$('.monthdisplay').css({'display':'none'});
 					$('.calendar-button').css({'display':'inline-block'});

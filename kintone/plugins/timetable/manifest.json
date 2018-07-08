@@ -32,8 +32,8 @@
         ],
         "css":[
             "css/sweetalert.css",
-            "css/desktop/common.css",
-            "css/desktop/timetable.css"
+            "css/common.css",
+            "css/timetable.css"
         ]
     },
     "config":{

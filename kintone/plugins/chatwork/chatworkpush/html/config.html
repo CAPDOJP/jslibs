@@ -1,0 +1,86 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">API トークン</div>
+		<div class="kintoneplugin-desc">ChatWorkから発行されたAPIトークンを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="api_token" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">通知設定</div>
+		<div class="kintoneplugin-desc">各チャットルーム毎に通知するアクションとメッセージ内に記載するフィールドを指定して下さい。</div>
+		<div class="kintoneplugin-caution">グループチャットに通知する場合は、アプリを操作する方がメンバーとなっている必要がありますので、ご注意下さい。</div>
+		<table class="outer rooms">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">チャットルーム</div>
+							<div class="kintoneplugin-select-outer">
+								<div class="kintoneplugin-select">
+									<select id="room">
+										<option value=""></option>
+									</select>
+								</div>
+							</div>
+							<div class="buttons">
+								<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addroom" alt="+" title="追加">
+								<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delroom" alt="x" title="削除">
+							</div>
+						</div>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">アクション</div>
+							<label><input type="checkbox" name="checkbox" value="0" id="insert"><span>レコード登録</span></label>
+							<label><input type="checkbox" name="checkbox" value="0" id="update"><span>レコード更新</span></label>
+							<label><input type="checkbox" name="checkbox" value="0" id="delete"><span>レコード削除</span></label>
+							<label><input type="checkbox" name="checkbox" value="0" id="process"><span>ステータス変更</span></label>
+						</div>
+						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">フィールド</div>
+							<div class="kintoneplugin-desc">メッセージ内にフィールドの値を記載する場合は、それらを指定して下さい。</div>
+							<table class="inner fields">
+								<tbody>
+									<tr>
+										<td>
+											<div class="kintoneplugin-select-outer">
+												<div class="kintoneplugin-select">
+													<select id="field">
+														<option value=""></option>
+													</select>
+												</div>
+											</div>
+										</td>
+										<td>
+											<div class="buttons">
+												<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addfield" alt="+" title="追加">
+												<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delfield" alt="x" title="削除">
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">クライアントID</div>
+		<div class="kintoneplugin-desc">OAuthクライアント作成時に取得したクライアントIDを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="client_id" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">クライアントシークレット</div>
+		<div class="kintoneplugin-desc">OAuthクライアント作成時に取得したクライアントシークレットを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="client_secret" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

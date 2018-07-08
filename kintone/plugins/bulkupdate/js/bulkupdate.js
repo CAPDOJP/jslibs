@@ -439,25 +439,8 @@ jQuery.noConflict();
 					});
 					kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 				}
-				vars.clearform=$('body').multiselect({
-					buttons:{
-						ok:{
-							text:'OK'
-						},
-						cancel:{
-							text:'キャンセル'
-						}
-					}
-				});
+				vars.clearform=$('body').multiselect();
 				vars.updateform=$('body').fieldsform({
-					buttons:{
-						ok:{
-							text:'OK'
-						},
-						cancel:{
-							text:'キャンセル'
-						}
-					},
 					fields:vars.bulkinfos,
 					radionulllabel:'更新しない'
 				});

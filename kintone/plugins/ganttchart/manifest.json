@@ -31,8 +31,8 @@
         ],
         "css":[
             "css/sweetalert.css",
-            "css/desktop/common.css",
-            "css/desktop/ganttchart.css"
+            "css/common.css",
+            "css/ganttchart.css"
         ]
     },
     "config":{

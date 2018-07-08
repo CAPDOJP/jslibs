@@ -328,6 +328,7 @@ jQuery.noConflict();
 											.on('click',function(){
 												if (vars.ismobile) $('div.customview-navi').hide();
 												else $('div.customview-navi').removeClass('show');
+												vars.request.hide();
 											})
 										)
 								)
@@ -433,7 +434,8 @@ jQuery.noConflict();
 		vars.config=kintone.plugin.app.getConfig(PLUGIN_ID);
 		if (!vars.config) return event;
 		/* check viewid */
-		if (event.viewId!=vars.config['requestview']) return;
+		var requestviews=JSON.parse(vars.config['requestview']);
+		if (requestviews.indexOf(event.viewId.toString())<0) return event;
 		/* initialize valiable */
 		vars.offset=0;
 		vars.records=[];

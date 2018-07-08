@@ -60,18 +60,9 @@ jQuery.noConflict();
 					vars.referers[fieldinfo.code]=$('body').referer({
 						datasource:vars.apps[fieldinfo.code],
 						displaytext:fieldinfo.lookup.lookupPickerFields,
-						searchbuttonclass:'customview-button search-button referer-button-search',
-						searchbuttontext:'',
-						buttons:[
-							{
-								id:'cancel',
-								text:'キャンセル'
-							}
-						],
 						searches:[
 							{
 								id:'multi',
-								class:'referer-input-multi',
 								label:'',
 								type:'multi'
 							}

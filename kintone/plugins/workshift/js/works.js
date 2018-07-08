@@ -137,6 +137,7 @@ jQuery.noConflict();
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
 		var assignment=$('<div class="kintoneplugin-select-outer">').append($('<div class="kintoneplugin-select">').append($('<select class="assignment">')));
+		var week=['日','月','火','水','木','金','土'];
 		/* append elements */
 		feed.append(assignment);
 		feed.append(prev);
@@ -146,12 +147,12 @@ jQuery.noConflict();
 		if ($('.workshift-headermenucontents').size()) $('.workshift-headermenucontents').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
-		date.text(vars.date.format('Y-m-d'));
+		date.text(vars.date.format('Y-m-d')+' ('+week[vars.date.getDay()]+')');
 		/* day pickup button */
 		vars.calendar=$('body').calendar({
 			selected:function(target,value){
 				vars.date=new Date(value.dateformat());
-				date.text(value);
+				date.text(value+' ('+week[vars.date.getDay()]+')');
 				/* reload view */
 				functions.load();
 			}
@@ -164,7 +165,7 @@ jQuery.noConflict();
 			$(this).on('click',function(){
 				var days=($(this).attr('id')=='next')?1:-1;
 				vars.date=vars.date.calc(days+' day');
-				date.text(vars.date.format('Y-m-d'));
+				date.text(vars.date.format('Y-m-d')+' ('+week[vars.date.getDay()]+')');
 				/* reload view */
 				functions.load();
 			});

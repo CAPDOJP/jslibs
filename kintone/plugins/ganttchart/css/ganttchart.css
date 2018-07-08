@@ -2,6 +2,32 @@
 *.hide{
   display:none;
 }
+div.ganttchart-balloon{
+  background-color:#F3F3F3;
+  border:1px solid #C9C9C9;
+  border-radius:5px;
+  box-shadow:0px 0px 3px rgba(0,0,0,0.25);
+  display:none;
+  font-size:13px;
+  margin:15px 0px 0px 15px;
+  padding:5px;
+  position:fixed;
+}
+div.ganttchart-balloon p{
+  font-size:11px;
+  line-height:15px;
+  margin:0px;
+  padding:0px 3px;
+}
+div.ganttchart-balloon p span{
+  padding-right:3px;
+}
+div.ganttchart-balloon p span:last-of type{
+  padding-right:0px;
+}
+div.ganttchart-balloon-show{
+  display:block;
+}
 div.ganttchart-dayfeed{
   display:inline-block;
   line-height:30px;
@@ -111,6 +137,9 @@ table.ganttchart tbody tr td:not(.ganttchart-merge).ganttchart-sunday{
 table.ganttchart tbody tr td:not(.ganttchart-merge).ganttchart-saturday{
   background-color:#BBDEFB;
 }
+table.ganttchart tbody tr td:not(.ganttchart-merge).ganttchart-today{
+  background-color:#FFE0B2;
+}
 table.ganttchart tbody tr td.ganttchart-merge p.ganttchart-merge-p{
   background-color:transparent;
   background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
@@ -118,21 +147,26 @@ table.ganttchart tbody tr td.ganttchart-merge p.ganttchart-merge-p{
   background-repeat:no-repeat;
   background-size:20px 20px;
   box-sizing:border-box;
-  font-size:13px;
   left:0px;
-  line-height:30px;
   margin:0px;
-  overflow:hidden;
   padding:3px 3px 0px 23px;
   position:absolute;
-  text-overflow:ellipsis;
   top:50%;
   vertical-align:top;
-  white-space:nowrap;
   width:100%;
   -webkit-transform:translate(0%,calc(-50% - 6.5px));
   -ms-transform:translate(0%,calc(-50% - 6.5px));
   transform:translate(0%,calc(-50% - 6.5px));
+}
+table.ganttchart tbody tr td.ganttchart-merge p.ganttchart-merge-p span{
+  box-sizing:border-box;
+  display:block;
+  font-size:13px;
+  line-height:26px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  width:100%;
 }
 table.ganttchart tbody tr td.ganttchart-merge span.ganttchart-merge-span{
   background-color:transparent;

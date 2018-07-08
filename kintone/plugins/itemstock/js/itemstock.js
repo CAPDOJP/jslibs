@@ -205,6 +205,7 @@ jQuery.noConflict();
 		var pick=$('<button id="datepick" class="customview-button calendar-button">');
 		var prev=$('<button id="prev" class="customview-button prev-button">');
 		var next=$('<button id="next" class="customview-button next-button">');
+		var week=['日','月','火','水','木','金','土'];
 		vars.splash=$('<div id="splash">').append(
 			$('<p>')
 			.append($('<span>').text('now loading'))
@@ -223,12 +224,12 @@ jQuery.noConflict();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		$('body').append(vars.splash);
 		/* setup date value */
-		day.text(vars.date.format('Y-m-d'));
+		day.text(vars.date.format('Y-m-d')+' ('+week[vars.date.getDay()]+')');
 		/* day pickup button */
 		vars.calendar=$('body').calendar({
 			selected:function(target,value){
 				vars.date=new Date(value.dateformat());
-				day.text(value);
+				day.text(value+' ('+week[vars.date.getDay()]+')');
 				/* reload view */
 				functions.load();
 			}
@@ -241,7 +242,7 @@ jQuery.noConflict();
 			$(this).on('click',function(){
 				var days=($(this).attr('id')=='next')?1:-1;
 				vars.date=vars.date.calc(days+' day');
-				day.text(vars.date.format('Y-m-d'));
+				day.text(vars.date.format('Y-m-d')+' ('+week[vars.date.getDay()]+')');
 				/* reload view */
 				functions.load();
 			});

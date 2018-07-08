@@ -867,39 +867,14 @@ jQuery.noConflict();
 			});
 			/* create termselect */
 			vars.termselect=$('body').termselect({
-				minutespan:15,
-				buttons:{
-					ok:{
-						text:'OK'
-					},
-					cancel:{
-						text:'Cancel'
-					}
-				}
+				minutespan:15
 			});
 			vars.termselectsingle=$('body').termselect({
 				minutespan:15,
-				issingle:true,
-				buttons:{
-					ok:{
-						text:'OK'
-					},
-					cancel:{
-						text:'Cancel'
-					}
-				}
+				issingle:true
 			});
 			/* create courseselect */
-			vars.courseselect=$('body').multiselect({
-				buttons:{
-					ok:{
-						text:'OK'
-					},
-					cancel:{
-						text:'Cancel'
-					}
-				}
-			});
+			vars.courseselect=$('body').multiselect();
 			/* get fields of app */
 			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 				vars.fields=['$id'];

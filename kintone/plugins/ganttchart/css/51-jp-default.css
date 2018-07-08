@@ -29,6 +29,15 @@
   font-size: 12px;
 }
 
+/* 設定項目の説明 */
+/* 説明 */
+/*
+<div class="kintoneplugin-desc">設定項目の説明</div>
+*/
+.kintoneplugin-desc {
+  margin-bottom: 3px;
+}
+
 /* 設定項目の行 */
 /*
 <div class="kintoneplugin-row">設定項目の行 1</div>
@@ -57,6 +66,7 @@
 .kintoneplugin-caution {
   color: #d80000;
   margin-top:5px;
+  margin-bottom: 3px;
   white-space:normal;
 }
 

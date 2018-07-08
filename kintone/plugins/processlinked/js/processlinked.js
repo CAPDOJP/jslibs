@@ -42,17 +42,7 @@ jQuery.noConflict();
 					for (var i=0;i<actionfields.length;i++) if (actionfields[i] in resp.properties) fields.push(resp.properties[actionfields[i]]);
 					if (fields.length!=0)
 					{
-						vars.inputform=$('body').fieldsform({
-							buttons:{
-								ok:{
-									text:'OK'
-								},
-								cancel:{
-									text:'キャンセル'
-								}
-							},
-							fields:fields
-						});
+						vars.inputform=$('body').fieldsform({fields:fields});
 						vars.inputform.show({
 							buttons:{
 								ok:function(){

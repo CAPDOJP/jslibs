@@ -266,16 +266,7 @@ jQuery.noConflict();
 						});
 						if (type=='list') kintone.app.getHeaderMenuSpaceElement().appendChild(button[0]);
 					}
-					vars.bulks=$('body').multiselect({
-						buttons:{
-							ok:{
-								text:'OK'
-							},
-							cancel:{
-								text:'キャンセル'
-							}
-						}
-					});
+					vars.bulks=$('body').multiselect();
 					vars.settings=new settingform({fieldinfos:vars.settinginfos});
 				},function(error){});
 			},function(error){});
@@ -710,14 +701,6 @@ jQuery.noConflict();
 									if ((key in fieldinfo) && !fieldinfo.ismapping)
 									{
 										my.inputforms[fieldinfo.code]=$('body').fieldsform({
-											buttons:{
-												ok:{
-													text:'OK'
-												},
-												cancel:{
-													text:'キャンセル'
-												}
-											},
 											fields:[fieldinfo],
 											callback:{
 												group:function(){$('.label',$('.'+key,row)).text(my.formatvalue(row,fieldinfo))},

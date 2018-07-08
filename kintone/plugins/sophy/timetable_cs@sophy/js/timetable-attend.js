@@ -480,16 +480,9 @@ jQuery.noConflict();
 			vars.studentselect=$('body').referer({
 				datasource:vars.apps[vars.config['student']],
 				displaytext:['gradename','name'],
-				buttons:[
-					{
-						id:'cancel',
-						text:'キャンセル'
-					}
-				],
 				searches:[
 					{
 						id:'gradecode',
-						class:'referer-select',
 						label:'学年',
 						type:'select',
 						param:{app:vars.config['grade']},

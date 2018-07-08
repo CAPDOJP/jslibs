@@ -13,6 +13,8 @@ jQuery.noConflict();
 	"use strict";
 	var vars={
 		colortable:null,
+		displaytable:null,
+		leveltable:null,
 		segmenttable:null,
 		fieldinfos:{},
 		colors:[
@@ -31,158 +33,267 @@ jQuery.noConflict();
 		]
 	};
 	var VIEW_NAME=['日次タイムテーブル','週次タイムテーブル','月次予定表'];
+	var functions={
+		fieldsort:function(layout){
+			var codes=[];
+			$.each(layout,function(index,values){
+				switch (values.type)
+				{
+					case 'ROW':
+						$.each(values.fields,function(index,values){
+							/* exclude spacer */
+							if (!values.elementId) codes.push(values.code);
+						});
+						break;
+					case 'GROUP':
+						$.merge(codes,functions.fieldsort(values.layout));
+						break;
+				}
+			});
+			return codes;
+		},
+		reloadlevels:function(callback){
+			/* clear rows */
+			var target=$('select#lookup');
+			vars.leveltable.clearrows();
+			if (target.val())
+			{
+				var fieldinfo=vars.fieldinfos[target.val()];
+				kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+					var sorted=functions.fieldsort(resp.layout);
+					/* get fieldinfo */
+					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:fieldinfo.lookup.relatedApp.app},function(resp){
+						var list=null;
+						list=$('select#level',vars.leveltable.template);
+						list.html('<option value=""></option>');
+						$.each(sorted,function(index){
+							if (sorted[index] in resp.properties)
+							{
+								fieldinfo=resp.properties[sorted[index]];
+								/* check field type */
+								switch (fieldinfo.type)
+								{
+									case 'CATEGORY':
+									case 'CREATED_TIME':
+									case 'FILE':
+									case 'RECORD_NUMBER':
+									case 'REFERENCE_TABLE':
+									case 'STATUS':
+									case 'STATUS_ASSIGNEE':
+									case 'UPDATED_TIME':
+										break;
+									default:
+										list.append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								}
+							}
+						});
+						vars.leveltable.addrow();
+						$('.segmentsblock').hide();
+						$('.levelsblock').show();
+						if (callback) callback();
+					},function(error){vars.leveltable.container.hide();});
+				},function(error){vars.leveltable.container.hide();});
+			}
+			else
+			{
+				$('.segmentsblock').show();
+				$('.levelsblock').hide();
+				if (callback) callback();
+			}
+		}
+	};
 	/*---------------------------------------------------------------
 	 initialize fields
 	---------------------------------------------------------------*/
-	kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
-		var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-		vars.fieldinfos=resp.properties;
-		$.each(vars.fieldinfos,function(key,values){
-			/* check field type */
-			switch (values.type)
-			{
-				case 'CALC':
-				case 'CREATOR':
-				case 'DATETIME':
-				case 'DROP_DOWN':
-				case 'LINK':
-				case 'MODIFIER':
-				case 'NUMBER':
-				case 'RADIO_BUTTON':
-				case 'RECORD_NUMBER':
-				case 'SINGLE_LINE_TEXT':
-					$('select#display').append($('<option>').attr('value',values.code).text(values.label));
-					if (values.lookup) $('select#segment').append($('<option>').attr('value',values.code).text(values.label));
-					switch (values.type)
+	kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
+		var sorted=functions.fieldsort(resp.layout);
+		/* get fieldinfo */
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+			var config=kintone.plugin.app.getConfig(PLUGIN_ID);
+			vars.fieldinfos=resp.properties;
+			$.each(sorted,function(index){
+				if (sorted[index] in vars.fieldinfos)
+				{
+					var fieldinfo=vars.fieldinfos[sorted[index]];
+					/* check field type */
+					switch (fieldinfo.type)
 					{
+						case 'CALC':
+						case 'CREATOR':
+						case 'DATETIME':
 						case 'DROP_DOWN':
-							$('select#segment').append($('<option>').attr('value',values.code).text(values.label));
-							break;
+						case 'LINK':
+						case 'MODIFIER':
 						case 'NUMBER':
-							/* exclude lookup */
-							if (!values.lookup)
+						case 'RADIO_BUTTON':
+						case 'RECORD_NUMBER':
+						case 'SINGLE_LINE_TEXT':
+							$('select#display').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							if (fieldinfo.lookup)
 							{
-								/* check scale */
-								if (values.displayScale)
-									if (values.displayScale>8)
+								$('select#segment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#lookup').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							}
+							switch (fieldinfo.type)
+							{
+								case 'DROP_DOWN':
+								case 'RADIO_BUTTON':
+									$('select#segment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+									break;
+								case 'NUMBER':
+									/* exclude lookup */
+									if (!fieldinfo.lookup)
 									{
-										$('select#lat').append($('<option>').attr('value',values.code).text(values.label));
-										$('select#lng').append($('<option>').attr('value',values.code).text(values.label));
+										/* check scale */
+										if (fieldinfo.displayScale)
+											if (fieldinfo.displayScale>8)
+											{
+												$('select#lat').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+												$('select#lng').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+											}
 									}
+									break;
 							}
 							break;
-						case 'RADIO_BUTTON':
-							$('select#segment').append($('<option>').attr('value',values.code).text(values.label));
+						case 'DATE':
+							$('select#date').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							break;
+						case 'TIME':
+							$('select#fromtime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#totime').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
 					}
-					break;
-				case 'DATE':
-					$('select#date').append($('<option>').attr('value',values.code).text(values.label));
-					break;
-				case 'TIME':
-					$('select#fromtime').append($('<option>').attr('value',values.code).text(values.label));
-					$('select#totime').append($('<option>').attr('value',values.code).text(values.label));
-					break;
-			}
-		});
-		/* initialize valiable */
-		vars.colortable=$('.segmentcolors').adjustabletable({
-			add:'img.add',
-			del:'img.del',
-			addcallback:function(row){
-				$('input#segmentcolor',row).val(vars.colors[0].replace('#',''));
-				$('span#segmentcolor',row).colorSelector(vars.colors,$('input#segmentcolor',row));
-			}
-		});
-		vars.segmenttable=$('.segments').adjustabletable({
-			add:'img.add',
-			del:'img.del',
-			addcallback:function(row){
-				var list=$('select#segmentdisplay',row);
-				var sort=$('select#segmentsort',row);
-				var listcontainer=list.closest('.kintoneplugin-select-outer');
-				var sortcontainer=sort.closest('.kintoneplugin-select-outer');
-				listcontainer.hide();
-				sortcontainer.hide();
-				$('select#segment',row).on('change',function(){
-					/* initialize field lists */
-					list.html('<option value=""></option>');
-					if ($(this).val().length!=0)
-					{
-						if (vars.fieldinfos[$(this).val()].lookup)
-						{
-							kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.fieldinfos[$(this).val()].lookup.relatedApp.app},function(resp){
-								/* setup field lists */
-								$.each(resp.properties,function(key,values){
-									switch (values.type)
-									{
-										case 'SINGLE_LINE_TEXT':
-											if (!values.lookup) list.append($('<option>').attr('value',values.code).text(values.label));
-									}
-								});
-								if ($.hasData(list[0]))
-									if ($.data(list[0],'initialdata').length!=0)
-									{
-										list.val($.data(list[0],'initialdata'));
-										$.data(list[0],'initialdata','');
-									}
-								listcontainer.show();
-								sortcontainer.show();
-							},function(error){});
-						}
-						else
-						{
-							listcontainer.hide();
-							sortcontainer.hide();
-						}
-					}
-				})
-			}
-		});
-		var add=false;
-		var row=null;
-		var segments=[];
-		var segmentcolors=[];
-		if (Object.keys(config).length!==0)
-		{
-			segments=JSON.parse(config['segment']);
-			segmentcolors=config['segmentcolors'].split(',');
-			$('select#date').val(config['date']);
-			$('select#fromtime').val(config['fromtime']);
-			$('select#totime').val(config['totime']);
-			$('select#display').val(config['display']);
-			$('select#scale').val(config['scale']);
-			$('select#starthour').val(config['starthour']);
-			$('select#endhour').val(config['endhour']);
-			$('select#lat').val(config['lat']);
-			$('select#lng').val(config['lng']);
-			$('input#scalefixedwidth').val(config['scalefixedwidth']);
-			$('input#apikey').val(config['apikey']);
-			if (config['registeredonly']=='1') $('input#registeredonly').prop('checked',true);
-			if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
-			if (config['route']=='1') $('input#route').prop('checked',true);
-			$.each(segments,function(key,values){
-				if (add) vars.segmenttable.addrow();
-				else add=true;
-				row=vars.segmenttable.rows.last();
-				$('select#segment',row).val(key);
-				$('select#segmentsort',row).val(values.sort);
-				/* trigger events */
-				$.data($('select#segmentdisplay',row)[0],'initialdata',values.display);
-				$('select#segment',row).trigger('change');
+				}
 			});
-		}
-		else segmentcolors=vars.colors;
-		add=false;
-		$.each(segmentcolors,function(index){
-			if (add) vars.colortable.addrow();
-			else add=true;
-			row=vars.colortable.rows.last();
-			$('input#segmentcolor',row).val(segmentcolors[index].replace('#',''));
-		});
-		$.each($('span#segmentcolor'),function(index){
-			$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#segmentcolor'));
-		});
+			/* initialize valiable */
+			vars.colortable=$('.segmentcolors').adjustabletable({
+				add:'img.add',
+				del:'img.del',
+				addcallback:function(row){
+					$('input#segmentcolor',row).val(vars.colors[0].replace('#',''));
+					$('span#segmentcolor',row).colorSelector(vars.colors,$('input#segmentcolor',row));
+				}
+			});
+			vars.displaytable=$('.displays').adjustabletable({
+				add:'img.add',
+				del:'img.del'
+			});
+			vars.leveltable=$('.levels').adjustabletable({
+				add:'img.add',
+				del:'img.del'
+			});
+			vars.segmenttable=$('.segments').adjustabletable({
+				add:'img.add',
+				del:'img.del',
+				addcallback:function(row){
+					var list=$('select#segmentdisplay',row);
+					var sort=$('select#segmentsort',row);
+					var listcontainer=list.closest('.kintoneplugin-select-outer');
+					var sortcontainer=sort.closest('.kintoneplugin-select-outer');
+					listcontainer.hide();
+					sortcontainer.hide();
+					$('select#segment',row).on('change',function(){
+						/* initialize field lists */
+						list.html('<option value=""></option>');
+						if ($(this).val().length!=0)
+						{
+							if (vars.fieldinfos[$(this).val()].lookup)
+							{
+								kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:vars.fieldinfos[$(this).val()].lookup.relatedApp.app},function(resp){
+									/* setup field lists */
+									$.each(resp.properties,function(key,values){
+										switch (values.type)
+										{
+											case 'SINGLE_LINE_TEXT':
+												if (!values.lookup) list.append($('<option>').attr('value',values.code).text(values.label));
+										}
+									});
+									if ($.hasData(list[0]))
+										if ($.data(list[0],'initialdata').length!=0)
+										{
+											list.val($.data(list[0],'initialdata'));
+											$.data(list[0],'initialdata','');
+										}
+									listcontainer.show();
+									sortcontainer.show();
+								},function(error){});
+							}
+							else
+							{
+								listcontainer.hide();
+								sortcontainer.hide();
+							}
+						}
+					})
+				}
+			});
+			var add=false;
+			var row=null;
+			var displays=[];
+			var levels={lookup:'',levels:[]};
+			var segments=[];
+			var segmentcolors=[];
+			if (Object.keys(config).length!==0)
+			{
+				displays=config['displays'].split(',');
+				levels=JSON.parse(config['levels']);
+				segments=JSON.parse(config['segment']);
+				segmentcolors=config['segmentcolors'].split(',');
+				$('select#date').val(config['date']);
+				$('select#fromtime').val(config['fromtime']);
+				$('select#totime').val(config['totime']);
+				$('select#lookup').val(levels.lookup);
+				$('select#scale').val(config['scale']);
+				$('select#starthour').val(config['starthour']);
+				$('select#endhour').val(config['endhour']);
+				$('select#lat').val(config['lat']);
+				$('select#lng').val(config['lng']);
+				$('input#scalefixedwidth').val(config['scalefixedwidth']);
+				$('input#apikey').val(config['apikey']);
+				if (config['registeredonly']=='1') $('input#registeredonly').prop('checked',true);
+				if (config['scalefixed']=='1') $('input#scalefixed').prop('checked',true);
+				if (config['route']=='1') $('input#route').prop('checked',true);
+				add=false;
+				$.each(displays,function(index){
+					if (add) vars.displaytable.addrow();
+					else add=true;
+					row=vars.displaytable.rows.last();
+					$('select#display',row).val(displays[index]);
+				});
+				add=false;
+				$.each(segments,function(key,values){
+					if (add) vars.segmenttable.addrow();
+					else add=true;
+					row=vars.segmenttable.rows.last();
+					$('select#segment',row).val(key);
+					$('select#segmentsort',row).val(values.sort);
+					/* trigger events */
+					$.data($('select#segmentdisplay',row)[0],'initialdata',values.display);
+					$('select#segment',row).trigger('change');
+				});
+			}
+			else segmentcolors=vars.colors;
+			functions.reloadlevels(function(){
+				add=false;
+				$.each(levels.levels,function(index){
+					if (add) vars.leveltable.addrow();
+					else add=true;
+					row=vars.leveltable.rows.last();
+					$('select#level',row).val(levels.levels[index]);
+				});
+				add=false;
+				$.each(segmentcolors,function(index){
+					if (add) vars.colortable.addrow();
+					else add=true;
+					row=vars.colortable.rows.last();
+					$('input#segmentcolor',row).val(segmentcolors[index].replace('#',''));
+				});
+				$.each($('span#segmentcolor'),function(index){
+					$(this).colorSelector(vars.colors,$(this).closest('tr').find('input#segmentcolor'));
+				});
+			});
+			$('select#lookup').on('change',function(){functions.reloadlevels()});
+		},function(error){});
 	},function(error){});
 	/*---------------------------------------------------------------
 	 button events
@@ -190,9 +301,18 @@ jQuery.noConflict();
 	$('button#submit').on('click',function(e){
 		var key='';
 		var row=null;
+		var fieldinfo={};
 		var config=[];
+		var displays=[];
 		var segments={};
 		var segmentcolors=[];
+		var levels={
+			lookup:'',
+			app:'',
+			relatedkey:'',
+			type:'',
+			levels:[]
+		};
 		/* check values */
 		if ($('select#date').val()=='')
 		{
@@ -209,44 +329,72 @@ jQuery.noConflict();
 			swal('Error!','終了時刻フィールドを選択して下さい。','error');
 			return;
 		}
-		if ($('select#display').val()=='')
-		{
-			swal('Error!','表示フィールドを選択して下さい。','error');
-			return;
-		}
 		if ($('select#fromtime').val()==$('select#totime').val())
 		{
 			swal('Error!','開始時刻フィールドと終了時刻フィールドは異なるフィールドを選択して下さい。','error');
 			return;
 		}
-		for (var i=0;i<vars.segmenttable.rows.length;i++)
+		for (var i=0;i<vars.displaytable.rows.length;i++)
 		{
-			row=vars.segmenttable.rows.eq(i);
-			key=$('select#segment',row).val();
-			if (key.length!=0)
+			row=vars.displaytable.rows.eq(i);
+			if ($('select#display',row).val().length!=0) displays.push($('select#display',row).val());
+		}
+		if (displays.length==0)
+		{
+			swal('Error!','表示フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#lookup').val()=='')
+		{
+			for (var i=0;i<vars.segmenttable.rows.length;i++)
 			{
-				segments[key]={display:'',app:'',field:'',sort:''};
-				if (vars.fieldinfos[key].lookup)
+				row=vars.segmenttable.rows.eq(i);
+				key=$('select#segment',row).val();
+				if (key.length!=0)
 				{
-					if ($('select#segmentdisplay',row).val()=='')
+					segments[key]={display:'',app:'',field:'',sort:''};
+					if (vars.fieldinfos[key].lookup)
 					{
-						swal('Error!','区分名フィールドを選択して下さい。','error');
-						return;
-					}
-					else
-					{
-						segments[key].display=$('select#segmentdisplay',row).val();
-						segments[key].app=vars.fieldinfos[key].lookup.relatedApp.app;
-						segments[key].field=vars.fieldinfos[key].lookup.relatedKeyField;
-						segments[key].sort=$('select#segmentsort',row).val();
+						if ($('select#segmentdisplay',row).val()=='')
+						{
+							swal('Error!','区分名フィールドを選択して下さい。','error');
+							return;
+						}
+						else
+						{
+							segments[key].display=$('select#segmentdisplay',row).val();
+							segments[key].app=vars.fieldinfos[key].lookup.relatedApp.app;
+							segments[key].field=vars.fieldinfos[key].lookup.relatedKeyField;
+							segments[key].sort=$('select#segmentsort',row).val();
+						}
 					}
 				}
 			}
+			if (Object.keys(segments).length==0)
+			{
+				swal('Error!','区分は1つ以上指定して下さい。','error');
+				return;
+			}
 		}
-		if (Object.keys(segments).length==0)
+		else
 		{
-			swal('Error!','区分を1つ以上指定して下さい。','error');
-			return;
+			fieldinfo=vars.fieldinfos[$('select#lookup').val()];
+			levels.lookup=fieldinfo.code;
+			levels.app=fieldinfo.lookup.relatedApp.app;
+			levels.relatedkey=fieldinfo.lookup.relatedKeyField;
+			levels.type=fieldinfo.type;
+			if (fieldinfo.type=='CALC') levels.format=fieldinfo.format;
+			else levels.format='';
+			for (var i=0;i<vars.leveltable.rows.length;i++)
+			{
+				row=vars.leveltable.rows.eq(i);
+				if ($('select#level',row).val().length!=0) levels.levels.push($('select#level',row).val());
+			}
+			if (Object.keys(levels.levels).length==0)
+			{
+				swal('Error!','階層は1つ以上指定して下さい。','error');
+				return;
+			}
 		}
 		for (var i=0;i<vars.colortable.rows.length;i++)
 		{
@@ -313,7 +461,8 @@ jQuery.noConflict();
 		config['date']=$('select#date').val();
 		config['fromtime']=$('select#fromtime').val();
 		config['totime']=$('select#totime').val();
-		config['display']=$('select#display').val();
+		config['displays']=displays.join(',');
+		config['levels']=JSON.stringify(levels);
 		config['segment']=JSON.stringify(segments);
 		config['segmentcolors']=segmentcolors.join(',');
 		config['scale']=$('select#scale').val();

@@ -21,9 +21,11 @@ jQuery.noConflict();
 		table:null,
 		apps:{},
 		config:{},
+		levels:{},
 		offset:{},
 		segments:{},
 		colors:[],
+		displays:[],
 		fields:[],
 		segmentkeys:[],
 		fieldinfos:{}
@@ -46,13 +48,24 @@ jQuery.noConflict();
 					var inner='';
 					inner='';
 					inner+='<p class="timetable-tooltip">';
-					$.each(vars.segments,function(key,values){
-						if (key!=vars.segmentkeys[0])
-							for (var i2=0;i2<values.records.length;i2++)
-								if (filter[i][key].value==values.records[i2].field) inner+='<span>'+values.records[i2].display+'</span>';
-					});
+					if (vars.levels.lookup)
+					{
+						var levels=$.grep(vars.apps[vars.levels.app],function(item,index){
+							return item[vars.levels.relatedkey].value==filter[i][vars.levels.lookup].value;
+						});
+						if (levels.length!=0)
+							for (var i2=0;i2<vars.segmentkeys.length;i2++) inner+='<span>'+$.fieldvalue(levels[0][vars.segmentkeys[i2]])+'</span>';
+					}
+					else
+					{
+						$.each(vars.segments,function(key,values){
+							if (key!=vars.segmentkeys[0])
+								for (var i2=0;i2<values.records.length;i2++)
+									if (filter[i][key].value==values.records[i2].field) inner+='<span>'+values.records[i2].display+'</span>';
+						});
+					}
 					inner+='</p>';
-					inner+='<p class="timetable-tooltip">'+$.fieldvalue(filter[i][vars.config['display']])+'</p>';
+					for (var i2=0;i2<vars.displays.length;i2++) inner+='<p class="timetable-tooltip">'+$.fieldvalue(filter[i][vars.displays[i2]])+'</p>';
 					inner+='<p class="timetable-tooltip">'+filter[i][vars.config['fromtime']].value+' ～ '+filter[i][vars.config['totime']].value+'</p>';
 					cell.append(
 						$('<div class="timetable-monthly-cell">').css({
@@ -107,17 +120,39 @@ jQuery.noConflict();
 							cell.find('span').css({'color':'#FA8273'});
 							break;
 					}
-					var key=vars.segmentkeys[0];
-					for (var i=0;i<vars.segments[key].records.length;i++)
+					if (vars.levels.lookup)
 					{
-						var filter=$.grep(records,function(item,index){
-							var exists=0;
-							if (item[vars.config['date']].value==day.format('Y-m-d')) exists++;
-							if (item[key].value==vars.segments[key].records[i].field) exists++;
-							return exists==2;
-						});
-						/* rebuild view */
-						functions.build(filter,cell,i);
+						var added=[];
+						for (var i=0;i<vars.apps[vars.levels.app].length;i++)
+						{
+							var legend=$.fieldvalue(vars.apps[vars.levels.app][i][vars.levels.relatedkey]);
+							if (added.indexOf(legend)<0)
+							{
+								var filter=$.grep(records,function(item,index){
+									var exists=0;
+									if (item[vars.config['date']].value==day.format('Y-m-d')) exists++;
+									if (item[vars.levels.lookup].value==legend) exists++;
+									return exists==2;
+								});
+								/* rebuild view */
+								functions.build(filter,cell,i);
+							}
+						}
+					}
+					else
+					{
+						var key=vars.segmentkeys[0];
+						for (var i=0;i<vars.segments[key].records.length;i++)
+						{
+							var filter=$.grep(records,function(item,index){
+								var exists=0;
+								if (item[vars.config['date']].value==day.format('Y-m-d')) exists++;
+								if (item[key].value==vars.segments[key].records[i].field) exists++;
+								return exists==2;
+							});
+							/* rebuild view */
+							functions.build(filter,cell,i);
+						}
 					}
 				});
 				/* check no element rows */
@@ -148,6 +183,23 @@ jQuery.noConflict();
 				else Array.prototype.push.apply(vars.apps[appkey],resp.records);
 				vars.offset[appkey]+=limit;
 				if (resp.records.length==limit) functions.loaddatas(appkey,callback);
+				else callback();
+			},function(error){});
+		},
+		/* reload datas of level */
+		loadlevels:function(callback){
+			var body={
+				app:vars.levels.app,
+				query:vars.fieldinfos[vars.levels.lookup].lookup.filterCond
+			};
+			body.query+=' order by ';
+			for (var i=0;i<vars.segmentkeys.length;i++) body.query+=vars.segmentkeys[i]+' asc,';
+			body.query=body.query.replace(/,$/g,'');
+			body.query+=' limit '+limit.toString()+' offset '+vars.offset[vars.levels.app].toString();
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+				Array.prototype.push.apply(vars.apps[vars.levels.app],resp.records);
+				vars.offset[vars.levels.app]+=limit;
+				if (resp.records.length==limit) functions.loadlevels(callback);
 				else callback();
 			},function(error){});
 		},
@@ -227,9 +279,14 @@ jQuery.noConflict();
 		});
 		/* setup colors value */
 		vars.colors=vars.config['segmentcolors'].split(',');
+		/* setup displays value */
+		vars.displays=vars.config['displays'].split(',');
+		/* setup levels value */
+		vars.levels=JSON.parse(vars.config['levels']);
 		/* setup segments value */
 		vars.segments=JSON.parse(vars.config['segment']);
-		vars.segmentkeys=Object.keys(vars.segments);
+		if (vars.levels.lookup) vars.segmentkeys=vars.levels.levels;
+		else vars.segmentkeys=Object.keys(vars.segments);
 		/* create table */
 		container.empty().append(vars.graphlegend.empty());
 		var head=$('<tr>');
@@ -255,23 +312,32 @@ jQuery.noConflict();
 				vars.fields.push(values.code);
 			});
 			/* get datas of segment */
-			$.each(vars.segments,function(key,values){
-				var param=values;
-				param.code=key;
-				param.loaded=0;
-				param.offset=0;
-				param.records=[];
-				if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
-				else
-				{
-					param.records=[resp.properties[key].options.length];
-					$.each(resp.properties[key].options,function(key,values){
-						param.records[values.index]={display:values.label,field:values.label};
-					});
-					param.loaded=1;
-				}
-			});
-			functions.checkloaded();
+			if (vars.levels.lookup)
+			{
+				vars.apps[vars.levels.app]=[];
+				vars.offset[vars.levels.app]=0;
+				functions.loadlevels(function(){functions.load();});
+			}
+			else
+			{
+				$.each(vars.segments,function(key,values){
+					var param=values;
+					param.code=key;
+					param.loaded=0;
+					param.offset=0;
+					param.records=[];
+					if (param.app.length!=0) functions.loadsegments(param,function(res){functions.checkloaded();});
+					else
+					{
+						param.records=[resp.properties[key].options.length];
+						$.each(resp.properties[key].options,function(key,values){
+							param.records[values.index]={display:values.label,field:values.label};
+						});
+						param.loaded=1;
+					}
+				});
+				functions.checkloaded();
+			}
 		},function(error){});
 		return event;
 	});
