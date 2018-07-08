@@ -259,6 +259,7 @@ var Referer=function(options){
 	this.displaytext=options.displaytext;
 	this.searches=options.searches;
 	this.dialog=createdialog(700,900);
+	this.searchblock=this.dialog.header
 	this.callback=null;
 	/* append elements */
 	$.each(this.searches,function(index){
