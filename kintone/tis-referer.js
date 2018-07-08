@@ -40,7 +40,7 @@ var button=$('<button>').css({
 	'width':'auto'
 });
 var cell=$('<td>').css({
-	'border-bottom':'1px dotted #e3e7e8',
+	'border-bottom':'1px dotted #d4d7d7',
 	'cursor':'pointer'
 });
 var checkbox=$('<label>').css({
@@ -92,7 +92,7 @@ var referer=div.clone(true).css({
 	.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png">').css({'width':'100%'}))
 );
 var select=$('<select>').css({
-	'border':'1px solid #e3e7e8',
+	'border':'1px solid #d4d7d7',
 	'border-radius':'3px',
 	'box-sizing':'border-box',
 	'display':'inline-block',
@@ -104,7 +104,7 @@ var select=$('<select>').css({
 	'width':'auto'
 });
 var textarea=$('<textarea>').css({
-	'border':'1px solid #e3e7e8',
+	'border':'1px solid #d4d7d7',
 	'border-radius':'3px',
 	'box-sizing':'border-box',
 	'display':'block',
@@ -115,7 +115,7 @@ var textarea=$('<textarea>').css({
 	'width':'100%'
 });
 var textline=$('<input type="text">').css({
-	'border':'1px solid #e3e7e8',
+	'border':'1px solid #d4d7d7',
 	'border-radius':'3px',
 	'box-sizing':'border-box',
 	'display':'inline-block',
@@ -136,7 +136,7 @@ for (var i=0;i<24;i++) $('.receiverhour',time).append($('<option>').attr('value'
 for (var i=0;i<60;i++) $('.receiverminute',time).append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)));
 var title=$('<label class="title">').css({
 	'box-sizing':'border-box',
-	'border-left':'5px solid #e3e7e8',
+	'border-left':'5px solid #d4d7d7',
 	'display':'block',
 	'line-height':'25px',
 	'margin':'5px 0px',
@@ -183,7 +183,7 @@ var createdialog=function(height,width){
 			'z-index':'1'
 		}),
 		header:div.clone(true).css({
-			'border-bottom':'1px solid #e3e7e8',
+			'border-bottom':'1px solid #d4d7d7',
 			'left':'0px',
 			'padding':'5px',
 			'position':'absolute',
@@ -193,7 +193,7 @@ var createdialog=function(height,width){
 			'z-index':'3'
 		}),
 		footer:div.clone(true).css({
-			'border-top':'1px solid #e3e7e8',
+			'border-top':'1px solid #d4d7d7',
 			'bottom':'0px',
 			'left':'0px',
 			'padding':'5px',
@@ -772,7 +772,7 @@ var TermSelect=function(options){
 	this.minute=select.clone(true);
 	for (var i=0;i<60;i+=options.minutespan) this.minute.append($('<option>').attr('value',('0'+i.toString()).slice(-2)).text(('0'+i.toString()).slice(-2)))
 	this.template=div.clone(true).addClass('term').css({
-		'border-bottom':'1px dotted #e3e7e8',
+		'border-bottom':'1px dotted #d4d7d7',
 		'padding':'5px 0px',
 		'width':'100%'
 	})
