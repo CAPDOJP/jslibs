@@ -29,7 +29,7 @@ var button=$('<button>').css({
 	'border':'none',
 	'border-radius':'3px',
 	'box-sizing':'border-box',
-	'color':'#3498db',
+	'color':'#FFFFFF',
 	'cursor':'pointer',
 	'font-size':'13px',
 	'height':'30px',
@@ -184,7 +184,7 @@ var createdialog=function(height,width){
 			'z-index':'1'
 		}),
 		header:div.clone(true).css({
-			'border-bottom':'1px solid #3498db',
+			'background-color':'1px solid #3498db',
 			'left':'0px',
 			'padding':'5px',
 			'position':'absolute',
@@ -194,7 +194,7 @@ var createdialog=function(height,width){
 			'z-index':'3'
 		}),
 		footer:div.clone(true).css({
-			'border-top':'1px solid #3498db',
+			'background-color':'1px solid #3498db',
 			'bottom':'0px',
 			'left':'0px',
 			'padding':'5px',
@@ -486,7 +486,7 @@ var FileSelect=function(options){
 		})
 	)
 	.append(
-		button.clone(true).css({'background-color':'#FFFFFF','width':'100%'})
+		button.clone(true).css({'background-color':'#FFFFFF','color':'#3498db','width':'100%'})
 		.text('ファイルを追加')
 		.on('click',function(){
 			$(this).closest('div').find('input').click();
