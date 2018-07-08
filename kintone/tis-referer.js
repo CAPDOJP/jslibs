@@ -1325,7 +1325,7 @@ var FieldsForm=function(options){
 	options.container.append(this.dialog.cover);
 	/* adjust container height */
 	$(window).on('load resize',function(){
-		my.dialog.contents.css({'height':(my.dialog.container.innerHeight()-my.dialog.footer.outerHeight(true)).toString()+'px'});
+		my.dialog.container.css({'height':(my.dialog.contents.innerHeight()+40).toString()+'px'});
 	});
 	/* create filebox */
 	this.filebox=$('body').fileselect();
@@ -1487,7 +1487,7 @@ FieldsForm.prototype={
 		});
 		this.dialog.cover.show();
 		/* adjust container height */
-		this.dialog.contents.css({'height':(this.dialog.container.innerHeight()-this.dialog.footer.outerHeight(true)).toString()+'px'});
+		this.dialog.container.css({'height':(this.dialog.contents.innerHeight()+40).toString()+'px'});
 	},
 	/* hide form */
 	hide:function(){
@@ -1890,7 +1890,7 @@ var ConditionsForm=function(options){
 	options.container.append(this.dialog.cover);
 	/* adjust container height */
 	$(window).on('load resize',function(){
-		my.dialog.contents.css({'height':(my.dialog.container.innerHeight()-my.dialog.footer.outerHeight(true)).toString()+'px'});
+		my.dialog.container.css({'height':(my.dialog.contents.innerHeight()+40).toString()+'px'});
 	});
 	/* create selectbox */
 	this.selectbox=$('body').multiselect();
@@ -2069,7 +2069,7 @@ ConditionsForm.prototype={
 		});
 		this.dialog.cover.show();
 		/* adjust container height */
-		this.dialog.contents.css({'height':(this.dialog.container.innerHeight()-this.dialog.footer.outerHeight(true)).toString()+'px'});
+		this.dialog.container.css({'height':(this.dialog.contents.innerHeight()+40).toString()+'px'});
 	},
 	/* hide form */
 	hide:function(){
