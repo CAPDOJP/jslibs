@@ -120,7 +120,7 @@ var textline=$('<input type="text">').css({
 	'border':'1px solid #3498db',
 	'border-radius':'3px',
 	'box-sizing':'border-box',
-	'display':'block',
+	'display':'inline-block',
 	'height':'30px',
 	'line-height':'30px',
 	'padding':'0px 5px',
@@ -178,7 +178,7 @@ var createdialog=function(height,width){
 			'margin':'0px',
 			'overflow-x':'hidden',
 			'overflow-y':'auto',
-			'padding':'5px',
+			'padding':'5px 5px 10px 5px',
 			'position':'relative',
 			'text-align':'left',
 			'width':'100%',
@@ -334,7 +334,11 @@ var Referer=function(options){
 	}
 	this.dialog.contents.append(this.dialog.lists);
 	this.dialog.container.append(this.dialog.contents);
-	if (this.searches.length!=0) this.dialog.container.append(this.dialog.header);
+	if (this.searches.length!=0)
+	{
+		this.dialog.contents.css({'padding-top':'10px'})
+		this.dialog.container.append(this.dialog.header);
+	}
 	this.dialog.container.append(
 		this.dialog.footer
 		.append(button.clone(true).attr('id','cancel').text('キャンセル'))
