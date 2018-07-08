@@ -506,7 +506,11 @@ var FileSelect=function(options){
 	/* create template */
 	this.template=$('<tr>')
 	.append(
-		cell.clone(true).css({'padding':'0px 5px'})
+		cell.clone(true).css({
+			'border':'none',
+			'border-bottom':'1px dotted #3498db',
+			'padding':'0px 5px'
+		})
 		.append(
 			$('<a href="" id="link">').on('click',function(e){
 				var list=$(this).closest('tr');
@@ -535,10 +539,14 @@ var FileSelect=function(options){
 		.append($('<input type="hidden" id="name">'))
 	)
 	.append(
-		cell.clone(true).css({'width':'30px'})
+		cell.clone(true).css({
+			'border':'none',
+			'border-bottom':'1px dotted #3498db',
+			'width':'30px'
+		})
 		.append(
 			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">')
-			.css({'width':'100%'})
+			.css({'vertical-align':'middle;','width':'100%'})
 			.on('click',function(){
 				$(this).closest('tr').remove();
 			})
