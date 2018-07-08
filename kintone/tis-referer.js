@@ -283,15 +283,15 @@ var Referer=function(options){
 					addition:$('<option value="">'+((searchvalue.label)?searchvalue.label:'')+'</option')
 				});
 				$.data(searchfield[0],'multi',false);
-				this.dialog.header.append(searchfield.css({'width':'100%'}));
+				my.dialog.header.append(searchfield.css({'width':'100%'}));
 				break;
 			case 'input':
 			case 'multi':
 				searchfield=textline.clone(true).attr('id',searchvalue.id);
 				if (searchvalue.label) searchfield.attr('placeholder',searchvalue.label);
 				$.data(searchfield[0],'multi',(searchvalue.type=='multi'));
-				this.dialog.header.append(searchfield.css({'margin-right':'-30px','padding-right':'35px'}));
-				this.dialog.header.append(
+				my.dialog.header.append(searchfield.css({'margin-right':'-30px','padding-right':'35px'}));
+				my.dialog.header.append(
 					$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png" class="add" alt="絞り込み" title="絞り込み">')
 					.css({
 						'cursor':'pointer',
@@ -1912,7 +1912,7 @@ ConditionsForm.prototype={
 		var my=this;
 		$('#ok',this.dialog.footer).on('click',function(){
 			var res=[];
-			$.each($('.container',this.dialog.contents),function(){
+			$.each($('.container',my.dialog.contents),function(){
 				var container=$(this);
 				if ($('.comp',container).val())
 				{
