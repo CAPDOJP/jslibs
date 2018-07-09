@@ -2248,348 +2248,350 @@ jQuery.fn.conditionsform=function(options){
 	options.container=this;
 	return new ConditionsForm(options);
 };
-jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
-	var match=true;
-	$.each(conditions,function(key,values){
-		if (values.comp.code)
-			if (key in record)
-			{
-				var fieldinfo=fieldinfos[key];
-				var value=record[key].value;
-				switch (fieldinfo.type)
+jQuery.extend({
+	conditionsmatch:function(record,fieldinfos,conditions){
+		var match=true;
+		$.each(conditions,function(key,values){
+			if (values.comp.code)
+				if (key in record)
 				{
-					case 'CALC':
-						switch(fieldinfo.format.toUpperCase())
-						{
-							case 'NUMBER':
-							case 'NUMBER_DIGIT':
-								switch (values.comp.code)
-								{
-									case '0':
-										if (!value) value=='';
-										if (value!=values.value) match=false;
-										break;
-									case '1':
-										if (!value) value=='';
-										if (value==values.value) match=false;
-										break;
-									case '2':
-										if (!value) match=false;
-										else
-										{
-											if (value>values.value) match=false;
-										}
-										break;
-									case '3':
-										if (!value) match=false;
-										else
-										{
-											if (value<values.value) match=false;
-										}
-										break;
-								}
-								break;
-							case 'DATE':
-							case 'DATETIME':
-							case 'DAY_HOUR_MINUTE':
-								switch (values.comp.code)
-								{
-									case '0':
-										if (!value) value=='';
-										if (value.deteformat()!=values.value.deteformat()) match=false;
-										break;
-									case '1':
-										if (!value) value=='';
-										if (value.deteformat()==values.value.deteformat()) match=false;
-										break;
-									case '2':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(value.dateformat())>new Date(values.value)) match=false;
-										}
-										break;
-									case '3':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(value.dateformat())>=new Date(values.value)) match=false;
-										}
-										break;
-									case '4':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(value.dateformat())<new Date(values.value)) match=false;
-										}
-										break;
-									case '5':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(value.dateformat())<=new Date(values.value)) match=false;
-										}
-										break;
-								}
-								break;
-							case 'HOUR_MINUTE':
-							case 'TIME':
-								var date=new Date().format('Y-m-d')+' ';
-								switch (values.comp.code)
-								{
-									case '0':
-										if (!value) value=='';
-										if (value!=values.value) match=false;
-										break;
-									case '1':
-										if (!value) value=='';
-										if (value==values.value) match=false;
-										break;
-									case '2':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(date+value+':00')>new Date(date+values.value+':00')) match=false;
-										}
-										break;
-									case '3':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(date+value+':00')>=new Date(date+values.value+':00')) match=false;
-										}
-										break;
-									case '4':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(date+value+':00')<new Date(date+values.value+':00')) match=false;
-										}
-										break;
-									case '5':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(date+value+':00')<=new Date(date+values.value+':00')) match=false;
-										}
-										break;
-								}
-								break;
-						}
-						break;
-					case 'CHECK_BOX':
-					case 'MULTI_SELECT':
-						var hit=0;
-						for (var i2=0;i2<value.length;i2++) if (values.value.indexOf(value[i2])>-1) hit++;
-						switch (values.comp.code)
-						{
-							case '0':
-								if (hit<1) match=false;
-								break;
-							case '1':
-								if (hit>0) match=false;
-								break;
-						}
-						break;
-					case 'DROP_DOWN':
-					case 'RADIO_BUTTON':
-						if (!value) value=='';
-						switch (values.comp.code)
-						{
-							case '0':
-								if (values.value.indexOf(value)<0) match=false;
-								break;
-							case '1':
-								if (values.value.indexOf(value)>-1) match=false;
-								break;
-						}
-						break;
-					case 'CREATED_TIME':
-					case 'DATE':
-					case 'DATETIME':
-					case 'UPDATED_TIME':
-						switch (values.comp.code)
-						{
-							case '0':
-								if (!value) value=='';
-								if (value.deteformat()!=values.value.deteformat()) match=false;
-								break;
-							case '1':
-								if (!value) value=='';
-								if (value.deteformat()==values.value.deteformat()) match=false;
-								break;
-							case '2':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(value.dateformat())>new Date(values.value)) match=false;
-								}
-								break;
-							case '3':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(value.dateformat())>=new Date(values.value)) match=false;
-								}
-								break;
-							case '4':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(value.dateformat())<new Date(values.value)) match=false;
-								}
-								break;
-							case '5':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(value.dateformat())<=new Date(values.value)) match=false;
-								}
-								break;
-						}
-						break;
-					case 'GROUP_SELECT':
-					case 'ORGANIZATION_SELECT':
-					case 'USER_SELECT':
-						switch (values.comp.code)
-						{
-							case '0':
-								if ($.grep(value,function(item,index){
-									var code=item.code;
-									return $.grep(values.value,function(item,index){return item.code==code}).length!=0;
-								}).length==0) match=false;
-								break;
-							case '1':
-								if ($.grep(value,function(item,index){
-									var code=item.code;
-									return $.grep(values.value,function(item,index){return item.code==code}).length!=0;
-								}).length!=0) match=false;
-								break;
-						}
-						break;
-					case 'LINK':
-					case 'SINGLE_LINE_TEXT':
-						if (!value) value=='';
-						switch (values.comp.code)
-						{
-							case '0':
-								if (value!=values.value) match=false;
-								break;
-							case '1':
-								if (value==values.value) match=false;
-								break;
-							case '2':
-								if (!value.match(new RegExp(values.value,'g'))) match=false;
-								break;
-							case '3':
-								if (value.match(new RegExp(values.value,'g'))) match=false;
-								break;
-						}
-						break;
-					case 'MULTI_LINE_TEXT':
-					case 'RICH_TEXT':
-						if (!value) value=='';
-						switch (values.comp.code)
-						{
-							case '0':
-								if (!value.match(new RegExp(values.value,'g'))) match=false;
-								break;
-							case '1':
-								if (value.match(new RegExp(values.value,'g'))) match=false;
-								break;
-						}
-						break;
-					case 'NUMBER':
-					case 'RECORD_NUMBER':
-						switch (values.comp.code)
-						{
-							case '0':
-								if (!value) value=='';
-								if (value!=values.value) match=false;
-								break;
-							case '1':
-								if (!value) value=='';
-								if (value==values.value) match=false;
-								break;
-							case '2':
-								if (!value) match=false;
-								else
-								{
-									if (value>values.value) match=false;
-								}
-								break;
-							case '3':
-								if (!value) match=false;
-								else
-								{
-									if (value<values.value) match=false;
-								}
-								break;
-						}
-						break;
-					case 'CREATOR':
-					case 'MODIFIER':
-					case 'STATUS_ASSIGNEE':
-					case 'STATUS':
-						switch (values.comp.code)
-						{
-							case '0':
-								if ($.grep(values.value,function(item,index){
-									return item.code==value.code;
-								}).length==0) match=false;
-								break;
-							case '1':
-								if ($.grep(values.value,function(item,index){
-									return item.code==value.code;
-								}).length!=0) match=false;
-								break;
-						}
-						break;
-					case 'TIME':
-						var date=new Date().format('Y-m-d')+' ';
-						switch (values.comp.code)
-						{
-							case '0':
-								if (!value) value=='';
-								if (value!=values.value) match=false;
-								break;
-							case '1':
-								if (!value) value=='';
-								if (value==values.value) match=false;
-								break;
-							case '2':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(date+value+':00')>new Date(date+values.value+':00')) match=false;
-								}
-								break;
-							case '3':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(date+value+':00')>=new Date(date+values.value+':00')) match=false;
-								}
-								break;
-							case '4':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(date+value+':00')<new Date(date+values.value+':00')) match=false;
-								}
-								break;
-							case '5':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(date+value+':00')<=new Date(date+values.value+':00')) match=false;
-								}
-								break;
-						}
-						break;
+					var fieldinfo=fieldinfos[key];
+					var value=record[key].value;
+					switch (fieldinfo.type)
+					{
+						case 'CALC':
+							switch(fieldinfo.format.toUpperCase())
+							{
+								case 'NUMBER':
+								case 'NUMBER_DIGIT':
+									switch (values.comp.code)
+									{
+										case '0':
+											if (!value) value=='';
+											if (value!=values.value) match=false;
+											break;
+										case '1':
+											if (!value) value=='';
+											if (value==values.value) match=false;
+											break;
+										case '2':
+											if (!value) match=false;
+											else
+											{
+												if (value>values.value) match=false;
+											}
+											break;
+										case '3':
+											if (!value) match=false;
+											else
+											{
+												if (value<values.value) match=false;
+											}
+											break;
+									}
+									break;
+								case 'DATE':
+								case 'DATETIME':
+								case 'DAY_HOUR_MINUTE':
+									switch (values.comp.code)
+									{
+										case '0':
+											if (!value) value=='';
+											if (value.deteformat()!=values.value.deteformat()) match=false;
+											break;
+										case '1':
+											if (!value) value=='';
+											if (value.deteformat()==values.value.deteformat()) match=false;
+											break;
+										case '2':
+											if (!value) match=false;
+											else
+											{
+												if (new Date(value.dateformat())>new Date(values.value)) match=false;
+											}
+											break;
+										case '3':
+											if (!value) match=false;
+											else
+											{
+												if (new Date(value.dateformat())>=new Date(values.value)) match=false;
+											}
+											break;
+										case '4':
+											if (!value) match=false;
+											else
+											{
+												if (new Date(value.dateformat())<new Date(values.value)) match=false;
+											}
+											break;
+										case '5':
+											if (!value) match=false;
+											else
+											{
+												if (new Date(value.dateformat())<=new Date(values.value)) match=false;
+											}
+											break;
+									}
+									break;
+								case 'HOUR_MINUTE':
+								case 'TIME':
+									var date=new Date().format('Y-m-d')+' ';
+									switch (values.comp.code)
+									{
+										case '0':
+											if (!value) value=='';
+											if (value!=values.value) match=false;
+											break;
+										case '1':
+											if (!value) value=='';
+											if (value==values.value) match=false;
+											break;
+										case '2':
+											if (!value) match=false;
+											else
+											{
+												if (new Date(date+value+':00')>new Date(date+values.value+':00')) match=false;
+											}
+											break;
+										case '3':
+											if (!value) match=false;
+											else
+											{
+												if (new Date(date+value+':00')>=new Date(date+values.value+':00')) match=false;
+											}
+											break;
+										case '4':
+											if (!value) match=false;
+											else
+											{
+												if (new Date(date+value+':00')<new Date(date+values.value+':00')) match=false;
+											}
+											break;
+										case '5':
+											if (!value) match=false;
+											else
+											{
+												if (new Date(date+value+':00')<=new Date(date+values.value+':00')) match=false;
+											}
+											break;
+									}
+									break;
+							}
+							break;
+						case 'CHECK_BOX':
+						case 'MULTI_SELECT':
+							var hit=0;
+							for (var i2=0;i2<value.length;i2++) if (values.value.indexOf(value[i2])>-1) hit++;
+							switch (values.comp.code)
+							{
+								case '0':
+									if (hit<1) match=false;
+									break;
+								case '1':
+									if (hit>0) match=false;
+									break;
+							}
+							break;
+						case 'DROP_DOWN':
+						case 'RADIO_BUTTON':
+							if (!value) value=='';
+							switch (values.comp.code)
+							{
+								case '0':
+									if (values.value.indexOf(value)<0) match=false;
+									break;
+								case '1':
+									if (values.value.indexOf(value)>-1) match=false;
+									break;
+							}
+							break;
+						case 'CREATED_TIME':
+						case 'DATE':
+						case 'DATETIME':
+						case 'UPDATED_TIME':
+							switch (values.comp.code)
+							{
+								case '0':
+									if (!value) value=='';
+									if (value.deteformat()!=values.value.deteformat()) match=false;
+									break;
+								case '1':
+									if (!value) value=='';
+									if (value.deteformat()==values.value.deteformat()) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())>new Date(values.value)) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())>=new Date(values.value)) match=false;
+									}
+									break;
+								case '4':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())<new Date(values.value)) match=false;
+									}
+									break;
+								case '5':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())<=new Date(values.value)) match=false;
+									}
+									break;
+							}
+							break;
+						case 'GROUP_SELECT':
+						case 'ORGANIZATION_SELECT':
+						case 'USER_SELECT':
+							switch (values.comp.code)
+							{
+								case '0':
+									if ($.grep(value,function(item,index){
+										var code=item.code;
+										return $.grep(values.value,function(item,index){return item.code==code}).length!=0;
+									}).length==0) match=false;
+									break;
+								case '1':
+									if ($.grep(value,function(item,index){
+										var code=item.code;
+										return $.grep(values.value,function(item,index){return item.code==code}).length!=0;
+									}).length!=0) match=false;
+									break;
+							}
+							break;
+						case 'LINK':
+						case 'SINGLE_LINE_TEXT':
+							if (!value) value=='';
+							switch (values.comp.code)
+							{
+								case '0':
+									if (value!=values.value) match=false;
+									break;
+								case '1':
+									if (value==values.value) match=false;
+									break;
+								case '2':
+									if (!value.match(new RegExp(values.value,'g'))) match=false;
+									break;
+								case '3':
+									if (value.match(new RegExp(values.value,'g'))) match=false;
+									break;
+							}
+							break;
+						case 'MULTI_LINE_TEXT':
+						case 'RICH_TEXT':
+							if (!value) value=='';
+							switch (values.comp.code)
+							{
+								case '0':
+									if (!value.match(new RegExp(values.value,'g'))) match=false;
+									break;
+								case '1':
+									if (value.match(new RegExp(values.value,'g'))) match=false;
+									break;
+							}
+							break;
+						case 'NUMBER':
+						case 'RECORD_NUMBER':
+							switch (values.comp.code)
+							{
+								case '0':
+									if (!value) value=='';
+									if (value!=values.value) match=false;
+									break;
+								case '1':
+									if (!value) value=='';
+									if (value==values.value) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (value>values.value) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (value<values.value) match=false;
+									}
+									break;
+							}
+							break;
+						case 'CREATOR':
+						case 'MODIFIER':
+						case 'STATUS_ASSIGNEE':
+						case 'STATUS':
+							switch (values.comp.code)
+							{
+								case '0':
+									if ($.grep(values.value,function(item,index){
+										return item.code==value.code;
+									}).length==0) match=false;
+									break;
+								case '1':
+									if ($.grep(values.value,function(item,index){
+										return item.code==value.code;
+									}).length!=0) match=false;
+									break;
+							}
+							break;
+						case 'TIME':
+							var date=new Date().format('Y-m-d')+' ';
+							switch (values.comp.code)
+							{
+								case '0':
+									if (!value) value=='';
+									if (value!=values.value) match=false;
+									break;
+								case '1':
+									if (!value) value=='';
+									if (value==values.value) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')>new Date(date+values.value+':00')) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')>=new Date(date+values.value+':00')) match=false;
+									}
+									break;
+								case '4':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')<new Date(date+values.value+':00')) match=false;
+									}
+									break;
+								case '5':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')<=new Date(date+values.value+':00')) match=false;
+									}
+									break;
+							}
+							break;
+					}
 				}
-			}
-	});
-	return match;
-};
+		});
+		return match;
+	}
+});
 })(jQuery);
