@@ -1571,7 +1571,7 @@ var ConditionsForm=function(options){
 	var my=this;
 	/* property */
 	this.fields=options.fields;
-	this.dialog=createdialog(0,600);
+	this.dialog=createdialog(900,800);
 	this.groupsource=null;
 	this.statussource=null;
 	this.organizationsource=null;
