@@ -1916,13 +1916,9 @@ var ConditionsForm=function(options){
 				{
 					my.statussource=[];
 					kintone.api(kintone.api.url('/k/v1/app/status',true),'GET',{app:kintone.app.getId()},function(resp){
-						resp.states.sort(function(a,b){
-							if(parseInt(a.index)<parseInt(b.index)) return -1;
-							if(parseInt(a.index)>parseInt(b.index)) return 1;
-							return 0;
-						});
+						my.statussource=[Object.keys(resp.states).length];
 						$.each(resp.states,function(key,values){
-							my.statussource.push({value:key,text:values.name});
+							my.statussource[values.index]={value:key,text:values.name};
 						});
 					},function(error){});
 				}
