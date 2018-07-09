@@ -167,8 +167,10 @@ jQuery.noConflict();
 					function(body,status,headers){
 						var json=JSON.parse(body);
 						var refresh=false;
-						if ('WWW-Authenticate' in headers)
-							if (headers['WWW-Authenticate'].match(/The access token expired/g)) refresh=true;
+						$.each(headers,function(key,values){
+							if (key.match(/WWW-Authenticate/g))
+								if (values.match(/The access token expired/g)) refresh=true;
+						});
 						if (refresh)
 						{
 							functions.token(null,sessionStorage.getItem('refreshtoken'),function(){

@@ -2036,6 +2036,27 @@ ConditionsForm.prototype={
 				var receivevalues=[];
 				switch (fieldinfo.type)
 				{
+					case 'CALC':
+						switch(fieldinfo.format.toUpperCase())
+						{
+							case 'NUMBER':
+							case 'NUMBER_DIGIT':
+								switch ($('.comp',fieldcontainer).val())
+								{
+									case '2':
+									case '3':
+										if (!receivevalue) alert('値を入力して下さい。');
+										if (!$.isNumeric(receivevalue)) alert('数値を入力して下さい。');
+										break;
+								}
+								break;
+						}
+						res[fieldcontainer.attr('id')]={
+							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+							label:receivevalue,
+							value:receivevalue
+						};
+						break;
 					case 'CHECK_BOX':
 					case 'DROP_DOWN':
 					case 'MULTI_SELECT':
@@ -2061,6 +2082,22 @@ ConditionsForm.prototype={
 							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
 							label:receivevalues.join(','),
 							value:receivevalues
+						};
+						break;
+					case 'NUMBER':
+					case 'RECORD_NUMBER':
+						switch ($('.comp',fieldcontainer).val())
+						{
+							case '2':
+							case '3':
+								if (!receivevalue) alert('値を入力して下さい。');
+								if (!$.isNumeric(receivevalue)) alert('数値を入力して下さい。');
+								break;
+						}
+						res[fieldcontainer.attr('id')]={
+							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+							label:receivevalue,
+							value:receivevalue
 						};
 						break;
 					default:
@@ -2278,14 +2315,14 @@ jQuery.extend({
 											if (!value) match=false;
 											else
 											{
-												if (value>values.value) match=false;
+												if (parseFloat(value)>parseFloat(values.value)) match=false;
 											}
 											break;
 										case '3':
 											if (!value) match=false;
 											else
 											{
-												if (value<values.value) match=false;
+												if (parseFloat(value)<parseFloat(values.value)) match=false;
 											}
 											break;
 									}
@@ -2516,14 +2553,14 @@ jQuery.extend({
 									if (!value) match=false;
 									else
 									{
-										if (value>values.value) match=false;
+										if (parseFloat(value)>parseFloat(values.value)) match=false;
 									}
 									break;
 								case '3':
 									if (!value) match=false;
 									else
 									{
-										if (value<values.value) match=false;
+										if (parseFloat(value)<parseFloat(values.value)) match=false;
 									}
 									break;
 							}
