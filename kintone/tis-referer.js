@@ -2177,7 +2177,7 @@ ConditionsForm.prototype={
 		var row=null;
 		$('#ok',this.dialog.footer).off('click').on('click',function(){
 			var res=[];
-			for (var i=0;i<my.conditiontable.rows.length;i2++)
+			for (var i=0;i<my.conditiontable.rows.length;i++)
 			{
 				row=my.conditiontable.rows.eq(i);
 				if (!$('.field',row).val()) continue;
