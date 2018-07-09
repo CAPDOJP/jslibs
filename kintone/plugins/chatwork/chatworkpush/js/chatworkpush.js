@@ -279,7 +279,7 @@ jQuery.noConflict();
 							var body=[];
 							for (var i=0;i<rooms.length;i++)
 							{
-								if ($.conditionsmatch(event.record,vars.fieldinfos,rooms[i].conditions))
+								if ($.conditionsmatch(event.record,vars.fieldinfos,JSON.parse(rooms[i].conditions)))
 								{
 									body.push({
 										room_id:rooms[i].room,
@@ -317,7 +317,7 @@ jQuery.noConflict();
 							var body=[];
 							for (var i=0;i<rooms.length;i++)
 							{
-								if ($.conditionsmatch(event.record,vars.fieldinfos,rooms[i].conditions))
+								if ($.conditionsmatch(event.record,vars.fieldinfos,JSON.parse(rooms[i].conditions)))
 								{
 									body.push({
 										room_id:rooms[i].room,
@@ -355,7 +355,7 @@ jQuery.noConflict();
 							var body=[];
 							for (var i=0;i<rooms.length;i++)
 							{
-								if ($.conditionsmatch(event.record,vars.fieldinfos,rooms[i].conditions))
+								if ($.conditionsmatch(event.record,vars.fieldinfos,JSON.parse(rooms[i].conditions)))
 								{
 									body.push({
 										room_id:rooms[i].room,
@@ -393,7 +393,7 @@ jQuery.noConflict();
 							var body=[];
 							for (var i=0;i<rooms.length;i++)
 							{
-								if ($.conditionsmatch(event.record,vars.fieldinfos,rooms[i].conditions))
+								if ($.conditionsmatch(event.record,vars.fieldinfos,JSON.parse(rooms[i].conditions)))
 								{
 									body.push({
 										room_id:rooms[i].room,

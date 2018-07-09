@@ -2267,11 +2267,11 @@ jQuery.extend({
 									switch (values.comp.code)
 									{
 										case '0':
-											if (!value) value=='';
+											if (!value) value='';
 											if (value!=values.value) match=false;
 											break;
 										case '1':
-											if (!value) value=='';
+											if (!value) value='';
 											if (value==values.value) match=false;
 											break;
 										case '2':
@@ -2296,11 +2296,11 @@ jQuery.extend({
 									switch (values.comp.code)
 									{
 										case '0':
-											if (!value) value=='';
+											if (!value) value='';
 											if (value.deteformat()!=values.value.deteformat()) match=false;
 											break;
 										case '1':
-											if (!value) value=='';
+											if (!value) value='';
 											if (value.deteformat()==values.value.deteformat()) match=false;
 											break;
 										case '2':
@@ -2339,11 +2339,11 @@ jQuery.extend({
 									switch (values.comp.code)
 									{
 										case '0':
-											if (!value) value=='';
+											if (!value) value='';
 											if (value!=values.value) match=false;
 											break;
 										case '1':
-											if (!value) value=='';
+											if (!value) value='';
 											if (value==values.value) match=false;
 											break;
 										case '2':
@@ -2394,7 +2394,7 @@ jQuery.extend({
 							break;
 						case 'DROP_DOWN':
 						case 'RADIO_BUTTON':
-							if (!value) value=='';
+							if (!value) value='';
 							switch (values.comp.code)
 							{
 								case '0':
@@ -2412,11 +2412,11 @@ jQuery.extend({
 							switch (values.comp.code)
 							{
 								case '0':
-									if (!value) value=='';
+									if (!value) value='';
 									if (value.deteformat()!=values.value.deteformat()) match=false;
 									break;
 								case '1':
-									if (!value) value=='';
+									if (!value) value='';
 									if (value.deteformat()==values.value.deteformat()) match=false;
 									break;
 								case '2':
@@ -2470,7 +2470,7 @@ jQuery.extend({
 							break;
 						case 'LINK':
 						case 'SINGLE_LINE_TEXT':
-							if (!value) value=='';
+							if (!value) value='';
 							switch (values.comp.code)
 							{
 								case '0':
@@ -2489,7 +2489,7 @@ jQuery.extend({
 							break;
 						case 'MULTI_LINE_TEXT':
 						case 'RICH_TEXT':
-							if (!value) value=='';
+							if (!value) value='';
 							switch (values.comp.code)
 							{
 								case '0':
@@ -2505,11 +2505,11 @@ jQuery.extend({
 							switch (values.comp.code)
 							{
 								case '0':
-									if (!value) value=='';
+									if (!value) value='';
 									if (value!=values.value) match=false;
 									break;
 								case '1':
-									if (!value) value=='';
+									if (!value) value='';
 									if (value==values.value) match=false;
 									break;
 								case '2':
@@ -2551,11 +2551,11 @@ jQuery.extend({
 							switch (values.comp.code)
 							{
 								case '0':
-									if (!value) value=='';
+									if (!value) value='';
 									if (value!=values.value) match=false;
 									break;
 								case '1':
-									if (!value) value=='';
+									if (!value) value='';
 									if (value==values.value) match=false;
 									break;
 								case '2':
