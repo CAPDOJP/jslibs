@@ -1537,8 +1537,8 @@ var ConditionsForm=function(options){
 	$.each(this.fields,function(key,values){
 		var comp=null;
 		var receiver=null;
-		var fieldinfo=this.fields[key];
-		var fieldcontainer=this.fieldcontainer.clone(true).attr('id',fieldinfo.code);
+		var fieldinfo=my.fields[key];
+		var fieldcontainer=my.fieldcontainer.clone(true).attr('id',fieldinfo.code);
 		var fieldoptions=[];
 		fieldcontainer.find('.title').text(fieldinfo.label);
 		switch (fieldinfo.type)
@@ -1682,9 +1682,9 @@ var ConditionsForm=function(options){
 				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
 				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
 				/* load user datas */
-				if (this.usersource==null)
+				if (my.usersource==null)
 				{
-					this.usersource=[];
+					my.usersource=[];
 					$.loadusers(function(records){
 						records.sort(function(a,b){
 							if(parseInt(a.id)<parseInt(b.id)) return -1;
@@ -1745,9 +1745,9 @@ var ConditionsForm=function(options){
 				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
 				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
 				/* load group datas */
-				if (this.groupsource==null)
+				if (my.groupsource==null)
 				{
-					this.groupsource=[];
+					my.groupsource=[];
 					$.loadgroups(function(records){
 						records.sort(function(a,b){
 							if(parseInt(a.id)<parseInt(b.id)) return -1;
@@ -1790,9 +1790,9 @@ var ConditionsForm=function(options){
 				.append($('<option>').attr('value','3').text('次のキーワードを含まない'));
 				if (fieldinfo.lookup)
 				{
-					this.apps[fieldinfo.code]=null;
-					this.offset[fieldinfo.code]=0;
-					this.loaddatas(fieldinfo);
+					my.apps[fieldinfo.code]=null;
+					my.offset[fieldinfo.code]=0;
+					my.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
@@ -1833,9 +1833,9 @@ var ConditionsForm=function(options){
 				.append($('<option>').attr('value','3').text('以上'));
 				if (fieldinfo.lookup)
 				{
-					this.apps[fieldinfo.code]=null;
-					this.offset[fieldinfo.code]=0;
-					this.loaddatas(fieldinfo);
+					my.apps[fieldinfo.code]=null;
+					my.offset[fieldinfo.code]=0;
+					my.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
@@ -1869,9 +1869,9 @@ var ConditionsForm=function(options){
 				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
 				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
 				/* load organization datas */
-				if (this.organizationsource==null)
+				if (my.organizationsource==null)
 				{
-					this.organizationsource=[];
+					my.organizationsource=[];
 					$.loadorganizations(function(records){
 						records.sort(function(a,b){
 							if(parseInt(a.id)<parseInt(b.id)) return -1;
@@ -1924,7 +1924,7 @@ var ConditionsForm=function(options){
 				fieldcontainer.append(receiver);
 				break;
 		}
-		this.dialog.contents.append(fieldcontainer);
+		my.dialog.contents.append(fieldcontainer);
 	});
 	this.dialog.container.append(this.dialog.contents);
 	this.dialog.container.append(
