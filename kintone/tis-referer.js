@@ -363,7 +363,7 @@ var Referer=function(options){
 	this.template=$('<tr>')
 	.on('mouseover',function(e){$(this).css({'background-color':'#f5b2b2'});})
 	.on('mouseout',function(e){$(this).css({'background-color':'transparent'});});
-	$.each(my.displaytext,function(index){
+	$.each(this.displaytext,function(index){
 		my.template
 		.append(cell.clone(true).css({'padding':'5px'}))
 		.on('click',function(){if (my.callback!=null) my.callback($(this));});
@@ -420,10 +420,10 @@ Referer.prototype={
 			$.each(filter,function(key,values){
 				list.append($('<input type="hidden" id="'+key+'">').val(values.value));
 			});
-			$.each(my.displaytext,function(index){
+			$.each(this.displaytext,function(index){
 				list.find('td').eq(index).html(filter[my.displaytext[index]].value);
 			});
-			my.dialog.lists.find('tbody').append(list);
+			this.dialog.lists.find('tbody').append(list);
 		}
 	},
 	/* display referer */
@@ -1565,7 +1565,7 @@ jQuery.fn.fieldsform=function(options){
 var ConditionsForm=function(options){
 	var options=$.extend({
 		container:null,
-		fields:[]
+		fields:{}
 	},options);
 	/* valiable */
 	var my=this;
@@ -1580,496 +1580,544 @@ var ConditionsForm=function(options){
 	this.offset={};
 	this.referer={};
 	/* append elements */
-	this.fieldcontainer=div.clone(true).addClass('container').css({'padding':'5px','width':'100%'})
-	.append(title.clone(true))
-	.append(
-		select.clone(true).addClass('comp').css({'display':'block','margin-bottom':'5px'})
-		.append($('<option>').attr('value','').text('指定しない'))
+	this.dialog.lists.find('tbody').append(
+		$('<tr>')
+		.append(
+			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px'})
+			.append(select.clone(true).addClass('field'))
+		)
+		.append(
+			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px'})
+			.append(select.clone(true).addClass('comp'))
+		)
+		.append(
+			cell.clone(true).addClass('value').css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px'})
+		)
+		.append(
+			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px 0px','width':'30px'})
+			.append(
+				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="追加" title="追加">')
+				.css({
+					'cursor':'pointer',
+					'vertical-align':'top',
+					'width':'100%'
+				})
+			)
+		)
+		.append(
+			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px 0px','width':'30px'})
+			.append(
+				$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="削除" title="削除">')
+				.css({
+					'cursor':'pointer',
+					'vertical-align':'top',
+					'width':'100%'
+				})
+			)
+		)
 	);
-	$.each(this.fields,function(key,values){
-		var comp=null;
-		var receiver=null;
-		var fieldinfo=my.fields[key];
-		var fieldcontainer=my.fieldcontainer.clone(true).attr('id',fieldinfo.code);
-		var fieldoptions=[];
-		fieldcontainer.find('.title').text(fieldinfo.label);
-		if (fieldinfo.type=='CATEGORY') return true;
-		if (fieldinfo.type=='FILE') return true;
-		if (fieldinfo.type=='GROUP') return true;
-		switch (fieldinfo.type)
-		{
-			case 'CALC':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('等しい'))
-				.append($('<option>').attr('value','1').text('等しくない'));
-				switch(fieldinfo.format.toUpperCase())
+	this.conditiontable=this.dialog.lists.adjustabletable({
+		add:'img.add',
+		del:'img.del',
+		addcallback:function(row){
+			$('.comp',row).empty().append($('<option>').attr('value','').text(''))
+			$('.field',row).on('change',function(){
+				if ($(this).val())
 				{
-					case 'NUMBER':
-					case 'NUMBER_DIGIT':
-						comp
-						.append($('<option>').attr('value','2').text('以下'))
-						.append($('<option>').attr('value','3').text('以上'));
-						receiver=textline.clone(true).addClass('receiver');
-						$('.receiver',receiver).css({'text-align':'right'});
-						fieldcontainer.append(receiver);
-						break;
-					case 'DATE':
-						comp
-						.append($('<option>').attr('value','2').text('以前'))
-						.append($('<option>').attr('value','3').text('より前'))
-						.append($('<option>').attr('value','4').text('以降'))
-						.append($('<option>').attr('value','5').text('より後'));
-						receiver=referer.clone(true);
-						$('.search',receiver).on('click',function(){
-							var target=$(this);
-							/* day pickup */
-							var calendar=$('body').calendar({
-								selected:function(cell,value){
-									target.closest('.container').find('.label').text(value);
-									target.closest('.container').find('.receiver').val(value);
-								}
+					var fieldinfo=my.fields[$(this).val()];
+					var fieldoptions=[];
+					var receiver=null;
+					switch (fieldinfo.type)
+					{
+						case 'CALC':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('等しい'))
+							.append($('<option>').attr('value','1').text('等しくない'));
+							switch(fieldinfo.format.toUpperCase())
+							{
+								case 'NUMBER':
+								case 'NUMBER_DIGIT':
+									$('.comp',row)
+									.append($('<option>').attr('value','2').text('以下'))
+									.append($('<option>').attr('value','3').text('以上'));
+									receiver=textline.clone(true).addClass('receiver');
+									$('.receiver',receiver).css({'text-align':'right'});
+									$('.value',row).empty().append(receiver);
+									break;
+								case 'DATE':
+									$('.comp',row)
+									.append($('<option>').attr('value','2').text('以前'))
+									.append($('<option>').attr('value','3').text('より前'))
+									.append($('<option>').attr('value','4').text('以降'))
+									.append($('<option>').attr('value','5').text('より後'));
+									receiver=referer.clone(true);
+									$('.search',receiver).on('click',function(){
+										var target=$(this);
+										/* day pickup */
+										var calendar=$('body').calendar({
+											selected:function(cell,value){
+												target.closest('.container').find('.label').text(value);
+												target.closest('.container').find('.receiver').val(value);
+											}
+										});
+										calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+									});
+									$('.clear',receiver).on('click',function(){
+										var target=$(this);
+										target.closest('.container').find('.label').text('');
+										target.closest('.container').find('.receiver').val('');
+									});
+									$('.value',row).empty().append(receiver);
+									break;
+								case 'DATETIME':
+								case 'DAY_HOUR_MINUTE':
+									$('.comp',row)
+									.append($('<option>').attr('value','2').text('以前'))
+									.append($('<option>').attr('value','3').text('より前'))
+									.append($('<option>').attr('value','4').text('以降'))
+									.append($('<option>').attr('value','5').text('より後'));
+									receiver=referer.clone(true).append(time.clone(true));
+									$('.label',receiver).css({'width':'calc(100% - 150px)'});
+									$('.search',receiver).on('click',function(){
+										var target=$(this);
+										/* day pickup */
+										var calendar=$('body').calendar({
+											selected:function(cell,value){
+												target.closest('.container').find('.label').text(value);
+												target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
+											}
+										});
+										calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+									});
+									$('.clear',receiver).on('click',function(){
+										var target=$(this);
+										target.closest('.container').find('.label').text('');
+										target.closest('.container').find('.receiver').val('');
+									});
+									$('.receiverhour',receiver).on('change',function(){
+										$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+									});
+									$('.receiverminute',receiver).on('change',function(){
+										$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+									});
+									$('.value',row).empty().append(receiver);
+									break;
+								case 'TIME':
+								case 'HOUR_MINUTE':
+									$('.comp',row)
+									.append($('<option>').attr('value','2').text('以前'))
+									.append($('<option>').attr('value','3').text('より前'))
+									.append($('<option>').attr('value','4').text('以降'))
+									.append($('<option>').attr('value','5').text('より後'));
+									receiver=time.clone(true);
+									receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
+									$('.receiverhour',receiver).on('change',function(){
+										$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+									});
+									$('.receiverminute',receiver).on('change',function(){
+										$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+									});
+									$('.value',row).empty().append(receiver);
+									break;
+							}
+							break;
+						case 'CHECK_BOX':
+						case 'DROP_DOWN':
+						case 'MULTI_SELECT':
+						case 'RADIO_BUTTON':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('次のいずれかを含む'))
+							.append($('<option>').attr('value','1').text('次のいずれも含まない'));
+							fieldoptions=[fieldinfo.options.length];
+							$.each(fieldinfo.options,function(key,values){
+								fieldoptions[values.index]=values.label;
 							});
-							calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
-						});
-						$('.clear',receiver).on('click',function(){
-							var target=$(this);
-							target.closest('.container').find('.label').text('');
-							target.closest('.container').find('.receiver').val('');
-						});
-						fieldcontainer.append(receiver);
-						break;
-					case 'DATETIME':
-					case 'DAY_HOUR_MINUTE':
-						comp
-						.append($('<option>').attr('value','2').text('以前'))
-						.append($('<option>').attr('value','3').text('より前'))
-						.append($('<option>').attr('value','4').text('以降'))
-						.append($('<option>').attr('value','5').text('より後'));
-						receiver=referer.clone(true).append(time.clone(true));
-						$('.label',receiver).css({'width':'calc(100% - 150px)'});
-						$('.search',receiver).on('click',function(){
-							var target=$(this);
-							/* day pickup */
-							var calendar=$('body').calendar({
-								selected:function(cell,value){
-									target.closest('.container').find('.label').text(value);
-									target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
-								}
+							for (var i=0;i<fieldoptions.length;i++)
+							{
+								receiver=checkbox.clone(true);
+								$('.label',receiver).html(fieldoptions[i]);
+								$('.receiver',receiver).attr('id',fieldoptions[i]).val(fieldoptions[i]);
+								$('.value',row).empty().append(receiver);
+							}
+							break;
+						case 'CREATED_TIME':
+						case 'DATETIME':
+						case 'UPDATED_TIME':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('等しい'))
+							.append($('<option>').attr('value','1').text('等しくない'))
+							.append($('<option>').attr('value','2').text('以前'))
+							.append($('<option>').attr('value','3').text('より前'))
+							.append($('<option>').attr('value','4').text('以降'))
+							.append($('<option>').attr('value','5').text('より後'));
+							receiver=referer.clone(true).append(time.clone(true));
+							$('.label',receiver).css({'width':'calc(100% - 150px)'});
+							$('.search',receiver).on('click',function(){
+								var target=$(this);
+								/* day pickup */
+								var calendar=$('body').calendar({
+									selected:function(cell,value){
+										target.closest('.container').find('.label').text(value);
+										target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
+									}
+								});
+								calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
 							});
-							calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
-						});
-						$('.clear',receiver).on('click',function(){
-							var target=$(this);
-							target.closest('.container').find('.label').text('');
-							target.closest('.container').find('.receiver').val('');
-						});
-						$('.receiverhour',receiver).on('change',function(){
-							$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
-						});
-						$('.receiverminute',receiver).on('change',function(){
-							$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
-						});
-						fieldcontainer.append(receiver);
-						break;
-					case 'TIME':
-					case 'HOUR_MINUTE':
-						comp
-						.append($('<option>').attr('value','2').text('以前'))
-						.append($('<option>').attr('value','3').text('より前'))
-						.append($('<option>').attr('value','4').text('以降'))
-						.append($('<option>').attr('value','5').text('より後'));
-						receiver=time.clone(true);
-						receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
-						$('.receiverhour',receiver).on('change',function(){
-							$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
-						});
-						$('.receiverminute',receiver).on('change',function(){
-							$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
-						});
-						fieldcontainer.append(receiver);
-						break;
-				}
-				break;
-			case 'CHECK_BOX':
-			case 'DROP_DOWN':
-			case 'MULTI_SELECT':
-			case 'RADIO_BUTTON':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
-				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
-				fieldoptions=[fieldinfo.options.length];
-				$.each(fieldinfo.options,function(key,values){
-					fieldoptions[values.index]=values.label;
-				});
-				for (var i2=0;i2<fieldoptions.length;i2++)
-				{
-					receiver=checkbox.clone(true);
-					$('.label',receiver).html(fieldoptions[i2]);
-					$('.receiver',receiver).attr('id',fieldoptions[i2]).val(fieldoptions[i2]);
-					fieldcontainer.append(receiver);
-				}
-				break;
-			case 'CREATED_TIME':
-			case 'DATETIME':
-			case 'UPDATED_TIME':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('等しい'))
-				.append($('<option>').attr('value','1').text('等しくない'))
-				.append($('<option>').attr('value','2').text('以前'))
-				.append($('<option>').attr('value','3').text('より前'))
-				.append($('<option>').attr('value','4').text('以降'))
-				.append($('<option>').attr('value','5').text('より後'));
-				receiver=referer.clone(true).append(time.clone(true));
-				$('.label',receiver).css({'width':'calc(100% - 150px)'});
-				$('.search',receiver).on('click',function(){
-					var target=$(this);
-					/* day pickup */
-					var calendar=$('body').calendar({
-						selected:function(cell,value){
-							target.closest('.container').find('.label').text(value);
-							target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
-						}
-					});
-					calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
-				});
-				$('.clear',receiver).on('click',function(){
-					var target=$(this);
-					target.closest('.container').find('.label').text('');
-					target.closest('.container').find('.receiver').val('');
-				});
-				$('.receiverhour',receiver).on('change',function(){
-					$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
-				});
-				$('.receiverminute',receiver).on('change',function(){
-					$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
-				});
-				fieldcontainer.append(receiver);
-				break;
-			case 'CREATOR':
-			case 'MODIFIER':
-			case 'STATUS_ASSIGNEE':
-			case 'USER_SELECT':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
-				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
-				/* load user datas */
-				if (my.usersource==null)
-				{
-					my.usersource=[];
-					$.loadusers(function(records){
-						records.sort(function(a,b){
-							if(parseInt(a.id)<parseInt(b.id)) return -1;
-							if(parseInt(a.id)>parseInt(b.id)) return 1;
-							return 0;
-						});
-						$.each(records,function(index,values){
-							my.usersource.push({value:values.code,text:values.name});
-						});
-					});
-				}
-				receiver=referer.clone(true);
-				$('.search',receiver).on('click',function(){
-					var target=$(this);
-					my.selectbox.show({
-						datasource:my.usersource,
-						buttons:{
-							ok:function(selection){
-								target.closest('.container').find('.label').text(Object.values(selection).join(','));
-								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
-								/* close the selectbox */
-								my.selectbox.hide();
-							},
-							cancel:function(){
-								/* close the selectbox */
-								my.selectbox.hide();
+							$('.clear',receiver).on('click',function(){
+								var target=$(this);
+								target.closest('.container').find('.label').text('');
+								target.closest('.container').find('.receiver').val('');
+							});
+							$('.receiverhour',receiver).on('change',function(){
+								$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+							});
+							$('.receiverminute',receiver).on('change',function(){
+								$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+							});
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'CREATOR':
+						case 'MODIFIER':
+						case 'STATUS_ASSIGNEE':
+						case 'USER_SELECT':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('次のいずれかを含む'))
+							.append($('<option>').attr('value','1').text('次のいずれも含まない'));
+							/* load user datas */
+							if (my.usersource==null)
+							{
+								my.usersource=[];
+								$.loadusers(function(records){
+									records.sort(function(a,b){
+										if(parseInt(a.id)<parseInt(b.id)) return -1;
+										if(parseInt(a.id)>parseInt(b.id)) return 1;
+										return 0;
+									});
+									$.each(records,function(index,values){
+										my.usersource.push({value:values.code,text:values.name});
+									});
+								});
 							}
-						},
-						selected:target.closest('.container').find('.receiver').val().split(',')
-					});
-				});
-				$('.clear',receiver).on('click',function(){
-					var target=$(this);
-					target.closest('.container').find('.label').text('');
-					target.closest('.container').find('.receiver').val('');
-				});
-				fieldcontainer.append(receiver);
-				break;
-			case 'DATE':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('等しい'))
-				.append($('<option>').attr('value','1').text('等しくない'))
-				.append($('<option>').attr('value','2').text('以前'))
-				.append($('<option>').attr('value','3').text('より前'))
-				.append($('<option>').attr('value','4').text('以降'))
-				.append($('<option>').attr('value','5').text('より後'));
-				receiver=referer.clone(true);
-				$('.search',receiver).on('click',function(){
-					var target=$(this);
-					/* day pickup */
-					var calendar=$('body').calendar({
-						selected:function(cell,value){
-							target.closest('.container').find('.label').text(value);
-							target.closest('.container').find('.receiver').val(value);
-						}
-					});
-					calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
-				});
-				$('.clear',receiver).on('click',function(){
-					var target=$(this);
-					target.closest('.container').find('.label').text('');
-					target.closest('.container').find('.receiver').val('');
-				});
-				fieldcontainer.append(receiver);
-				break;
-			case 'GROUP_SELECT':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
-				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
-				/* load group datas */
-				if (my.groupsource==null)
-				{
-					my.groupsource=[];
-					$.loadgroups(function(records){
-						records.sort(function(a,b){
-							if(parseInt(a.id)<parseInt(b.id)) return -1;
-							if(parseInt(a.id)>parseInt(b.id)) return 1;
-							return 0;
-						});
-						$.each(records,function(index,values){
-							my.groupsource.push({value:values.code,text:values.name});
-						});
-					});
-				}
-				receiver=referer.clone(true);
-				$('.search',receiver).on('click',function(){
-					var target=$(this);
-					my.selectbox.show({
-						datasource:my.groupsource,
-						buttons:{
-							ok:function(selection){
-								target.closest('.container').find('.label').text(Object.values(selection).join(','));
-								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
-								/* close the selectbox */
-								my.selectbox.hide();
-							},
-							cancel:function(){
-								/* close the selectbox */
-								my.selectbox.hide();
+							receiver=referer.clone(true);
+							$('.search',receiver).on('click',function(){
+								var target=$(this);
+								my.selectbox.show({
+									datasource:my.usersource,
+									buttons:{
+										ok:function(selection){
+											target.closest('.container').find('.label').text(Object.values(selection).join(','));
+											target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+											/* close the selectbox */
+											my.selectbox.hide();
+										},
+										cancel:function(){
+											/* close the selectbox */
+											my.selectbox.hide();
+										}
+									},
+									selected:target.closest('.container').find('.receiver').val().split(',')
+								});
+							});
+							$('.clear',receiver).on('click',function(){
+								var target=$(this);
+								target.closest('.container').find('.label').text('');
+								target.closest('.container').find('.receiver').val('');
+							});
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'DATE':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('等しい'))
+							.append($('<option>').attr('value','1').text('等しくない'))
+							.append($('<option>').attr('value','2').text('以前'))
+							.append($('<option>').attr('value','3').text('より前'))
+							.append($('<option>').attr('value','4').text('以降'))
+							.append($('<option>').attr('value','5').text('より後'));
+							receiver=referer.clone(true);
+							$('.search',receiver).on('click',function(){
+								var target=$(this);
+								/* day pickup */
+								var calendar=$('body').calendar({
+									selected:function(cell,value){
+										target.closest('.container').find('.label').text(value);
+										target.closest('.container').find('.receiver').val(value);
+									}
+								});
+								calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+							});
+							$('.clear',receiver).on('click',function(){
+								var target=$(this);
+								target.closest('.container').find('.label').text('');
+								target.closest('.container').find('.receiver').val('');
+							});
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'GROUP_SELECT':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('次のいずれかを含む'))
+							.append($('<option>').attr('value','1').text('次のいずれも含まない'));
+							/* load group datas */
+							if (my.groupsource==null)
+							{
+								my.groupsource=[];
+								$.loadgroups(function(records){
+									records.sort(function(a,b){
+										if(parseInt(a.id)<parseInt(b.id)) return -1;
+										if(parseInt(a.id)>parseInt(b.id)) return 1;
+										return 0;
+									});
+									$.each(records,function(index,values){
+										my.groupsource.push({value:values.code,text:values.name});
+									});
+								});
 							}
-						},
-						selected:target.closest('.container').find('.receiver').val().split(',')
-					});
-				});
-				$('.clear',receiver).on('click',function(){
-					var target=$(this);
-					target.closest('.container').find('.label').text('');
-					target.closest('.container').find('.receiver').val('');
-				});
-				fieldcontainer.append(receiver);
-				break;
-			case 'LINK':
-			case 'SINGLE_LINE_TEXT':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('等しい'))
-				.append($('<option>').attr('value','1').text('等しくない'))
-				.append($('<option>').attr('value','2').text('次のキーワードを含む'))
-				.append($('<option>').attr('value','3').text('次のキーワードを含まない'));
-				if (fieldinfo.lookup)
-				{
-					my.apps[fieldinfo.code]=null;
-					my.offset[fieldinfo.code]=0;
-					my.loaddatas(fieldinfo);
-					receiver=referer.clone(true);
-					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
-					$('.search',receiver).on('click',function(){
-						var target=$(this);
-						my.referer[target.closest('.container').attr('id')].show({
-							buttons:{
-								cancel:function(){
-									/* close the reference box */
-									my.referer[target.closest('.container').attr('id')].hide();
-								}
-							},
-							callback:function(row){
-								target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
-								target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
-								/* close the reference box */
-								my.referer[target.closest('.container').attr('id')].hide();
+							receiver=referer.clone(true);
+							$('.search',receiver).on('click',function(){
+								var target=$(this);
+								my.selectbox.show({
+									datasource:my.groupsource,
+									buttons:{
+										ok:function(selection){
+											target.closest('.container').find('.label').text(Object.values(selection).join(','));
+											target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+											/* close the selectbox */
+											my.selectbox.hide();
+										},
+										cancel:function(){
+											/* close the selectbox */
+											my.selectbox.hide();
+										}
+									},
+									selected:target.closest('.container').find('.receiver').val().split(',')
+								});
+							});
+							$('.clear',receiver).on('click',function(){
+								var target=$(this);
+								target.closest('.container').find('.label').text('');
+								target.closest('.container').find('.receiver').val('');
+							});
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'LINK':
+						case 'SINGLE_LINE_TEXT':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('等しい'))
+							.append($('<option>').attr('value','1').text('等しくない'))
+							.append($('<option>').attr('value','2').text('次のキーワードを含む'))
+							.append($('<option>').attr('value','3').text('次のキーワードを含まない'));
+							if (fieldinfo.lookup)
+							{
+								my.apps[fieldinfo.code]=null;
+								my.offset[fieldinfo.code]=0;
+								my.loaddatas(fieldinfo);
+								receiver=referer.clone(true);
+								$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
+								$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+								$('.search',receiver).on('click',function(){
+									var target=$(this);
+									my.referer[target.closest('.container').attr('id')].show({
+										buttons:{
+											cancel:function(){
+												/* close the reference box */
+												my.referer[target.closest('.container').attr('id')].hide();
+											}
+										},
+										callback:function(row){
+											target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
+											target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
+											/* close the reference box */
+											my.referer[target.closest('.container').attr('id')].hide();
+										}
+									});
+								});
+								$('.clear',receiver).on('click',function(){
+									var target=$(this);
+									target.closest('.container').find('.label').text('');
+									target.closest('.container').find('.receiver').val('');
+								});
 							}
-						});
-					});
-					$('.clear',receiver).on('click',function(){
-						var target=$(this);
-						target.closest('.container').find('.label').text('');
-						target.closest('.container').find('.receiver').val('');
-					});
-				}
-				else receiver=textline.clone(true).addClass('receiver');
-				fieldcontainer.append(receiver);
-				break;
-			case 'MULTI_LINE_TEXT':
-			case 'RICH_TEXT':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('次のキーワードを含む'))
-				.append($('<option>').attr('value','1').text('次のキーワードを含まない'));
-				receiver=textline.clone(true).addClass('receiver');
-				fieldcontainer.append(receiver);
-				break;
-			case 'NUMBER':
-			case 'RECORD_NUMBER':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('等しい'))
-				.append($('<option>').attr('value','1').text('等しくない'))
-				.append($('<option>').attr('value','2').text('以下'))
-				.append($('<option>').attr('value','3').text('以上'));
-				if (fieldinfo.lookup)
-				{
-					my.apps[fieldinfo.code]=null;
-					my.offset[fieldinfo.code]=0;
-					my.loaddatas(fieldinfo);
-					receiver=referer.clone(true);
-					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
-					$('.search',receiver).on('click',function(){
-						var target=$(this);
-						my.referer[target.closest('.container').attr('id')].show({
-							buttons:{
-								cancel:function(){
-									/* close the reference box */
-									my.referer[target.closest('.container').attr('id')].hide();
-								}
-							},
-							callback:function(row){
-								target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
-								target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
-								/* close the reference box */
-								my.referer[target.closest('.container').attr('id')].hide();
+							else receiver=textline.clone(true).addClass('receiver');
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'MULTI_LINE_TEXT':
+						case 'RICH_TEXT':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('次のキーワードを含む'))
+							.append($('<option>').attr('value','1').text('次のキーワードを含まない'));
+							receiver=textline.clone(true).addClass('receiver');
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'NUMBER':
+						case 'RECORD_NUMBER':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('等しい'))
+							.append($('<option>').attr('value','1').text('等しくない'))
+							.append($('<option>').attr('value','2').text('以下'))
+							.append($('<option>').attr('value','3').text('以上'));
+							if (fieldinfo.lookup)
+							{
+								my.apps[fieldinfo.code]=null;
+								my.offset[fieldinfo.code]=0;
+								my.loaddatas(fieldinfo);
+								receiver=referer.clone(true);
+								$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
+								$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+								$('.search',receiver).on('click',function(){
+									var target=$(this);
+									my.referer[target.closest('.container').attr('id')].show({
+										buttons:{
+											cancel:function(){
+												/* close the reference box */
+												my.referer[target.closest('.container').attr('id')].hide();
+											}
+										},
+										callback:function(row){
+											target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
+											target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
+											/* close the reference box */
+											my.referer[target.closest('.container').attr('id')].hide();
+										}
+									});
+								});
+								$('.clear',receiver).on('click',function(){
+									var target=$(this);
+									target.closest('.container').find('.label').text('');
+									target.closest('.container').find('.receiver').val('');
+								});
 							}
-						});
-					});
-					$('.clear',receiver).on('click',function(){
-						var target=$(this);
-						target.closest('.container').find('.label').text('');
-						target.closest('.container').find('.receiver').val('');
-					});
+							else
+							{
+								receiver=textline.clone(true).addClass('receiver');
+								$('.receiver',receiver).css({'text-align':'right'});
+							}
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'ORGANIZATION_SELECT':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('次のいずれかを含む'))
+							.append($('<option>').attr('value','1').text('次のいずれも含まない'));
+							/* load organization datas */
+							if (my.organizationsource==null)
+							{
+								my.organizationsource=[];
+								$.loadorganizations(function(records){
+									records.sort(function(a,b){
+										if(parseInt(a.id)<parseInt(b.id)) return -1;
+										if(parseInt(a.id)>parseInt(b.id)) return 1;
+										return 0;
+									});
+									$.each(records,function(index,values){
+										my.organizationsource.push({value:values.code,text:values.name});
+									});
+								});
+							}
+							receiver=referer.clone(true);
+							$('.search',receiver).on('click',function(){
+								var target=$(this);
+								my.selectbox.show({
+									datasource:my.organizationsource,
+									buttons:{
+										ok:function(selection){
+											target.closest('.container').find('.label').text(Object.values(selection).join(','));
+											target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+											/* close the selectbox */
+											my.selectbox.hide();
+										},
+										cancel:function(){
+											/* close the selectbox */
+											my.selectbox.hide();
+										}
+									},
+									selected:target.closest('.container').find('.receiver').val().split(',')
+								});
+							});
+							$('.clear',receiver).on('click',function(){
+								var target=$(this);
+								target.closest('.container').find('.label').text('');
+								target.closest('.container').find('.receiver').val('');
+							});
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'STATUS':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('次のいずれかを含む'))
+							.append($('<option>').attr('value','1').text('次のいずれも含まない'));
+							/* load group datas */
+							if (my.statussource==null)
+							{
+								my.statussource=[];
+								kintone.api(kintone.api.url('/k/v1/app/status',true),'GET',{app:kintone.app.getId()},function(resp){
+									my.statussource=[Object.keys(resp.states).length];
+									$.each(resp.states,function(key,values){
+										my.statussource[values.index]={value:key,text:values.name};
+									});
+								},function(error){});
+							}
+							receiver=referer.clone(true);
+							$('.search',receiver).on('click',function(){
+								var target=$(this);
+								my.selectbox.show({
+									datasource:my.statussource,
+									buttons:{
+										ok:function(selection){
+											target.closest('.container').find('.label').text(Object.values(selection).join(','));
+											target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+											/* close the selectbox */
+											my.selectbox.hide();
+										},
+										cancel:function(){
+											/* close the selectbox */
+											my.selectbox.hide();
+										}
+									},
+									selected:target.closest('.container').find('.receiver').val().split(',')
+								});
+							});
+							$('.clear',receiver).on('click',function(){
+								var target=$(this);
+								target.closest('.container').find('.label').text('');
+								target.closest('.container').find('.receiver').val('');
+							});
+							$('.value',row).empty().append(receiver);
+							break;
+						case 'TIME':
+							$('.comp',row)
+							.append($('<option>').attr('value','0').text('等しい'))
+							.append($('<option>').attr('value','1').text('等しくない'))
+							.append($('<option>').attr('value','2').text('以前'))
+							.append($('<option>').attr('value','3').text('より前'))
+							.append($('<option>').attr('value','4').text('以降'))
+							.append($('<option>').attr('value','5').text('より後'));
+							receiver=time.clone(true);
+							receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
+							$('.receiverhour',receiver).on('change',function(){
+								$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+							});
+							$('.receiverminute',receiver).on('change',function(){
+								$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+							});
+							$('.value',row).empty().append(receiver);
+							break;
+					}
 				}
 				else
 				{
-					receiver=textline.clone(true).addClass('receiver');
-					$('.receiver',receiver).css({'text-align':'right'});
+					$('.comp',row).empty().append($('<option>').attr('value','').text(''));
+					$('.value',row).empty();
 				}
-				fieldcontainer.append(receiver);
-				break;
-			case 'ORGANIZATION_SELECT':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
-				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
-				/* load organization datas */
-				if (my.organizationsource==null)
-				{
-					my.organizationsource=[];
-					$.loadorganizations(function(records){
-						records.sort(function(a,b){
-							if(parseInt(a.id)<parseInt(b.id)) return -1;
-							if(parseInt(a.id)>parseInt(b.id)) return 1;
-							return 0;
-						});
-						$.each(records,function(index,values){
-							my.organizationsource.push({value:values.code,text:values.name});
-						});
-					});
-				}
-				receiver=referer.clone(true);
-				$('.search',receiver).on('click',function(){
-					var target=$(this);
-					my.selectbox.show({
-						datasource:my.organizationsource,
-						buttons:{
-							ok:function(selection){
-								target.closest('.container').find('.label').text(Object.values(selection).join(','));
-								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
-								/* close the selectbox */
-								my.selectbox.hide();
-							},
-							cancel:function(){
-								/* close the selectbox */
-								my.selectbox.hide();
-							}
-						},
-						selected:target.closest('.container').find('.receiver').val().split(',')
-					});
-				});
-				$('.clear',receiver).on('click',function(){
-					var target=$(this);
-					target.closest('.container').find('.label').text('');
-					target.closest('.container').find('.receiver').val('');
-				});
-				fieldcontainer.append(receiver);
-				break;
-			case 'STATUS':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
-				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
-				/* load group datas */
-				if (my.statussource==null)
-				{
-					my.statussource=[];
-					kintone.api(kintone.api.url('/k/v1/app/status',true),'GET',{app:kintone.app.getId()},function(resp){
-						my.statussource=[Object.keys(resp.states).length];
-						$.each(resp.states,function(key,values){
-							my.statussource[values.index]={value:key,text:values.name};
-						});
-					},function(error){});
-				}
-				receiver=referer.clone(true);
-				$('.search',receiver).on('click',function(){
-					var target=$(this);
-					my.selectbox.show({
-						datasource:my.statussource,
-						buttons:{
-							ok:function(selection){
-								target.closest('.container').find('.label').text(Object.values(selection).join(','));
-								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
-								/* close the selectbox */
-								my.selectbox.hide();
-							},
-							cancel:function(){
-								/* close the selectbox */
-								my.selectbox.hide();
-							}
-						},
-						selected:target.closest('.container').find('.receiver').val().split(',')
-					});
-				});
-				$('.clear',receiver).on('click',function(){
-					var target=$(this);
-					target.closest('.container').find('.label').text('');
-					target.closest('.container').find('.receiver').val('');
-				});
-				fieldcontainer.append(receiver);
-				break;
-			case 'TIME':
-				comp=fieldcontainer.find('.comp')
-				.append($('<option>').attr('value','0').text('等しい'))
-				.append($('<option>').attr('value','1').text('等しくない'))
-				.append($('<option>').attr('value','2').text('以前'))
-				.append($('<option>').attr('value','3').text('より前'))
-				.append($('<option>').attr('value','4').text('以降'))
-				.append($('<option>').attr('value','5').text('より後'));
-				receiver=time.clone(true);
-				receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
-				$('.receiverhour',receiver).on('change',function(){
-					$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
-				});
-				$('.receiverminute',receiver).on('change',function(){
-					$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
-				});
-				fieldcontainer.append(receiver);
-				break;
-		}
-		my.dialog.contents.append(fieldcontainer);
+			});
+		},
 	});
+	$('.field',this.conditiontable.template).empty().append($('<option>').attr('value','').text(''));
+	$.each(this.fields,function(key,values){
+		if (values.type=='CATEGORY') return true;
+		if (values.type=='FILE') return true;
+		if (values.type=='GROUP') return true;
+		if (values.type=='REFERENCE_TABLE') return true;
+		if (values.type=='SUBTABLE') return true;
+		$('.field',my.conditiontable.template).append($('<option>').attr('value',values.code).text(values.label));
+	});
+	this.dialog.contents.append(this.dialog.lists);
 	this.dialog.container.append(this.dialog.contents);
 	this.dialog.container.append(
 		this.dialog.footer
@@ -2125,15 +2173,19 @@ ConditionsForm.prototype={
 	show:function(options,callback){
 		var options=$.extend({
 			fieldinfos:{},
-			conditions:{}
+			conditions:[]
 		},options);
 		var my=this;
+		var row=null;
 		$('#ok',this.dialog.footer).off('click').on('click',function(){
-			var res={};
-			$.each($('.container',my.dialog.contents),function(){
-				var fieldcontainer=$(this);
-				var fieldinfo=options.fieldinfos[fieldcontainer.attr('id')];
-				var receivevalue=fieldcontainer.find('.receiver').val();
+			var res=[];
+			for (var i=0;i<my.conditiontable.rows.length;i2++)
+			{
+				row=my.conditiontable.rows.eq(i);
+				if (!$('.field',row).val()) continue;
+				if (!$('.comp',row).val()) continue;
+				var fieldinfo=options.fieldinfos[$('.field',row).val()];
+				var receivevalue=$('.receiver',row).val();
 				var receivevalues=[];
 				switch (fieldinfo.type)
 				{
@@ -2142,7 +2194,7 @@ ConditionsForm.prototype={
 						{
 							case 'NUMBER':
 							case 'NUMBER_DIGIT':
-								switch ($('.comp',fieldcontainer).val())
+								switch ($('.comp',row).val())
 								{
 									case '2':
 									case '3':
@@ -2152,22 +2204,24 @@ ConditionsForm.prototype={
 								}
 								break;
 						}
-						res[fieldcontainer.attr('id')]={
-							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+						res.push({
+							field:$('.field',row).val(),
+							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
 							label:receivevalue,
 							value:receivevalue
-						};
+						});
 						break;
 					case 'CHECK_BOX':
 					case 'DROP_DOWN':
 					case 'MULTI_SELECT':
 					case 'RADIO_BUTTON':
-						$.each(fieldcontainer.find('.receiver:checked'),function(){receivevalues.push($(this).val());});
-						res[fieldcontainer.attr('id')]={
-							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+						$.each($('.receiver:checked',row),function(){receivevalues.push($(this).val());});
+						res.push({
+							field:$('.field',row).val(),
+							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
 							label:receivevalues.join(','),
 							value:receivevalues
-						};
+						});
 						break;
 					case 'CREATOR':
 					case 'GROUP_SELECT':
@@ -2176,18 +2230,19 @@ ConditionsForm.prototype={
 					case 'STATUS_ASSIGNEE':
 					case 'USER_SELECT':
 					case 'STATUS':
-						var names=fieldcontainer.find('.label').val().split(',');
+						var names=$('.label',row).val().split(',');
 						var values=receivevalue.split(',');
 						for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2],name:names[i2]});
-						res[fieldcontainer.attr('id')]={
-							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+						res.push({
+							field:$('.field',row).val(),
+							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
 							label:receivevalues.join(','),
 							value:receivevalues
-						};
+						});
 						break;
 					case 'NUMBER':
 					case 'RECORD_NUMBER':
-						switch ($('.comp',fieldcontainer).val())
+						switch ($('.comp',row).val())
 						{
 							case '2':
 							case '3':
@@ -2195,32 +2250,35 @@ ConditionsForm.prototype={
 								if (!$.isNumeric(receivevalue)) alert('数値を入力して下さい。');
 								break;
 						}
-						res[fieldcontainer.attr('id')]={
-							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+						res.push({
+							field:$('.field',row).val(),
+							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
 							label:receivevalue,
 							value:receivevalue
-						};
+						});
 						break;
 					default:
-						res[fieldcontainer.attr('id')]={
-							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+						res.push({
+							field:$('.field',row).val(),
+							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
 							label:receivevalue,
 							value:receivevalue
-						};
+						});
 						break;
 				}
-			});
+			}
 			callback(res);
 			my.hide();
 		});
-		$.each(options.fieldinfos,function(key,values){
-			if (key.match(/^\$/g)) return true;
-			if (!$('#'+key,my.dialog.contents).size()) return true;
-			var condition=(key in options.conditions)?options.conditions[key]:null;
-			var fieldinfo=options.fieldinfos[key];
-			var fieldcontainer=$('#'+key,my.dialog.contents);
-			if (condition) $('.comp',fieldcontainer).val(condition.comp.code);
-			else $('.comp',fieldcontainer).val('');
+		this.conditiontable.clearrows();
+		for (var i=0;i<options.conditions;i++)
+		{
+			var condition=options.conditions[i];
+			var fieldinfo=options.fieldinfos[condition.field];
+			this.conditiontable.addrow();
+			row=this.conditiontable.rows.last();
+			$('.field',row).val(condition.field).trigger('change');
+			$('.comp',row).val(condition.comp.code);
 			switch (fieldinfo.type)
 			{
 				case 'CALC':
@@ -2228,50 +2286,49 @@ ConditionsForm.prototype={
 					{
 						case 'NUMBER':
 						case 'NUMBER_DIGIT':
-							/* clear value */
-							$('.receiver',fieldcontainer).val('');
-							if (!condition) return true;
-							if (!condition.value) return true;
 							/* initialize value */
-							$('.receiver',fieldcontainer).val(condition.value);
+							if (condition.value) $('.receiver',row).val(condition.value);
 							break;
 						case 'DATE':
 							/* clear value */
-							$('.label',fieldcontainer).text('');
-							$('.receiver',fieldcontainer).val('');
-							if (!condition) return true;
-							if (!condition.value) return true;
+							$('.label',row).text('');
+							$('.receiver',row).val('');
 							/* initialize value */
-							$('.label',fieldcontainer).text(condition.value);
-							$('.receiver',fieldcontainer).val(condition.value);
+							if (condition.value)
+							{
+								$('.label',row).text(condition.value);
+								$('.receiver',row).val(condition.value);
+							}
 							break;
 						case 'DATETIME':
 						case 'DAY_HOUR_MINUTE':
 							/* clear value */
-							$('.label',fieldcontainer).text('');
-							$('.receiver',fieldcontainer).val('');
-							$('.receiverhour',fieldcontainer).val('00');
-							$('.receiverminute',fieldcontainer).val('00');
-							if (!condition) return true;
-							if (!condition.value) return true;
+							$('.label',row).text('');
+							$('.receiver',row).val('');
+							$('.receiverhour',row).val('00');
+							$('.receiverminute',row).val('00');
 							/* initialize value */
-							$('.label',fieldcontainer).text(new Date(condition.value.dateformat()).format('Y-m-d'));
-							$('.receiver',fieldcontainer).val(condition.value);
-							$('.receiverhour',fieldcontainer).val(new Date(condition.value.dateformat()).format('H'));
-							$('.receiverminute',fieldcontainer).val(new Date(condition.value.dateformat()).format('i'));
+							if (condition.value)
+							{
+								$('.label',row).text(new Date(condition.value.dateformat()).format('Y-m-d'));
+								$('.receiver',row).val(condition.value);
+								$('.receiverhour',row).val(new Date(condition.value.dateformat()).format('H'));
+								$('.receiverminute',row).val(new Date(condition.value.dateformat()).format('i'));
+							}
 							break;
 						case 'TIME':
 						case 'HOUR_MINUTE':
 							/* clear value */
-							$('.receiver',fieldcontainer).val('');
-							$('.receiverhour',fieldcontainer).val('00');
-							$('.receiverminute',fieldcontainer).val('00');
-							if (!condition) return true;
-							if (!condition.value) return true;
+							$('.receiver',row).val('');
+							$('.receiverhour',row).val('00');
+							$('.receiverminute',row).val('00');
 							/* initialize value */
-							$('.receiver',fieldcontainer).val(condition.value);
-							$('.receiverhour',fieldcontainer).val(('0'+condition.value.split(':')[0]).slice(-2));
-							$('.receiverminute',fieldcontainer).val(('0'+condition.value.split(':')[1]).slice(-2));
+							if (condition.value)
+							{
+								$('.receiver',row).val(condition.value);
+								$('.receiverhour',row).val(('0'+condition.value.split(':')[0]).slice(-2));
+								$('.receiverminute',row).val(('0'+condition.value.split(':')[1]).slice(-2));
+							}
 							break;
 					}
 					break;
@@ -2280,29 +2337,28 @@ ConditionsForm.prototype={
 				case 'MULTI_SELECT':
 				case 'RADIO_BUTTON':
 					/* clear value */
-					$.each($('input[type=checkbox]',fieldcontainer),function(){
+					$.each($('input[type=checkbox]',row),function(){
 						$(this).prop('checked',false);
 					});
-					if (!condition) return true;
-					if (!condition.value) return true;
 					/* initialize value */
-					for (var i=0;i<condition.value.length;i++) $('#'+condition.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
+					if (condition.value) for (var i2=0;i2<condition.value.length;i2++) $('#'+condition.value[i2].replace(/'/g,'\\\''),row).prop('checked',true);
 					break;
 				case 'CREATED_TIME':
 				case 'DATETIME':
 				case 'UPDATED_TIME':
 					/* clear value */
-					$('.label',fieldcontainer).text('');
-					$('.receiver',fieldcontainer).val('');
-					$('.receiverhour',fieldcontainer).val('00');
-					$('.receiverminute',fieldcontainer).val('00');
-					if (!condition) return true;
-					if (!condition.value) return true;
+					$('.label',row).text('');
+					$('.receiver',row).val('');
+					$('.receiverhour',row).val('00');
+					$('.receiverminute',row).val('00');
 					/* initialize value */
-					$('.label',fieldcontainer).text(new Date(condition.value.dateformat()).format('Y-m-d'));
-					$('.receiver',fieldcontainer).val(condition.value);
-					$('.receiverhour',fieldcontainer).val(new Date(condition.value.dateformat()).format('H'));
-					$('.receiverminute',fieldcontainer).val(new Date(condition.value.dateformat()).format('i'));
+					if (condition.value)
+					{
+						$('.label',row).text(new Date(condition.value.dateformat()).format('Y-m-d'));
+						$('.receiver',row).val(condition.value);
+						$('.receiverhour',row).val(new Date(condition.value.dateformat()).format('H'));
+						$('.receiverminute',row).val(new Date(condition.value.dateformat()).format('i'));
+					}
 					break;
 				case 'CREATOR':
 				case 'GROUP_SELECT':
@@ -2314,57 +2370,60 @@ ConditionsForm.prototype={
 					var label=[];
 					var receiver=[];
 					/* clear value */
-					$('.label',fieldcontainer).text('');
-					$('.receiver',fieldcontainer).val('');
-					if (!condition) return true;
-					if (!condition.value) return true;
+					$('.label',row).text('');
+					$('.receiver',row).val('');
 					/* initialize value */
-					$.each(condition.value,function(index){
-						label.push(condition.value[index].name);
-						receiver.push(condition.value[index].code);
-					});
-					$('.label',fieldcontainer).text(label.join(','));
-					$('.receiver',fieldcontainer).val(receiver.join(','));
+					if (condition.value)
+						$.each(condition.value,function(index){
+							label.push(condition.value[index].name);
+							receiver.push(condition.value[index].code);
+						});
+					$('.label',row).text(label.join(','));
+					$('.receiver',row).val(receiver.join(','));
 					break;
 				case 'DATE':
 					/* clear value */
-					$('.label',fieldcontainer).text('');
-					$('.receiver',fieldcontainer).val('');
-					if (!condition) return true;
-					if (!condition.value) return true;
+					$('.label',row).text('');
+					$('.receiver',row).val('');
 					/* initialize value */
-					$('.label',fieldcontainer).text(condition.value);
-					$('.receiver',fieldcontainer).val(condition.value);
+					if (condition.value)
+					{
+						$('.label',row).text(condition.value);
+						$('.receiver',row).val(condition.value);
+					}
 					break;
 				case 'TIME':
 					/* clear value */
-					$('.receiver',fieldcontainer).val('');
-					$('.receiverhour',fieldcontainer).val('00');
-					$('.receiverminute',fieldcontainer).val('00');
-					if (!condition) return true;
-					if (!condition.value) return true;
+					$('.receiver',row).val('');
+					$('.receiverhour',row).val('00');
+					$('.receiverminute',row).val('00');
 					/* initialize value */
-					$('.receiver',fieldcontainer).val(condition.value);
-					$('.receiverhour',fieldcontainer).val(('0'+condition.value.split(':')[0]).slice(-2));
-					$('.receiverminute',fieldcontainer).val(('0'+condition.value.split(':')[1]).slice(-2));
+					if (condition.value)
+					{
+						$('.receiver',row).val(condition.value);
+						$('.receiverhour',row).val(('0'+condition.value.split(':')[0]).slice(-2));
+						$('.receiverminute',row).val(('0'+condition.value.split(':')[1]).slice(-2));
+					}
 					break;
 				default:
 					/* clear value */
-					if ($('.label',fieldcontainer).size()) $('.label',fieldcontainer).text('');
-					$('.receiver',fieldcontainer).val('');
-					if (!condition) return true;
-					if (!condition.value) return true;
+					if ($('.label',row).size()) $('.label',row).text('');
+					$('.receiver',row).val('');
 					/* initialize value */
-					if (key in my.apps)
+					if (condition.value)
 					{
-						for (var i=0;i<my.apps[key].length;i++)
-							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==condition.value)
-								$('.label',fieldcontainer).html(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
+						if (condition.field in this.apps)
+						{
+							for (var i2=0;i2<this.apps[condition.field].length;i2++)
+								if (this.apps[condition.field][i2][$('.key',row).val()].value==condition.value)
+									$('.label',row).html(this.apps[condition.field][i2][$('.picker',row).val()].value);
+						}
+						$('.receiver',row).val(condition.value);
 					}
-					$('.receiver',fieldcontainer).val(condition.value);
 					break;
 			}
-		});
+		}
+		this.conditiontable.addrow();
 		this.dialog.cover.show();
 		/* adjust container height */
 		this.dialog.container.css({'height':(this.dialog.contents[0].scrollHeight+45).toString()+'px'});
@@ -2389,346 +2448,348 @@ jQuery.fn.conditionsform=function(options){
 jQuery.extend({
 	conditionsmatch:function(record,fieldinfos,conditions){
 		var match=true;
-		$.each(conditions,function(key,values){
-			if (values.comp.code)
-				if (key in record)
+		for (var i=0;i<conditions.length;i++)
+		{
+			var condition=conditions[i];
+			if (!condition.comp.code) continue;
+			if (condition.field in record)
+			{
+				var fieldinfo=fieldinfos[condition.field];
+				var value=record[condition.field].value;
+				switch (fieldinfo.type)
 				{
-					var fieldinfo=fieldinfos[key];
-					var value=record[key].value;
-					switch (fieldinfo.type)
-					{
-						case 'CALC':
-							switch(fieldinfo.format.toUpperCase())
-							{
-								case 'NUMBER':
-								case 'NUMBER_DIGIT':
-									switch (values.comp.code)
-									{
-										case '0':
-											if (!value) value='';
-											if (value!=values.value) match=false;
-											break;
-										case '1':
-											if (!value) value='';
-											if (value==values.value) match=false;
-											break;
-										case '2':
-											if (!value) match=false;
-											else
-											{
-												if (parseFloat(value)>parseFloat(values.value)) match=false;
-											}
-											break;
-										case '3':
-											if (!value) match=false;
-											else
-											{
-												if (parseFloat(value)<parseFloat(values.value)) match=false;
-											}
-											break;
-									}
-									break;
-								case 'DATE':
-								case 'DATETIME':
-								case 'DAY_HOUR_MINUTE':
-									switch (values.comp.code)
-									{
-										case '0':
-											if (!value) value='';
-											if (value.dateformat()!=values.value.dateformat()) match=false;
-											break;
-										case '1':
-											if (!value) value='';
-											if (value.dateformat()==values.value.dateformat()) match=false;
-											break;
-										case '2':
-											if (!value) match=false;
-											else
-											{
-												if (new Date(value.dateformat())>new Date(values.value)) match=false;
-											}
-											break;
-										case '3':
-											if (!value) match=false;
-											else
-											{
-												if (new Date(value.dateformat())>=new Date(values.value)) match=false;
-											}
-											break;
-										case '4':
-											if (!value) match=false;
-											else
-											{
-												if (new Date(value.dateformat())<new Date(values.value)) match=false;
-											}
-											break;
-										case '5':
-											if (!value) match=false;
-											else
-											{
-												if (new Date(value.dateformat())<=new Date(values.value)) match=false;
-											}
-											break;
-									}
-									break;
-								case 'HOUR_MINUTE':
-								case 'TIME':
-									var date=new Date().format('Y-m-d')+' ';
-									switch (values.comp.code)
-									{
-										case '0':
-											if (!value) value='';
-											if (value!=values.value) match=false;
-											break;
-										case '1':
-											if (!value) value='';
-											if (value==values.value) match=false;
-											break;
-										case '2':
-											if (!value) match=false;
-											else
-											{
-												if (new Date(date+value+':00')>new Date(date+values.value+':00')) match=false;
-											}
-											break;
-										case '3':
-											if (!value) match=false;
-											else
-											{
-												if (new Date(date+value+':00')>=new Date(date+values.value+':00')) match=false;
-											}
-											break;
-										case '4':
-											if (!value) match=false;
-											else
-											{
-												if (new Date(date+value+':00')<new Date(date+values.value+':00')) match=false;
-											}
-											break;
-										case '5':
-											if (!value) match=false;
-											else
-											{
-												if (new Date(date+value+':00')<=new Date(date+values.value+':00')) match=false;
-											}
-											break;
-									}
-									break;
-							}
-							break;
-						case 'CHECK_BOX':
-						case 'MULTI_SELECT':
-							var hit=0;
-							for (var i2=0;i2<value.length;i2++) if (values.value.indexOf(value[i2])>-1) hit++;
-							switch (values.comp.code)
-							{
-								case '0':
-									if (hit<1) match=false;
-									break;
-								case '1':
-									if (hit>0) match=false;
-									break;
-							}
-							break;
-						case 'DROP_DOWN':
-						case 'RADIO_BUTTON':
-							if (!value) value='';
-							switch (values.comp.code)
-							{
-								case '0':
-									if (values.value.indexOf(value)<0) match=false;
-									break;
-								case '1':
-									if (values.value.indexOf(value)>-1) match=false;
-									break;
-							}
-							break;
-						case 'CREATED_TIME':
-						case 'DATE':
-						case 'DATETIME':
-						case 'UPDATED_TIME':
-							switch (values.comp.code)
-							{
-								case '0':
-									if (!value) value='';
-									if (value.dateformat()!=values.value.dateformat()) match=false;
-									break;
-								case '1':
-									if (!value) value='';
-									if (value.dateformat()==values.value.dateformat()) match=false;
-									break;
-								case '2':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(value.dateformat())>new Date(values.value)) match=false;
-									}
-									break;
-								case '3':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(value.dateformat())>=new Date(values.value)) match=false;
-									}
-									break;
-								case '4':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(value.dateformat())<new Date(values.value)) match=false;
-									}
-									break;
-								case '5':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(value.dateformat())<=new Date(values.value)) match=false;
-									}
-									break;
-							}
-							break;
-						case 'GROUP_SELECT':
-						case 'ORGANIZATION_SELECT':
-						case 'USER_SELECT':
-							switch (values.comp.code)
-							{
-								case '0':
-									if ($.grep(value,function(item,index){
-										var code=item.code;
-										return $.grep(values.value,function(item,index){return item.code==code}).length!=0;
-									}).length==0) match=false;
-									break;
-								case '1':
-									if ($.grep(value,function(item,index){
-										var code=item.code;
-										return $.grep(values.value,function(item,index){return item.code==code}).length!=0;
-									}).length!=0) match=false;
-									break;
-							}
-							break;
-						case 'LINK':
-						case 'SINGLE_LINE_TEXT':
-							if (!value) value='';
-							switch (values.comp.code)
-							{
-								case '0':
-									if (value!=values.value) match=false;
-									break;
-								case '1':
-									if (value==values.value) match=false;
-									break;
-								case '2':
-									if (!value.match(new RegExp(values.value,'g'))) match=false;
-									break;
-								case '3':
-									if (value.match(new RegExp(values.value,'g'))) match=false;
-									break;
-							}
-							break;
-						case 'MULTI_LINE_TEXT':
-						case 'RICH_TEXT':
-							if (!value) value='';
-							switch (values.comp.code)
-							{
-								case '0':
-									if (!value.match(new RegExp(values.value,'g'))) match=false;
-									break;
-								case '1':
-									if (value.match(new RegExp(values.value,'g'))) match=false;
-									break;
-							}
-							break;
-						case 'NUMBER':
-						case 'RECORD_NUMBER':
-							switch (values.comp.code)
-							{
-								case '0':
-									if (!value) value='';
-									if (value!=values.value) match=false;
-									break;
-								case '1':
-									if (!value) value='';
-									if (value==values.value) match=false;
-									break;
-								case '2':
-									if (!value) match=false;
-									else
-									{
-										if (parseFloat(value)>parseFloat(values.value)) match=false;
-									}
-									break;
-								case '3':
-									if (!value) match=false;
-									else
-									{
-										if (parseFloat(value)<parseFloat(values.value)) match=false;
-									}
-									break;
-							}
-							break;
-						case 'CREATOR':
-						case 'MODIFIER':
-						case 'STATUS_ASSIGNEE':
-						case 'STATUS':
-							switch (values.comp.code)
-							{
-								case '0':
-									if ($.grep(values.value,function(item,index){
-										return item.code==value.code;
-									}).length==0) match=false;
-									break;
-								case '1':
-									if ($.grep(values.value,function(item,index){
-										return item.code==value.code;
-									}).length!=0) match=false;
-									break;
-							}
-							break;
-						case 'TIME':
-							var date=new Date().format('Y-m-d')+' ';
-							switch (values.comp.code)
-							{
-								case '0':
-									if (!value) value='';
-									if (value!=values.value) match=false;
-									break;
-								case '1':
-									if (!value) value='';
-									if (value==values.value) match=false;
-									break;
-								case '2':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(date+value+':00')>new Date(date+values.value+':00')) match=false;
-									}
-									break;
-								case '3':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(date+value+':00')>=new Date(date+values.value+':00')) match=false;
-									}
-									break;
-								case '4':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(date+value+':00')<new Date(date+values.value+':00')) match=false;
-									}
-									break;
-								case '5':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(date+value+':00')<=new Date(date+values.value+':00')) match=false;
-									}
-									break;
-							}
-							break;
-					}
+					case 'CALC':
+						switch(fieldinfo.format.toUpperCase())
+						{
+							case 'NUMBER':
+							case 'NUMBER_DIGIT':
+								switch (condition.comp.code)
+								{
+									case '0':
+										if (!value) value='';
+										if (value!=condition.value) match=false;
+										break;
+									case '1':
+										if (!value) value='';
+										if (value==condition.value) match=false;
+										break;
+									case '2':
+										if (!value) match=false;
+										else
+										{
+											if (parseFloat(value)>parseFloat(condition.value)) match=false;
+										}
+										break;
+									case '3':
+										if (!value) match=false;
+										else
+										{
+											if (parseFloat(value)<parseFloat(condition.value)) match=false;
+										}
+										break;
+								}
+								break;
+							case 'DATE':
+							case 'DATETIME':
+							case 'DAY_HOUR_MINUTE':
+								switch (condition.comp.code)
+								{
+									case '0':
+										if (!value) value='';
+										if (value.dateformat()!=condition.value.dateformat()) match=false;
+										break;
+									case '1':
+										if (!value) value='';
+										if (value.dateformat()==condition.value.dateformat()) match=false;
+										break;
+									case '2':
+										if (!value) match=false;
+										else
+										{
+											if (new Date(value.dateformat())>new Date(condition.value)) match=false;
+										}
+										break;
+									case '3':
+										if (!value) match=false;
+										else
+										{
+											if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
+										}
+										break;
+									case '4':
+										if (!value) match=false;
+										else
+										{
+											if (new Date(value.dateformat())<new Date(condition.value)) match=false;
+										}
+										break;
+									case '5':
+										if (!value) match=false;
+										else
+										{
+											if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
+										}
+										break;
+								}
+								break;
+							case 'HOUR_MINUTE':
+							case 'TIME':
+								var date=new Date().format('Y-m-d')+' ';
+								switch (condition.comp.code)
+								{
+									case '0':
+										if (!value) value='';
+										if (value!=condition.value) match=false;
+										break;
+									case '1':
+										if (!value) value='';
+										if (value==condition.value) match=false;
+										break;
+									case '2':
+										if (!value) match=false;
+										else
+										{
+											if (new Date(date+value+':00')>new Date(date+condition.value+':00')) match=false;
+										}
+										break;
+									case '3':
+										if (!value) match=false;
+										else
+										{
+											if (new Date(date+value+':00')>=new Date(date+condition.value+':00')) match=false;
+										}
+										break;
+									case '4':
+										if (!value) match=false;
+										else
+										{
+											if (new Date(date+value+':00')<new Date(date+condition.value+':00')) match=false;
+										}
+										break;
+									case '5':
+										if (!value) match=false;
+										else
+										{
+											if (new Date(date+value+':00')<=new Date(date+condition.value+':00')) match=false;
+										}
+										break;
+								}
+								break;
+						}
+						break;
+					case 'CHECK_BOX':
+					case 'MULTI_SELECT':
+						var hit=0;
+						for (var i2=0;i2<value.length;i2++) if (condition.value.indexOf(value[i2])>-1) hit++;
+						switch (condition.comp.code)
+						{
+							case '0':
+								if (hit<1) match=false;
+								break;
+							case '1':
+								if (hit>0) match=false;
+								break;
+						}
+						break;
+					case 'DROP_DOWN':
+					case 'RADIO_BUTTON':
+						if (!value) value='';
+						switch (condition.comp.code)
+						{
+							case '0':
+								if (condition.value.indexOf(value)<0) match=false;
+								break;
+							case '1':
+								if (condition.value.indexOf(value)>-1) match=false;
+								break;
+						}
+						break;
+					case 'CREATED_TIME':
+					case 'DATE':
+					case 'DATETIME':
+					case 'UPDATED_TIME':
+						switch (condition.comp.code)
+						{
+							case '0':
+								if (!value) value='';
+								if (value.dateformat()!=condition.value.dateformat()) match=false;
+								break;
+							case '1':
+								if (!value) value='';
+								if (value.dateformat()==condition.value.dateformat()) match=false;
+								break;
+							case '2':
+								if (!value) match=false;
+								else
+								{
+									if (new Date(value.dateformat())>new Date(condition.value)) match=false;
+								}
+								break;
+							case '3':
+								if (!value) match=false;
+								else
+								{
+									if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
+								}
+								break;
+							case '4':
+								if (!value) match=false;
+								else
+								{
+									if (new Date(value.dateformat())<new Date(condition.value)) match=false;
+								}
+								break;
+							case '5':
+								if (!value) match=false;
+								else
+								{
+									if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
+								}
+								break;
+						}
+						break;
+					case 'GROUP_SELECT':
+					case 'ORGANIZATION_SELECT':
+					case 'USER_SELECT':
+						switch (condition.comp.code)
+						{
+							case '0':
+								if ($.grep(value,function(item,index){
+									var code=item.code;
+									return $.grep(condition.value,function(item,index){return item.code==code}).length!=0;
+								}).length==0) match=false;
+								break;
+							case '1':
+								if ($.grep(value,function(item,index){
+									var code=item.code;
+									return $.grep(condition.value,function(item,index){return item.code==code}).length!=0;
+								}).length!=0) match=false;
+								break;
+						}
+						break;
+					case 'LINK':
+					case 'SINGLE_LINE_TEXT':
+						if (!value) value='';
+						switch (condition.comp.code)
+						{
+							case '0':
+								if (value!=condition.value) match=false;
+								break;
+							case '1':
+								if (value==condition.value) match=false;
+								break;
+							case '2':
+								if (!value.match(new RegExp(condition.value,'g'))) match=false;
+								break;
+							case '3':
+								if (value.match(new RegExp(condition.value,'g'))) match=false;
+								break;
+						}
+						break;
+					case 'MULTI_LINE_TEXT':
+					case 'RICH_TEXT':
+						if (!value) value='';
+						switch (condition.comp.code)
+						{
+							case '0':
+								if (!value.match(new RegExp(condition.value,'g'))) match=false;
+								break;
+							case '1':
+								if (value.match(new RegExp(condition.value,'g'))) match=false;
+								break;
+						}
+						break;
+					case 'NUMBER':
+					case 'RECORD_NUMBER':
+						switch (condition.comp.code)
+						{
+							case '0':
+								if (!value) value='';
+								if (value!=condition.value) match=false;
+								break;
+							case '1':
+								if (!value) value='';
+								if (value==condition.value) match=false;
+								break;
+							case '2':
+								if (!value) match=false;
+								else
+								{
+									if (parseFloat(value)>parseFloat(condition.value)) match=false;
+								}
+								break;
+							case '3':
+								if (!value) match=false;
+								else
+								{
+									if (parseFloat(value)<parseFloat(condition.value)) match=false;
+								}
+								break;
+						}
+						break;
+					case 'CREATOR':
+					case 'MODIFIER':
+					case 'STATUS_ASSIGNEE':
+					case 'STATUS':
+						switch (condition.comp.code)
+						{
+							case '0':
+								if ($.grep(condition.value,function(item,index){
+									return item.code==value.code;
+								}).length==0) match=false;
+								break;
+							case '1':
+								if ($.grep(condition.value,function(item,index){
+									return item.code==value.code;
+								}).length!=0) match=false;
+								break;
+						}
+						break;
+					case 'TIME':
+						var date=new Date().format('Y-m-d')+' ';
+						switch (condition.comp.code)
+						{
+							case '0':
+								if (!value) value='';
+								if (value!=condition.value) match=false;
+								break;
+							case '1':
+								if (!value) value='';
+								if (value==condition.value) match=false;
+								break;
+							case '2':
+								if (!value) match=false;
+								else
+								{
+									if (new Date(date+value+':00')>new Date(date+condition.value+':00')) match=false;
+								}
+								break;
+							case '3':
+								if (!value) match=false;
+								else
+								{
+									if (new Date(date+value+':00')>=new Date(date+condition.value+':00')) match=false;
+								}
+								break;
+							case '4':
+								if (!value) match=false;
+								else
+								{
+									if (new Date(date+value+':00')<new Date(date+condition.value+':00')) match=false;
+								}
+								break;
+							case '5':
+								if (!value) match=false;
+								else
+								{
+									if (new Date(date+value+':00')<=new Date(date+condition.value+':00')) match=false;
+								}
+								break;
+						}
+						break;
 				}
-		});
+			}
+		}
 		return match;
 	}
 });

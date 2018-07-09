@@ -42,17 +42,16 @@ jQuery.noConflict();
 			var add=false;
 			var row=null;
 			vars.conditiontable[index].clearrows();
-			$.each(conditions,function(key,values){
-				if (values.comp.code)
-				{
-					add=true;
-					vars.conditiontable[index].addrow();
-					row=vars.conditiontable[index].rows.last();
-					$('.field',row).text(vars.conditioninfos[key].label);
-					$('.comp',row).text(values.comp.name);
-					$('.value',row).text(values.label);
-				}
-			});
+			for (var i=0;i<conditions.length;i++)
+			{
+				var condition=conditions[i];
+				add=true;
+				vars.conditiontable[index].addrow();
+				row=vars.conditiontable[index].rows.last();
+				$('.field',row).text(vars.conditioninfos[key].label);
+				$('.comp',row).text(condition.comp.name);
+				$('.value',row).text(condition.label);
+			}
 			if (add) vars.conditiontable[index].container.css({'display':'table'});
 			else vars.conditiontable[index].container.hide();
 		},
@@ -158,8 +157,8 @@ jQuery.noConflict();
 						}));
 						$('button#conditions',row).off('click').on('click',function(){
 							var index=vars.roomtable.rows.index(row);
-							var conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'{}';
-							vars.conditionform.show({fieldinfos:vars.conditioninfos,conditions:JSON.parse(conditions)},function(resp){
+							var conditions=($('input#conditions',row).val())?JSON.parse($('input#conditions',row).val()):[];
+							vars.conditionform.show({fieldinfos:vars.conditioninfos,conditions:conditions},function(resp){
 								$('input#conditions',row).val(JSON.stringify(resp));
 								functions.loadconditions(index,resp);
 							});
@@ -272,7 +271,7 @@ jQuery.noConflict();
 				swal('Error!','アクションを選択して下さい。','error');
 				return;
 			}
-			room.conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'{}';
+			room.conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'[]';
 			for (var i2=0;i2<vars.fieldtable[i].rows.length;i2++)
 			{
 				row=vars.fieldtable[i].rows.eq(i2);
