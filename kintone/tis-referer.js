@@ -1830,6 +1830,7 @@ var ConditionsForm=function(options){
 				fieldcontainer.append(receiver);
 				break;
 			case 'NUMBER':
+			case 'RECORD_NUMBER':
 				comp=fieldcontainer.find('.comp')
 				.append($('<option>').attr('value','0').text('等しい'))
 				.append($('<option>').attr('value','1').text('等しくない'))
@@ -2482,6 +2483,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 						}
 						break;
 					case 'NUMBER':
+					case 'RECORD_NUMBER':
 						switch (values.comp.code)
 						{
 							case '0':
