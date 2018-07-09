@@ -2297,11 +2297,11 @@ jQuery.extend({
 									{
 										case '0':
 											if (!value) value='';
-											if (value.deteformat()!=values.value.deteformat()) match=false;
+											if (value.dateformat()!=values.value.dateformat()) match=false;
 											break;
 										case '1':
 											if (!value) value='';
-											if (value.deteformat()==values.value.deteformat()) match=false;
+											if (value.dateformat()==values.value.dateformat()) match=false;
 											break;
 										case '2':
 											if (!value) match=false;
@@ -2413,11 +2413,11 @@ jQuery.extend({
 							{
 								case '0':
 									if (!value) value='';
-									if (value.deteformat()!=values.value.deteformat()) match=false;
+									if (value.dateformat()!=values.value.dateformat()) match=false;
 									break;
 								case '1':
 									if (!value) value='';
-									if (value.deteformat()==values.value.deteformat()) match=false;
+									if (value.dateformat()==values.value.dateformat()) match=false;
 									break;
 								case '2':
 									if (!value) match=false;
