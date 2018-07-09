@@ -2434,12 +2434,7 @@ ConditionsForm.prototype={
 					/* initialize value */
 					if (condition.value)
 					{
-						if (condition.field in this.apps)
-						{
-							for (var i2=0;i2<this.apps[condition.field].length;i2++)
-								if (this.apps[condition.field][i2][$('.key',row).val()].value==condition.value)
-									$('.label',row).html(this.apps[condition.field][i2][$('.picker',row).val()].value);
-						}
+						if ($('.label',row).size()) $('.label',row).html(condition.label);
 						$('.receiver',row).val(condition.value);
 					}
 					break;
