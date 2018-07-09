@@ -2253,7 +2253,7 @@ ConditionsForm.prototype={
 							res.push({
 								field:$('.field',row).val(),
 								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
-								label:$('.label',row).val(),
+								label:$('.label',row).text(),
 								value:receivevalue
 							});
 						}
@@ -2273,7 +2273,7 @@ ConditionsForm.prototype={
 							res.push({
 								field:$('.field',row).val(),
 								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
-								label:$('.label',row).val(),
+								label:$('.label',row).text(),
 								value:receivevalue
 							});
 						}
