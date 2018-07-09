@@ -1583,15 +1583,15 @@ var ConditionsForm=function(options){
 	this.dialog.lists.find('tbody').append(
 		$('<tr>')
 		.append(
-			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px'})
+			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px','width':'150px'})
 			.append(select.clone(true).addClass('field'))
 		)
 		.append(
-			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px'})
+			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px','width':'150px'})
 			.append(select.clone(true).addClass('comp'))
 		)
 		.append(
-			cell.clone(true).addClass('value').css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px','width':'100%'})
+			cell.clone(true).addClass('value').css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px','width':'calc(100% - 360px)'})
 		)
 		.append(
 			cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'5px 0px','width':'30px'})
