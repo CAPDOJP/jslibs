@@ -2128,10 +2128,6 @@ var ConditionsForm=function(options){
 	);
 	this.dialog.cover.append(this.dialog.container);
 	options.container.append(this.dialog.cover);
-	/* adjust container height */
-	$(window).on('load resize',function(){
-		my.dialog.container.css({'height':(my.dialog.contents[0].scrollHeight+45).toString()+'px'});
-	});
 	/* create selectbox */
 	this.selectbox=$('body').multiselect();
 };
@@ -2425,8 +2421,6 @@ ConditionsForm.prototype={
 		}
 		this.conditiontable.addrow();
 		this.dialog.cover.show();
-		/* adjust container height */
-		this.dialog.container.css({'height':(this.dialog.contents[0].scrollHeight+45).toString()+'px'});
 	},
 	/* hide form */
 	hide:function(){
