@@ -48,7 +48,7 @@ jQuery.noConflict();
 				add=true;
 				vars.conditiontable[index].addrow();
 				row=vars.conditiontable[index].rows.last();
-				$('.field',row).text(vars.conditioninfos[key].label);
+				$('.field',row).text(vars.conditioninfos[condition.field].label);
 				$('.comp',row).text(condition.comp.name);
 				$('.value',row).text(condition.label);
 			}

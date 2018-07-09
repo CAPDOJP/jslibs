@@ -2248,20 +2248,44 @@ ConditionsForm.prototype={
 								if (!$.isNumeric(receivevalue)) alert('数値を入力して下さい。');
 								break;
 						}
-						res.push({
-							field:$('.field',row).val(),
-							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
-							label:receivevalue,
-							value:receivevalue
-						});
+						if (fieldinfo.lookup)
+						{
+							res.push({
+								field:$('.field',row).val(),
+								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
+								label:$('.label',row).val(),
+								value:receivevalue
+							});
+						}
+						else
+						{
+							res.push({
+								field:$('.field',row).val(),
+								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
+								label:receivevalue,
+								value:receivevalue
+							});
+						}
 						break;
 					default:
-						res.push({
-							field:$('.field',row).val(),
-							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
-							label:receivevalue,
-							value:receivevalue
-						});
+						if (fieldinfo.lookup)
+						{
+							res.push({
+								field:$('.field',row).val(),
+								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
+								label:$('.label',row).val(),
+								value:receivevalue
+							});
+						}
+						else
+						{
+							res.push({
+								field:$('.field',row).val(),
+								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
+								label:receivevalue,
+								value:receivevalue
+							});
+						}
 						break;
 				}
 			}
