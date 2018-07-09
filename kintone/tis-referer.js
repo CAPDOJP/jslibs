@@ -2228,13 +2228,12 @@ ConditionsForm.prototype={
 					case 'STATUS_ASSIGNEE':
 					case 'USER_SELECT':
 					case 'STATUS':
-						var names=$('.label',row).val().split(',');
 						var values=receivevalue.split(',');
-						for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2],name:names[i2]});
+						for (var i2=0;i2<values.length;i2++) receivevalues.push(values[i2]);
 						res.push({
 							field:$('.field',row).val(),
 							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
-							label:receivevalues.join(','),
+							label:$('.label',row).text(),
 							value:receivevalues
 						});
 						break;
@@ -2396,12 +2395,10 @@ ConditionsForm.prototype={
 					$('.receiver',row).val('');
 					/* initialize value */
 					if (condition.value)
-						$.each(condition.value,function(index){
-							label.push(condition.value[index].name);
-							receiver.push(condition.value[index].code);
-						});
-					$('.label',row).text(label.join(','));
-					$('.receiver',row).val(receiver.join(','));
+					{
+						$('.label',row).text(condition.label);
+						$('.receiver',row).val(condition.value.join(','));
+					}
 					break;
 				case 'DATE':
 					/* clear value */
@@ -2670,14 +2667,12 @@ jQuery.extend({
 						{
 							case '0':
 								if ($.grep(value,function(item,index){
-									var code=item.code;
-									return $.grep(condition.value,function(item,index){return item.code==code}).length!=0;
+									return condition.value.indexOf(item.code)>-1;
 								}).length==0) match=false;
 								break;
 							case '1':
 								if ($.grep(value,function(item,index){
-									var code=item.code;
-									return $.grep(condition.value,function(item,index){return item.code==code}).length!=0;
+									return condition.value.indexOf(item.code)>-1;
 								}).length!=0) match=false;
 								break;
 						}
@@ -2749,14 +2744,10 @@ jQuery.extend({
 						switch (condition.comp.code)
 						{
 							case '0':
-								if ($.grep(condition.value,function(item,index){
-									return item.code==value.code;
-								}).length==0) match=false;
+								if (condition.value.indexOf(value.code)<0) match=false;
 								break;
 							case '1':
-								if ($.grep(condition.value,function(item,index){
-									return item.code==value.code;
-								}).length!=0) match=false;
+								if (condition.value.indexOf(value.code)>-1) match=false;
 								break;
 						}
 						break;
