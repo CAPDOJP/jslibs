@@ -1628,6 +1628,7 @@ var ConditionsForm=function(options){
 					var fieldinfo=my.fields[$(this).val()];
 					var fieldoptions=[];
 					var receiver=null;
+					$('.value',row).empty();
 					switch (fieldinfo.type)
 					{
 						case 'CALC':
@@ -1643,7 +1644,7 @@ var ConditionsForm=function(options){
 									.append($('<option>').attr('value','3').text('以上'));
 									receiver=textline.clone(true).addClass('receiver');
 									$('.receiver',receiver).css({'text-align':'right'});
-									$('.value',row).empty().append(receiver);
+									$('.value',row).append(receiver);
 									break;
 								case 'DATE':
 									$('.comp',row)
@@ -1668,7 +1669,7 @@ var ConditionsForm=function(options){
 										$('.label',container).text('');
 										$('.receiver',container).val('');
 									});
-									$('.value',row).empty().append(receiver);
+									$('.value',row).append(receiver);
 									break;
 								case 'DATETIME':
 								case 'DAY_HOUR_MINUTE':
@@ -1701,7 +1702,7 @@ var ConditionsForm=function(options){
 									$('.receiverminute',receiver).on('change',function(){
 										$('.receiver',container).val(my.datetimevalue(container));
 									});
-									$('.value',row).empty().append(receiver);
+									$('.value',row).append(receiver);
 									break;
 								case 'TIME':
 								case 'HOUR_MINUTE':
@@ -1718,7 +1719,7 @@ var ConditionsForm=function(options){
 									$('.receiverminute',receiver).on('change',function(){
 										$('.receiver',container).val(my.timevalue(container));
 									});
-									$('.value',row).empty().append(receiver);
+									$('.value',row).append(receiver);
 									break;
 							}
 							break;
@@ -1738,7 +1739,7 @@ var ConditionsForm=function(options){
 								receiver=checkbox.clone(true);
 								$('.label',receiver).html(fieldoptions[i]);
 								$('.receiver',receiver).attr('id',fieldoptions[i]).val(fieldoptions[i]);
-								$('.value',row).empty().append(receiver);
+								$('.value',row).append(receiver);
 							}
 							break;
 						case 'CREATED_TIME':
@@ -1775,7 +1776,7 @@ var ConditionsForm=function(options){
 							$('.receiverminute',receiver).on('change',function(){
 								$('.receiver',container).val(my.datetimevalue(container));
 							});
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'CREATOR':
 						case 'MODIFIER':
@@ -1824,7 +1825,7 @@ var ConditionsForm=function(options){
 								$('.label',container).text('');
 								$('.receiver',container).val('');
 							});
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'DATE':
 							$('.comp',row)
@@ -1851,7 +1852,7 @@ var ConditionsForm=function(options){
 								$('.label',container).text('');
 								$('.receiver',container).val('');
 							});
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'GROUP_SELECT':
 							$('.comp',row)
@@ -1897,7 +1898,7 @@ var ConditionsForm=function(options){
 								$('.label',container).text('');
 								$('.receiver',container).val('');
 							});
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'LINK':
 						case 'SINGLE_LINE_TEXT':
@@ -1938,7 +1939,7 @@ var ConditionsForm=function(options){
 								});
 							}
 							else receiver=textline.clone(true).addClass('receiver');
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'MULTI_LINE_TEXT':
 						case 'RICH_TEXT':
@@ -1946,7 +1947,7 @@ var ConditionsForm=function(options){
 							.append($('<option>').attr('value','0').text('次のキーワードを含む'))
 							.append($('<option>').attr('value','1').text('次のキーワードを含まない'));
 							receiver=textline.clone(true).addClass('receiver');
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'NUMBER':
 						case 'RECORD_NUMBER':
@@ -1991,7 +1992,7 @@ var ConditionsForm=function(options){
 								receiver=textline.clone(true).addClass('receiver');
 								$('.receiver',receiver).css({'text-align':'right'});
 							}
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'ORGANIZATION_SELECT':
 							$('.comp',row)
@@ -2037,7 +2038,7 @@ var ConditionsForm=function(options){
 								$('.label',container).text('');
 								$('.receiver',container).val('');
 							});
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'STATUS':
 							$('.comp',row)
@@ -2079,7 +2080,7 @@ var ConditionsForm=function(options){
 								$('.label',container).text('');
 								$('.receiver',container).val('');
 							});
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 						case 'TIME':
 							$('.comp',row)
@@ -2097,7 +2098,7 @@ var ConditionsForm=function(options){
 							$('.receiverminute',receiver).on('change',function(){
 								$('.receiver',container).val(my.timevalue(container));
 							});
-							$('.value',row).empty().append(receiver);
+							$('.value',row).append(receiver);
 							break;
 					}
 				}
