@@ -1624,6 +1624,7 @@ var ConditionsForm=function(options){
 			$('.field',row).on('change',function(){
 				if ($(this).val())
 				{
+					var container=row;
 					var fieldinfo=my.fields[$(this).val()];
 					var fieldoptions=[];
 					var receiver=null;
@@ -1656,16 +1657,16 @@ var ConditionsForm=function(options){
 										/* day pickup */
 										var calendar=$('body').calendar({
 											selected:function(cell,value){
-												target.closest('.container').find('.label').text(value);
-												target.closest('.container').find('.receiver').val(value);
+												$('.label',container).text(value);
+												$('.receiver',container).val(value);
 											}
 										});
-										calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+										calendar.show({activedate:new Date($('.label',container).text().dateformat())});
 									});
 									$('.clear',receiver).on('click',function(){
 										var target=$(this);
-										target.closest('.container').find('.label').text('');
-										target.closest('.container').find('.receiver').val('');
+										$('.label',container).text('');
+										$('.receiver',container).val('');
 									});
 									$('.value',row).empty().append(receiver);
 									break;
@@ -1683,22 +1684,22 @@ var ConditionsForm=function(options){
 										/* day pickup */
 										var calendar=$('body').calendar({
 											selected:function(cell,value){
-												target.closest('.container').find('.label').text(value);
-												target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
+												$('.label',container).text(value);
+												$('.receiver',container).val(my.datetimevalue(container));
 											}
 										});
-										calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+										calendar.show({activedate:new Date($('.label',container).text().dateformat())});
 									});
 									$('.clear',receiver).on('click',function(){
 										var target=$(this);
-										target.closest('.container').find('.label').text('');
-										target.closest('.container').find('.receiver').val('');
+										$('.label',container).text('');
+										$('.receiver',container).val('');
 									});
 									$('.receiverhour',receiver).on('change',function(){
-										$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+										$('.receiver',container).val(my.datetimevalue(container));
 									});
 									$('.receiverminute',receiver).on('change',function(){
-										$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+										$('.receiver',container).val(my.datetimevalue(container));
 									});
 									$('.value',row).empty().append(receiver);
 									break;
@@ -1712,10 +1713,10 @@ var ConditionsForm=function(options){
 									receiver=time.clone(true);
 									receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
 									$('.receiverhour',receiver).on('change',function(){
-										$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+										$('.receiver',container).val(my.timevalue(container));
 									});
 									$('.receiverminute',receiver).on('change',function(){
-										$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+										$('.receiver',container).val(my.timevalue(container));
 									});
 									$('.value',row).empty().append(receiver);
 									break;
@@ -1757,22 +1758,22 @@ var ConditionsForm=function(options){
 								/* day pickup */
 								var calendar=$('body').calendar({
 									selected:function(cell,value){
-										target.closest('.container').find('.label').text(value);
-										target.closest('.container').find('.receiver').val(my.datetimevalue(target.closest('.container')));
+										$('.label',container).text(value);
+										$('.receiver',container).val(my.datetimevalue(container));
 									}
 								});
-								calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+								calendar.show({activedate:new Date($('.label',container).text().dateformat())});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								target.closest('.container').find('.label').text('');
-								target.closest('.container').find('.receiver').val('');
+								$('.label',container).text('');
+								$('.receiver',container).val('');
 							});
 							$('.receiverhour',receiver).on('change',function(){
-								$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+								$('.receiver',container).val(my.datetimevalue(container));
 							});
 							$('.receiverminute',receiver).on('change',function(){
-								$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
+								$('.receiver',container).val(my.datetimevalue(container));
 							});
 							$('.value',row).empty().append(receiver);
 							break;
@@ -1805,8 +1806,8 @@ var ConditionsForm=function(options){
 									datasource:my.usersource,
 									buttons:{
 										ok:function(selection){
-											target.closest('.container').find('.label').text(Object.values(selection).join(','));
-											target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+											$('.label',container).text(Object.values(selection).join(','));
+											$('.receiver',container).val(Object.keys(selection).join(','));
 											/* close the selectbox */
 											my.selectbox.hide();
 										},
@@ -1815,13 +1816,13 @@ var ConditionsForm=function(options){
 											my.selectbox.hide();
 										}
 									},
-									selected:target.closest('.container').find('.receiver').val().split(',')
+									selected:$('.receiver',container).val().split(',')
 								});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								target.closest('.container').find('.label').text('');
-								target.closest('.container').find('.receiver').val('');
+								$('.label',container).text('');
+								$('.receiver',container).val('');
 							});
 							$('.value',row).empty().append(receiver);
 							break;
@@ -1839,16 +1840,16 @@ var ConditionsForm=function(options){
 								/* day pickup */
 								var calendar=$('body').calendar({
 									selected:function(cell,value){
-										target.closest('.container').find('.label').text(value);
-										target.closest('.container').find('.receiver').val(value);
+										$('.label',container).text(value);
+										$('.receiver',container).val(value);
 									}
 								});
-								calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+								calendar.show({activedate:new Date($('.label',container).text().dateformat())});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								target.closest('.container').find('.label').text('');
-								target.closest('.container').find('.receiver').val('');
+								$('.label',container).text('');
+								$('.receiver',container).val('');
 							});
 							$('.value',row).empty().append(receiver);
 							break;
@@ -1878,8 +1879,8 @@ var ConditionsForm=function(options){
 									datasource:my.groupsource,
 									buttons:{
 										ok:function(selection){
-											target.closest('.container').find('.label').text(Object.values(selection).join(','));
-											target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+											$('.label',container).text(Object.values(selection).join(','));
+											$('.receiver',container).val(Object.keys(selection).join(','));
 											/* close the selectbox */
 											my.selectbox.hide();
 										},
@@ -1888,13 +1889,13 @@ var ConditionsForm=function(options){
 											my.selectbox.hide();
 										}
 									},
-									selected:target.closest('.container').find('.receiver').val().split(',')
+									selected:$('.receiver',container).val().split(',')
 								});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								target.closest('.container').find('.label').text('');
-								target.closest('.container').find('.receiver').val('');
+								$('.label',container).text('');
+								$('.receiver',container).val('');
 							});
 							$('.value',row).empty().append(receiver);
 							break;
@@ -1915,25 +1916,25 @@ var ConditionsForm=function(options){
 								$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
 								$('.search',receiver).on('click',function(){
 									var target=$(this);
-									my.referer[target.closest('.container').attr('id')].show({
+									my.referer[$('.field',container).val()].show({
 										buttons:{
 											cancel:function(){
 												/* close the reference box */
-												my.referer[target.closest('.container').attr('id')].hide();
+												my.referer[$('.field',container).val()].hide();
 											}
 										},
 										callback:function(row){
-											target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
-											target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
+											$('.label',container).html(row.find('#'+$('.picker',container).val()).val());
+											$('.receiver',container).val(row.find('#'+$('.key',container).val()).val());
 											/* close the reference box */
-											my.referer[target.closest('.container').attr('id')].hide();
+											my.referer[$('.field',container).val()].hide();
 										}
 									});
 								});
 								$('.clear',receiver).on('click',function(){
 									var target=$(this);
-									target.closest('.container').find('.label').text('');
-									target.closest('.container').find('.receiver').val('');
+									$('.label',container).text('');
+									$('.receiver',container).val('');
 								});
 							}
 							else receiver=textline.clone(true).addClass('receiver');
@@ -1964,25 +1965,25 @@ var ConditionsForm=function(options){
 								$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
 								$('.search',receiver).on('click',function(){
 									var target=$(this);
-									my.referer[target.closest('.container').attr('id')].show({
+									my.referer[$('.field',container).val()].show({
 										buttons:{
 											cancel:function(){
 												/* close the reference box */
-												my.referer[target.closest('.container').attr('id')].hide();
+												my.referer[$('.field',container).val()].hide();
 											}
 										},
 										callback:function(row){
-											target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
-											target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
+											$('.label',container).html(row.find('#'+$('.picker',container).val()).val());
+											$('.receiver',container).val(row.find('#'+$('.key',container).val()).val());
 											/* close the reference box */
-											my.referer[target.closest('.container').attr('id')].hide();
+											my.referer[$('.field',container).val()].hide();
 										}
 									});
 								});
 								$('.clear',receiver).on('click',function(){
 									var target=$(this);
-									target.closest('.container').find('.label').text('');
-									target.closest('.container').find('.receiver').val('');
+									$('.label',container).text('');
+									$('.receiver',container).val('');
 								});
 							}
 							else
@@ -2018,8 +2019,8 @@ var ConditionsForm=function(options){
 									datasource:my.organizationsource,
 									buttons:{
 										ok:function(selection){
-											target.closest('.container').find('.label').text(Object.values(selection).join(','));
-											target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+											$('.label',container).text(Object.values(selection).join(','));
+											$('.receiver',container).val(Object.keys(selection).join(','));
 											/* close the selectbox */
 											my.selectbox.hide();
 										},
@@ -2028,13 +2029,13 @@ var ConditionsForm=function(options){
 											my.selectbox.hide();
 										}
 									},
-									selected:target.closest('.container').find('.receiver').val().split(',')
+									selected:$('.receiver',container).val().split(',')
 								});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								target.closest('.container').find('.label').text('');
-								target.closest('.container').find('.receiver').val('');
+								$('.label',container).text('');
+								$('.receiver',container).val('');
 							});
 							$('.value',row).empty().append(receiver);
 							break;
@@ -2060,8 +2061,8 @@ var ConditionsForm=function(options){
 									datasource:my.statussource,
 									buttons:{
 										ok:function(selection){
-											target.closest('.container').find('.label').text(Object.values(selection).join(','));
-											target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+											$('.label',container).text(Object.values(selection).join(','));
+											$('.receiver',container).val(Object.keys(selection).join(','));
 											/* close the selectbox */
 											my.selectbox.hide();
 										},
@@ -2070,13 +2071,13 @@ var ConditionsForm=function(options){
 											my.selectbox.hide();
 										}
 									},
-									selected:target.closest('.container').find('.receiver').val().split(',')
+									selected:$('.receiver',container).val().split(',')
 								});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								target.closest('.container').find('.label').text('');
-								target.closest('.container').find('.receiver').val('');
+								$('.label',container).text('');
+								$('.receiver',container).val('');
 							});
 							$('.value',row).empty().append(receiver);
 							break;
@@ -2091,10 +2092,10 @@ var ConditionsForm=function(options){
 							receiver=time.clone(true);
 							receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
 							$('.receiverhour',receiver).on('change',function(){
-								$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+								$('.receiver',container).val(my.timevalue(container));
 							});
 							$('.receiverminute',receiver).on('change',function(){
-								$(this).closest('.container').find('.receiver').val(my.timevalue($(this).closest('.container')));
+								$('.receiver',container).val(my.timevalue(container));
 							});
 							$('.value',row).empty().append(receiver);
 							break;
