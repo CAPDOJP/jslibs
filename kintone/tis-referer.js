@@ -486,7 +486,7 @@ var FileSelect=function(options){
 		})
 	)
 	.append(
-		button.clone(true).css({'background-color':'#FFFFFF','color':'#3498db','width':'100%'})
+		button.clone(true).css({'background-color':'#FFFFFF','color':'#3498db','margin':'0px','width':'100%'})
 		.text('ファイルを追加')
 		.on('click',function(){
 			$(this).closest('div').find('input').click();
@@ -505,7 +505,7 @@ var FileSelect=function(options){
 	/* create template */
 	this.template=$('<tr>')
 	.append(
-		cell.clone(true).css({'padding':'0px 5px'})
+		cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','padding':'0px 5px'})
 		.append(
 			$('<a href="" id="link">').on('click',function(e){
 				var list=$(this).closest('tr');
