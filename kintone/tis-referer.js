@@ -1542,6 +1542,8 @@ var ConditionsForm=function(options){
 		var fieldcontainer=my.fieldcontainer.clone(true).attr('id',fieldinfo.code);
 		var fieldoptions=[];
 		fieldcontainer.find('.title').text(fieldinfo.label);
+		if (fieldinfo.type=='CATEGORY') return true;
+		if (fieldinfo.type=='GROUP') return true;
 		switch (fieldinfo.type)
 		{
 			case 'CALC':
