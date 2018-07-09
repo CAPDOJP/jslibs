@@ -2027,7 +2027,7 @@ ConditionsForm.prototype={
 			conditions:{}
 		},options);
 		var my=this;
-		$('#ok',this.dialog.footer).on('click',function(){
+		$('#ok',this.dialog.footer).off('click').on('click',function(){
 			var res={};
 			$.each($('.container',my.dialog.contents),function(){
 				var fieldcontainer=$(this);
@@ -2075,12 +2075,14 @@ ConditionsForm.prototype={
 			callback(res);
 			my.hide();
 		});
-		$.each(options.conditions,function(key,values){
+		$.each(options.fieldinfos,function(key,values){
 			if (key.match(/^\$/g)) return true;
 			if (!$('#'+key,my.dialog.contents).size()) return true;
-			var fieldcontainer=$('#'+key,my.dialog.contents);
+			if (!(key in options.conditions)) return true;
+			var condition=options.conditions[key];
 			var fieldinfo=options.fieldinfos[key];
-			$('.comp',fieldcontainer).val(values.comp.code);
+			var fieldcontainer=$('#'+key,my.dialog.contents);
+			$('.comp',fieldcontainer).val(condition.comp.code);
 			switch (fieldinfo.type)
 			{
 				case 'CALC':
@@ -2091,16 +2093,16 @@ ConditionsForm.prototype={
 							/* clear value */
 							$('.receiver',fieldcontainer).val('');
 							/* initialize value */
-							$('.receiver',fieldcontainer).val(values.value);
+							$('.receiver',fieldcontainer).val(condition.value);
 							break;
 						case 'DATE':
 							/* clear value */
 							$('.label',fieldcontainer).text('');
 							$('.receiver',fieldcontainer).val('');
-							if (!values.value) return true;
+							if (!condition.value) return true;
 							/* initialize value */
-							$('.label',fieldcontainer).text(values.value);
-							$('.receiver',fieldcontainer).val(values.value);
+							$('.label',fieldcontainer).text(condition.value);
+							$('.receiver',fieldcontainer).val(condition.value);
 							break;
 						case 'DATETIME':
 						case 'DAY_HOUR_MINUTE':
@@ -2109,12 +2111,12 @@ ConditionsForm.prototype={
 							$('.receiver',fieldcontainer).val('');
 							$('.receiverhour',fieldcontainer).val('00');
 							$('.receiverminute',fieldcontainer).val('00');
-							if (!values.value) return true;
+							if (!condition.value) return true;
 							/* initialize value */
-							$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
-							$('.receiver',fieldcontainer).val(values.value);
-							$('.receiverhour',fieldcontainer).val(new Date(values.value.dateformat()).format('H'));
-							$('.receiverminute',fieldcontainer).val(new Date(values.value.dateformat()).format('i'));
+							$('.label',fieldcontainer).text(new Date(condition.value.dateformat()).format('Y-m-d'));
+							$('.receiver',fieldcontainer).val(condition.value);
+							$('.receiverhour',fieldcontainer).val(new Date(condition.value.dateformat()).format('H'));
+							$('.receiverminute',fieldcontainer).val(new Date(condition.value.dateformat()).format('i'));
 							break;
 						case 'TIME':
 						case 'HOUR_MINUTE':
@@ -2122,11 +2124,11 @@ ConditionsForm.prototype={
 							$('.receiver',fieldcontainer).val('');
 							$('.receiverhour',fieldcontainer).val('00');
 							$('.receiverminute',fieldcontainer).val('00');
-							if (!values.value) return true;
+							if (!condition.value) return true;
 							/* initialize value */
-							$('.receiver',fieldcontainer).val(values.value);
-							$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));
-							$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
+							$('.receiver',fieldcontainer).val(condition.value);
+							$('.receiverhour',fieldcontainer).val(('0'+condition.value.split(':')[0]).slice(-2));
+							$('.receiverminute',fieldcontainer).val(('0'+condition.value.split(':')[1]).slice(-2));
 							break;
 					}
 					break;
@@ -2139,7 +2141,7 @@ ConditionsForm.prototype={
 						$(this).prop('checked',false);
 					});
 					/* initialize value */
-					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
+					for (var i=0;i<condition.value.length;i++) $('#'+condition.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
 				case 'CREATED_TIME':
 				case 'DATETIME':
@@ -2149,12 +2151,12 @@ ConditionsForm.prototype={
 					$('.receiver',fieldcontainer).val('');
 					$('.receiverhour',fieldcontainer).val('00');
 					$('.receiverminute',fieldcontainer).val('00');
-					if (!values.value) return true;
+					if (!condition.value) return true;
 					/* initialize value */
-					$('.label',fieldcontainer).text(new Date(values.value.dateformat()).format('Y-m-d'));
-					$('.receiver',fieldcontainer).val(values.value);
-					$('.receiverhour',fieldcontainer).val(new Date(values.value.dateformat()).format('H'));
-					$('.receiverminute',fieldcontainer).val(new Date(values.value.dateformat()).format('i'));
+					$('.label',fieldcontainer).text(new Date(condition.value.dateformat()).format('Y-m-d'));
+					$('.receiver',fieldcontainer).val(condition.value);
+					$('.receiverhour',fieldcontainer).val(new Date(condition.value.dateformat()).format('H'));
+					$('.receiverminute',fieldcontainer).val(new Date(condition.value.dateformat()).format('i'));
 					break;
 				case 'CREATOR':
 				case 'GROUP_SELECT':
@@ -2169,9 +2171,9 @@ ConditionsForm.prototype={
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
 					/* initialize value */
-					$.each(values.value,function(index){
-						label.push(values.value[index].name);
-						receiver.push(values.value[index].code);
+					$.each(condition.value,function(index){
+						label.push(condition.value[index].name);
+						receiver.push(condition.value[index].code);
 					});
 					$('.label',fieldcontainer).text(label.join(','));
 					$('.receiver',fieldcontainer).val(receiver.join(','));
@@ -2180,21 +2182,21 @@ ConditionsForm.prototype={
 					/* clear value */
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
-					if (!values.value) return true;
+					if (!condition.value) return true;
 					/* initialize value */
-					$('.label',fieldcontainer).text(values.value);
-					$('.receiver',fieldcontainer).val(values.value);
+					$('.label',fieldcontainer).text(condition.value);
+					$('.receiver',fieldcontainer).val(condition.value);
 					break;
 				case 'TIME':
 					/* clear value */
 					$('.receiver',fieldcontainer).val('');
 					$('.receiverhour',fieldcontainer).val('00');
 					$('.receiverminute',fieldcontainer).val('00');
-					if (!values.value) return true;
+					if (!condition.value) return true;
 					/* initialize value */
-					$('.receiver',fieldcontainer).val(values.value);
-					$('.receiverhour',fieldcontainer).val(('0'+values.value.split(':')[0]).slice(-2));
-					$('.receiverminute',fieldcontainer).val(('0'+values.value.split(':')[1]).slice(-2));
+					$('.receiver',fieldcontainer).val(condition.value);
+					$('.receiverhour',fieldcontainer).val(('0'+condition.value.split(':')[0]).slice(-2));
+					$('.receiverminute',fieldcontainer).val(('0'+condition.value.split(':')[1]).slice(-2));
 					break;
 				default:
 					/* clear value */
@@ -2204,10 +2206,10 @@ ConditionsForm.prototype={
 					{
 						$('.label',fieldcontainer).text('');
 						for (var i=0;i<my.apps[key].length;i++)
-							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==values.value)
+							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==condition.value)
 								$('.label',fieldcontainer).html(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
 					}
-					$('.receiver',fieldcontainer).val(values.value);
+					$('.receiver',fieldcontainer).val(condition.value);
 					break;
 			}
 		});

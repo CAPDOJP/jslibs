@@ -38,23 +38,23 @@ jQuery.noConflict();
 			});
 			return codes;
 		},
-		loadconditions:function(table,conditions){
+		loadconditions:function(index,conditions){
 			var add=false;
 			var row=null;
-			table.clearrows();
+			vars.conditiontable[index].clearrows();
 			$.each(conditions,function(key,values){
 				if (values.comp.code)
 				{
 					add=true;
-					table.addrow();
-					row=table.rows.last();
+					vars.conditiontable[index].addrow();
+					row=vars.conditiontable[index].rows.last();
 					$('.field',row).text(vars.conditioninfos[key].label);
 					$('.comp',row).text(values.comp.name);
 					$('.value',row).text(values.label);
 				}
 			});
-			if (add) table.container.css({'display':'table'});
-			else table.container.hide();
+			if (add) vars.conditiontable[index].container.css({'display':'table'});
+			else vars.conditiontable[index].container.hide();
 		},
 		loadrooms:function(callback){
 			vars.roomtable.clearrows();
@@ -151,17 +151,17 @@ jQuery.noConflict();
 				addcallback:function(row){
 					if (vars.roomtable)
 					{
-						var conditiontable=$('.conditions',row).adjustabletable();
-						vars.conditiontable.push(conditiontable);
+						vars.conditiontable.push($('.conditions',row).adjustabletable());
 						vars.fieldtable.push($('.fields',row).adjustabletable({
 							add:'img.addfield',
 							del:'img.delfield'
 						}));
-						$('button#conditions').on('click',function(){
+						$('button#conditions',row).off('click').on('click',function(){
+							var index=vars.roomtable.rows.index(row);
 							var conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'{}';
 							vars.conditionform.show({fieldinfos:vars.conditioninfos,conditions:JSON.parse(conditions)},function(resp){
 								$('input#conditions',row).val(JSON.stringify(resp));
-								functions.loadconditions(conditiontable,resp);
+								functions.loadconditions(index,resp);
 							});
 						});
 					}
@@ -193,7 +193,7 @@ jQuery.noConflict();
 						if (rooms[i].delete=='1') $('input#delete',row).prop('checked',true);
 						if (rooms[i].process=='1') $('input#process',row).prop('checked',true);
 						$('input#conditions',row).val(rooms[i].conditions);
-						functions.loadconditions(vars.conditiontable[i],JSON.parse(rooms[i].conditions));
+						functions.loadconditions(i,JSON.parse(rooms[i].conditions));
 						for (var i2=0;i2<rooms[i].fields.length;i2++)
 						{
 							if (i2>0) vars.fieldtable[i].addrow();

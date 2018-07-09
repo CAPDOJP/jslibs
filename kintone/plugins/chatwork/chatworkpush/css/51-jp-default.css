@@ -527,12 +527,15 @@ div.kintoneplugin-row table.outer{
 div.kintoneplugin-row table.outer tr td{
   padding:10px;
 }
+div.kintoneplugin-row table.outer table.inner{
+  margin-top:10px;
+}
 div.kintoneplugin-row table.outer table.inner tr{
   border-bottom:1px solid #d6d1cc;
 }
-div.kintoneplugin-row table.outer table.inner tr td{
-  padding:3px;
-}
 div.kintoneplugin-row table.outer table.inner tbody tr:last-of-type{
   border-bottom:none;
+}
+div.kintoneplugin-row table.outer table.inner.fields tr td{
+  padding:3px;
 }
