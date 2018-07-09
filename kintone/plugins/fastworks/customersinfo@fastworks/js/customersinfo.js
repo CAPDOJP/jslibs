@@ -1394,11 +1394,6 @@ jQuery.noConflict();
 				})
 			);
 			events=[];
-			events.push('app.record.create.change.'+vars.config['zip']);
-			events.push('mobile.app.record.create.change.'+vars.config['zip']);
-			events.push('app.record.edit.change.'+vars.config['zip']);
-			events.push('mobile.app.record.edit.change.'+vars.config['zip']);
-			events.push('app.record.index.edit.change.'+vars.config['zip']);
 			events.push('app.record.create.change.'+vars.config['address']);
 			events.push('mobile.app.record.create.change.'+vars.config['address']);
 			events.push('app.record.edit.change.'+vars.config['address']);
@@ -1459,6 +1454,32 @@ jQuery.noConflict();
 					event.record[vars.config['zip2']].value=null;
 				}
 				return event;
+			});
+			events=[];
+			events.push('app.record.create.change.'+vars.config['zip']);
+			events.push('mobile.app.record.create.change.'+vars.config['zip']);
+			events.push('app.record.edit.change.'+vars.config['zip']);
+			events.push('mobile.app.record.edit.change.'+vars.config['zip']);
+			events.push('app.record.index.edit.change.'+vars.config['zip']);
+			kintone.events.on(events,function(event){
+				if (event.changes.field.value)
+				{
+					var zip=event.changes.field.value.replace(/[^0-9]/g,'');
+					if (zip.length==7)
+					{
+						event.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+							return String.fromCharCode(s.charCodeAt(0)+65248);
+						});
+						event.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+							return String.fromCharCode(s.charCodeAt(0)+65248);
+						});
+					}
+				}
+				else
+				{
+					event.record[vars.config['zip1']].value=null;
+					event.record[vars.config['zip2']].value=null;
+				}
 				return event;
 			});
 			var mailingoptions=JSON.parse(vars.config['mailingoptions']);

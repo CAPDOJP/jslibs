@@ -66,6 +66,9 @@ jQuery.noConflict();
 								/* check field type */
 								switch (fieldinfo.type)
 								{
+									case 'FILE':
+										$('select#templateattachment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										break;
 									case 'SINGLE_LINE_TEXT':
 										$('select#templatename').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#templatesubject').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
@@ -132,6 +135,7 @@ jQuery.noConflict();
 						$('select#templatename').val(config['templatename']);
 						$('select#templatesubject').val(config['templatesubject']);
 						$('select#templatebody').val(config['templatebody']);
+						$('select#templateattachment').val(config['templateattachment']);
 					});
 				}
 				else functions.reloadapp();
@@ -195,6 +199,7 @@ jQuery.noConflict();
 		config['templatename']=$('select#templatename').val();
 		config['templatesubject']=$('select#templatesubject').val();
 		config['templatebody']=$('select#templatebody').val();
+		config['templateattachment']=$('select#templateattachment').val();
 		config['histories']=$('select#histories').val();
 		config['client_id']=$('input#client_id').val();
 		config['draft']=($('input#draft').prop('checked'))?'1':'0';

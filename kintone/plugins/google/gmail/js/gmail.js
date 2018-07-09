@@ -215,10 +215,7 @@ jQuery.noConflict();
 				{
 					if (record[vars.config['mailto']].value)
 					{
-						var attachment=(function(record){
-							if (!vars.config['attachment']) return false;
-							else return record[vars.config['attachment']].value.length!=0;
-						})(record);
+						var attachment=[];
 						var subject=functions.assign(templates[0][vars.config['templatesubject']].value,record);
 						var body=functions.assign(templates[0][vars.config['templatebody']].value,record);
 						var maildata=[];
@@ -226,6 +223,8 @@ jQuery.noConflict();
 							alternative:functions.boundary(),
 							mixed:functions.boundary()
 						};
+						if (vars.config['templateattachment']) Array.prototype.push.apply(attachment,templates[0][vars.config['templateattachment']].value);
+						if (vars.config['attachment']) Array.prototype.push.apply(attachment,record[vars.config['attachment']].value);
 						maildata.push('To: '+record[vars.config['mailto']].value);
 						if (vars.config['mailcc'])
 							if (record[vars.config['mailcc']].value)
@@ -235,7 +234,7 @@ jQuery.noConflict();
 								maildata.push('BCC: '+record[vars.config['mailbcc']].value);
 						maildata.push('Subject: =?utf-8?B?'+window.btoa(unescape(encodeURIComponent(subject)))+'?=');
 						maildata.push('MIME-Version: 1.0');
-						if (attachment)
+						if (attachment.length!=0)
 						{
 							maildata.push('Content-Type: multipart/mixed; boundary="'+boundaries.mixed+'"');
 							maildata.push('');
@@ -248,12 +247,12 @@ jQuery.noConflict();
 						maildata.push('Content-Transfer-Encoding: 7bit');
 						maildata.push('');
 						maildata.push('<html><body>'+body.replace(/\r/g,'').replace(/\n/g,'<br>')+'</body></html>');
-						if (attachment)
+						if (attachment.length!=0)
 						{
 							maildata.push('');
 							maildata.push('--'+boundaries.alternative+'--');
 							var counter=0;
-							for (var i=0;i<record[vars.config['attachment']].value.length;i++)
+							for (var i=0;i<attachment.length;i++)
 							{
 								(function(file){
 									functions.download(file.fileKey).then(function(blob){
@@ -269,7 +268,7 @@ jQuery.noConflict();
 											maildata.push('');
 											maildata.push(event.target.result.replace(/^.+,/,''));
 											counter++;
-											if (counter==record[vars.config['attachment']].value.length)
+											if (counter==attachment.length)
 											{
 												maildata.push('');
 												maildata.push('--'+boundaries.mixed+'--');
@@ -278,7 +277,7 @@ jQuery.noConflict();
 										}
 										reader.readAsDataURL(blob);
 									});
-								})(record[vars.config['attachment']].value[i]);
+								})(attachment[i]);
 							}
 						}
 						else send(maildata);

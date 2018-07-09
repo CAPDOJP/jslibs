@@ -1935,46 +1935,43 @@ ConditionsForm.prototype={
 		$('#ok',this.dialog.footer).on('click',function(){
 			var res=[];
 			$.each($('.container',my.dialog.contents),function(){
-				var container=$(this);
-				if ($('.comp',container).val())
+				var fieldcontainer=$(this);
+				var receivevalue=fieldcontainer.find('.receiver').val();
+				var receivevalues=[];
+				switch (fieldcontainer.find('.type').val())
 				{
-					var receivevalue=container.find('.receiver').val();
-					var receivevalues=[];
-					switch (container.find('.type').val())
-					{
-						case 'CHECK_BOX':
-						case 'DROP_DOWN':
-						case 'MULTI_SELECT':
-						case 'RADIO_BUTTON':
-							$.each(container.find('.receiver:checked'),function(){receivevalues.push($(this).val());});
-							res.push({
-								field:container.attr('id'),
-								comp:$('.comp',container).val(),
-								value:receivevalues
-							});
-							break;
-						case 'CREATOR':
-						case 'GROUP_SELECT':
-						case 'MODIFIER':
-						case 'ORGANIZATION_SELECT':
-						case 'USER_SELECT':
-							var names=container.find('.label').val().split(',');
-							var values=receivevalue.split(',');
-							for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2],name:names[i2]});
-							res.push({
-								field:container.attr('id'),
-								comp:$('.comp',container).val(),
-								value:receivevalues
-							});
-							break;
-						default:
-							res.push({
-								field:container.attr('id'),
-								comp:$('.comp',container).val(),
-								value:receivevalue
-							});
-							break;
-					}
+					case 'CHECK_BOX':
+					case 'DROP_DOWN':
+					case 'MULTI_SELECT':
+					case 'RADIO_BUTTON':
+						$.each(fieldcontainer.find('.receiver:checked'),function(){receivevalues.push($(this).val());});
+						res.push({
+							field:fieldcontainer.attr('id'),
+							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+							value:receivevalues
+						});
+						break;
+					case 'CREATOR':
+					case 'GROUP_SELECT':
+					case 'MODIFIER':
+					case 'ORGANIZATION_SELECT':
+					case 'USER_SELECT':
+						var names=fieldcontainer.find('.label').val().split(',');
+						var values=receivevalue.split(',');
+						for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2],name:names[i2]});
+						res.push({
+							field:fieldcontainer.attr('id'),
+							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+							value:receivevalues
+						});
+						break;
+					default:
+						res.push({
+							field:fieldcontainer.attr('id'),
+							comp:{code:$('.comp',fieldcontainer).val(),name:$('.comp option:selected',fieldcontainer).text()},
+							value:receivevalue
+						});
+						break;
 				}
 				callback(res);
 			});
@@ -1984,6 +1981,7 @@ ConditionsForm.prototype={
 			if (key.match(/^\$/g)) return true;
 			if (!$('#'+key,my.dialog.contents).size()) return true;
 			var fieldcontainer=$('#'+key,my.dialog.contents);
+			$('.comp',fieldcontainer).val(values.comp.code);
 			switch (values.type)
 			{
 				case 'CHECK_BOX':
@@ -2102,7 +2100,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 					{
 						case 'NUMBER':
 						case 'NUMBER_DIGIT':
-							switch (condition.comp)
+							switch (condition.comp.code)
 							{
 								case '0':
 									if (!value) value=='';
@@ -2131,7 +2129,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 						case 'DATE':
 						case 'DATETIME':
 						case 'DAY_HOUR_MINUTE':
-							switch (condition.comp)
+							switch (condition.comp.code)
 							{
 								case '0':
 									if (!value) value=='';
@@ -2174,7 +2172,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 						case 'HOUR_MINUTE':
 						case 'TIME':
 							var date=new Date().format('Y-m-d')+' ';
-							switch (condition.comp)
+							switch (condition.comp.code)
 							{
 								case '0':
 									if (!value) value=='';
@@ -2220,7 +2218,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 				case 'MULTI_SELECT':
 					var hit=0;
 					for (var i2=0;i2<value.length;i2++) if (condition.value.indexOf(value[i2])>-1) hit++;
-					switch (condition.comp)
+					switch (condition.comp.code)
 					{
 						case '0':
 							if (hit<1) match=false;
@@ -2233,7 +2231,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 				case 'DROP_DOWN':
 				case 'RADIO_BUTTON':
 					if (!value) value=='';
-					switch (condition.comp)
+					switch (condition.comp.code)
 					{
 						case '0':
 							if (condition.value.indexOf(value)<0) match=false;
@@ -2247,7 +2245,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 				case 'DATE':
 				case 'DATETIME':
 				case 'UPDATED_TIME':
-					switch (condition.comp)
+					switch (condition.comp.code)
 					{
 						case '0':
 							if (!value) value=='';
@@ -2292,7 +2290,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 				case 'MODIFIER':
 				case 'ORGANIZATION_SELECT':
 				case 'USER_SELECT':
-					switch (condition.comp)
+					switch (condition.comp.code)
 					{
 						case '0':
 							if ($.grep(value,function(item,index){
@@ -2311,7 +2309,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 				case 'LINK':
 				case 'SINGLE_LINE_TEXT':
 					if (!value) value=='';
-					switch (condition.comp)
+					switch (condition.comp.code)
 					{
 						case '0':
 							if (value!=condition.value) match=false;
@@ -2330,7 +2328,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 				case 'MULTI_LINE_TEXT':
 				case 'RICH_TEXT':
 					if (!value) value=='';
-					switch (condition.comp)
+					switch (condition.comp.code)
 					{
 						case '0':
 							if (!value.match(new RegExp(condition.value,'g'))) match=false;
@@ -2341,7 +2339,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 					}
 					break;
 				case 'NUMBER':
-					switch (condition.comp)
+					switch (condition.comp.code)
 					{
 						case '0':
 							if (!value) value=='';
@@ -2369,7 +2367,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 					break;
 				case 'TIME':
 					var date=new Date().format('Y-m-d')+' ';
-					switch (condition.comp)
+					switch (condition.comp.code)
 					{
 						case '0':
 							if (!value) value=='';
