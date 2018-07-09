@@ -2293,7 +2293,7 @@ ConditionsForm.prototype={
 			my.hide();
 		});
 		this.conditiontable.clearrows();
-		for (var i=0;i<options.conditions;i++)
+		for (var i=0;i<options.conditions.length;i++)
 		{
 			var condition=options.conditions[i];
 			var fieldinfo=options.fieldinfos[condition.field];
