@@ -36,6 +36,28 @@
 							<label><input type="checkbox" name="checkbox" value="0" id="process"><span>ステータス変更</span></label>
 						</div>
 						<div class="kintoneplugin-row">
+							<div class="kintoneplugin-label">通知条件</div>
+							<div class="kintoneplugin-desc">フィールドの値で通知する条件を制限する場合は、条件指定ボタンを押下して下さい。</div>
+							<button type="button" id="conditions" class="kintoneplugin-button-normal">条件指定</button>
+							<table class="inner conditions">
+								<thead>
+									<tr>
+										<th>フィールド</th>
+										<th>比較</th>
+										<th>値</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="field"></td>
+										<td class="comp"></td>
+										<td class="value"></td>
+									</tr>
+								</tbody>
+							</table>
+							<input type="hidden" id="conditions">
+						</div>
+						<div class="kintoneplugin-row">
 							<div class="kintoneplugin-label">フィールド</div>
 							<div class="kintoneplugin-desc">メッセージ内にフィールドの値を記載する場合は、それらを指定して下さい。</div>
 							<table class="inner fields">

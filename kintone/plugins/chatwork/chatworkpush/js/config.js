@@ -12,7 +12,9 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
+		conditionform:null,
 		roomtable:null,
+		conditiontable:[],
 		fieldtable:[],
 		fieldinfos:{}
 	};
@@ -35,8 +37,27 @@ jQuery.noConflict();
 			});
 			return codes;
 		},
+		loadconditions:function(table,conditions){
+			var add=false;
+			var row=null;
+			table.clearrows();
+			$.each(conditions,function(key,values){
+				if (values.comp.code)
+				{
+					add=true;
+					table.addrow();
+					row=table.rows.last();
+					$('.field',row).text(vars.fieldinfos[values.field].label);
+					$('.comp',row).text(values.comp.name);
+					$('.value',row).text(values.label);
+				}
+			});
+			if (add) table.container.css({'display':'table'});
+			else table.container.hide();
+		},
 		loadrooms:function(callback){
 			vars.roomtable.clearrows();
+			vars.conditiontable=[];
 			vars.fieldtable=[];
 			$('select#room',vars.roomtable.template).empty().append($('<option>').attr('value','').text(''));
 			if ($('input#api_token').val())
@@ -111,12 +132,24 @@ jQuery.noConflict();
 				del:'img.delroom',
 				addcallback:function(row){
 					if (vars.roomtable)
+					{
+						var conditiontable=$('.conditions',row).adjustabletable();
+						vars.conditiontable.push(conditiontable);
 						vars.fieldtable.push($('.fields',row).adjustabletable({
 							add:'img.addfield',
 							del:'img.delfield'
 						}));
+						$('button#conditions').on('click',function(){
+							var conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'{}';
+							vars.conditionform.show({fieldinfos:vars.fieldinfos,conditions:conditions},function(resp){
+								$('input#conditions',row).val(JSON.stringify(resp));
+								functions.loadconditions(conditiontable,resp);
+							});
+						});
+					}
 				},
 				delcallback:function(index){
+					vars.conditiontable.splice(index,1);
 					vars.fieldtable.splice(index,1);
 				}
 			});
@@ -141,6 +174,8 @@ jQuery.noConflict();
 						if (rooms[i].update=='1') $('input#update',row).prop('checked',true);
 						if (rooms[i].delete=='1') $('input#delete',row).prop('checked',true);
 						if (rooms[i].process=='1') $('input#process',row).prop('checked',true);
+						$('input#conditions',row).val(rooms[i].conditions);
+						functions.loadconditions(vars.conditiontable[i],JSON.parse(rooms[i].conditions));
 						for (var i2=0;i2<rooms[i].fields.length;i2++)
 						{
 							if (i2>0) vars.fieldtable[i].addrow();
@@ -150,6 +185,9 @@ jQuery.noConflict();
 				}
 			});
 			$('input#api_token').on('change',function(){functions.loadrooms()});
+			vars.conditionform=$('body').conditionsform({
+				fields:vars.fieldinfos
+			});
 		},function(error){});
 	},function(error){});
 	/*---------------------------------------------------------------
@@ -184,6 +222,7 @@ jQuery.noConflict();
 				update:'0',
 				delete:'0',
 				process:'0',
+				conditions:'',
 				fields:[]
 			};
 			checked=0;
@@ -215,6 +254,7 @@ jQuery.noConflict();
 				swal('Error!','アクションを選択して下さい。','error');
 				return;
 			}
+			room.conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'{}';
 			for (var i2=0;i2<vars.fieldtable[i].rows.length;i2++)
 			{
 				row=vars.fieldtable[i].rows.eq(i2);
