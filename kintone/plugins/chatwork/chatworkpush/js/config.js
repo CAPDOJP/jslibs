@@ -48,7 +48,7 @@ jQuery.noConflict();
 					add=true;
 					table.addrow();
 					row=table.rows.last();
-					$('.field',row).text(vars.fieldinfos[values.field].label);
+					$('.field',row).text(vars.conditioninfos[key].label);
 					$('.comp',row).text(values.comp.name);
 					$('.value',row).text(values.label);
 				}
@@ -159,7 +159,7 @@ jQuery.noConflict();
 						}));
 						$('button#conditions').on('click',function(){
 							var conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'{}';
-							vars.conditionform.show({fieldinfos:vars.fieldinfos,conditions:JSON.parse(conditions)},function(resp){
+							vars.conditionform.show({fieldinfos:vars.conditioninfos,conditions:JSON.parse(conditions)},function(resp){
 								$('input#conditions',row).val(JSON.stringify(resp));
 								functions.loadconditions(conditiontable,resp);
 							});
