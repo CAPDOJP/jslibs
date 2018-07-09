@@ -141,7 +141,7 @@ jQuery.noConflict();
 						}));
 						$('button#conditions').on('click',function(){
 							var conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'{}';
-							vars.conditionform.show({fieldinfos:vars.fieldinfos,conditions:conditions},function(resp){
+							vars.conditionform.show({fieldinfos:vars.fieldinfos,conditions:JSON.parse(conditions)},function(resp){
 								$('input#conditions',row).val(JSON.stringify(resp));
 								functions.loadconditions(conditiontable,resp);
 							});

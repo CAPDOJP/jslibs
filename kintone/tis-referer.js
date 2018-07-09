@@ -1522,6 +1522,7 @@ var ConditionsForm=function(options){
 	this.fields=options.fields;
 	this.dialog=createdialog(0,600);
 	this.groupsource=null;
+	this.statussource=null;
 	this.organizationsource=null;
 	this.usersource=null;
 	this.apps={};
@@ -1531,7 +1532,7 @@ var ConditionsForm=function(options){
 	this.fieldcontainer=div.clone(true).addClass('container').css({'padding':'5px','width':'100%'})
 	.append(title.clone(true))
 	.append(
-		select.clone(true).addClass('comp').css({'display':'block'})
+		select.clone(true).addClass('comp').css({'display':'block','margin-bottom':'5px'})
 		.append($('<option>').attr('value','').text('指定しない'))
 	);
 	$.each(this.fields,function(key,values){
@@ -1677,6 +1678,7 @@ var ConditionsForm=function(options){
 				break;
 			case 'CREATOR':
 			case 'MODIFIER':
+			case 'STATUS_ASSIGNEE':
 			case 'USER_SELECT':
 				comp=fieldcontainer.find('.comp')
 				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
@@ -1905,6 +1907,47 @@ var ConditionsForm=function(options){
 				});
 				fieldcontainer.append(receiver);
 				break;
+			case 'STATUS':
+				comp=fieldcontainer.find('.comp')
+				.append($('<option>').attr('value','0').text('次のいずれかを含む'))
+				.append($('<option>').attr('value','1').text('次のいずれも含まない'));
+				/* load group datas */
+				if (my.statussource==null)
+				{
+					my.statussource=[];
+					kintone.api(kintone.api.url('/k/v1/app/status',true),'GET',{app:kintone.app.getId()},function(resp){
+						resp.states.sort(function(a,b){
+							if(parseInt(a.index)<parseInt(b.index)) return -1;
+							if(parseInt(a.index)>parseInt(b.index)) return 1;
+							return 0;
+						});
+						$.each(resp.states,function(key,values){
+							my.statussource.push({value:key,text:values.name});
+						});
+					},function(error){});
+				}
+				receiver=referer.clone(true);
+				$('.button',receiver).on('click',function(){
+					var target=$(this);
+					my.selectbox.show({
+						datasource:my.statussource,
+						buttons:{
+							ok:function(selection){
+								target.closest('.container').find('.label').text(Object.values(selection).join(','));
+								target.closest('.container').find('.receiver').val(Object.keys(selection).join(','));
+								/* close the selectbox */
+								my.selectbox.hide();
+							},
+							cancel:function(){
+								/* close the selectbox */
+								my.selectbox.hide();
+							}
+						},
+						selected:target.closest('.container').find('.receiver').val().split(',')
+					});
+				});
+				fieldcontainer.append(receiver);
+				break;
 			case 'TIME':
 				comp=fieldcontainer.find('.comp')
 				.append($('<option>').attr('value','0').text('等しい'))
@@ -2008,7 +2051,9 @@ ConditionsForm.prototype={
 					case 'GROUP_SELECT':
 					case 'MODIFIER':
 					case 'ORGANIZATION_SELECT':
+					case 'STATUS_ASSIGNEE':
 					case 'USER_SELECT':
+					case 'STATUS':
 						var names=fieldcontainer.find('.label').val().split(',');
 						var values=receivevalue.split(',');
 						for (var i2=0;i2<values.length;i2++) receivevalues.push({code:values[i2],name:names[i2]});
@@ -2115,7 +2160,9 @@ ConditionsForm.prototype={
 				case 'GROUP_SELECT':
 				case 'MODIFIER':
 				case 'ORGANIZATION_SELECT':
+				case 'STATUS_ASSIGNEE':
 				case 'USER_SELECT':
+				case 'STATUS':
 					var label=[];
 					var receiver=[];
 					/* clear value */
@@ -2385,9 +2432,7 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 								break;
 						}
 						break;
-					case 'CREATOR':
 					case 'GROUP_SELECT':
-					case 'MODIFIER':
 					case 'ORGANIZATION_SELECT':
 					case 'USER_SELECT':
 						switch (values.comp.code)
@@ -2462,6 +2507,24 @@ jQuery.fn.conditionsmatch=function(record,fieldinfos,conditions){
 								{
 									if (value<values.value) match=false;
 								}
+								break;
+						}
+						break;
+					case 'CREATOR':
+					case 'MODIFIER':
+					case 'STATUS_ASSIGNEE':
+					case 'STATUS':
+						switch (values.comp.code)
+						{
+							case '0':
+								if ($.grep(values.value,function(item,index){
+									return item.code==value.code;
+								}).length==0) match=false;
+								break;
+							case '1':
+								if ($.grep(values.value,function(item,index){
+									return item.code==value.code;
+								}).length!=0) match=false;
 								break;
 						}
 						break;
