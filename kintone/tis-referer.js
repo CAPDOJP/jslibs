@@ -538,7 +538,7 @@ var FileSelect=function(options){
 		.append($('<input type="hidden" id="name">'))
 	)
 	.append(
-		cell.clone(true).css({'width':'30px'})
+		cell.clone(true).css({'border':'none','border-bottom':'1px dotted #C9C9C9','width':'30px'})
 		.append(
 			$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" alt="削除" title="削除">')
 			.css({'vertical-align':'middle;','width':'100%'})
