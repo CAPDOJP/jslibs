@@ -2078,11 +2078,11 @@ ConditionsForm.prototype={
 		$.each(options.fieldinfos,function(key,values){
 			if (key.match(/^\$/g)) return true;
 			if (!$('#'+key,my.dialog.contents).size()) return true;
-			if (!(key in options.conditions)) return true;
-			var condition=options.conditions[key];
+			var condition=(key in options.conditions)?options.conditions[key]:null;
 			var fieldinfo=options.fieldinfos[key];
 			var fieldcontainer=$('#'+key,my.dialog.contents);
-			$('.comp',fieldcontainer).val(condition.comp.code);
+			if (condition) $('.comp',fieldcontainer).val(condition.comp.code);
+			else $('.comp',fieldcontainer).val('');
 			switch (fieldinfo.type)
 			{
 				case 'CALC':
@@ -2092,6 +2092,8 @@ ConditionsForm.prototype={
 						case 'NUMBER_DIGIT':
 							/* clear value */
 							$('.receiver',fieldcontainer).val('');
+							if (!condition) return true;
+							if (!condition.value) return true;
 							/* initialize value */
 							$('.receiver',fieldcontainer).val(condition.value);
 							break;
@@ -2099,6 +2101,7 @@ ConditionsForm.prototype={
 							/* clear value */
 							$('.label',fieldcontainer).text('');
 							$('.receiver',fieldcontainer).val('');
+							if (!condition) return true;
 							if (!condition.value) return true;
 							/* initialize value */
 							$('.label',fieldcontainer).text(condition.value);
@@ -2111,6 +2114,7 @@ ConditionsForm.prototype={
 							$('.receiver',fieldcontainer).val('');
 							$('.receiverhour',fieldcontainer).val('00');
 							$('.receiverminute',fieldcontainer).val('00');
+							if (!condition) return true;
 							if (!condition.value) return true;
 							/* initialize value */
 							$('.label',fieldcontainer).text(new Date(condition.value.dateformat()).format('Y-m-d'));
@@ -2124,6 +2128,7 @@ ConditionsForm.prototype={
 							$('.receiver',fieldcontainer).val('');
 							$('.receiverhour',fieldcontainer).val('00');
 							$('.receiverminute',fieldcontainer).val('00');
+							if (!condition) return true;
 							if (!condition.value) return true;
 							/* initialize value */
 							$('.receiver',fieldcontainer).val(condition.value);
@@ -2140,6 +2145,8 @@ ConditionsForm.prototype={
 					$.each($('input[type=checkbox]',fieldcontainer),function(){
 						$(this).prop('checked',false);
 					});
+					if (!condition) return true;
+					if (!condition.value) return true;
 					/* initialize value */
 					for (var i=0;i<condition.value.length;i++) $('#'+condition.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
 					break;
@@ -2151,6 +2158,7 @@ ConditionsForm.prototype={
 					$('.receiver',fieldcontainer).val('');
 					$('.receiverhour',fieldcontainer).val('00');
 					$('.receiverminute',fieldcontainer).val('00');
+					if (!condition) return true;
 					if (!condition.value) return true;
 					/* initialize value */
 					$('.label',fieldcontainer).text(new Date(condition.value.dateformat()).format('Y-m-d'));
@@ -2170,6 +2178,8 @@ ConditionsForm.prototype={
 					/* clear value */
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
+					if (!condition) return true;
+					if (!condition.value) return true;
 					/* initialize value */
 					$.each(condition.value,function(index){
 						label.push(condition.value[index].name);
@@ -2182,6 +2192,7 @@ ConditionsForm.prototype={
 					/* clear value */
 					$('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
+					if (!condition) return true;
 					if (!condition.value) return true;
 					/* initialize value */
 					$('.label',fieldcontainer).text(condition.value);
@@ -2192,6 +2203,7 @@ ConditionsForm.prototype={
 					$('.receiver',fieldcontainer).val('');
 					$('.receiverhour',fieldcontainer).val('00');
 					$('.receiverminute',fieldcontainer).val('00');
+					if (!condition) return true;
 					if (!condition.value) return true;
 					/* initialize value */
 					$('.receiver',fieldcontainer).val(condition.value);
@@ -2200,11 +2212,13 @@ ConditionsForm.prototype={
 					break;
 				default:
 					/* clear value */
+					if ($('.label',fieldcontainer).size()) $('.label',fieldcontainer).text('');
 					$('.receiver',fieldcontainer).val('');
+					if (!condition) return true;
+					if (!condition.value) return true;
 					/* initialize value */
 					if (key in my.apps)
 					{
-						$('.label',fieldcontainer).text('');
 						for (var i=0;i<my.apps[key].length;i++)
 							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==condition.value)
 								$('.label',fieldcontainer).html(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
