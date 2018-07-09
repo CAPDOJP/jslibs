@@ -72,7 +72,7 @@ var referer=div.clone(true).css({
 .append(
 	span.clone(true).addClass('label').css({
 		'overflow':'hidden',
-		'padding-left':'35px',
+		'padding-left':'70px',
 		'text-overflow':'ellipsis',
 		'white-space':'nowrap',
 		'width':'100%'
@@ -82,7 +82,7 @@ var referer=div.clone(true).css({
 .append($('<input type="hidden" class="key">'))
 .append($('<input type="hidden" class="picker">'))
 .append(
-	button.clone(true).addClass('button').css({
+	button.clone(true).addClass('search').css({
 		'left':'0px',
 		'margin':'0px',
 		'padding':'0px',
@@ -91,6 +91,17 @@ var referer=div.clone(true).css({
 		'width':'30px'
 	})
 	.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png">').css({'width':'100%'}))
+)
+.append(
+	button.clone(true).addClass('clear').css({
+		'left':'35px',
+		'margin':'0px',
+		'padding':'0px',
+		'position':'absolute',
+		'top':'0px',
+		'width':'30px'
+	})
+	.append($('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png">').css({'width':'100%'}))
 );
 var select=$('<select>').css({
 	'border':'1px solid #C9C9C9',
@@ -1020,7 +1031,7 @@ var FieldsForm=function(options){
 				break;
 			case 'DATE':
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					/* day pickup */
 					var calendar=$('body').calendar({
@@ -1031,12 +1042,17 @@ var FieldsForm=function(options){
 					});
 					calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
 				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
+				});
 				fieldcontainer.append(receiver);
 				break;
 			case 'DATETIME':
 				receiver=referer.clone(true).append(time.clone(true));
 				$('.label',receiver).css({'width':'calc(100% - 150px)'});
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					/* day pickup */
 					var calendar=$('body').calendar({
@@ -1046,6 +1062,11 @@ var FieldsForm=function(options){
 						}
 					});
 					calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
 				});
 				$('.receiverhour',receiver).on('change',function(){
 					$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
@@ -1067,7 +1088,7 @@ var FieldsForm=function(options){
 				break;
 			case 'FILE':
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					my.filebox.show({
 						datasource:((target.closest('.container').find('.receiver').val().length!=0)?JSON.parse(target.closest('.container').find('.receiver').val()):[]),
@@ -1085,6 +1106,11 @@ var FieldsForm=function(options){
 							}
 						}
 					});
+				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
 				});
 				fieldcontainer.append(receiver);
 				break;
@@ -1106,7 +1132,7 @@ var FieldsForm=function(options){
 					});
 				}
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					my.selectbox.show({
 						datasource:my.groupsource,
@@ -1125,6 +1151,11 @@ var FieldsForm=function(options){
 						selected:target.closest('.container').find('.receiver').val().split(',')
 					});
 				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
+				});
 				fieldcontainer.append(receiver);
 				break;
 			case 'LINK':
@@ -1137,7 +1168,7 @@ var FieldsForm=function(options){
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
-					$('.button',receiver).on('click',function(){
+					$('.search',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
 							buttons:{
@@ -1153,6 +1184,11 @@ var FieldsForm=function(options){
 								my.referer[target.closest('.container').attr('id')].hide();
 							}
 						});
+					});
+					$('.clear',receiver).on('click',function(){
+						var target=$(this);
+						target.closest('.container').find('.label').text('');
+						target.closest('.container').find('.receiver').val('');
 					});
 				}
 				else receiver=textline.clone(true).addClass('receiver');
@@ -1172,7 +1208,7 @@ var FieldsForm=function(options){
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
-					$('.button',receiver).on('click',function(){
+					$('.search',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
 							buttons:{
@@ -1188,6 +1224,11 @@ var FieldsForm=function(options){
 								my.referer[target.closest('.container').attr('id')].hide();
 							}
 						});
+					});
+					$('.clear',receiver).on('click',function(){
+						var target=$(this);
+						target.closest('.container').find('.label').text('');
+						target.closest('.container').find('.receiver').val('');
 					});
 				}
 				else
@@ -1215,7 +1256,7 @@ var FieldsForm=function(options){
 					});
 				}
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					my.selectbox.show({
 						datasource:my.organizationsource,
@@ -1233,6 +1274,11 @@ var FieldsForm=function(options){
 						},
 						selected:target.closest('.container').find('.receiver').val().split(',')
 					});
+				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
 				});
 				fieldcontainer.append(receiver);
 				break;
@@ -1288,7 +1334,7 @@ var FieldsForm=function(options){
 					});
 				}
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					my.selectbox.show({
 						datasource:my.usersource,
@@ -1306,6 +1352,11 @@ var FieldsForm=function(options){
 						},
 						selected:target.closest('.container').find('.receiver').val().split(',')
 					});
+				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
 				});
 				fieldcontainer.append(receiver);
 				break;
@@ -1569,7 +1620,7 @@ var ConditionsForm=function(options){
 						.append($('<option>').attr('value','4').text('以降'))
 						.append($('<option>').attr('value','5').text('より後'));
 						receiver=referer.clone(true);
-						$('.button',receiver).on('click',function(){
+						$('.search',receiver).on('click',function(){
 							var target=$(this);
 							/* day pickup */
 							var calendar=$('body').calendar({
@@ -1579,6 +1630,11 @@ var ConditionsForm=function(options){
 								}
 							});
 							calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+						});
+						$('.clear',receiver).on('click',function(){
+							var target=$(this);
+							target.closest('.container').find('.label').text('');
+							target.closest('.container').find('.receiver').val('');
 						});
 						fieldcontainer.append(receiver);
 						break;
@@ -1591,7 +1647,7 @@ var ConditionsForm=function(options){
 						.append($('<option>').attr('value','5').text('より後'));
 						receiver=referer.clone(true).append(time.clone(true));
 						$('.label',receiver).css({'width':'calc(100% - 150px)'});
-						$('.button',receiver).on('click',function(){
+						$('.search',receiver).on('click',function(){
 							var target=$(this);
 							/* day pickup */
 							var calendar=$('body').calendar({
@@ -1601,6 +1657,11 @@ var ConditionsForm=function(options){
 								}
 							});
 							calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+						});
+						$('.clear',receiver).on('click',function(){
+							var target=$(this);
+							target.closest('.container').find('.label').text('');
+							target.closest('.container').find('.receiver').val('');
 						});
 						$('.receiverhour',receiver).on('change',function(){
 							$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
@@ -1660,7 +1721,7 @@ var ConditionsForm=function(options){
 				.append($('<option>').attr('value','5').text('より後'));
 				receiver=referer.clone(true).append(time.clone(true));
 				$('.label',receiver).css({'width':'calc(100% - 150px)'});
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					/* day pickup */
 					var calendar=$('body').calendar({
@@ -1670,6 +1731,11 @@ var ConditionsForm=function(options){
 						}
 					});
 					calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
 				});
 				$('.receiverhour',receiver).on('change',function(){
 					$(this).closest('.container').find('.receiver').val(my.datetimevalue($(this).closest('.container')));
@@ -1702,7 +1768,7 @@ var ConditionsForm=function(options){
 					});
 				}
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					my.selectbox.show({
 						datasource:my.usersource,
@@ -1721,6 +1787,11 @@ var ConditionsForm=function(options){
 						selected:target.closest('.container').find('.receiver').val().split(',')
 					});
 				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
+				});
 				fieldcontainer.append(receiver);
 				break;
 			case 'DATE':
@@ -1732,7 +1803,7 @@ var ConditionsForm=function(options){
 				.append($('<option>').attr('value','4').text('以降'))
 				.append($('<option>').attr('value','5').text('より後'));
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					/* day pickup */
 					var calendar=$('body').calendar({
@@ -1742,6 +1813,11 @@ var ConditionsForm=function(options){
 						}
 					});
 					calendar.show({activedate:new Date(target.closest('.container').find('.label').text().dateformat())});
+				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
 				});
 				fieldcontainer.append(receiver);
 				break;
@@ -1765,7 +1841,7 @@ var ConditionsForm=function(options){
 					});
 				}
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					my.selectbox.show({
 						datasource:my.groupsource,
@@ -1784,6 +1860,11 @@ var ConditionsForm=function(options){
 						selected:target.closest('.container').find('.receiver').val().split(',')
 					});
 				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
+				});
 				fieldcontainer.append(receiver);
 				break;
 			case 'LINK':
@@ -1801,7 +1882,7 @@ var ConditionsForm=function(options){
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
-					$('.button',receiver).on('click',function(){
+					$('.search',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
 							buttons:{
@@ -1817,6 +1898,11 @@ var ConditionsForm=function(options){
 								my.referer[target.closest('.container').attr('id')].hide();
 							}
 						});
+					});
+					$('.clear',receiver).on('click',function(){
+						var target=$(this);
+						target.closest('.container').find('.label').text('');
+						target.closest('.container').find('.receiver').val('');
 					});
 				}
 				else receiver=textline.clone(true).addClass('receiver');
@@ -1845,7 +1931,7 @@ var ConditionsForm=function(options){
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
-					$('.button',receiver).on('click',function(){
+					$('.search',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
 							buttons:{
@@ -1861,6 +1947,11 @@ var ConditionsForm=function(options){
 								my.referer[target.closest('.container').attr('id')].hide();
 							}
 						});
+					});
+					$('.clear',receiver).on('click',function(){
+						var target=$(this);
+						target.closest('.container').find('.label').text('');
+						target.closest('.container').find('.receiver').val('');
 					});
 				}
 				else
@@ -1890,7 +1981,7 @@ var ConditionsForm=function(options){
 					});
 				}
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					my.selectbox.show({
 						datasource:my.organizationsource,
@@ -1908,6 +1999,11 @@ var ConditionsForm=function(options){
 						},
 						selected:target.closest('.container').find('.receiver').val().split(',')
 					});
+				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
 				});
 				fieldcontainer.append(receiver);
 				break;
@@ -1927,7 +2023,7 @@ var ConditionsForm=function(options){
 					},function(error){});
 				}
 				receiver=referer.clone(true);
-				$('.button',receiver).on('click',function(){
+				$('.search',receiver).on('click',function(){
 					var target=$(this);
 					my.selectbox.show({
 						datasource:my.statussource,
@@ -1945,6 +2041,11 @@ var ConditionsForm=function(options){
 						},
 						selected:target.closest('.container').find('.receiver').val().split(',')
 					});
+				});
+				$('.clear',receiver).on('click',function(){
+					var target=$(this);
+					target.closest('.container').find('.label').text('');
+					target.closest('.container').find('.receiver').val('');
 				});
 				fieldcontainer.append(receiver);
 				break;
