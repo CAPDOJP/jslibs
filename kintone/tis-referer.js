@@ -2071,8 +2071,8 @@ ConditionsForm.prototype={
 						};
 						break;
 				}
-				callback(res);
 			});
+			callback(res);
 			my.hide();
 		});
 		$.each(options.conditions,function(key,values){
