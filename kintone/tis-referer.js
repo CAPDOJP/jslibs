@@ -2605,6 +2605,7 @@ jQuery.extend({
 						break;
 					case 'DROP_DOWN':
 					case 'RADIO_BUTTON':
+					case 'STATUS':
 						if (!value) value='';
 						switch (condition.comp.code)
 						{
@@ -2740,14 +2741,13 @@ jQuery.extend({
 					case 'CREATOR':
 					case 'MODIFIER':
 					case 'STATUS_ASSIGNEE':
-					case 'STATUS':
 						switch (condition.comp.code)
 						{
 							case '0':
-								if (condition.value.indexOf(value.code)<0) match=false;
+								if (condition.value.indexOf((value.code)?value.code:'')<0) match=false;
 								break;
 							case '1':
-								if (condition.value.indexOf(value.code)>-1) match=false;
+								if (condition.value.indexOf((value.code)?value.code:'')>-1) match=false;
 								break;
 						}
 						break;
