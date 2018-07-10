@@ -273,6 +273,7 @@ var Referer=function(options){
 	this.displaytext=options.displaytext;
 	this.searches=options.searches;
 	this.dialog=createdialog(700,900);
+	this.contents=this.dialog.contents;
 	this.searchblock=this.dialog.header
 	this.callback=null;
 	/* append elements */
@@ -484,6 +485,7 @@ var FileSelect=function(options){
 	var my=this;
 	/* property */
 	this.dialog=createdialog(600,500);
+	this.contents=this.dialog.contents;
 	/* append elements */
 	this.dialog.header
 	.append(
@@ -666,6 +668,7 @@ var MultiSelect=function(options){
 	var my=this;
 	/* property */
 	this.dialog=createdialog(600,500);
+	this.contents=this.dialog.contents;
 	this.selection={};
 	/* append elements */
 	this.dialog.contents.append(this.dialog.lists);
@@ -774,6 +777,7 @@ var TermSelect=function(options){
 	this.issingle=options.issingle;
 	this.istimeonly=options.istimeonly;
 	this.dialog=createdialog(500,(((!options.issingle)?545:365)+pluswidth));
+	this.contents=this.dialog.contents;
 	/* append elements */
 	this.dialog.container.append(this.dialog.contents);
 	this.dialog.container.append(
@@ -998,6 +1002,7 @@ var FieldsForm=function(options){
 	this.callback=options.callback;
 	this.radionulllabel=options.radionulllabel;
 	this.dialog=createdialog(0,600);
+	this.contents=this.dialog.contents;
 	this.groupsource=null;
 	this.organizationsource=null;
 	this.usersource=null;
@@ -1572,6 +1577,7 @@ var ConditionsForm=function(options){
 	/* property */
 	this.fields=options.fields;
 	this.dialog=createdialog(900,800);
+	this.contents=this.dialog.contents;
 	this.groupsource=null;
 	this.statussource=null;
 	this.organizationsource=null;
