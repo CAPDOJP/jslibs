@@ -160,6 +160,7 @@ jQuery.noConflict();
 			row.find('td').eq(from).append(displays);
 			row.find('td').eq(from).append($('<span>').addClass('timetable-daily-merge-span').css({'background-color':'#'+color}));
 			if (vars.config['registeredonly']=='1') row.find('td').eq(from).on('click',function(){
+				sessionStorage.setItem('date_timetable-daily',vars.date.format('Y-m-d').dateformat());
 				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#\\$id').val()+'&mode=show';
 			});
 			$.each(filter,function(key,values){
@@ -428,6 +429,11 @@ jQuery.noConflict();
 			container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
 		});
 		/* setup date value */
+		if (sessionStorage.getItem('date_timetable-daily'))
+		{
+			vars.date=new Date(sessionStorage.getItem('date_timetable-daily'));
+			sessionStorage.removeItem('date_timetable-daily');
+		}
 		date.text(vars.date.format('Y-m-d')+' ('+week[vars.date.getDay()]+')');
 		/* day pickup button */
 		vars.calendar=$('body').calendar({
@@ -512,9 +518,11 @@ jQuery.noConflict();
 				query+='&'+vars.config['totime']+'='+tohour.toString().lpad('0',2)+':'+tominute.toString().lpad('0',2);
 				if (vars.levels.lookup) query+='&'+vars.levels.lookup+'='+caller.contents.find('tr').eq(rowindex).find('td').first().find('input#segment').val();
 				else for (var i=0;i<vars.segmentkeys.length;i++) query+='&'+vars.segmentkeys[i]+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(i).find('input#segment').val();
+				sessionStorage.setItem('date_timetable-daily',vars.date.format('Y-m-d').dateformat());
 				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
 			},
 			unmergetrigger:function(caller,cell,rowindex,cellindex){
+				sessionStorage.setItem('date_timetable-daily',vars.date.format('Y-m-d').dateformat());
 				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
 			},
 			callback:{

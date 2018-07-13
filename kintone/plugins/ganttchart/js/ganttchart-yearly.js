@@ -126,6 +126,8 @@ jQuery.noConflict();
 			row.find('td').eq(from).append(displays);
 			row.find('td').eq(from).append($('<span>').addClass('ganttchart-merge-span').css({'background-color':'#'+color}));
 			if (vars.config['registeredonly']=='1') row.find('td').eq(from).on('click',function(){
+				sessionStorage.setItem('fromdate_ganttchart-yearly',vars.fromdate.format('Y-m-d').dateformat());
+				sessionStorage.setItem('todate_ganttchart-yearly',vars.todate.format('Y-m-d').dateformat());
 				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#\\$id').val()+'&mode=show';
 			});
 			$.each(filter,function(key,values){
@@ -233,9 +235,13 @@ jQuery.noConflict();
 						query+='&'+vars.config['todate']+'='+vars.fromdate.calc((tomonth+1).toString()+' month').calc('-1 day').format('Y-m-d');
 						if (vars.levels.lookup) query+='&'+vars.levels.lookup+'='+caller.contents.find('tr').eq(rowindex).find('td').first().find('input#segment').val();
 						else for (var i=0;i<vars.segmentkeys.length;i++) query+='&'+vars.segmentkeys[i]+'='+caller.contents.find('tr').eq(rowindex).find('td').eq(i).find('input#segment').val();
+						sessionStorage.setItem('fromdate_ganttchart-yearly',vars.fromdate.format('Y-m-d').dateformat());
+						sessionStorage.setItem('todate_ganttchart-yearly',vars.todate.format('Y-m-d').dateformat());
 						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
 					},
 					unmergetrigger:function(caller,cell,rowindex,cellindex){
+						sessionStorage.setItem('fromdate_ganttchart-yearly',vars.fromdate.format('Y-m-d').dateformat());
+						sessionStorage.setItem('todate_ganttchart-yearly',vars.todate.format('Y-m-d').dateformat());
 						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+cell.find('input#\\$id').val()+'&mode=show';
 					},
 					callback:{
@@ -479,6 +485,16 @@ jQuery.noConflict();
 			container.css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
 		});
 		/* setup date value */
+		if (sessionStorage.getItem('fromdate_ganttchart-yearly'))
+		{
+			vars.fromdate=new Date(sessionStorage.getItem('fromdate_ganttchart-yearly'));
+			sessionStorage.removeItem('fromdate_ganttchart-yearly');
+		}
+		if (sessionStorage.getItem('todate_ganttchart-yearly'))
+		{
+			vars.todate=new Date(sessionStorage.getItem('todate_ganttchart-yearly'));
+			sessionStorage.removeItem('todate_ganttchart-yearly');
+		}
 		vars.datecalc=$.ganttchartdatecalc(vars.fromdate,vars.todate);
 		fromdate.text(vars.fromdate.format('Y'));
 		todate.text(vars.todate.format('Y'));

@@ -92,6 +92,8 @@ jQuery.noConflict();
 						'left':(vars.cellwidth*position)+'px'
 					})
 					.on('click',function(){
+						sessionStorage.setItem('fromdate_timetable-weekly',vars.fromdate.format('Y-m-d').dateformat());
+						sessionStorage.setItem('todate_timetable-weekly',vars.todate.format('Y-m-d').dateformat());
 						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
 					})
 					.append($('<input type="hidden">').attr('id','id').val(filter[i]['$id'].value));
@@ -163,6 +165,8 @@ jQuery.noConflict();
 						var query='';
 						query+='view='+vars.config.datetimetable;
 						query+='&'+vars.config['date']+'='+$(this).closest('th').find('p').text();
+						sessionStorage.setItem('fromdate_timetable-weekly',vars.fromdate.format('Y-m-d').dateformat());
+						sessionStorage.setItem('todate_timetable-weekly',vars.todate.format('Y-m-d').dateformat());
 						window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?'+query;
 					}));
 					if (vars.levels.lookup)
@@ -316,6 +320,16 @@ jQuery.noConflict();
 		if ($('.timetable-dayfeed').size()) $('.timetable-dayfeed').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
+		if (sessionStorage.getItem('fromdate_timetable-weekly'))
+		{
+			vars.fromdate=new Date(sessionStorage.getItem('fromdate_timetable-weekly'));
+			sessionStorage.removeItem('fromdate_timetable-weekly');
+		}
+		if (sessionStorage.getItem('todate_timetable-weekly'))
+		{
+			vars.todate=new Date(sessionStorage.getItem('todate_timetable-weekly'));
+			sessionStorage.removeItem('todate_timetable-weekly');
+		}
 		vars.fromdate.setDate(vars.fromdate.getDate()+vars.fromdate.getDay()*-1);
 		vars.todate=vars.fromdate.calc('6 day');
 		week.text(vars.fromdate.format('Y-m-d')+' ～ '+vars.todate.format('Y-m-d'));

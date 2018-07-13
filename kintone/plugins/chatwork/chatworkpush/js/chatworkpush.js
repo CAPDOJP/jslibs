@@ -156,14 +156,15 @@ jQuery.noConflict();
 			if (accesstoken)
 			{
 				kintone.proxy(
-					'https://api.chatwork.com/v2/rooms/'+room_id+'/messages?'+functions.join({
-						'body':encodeURIComponent(message)
-					}),
+					'https://api.chatwork.com/v2/rooms/'+room_id+'/messages',
 					'POST',
 					{
-						'Authorization':'Bearer '+accesstoken
+						'Authorization':'Bearer '+accesstoken,
+						'Content-Type':'application/x-www-form-urlencoded'
 					},
-					{},
+					functions.join({
+						'body':encodeURIComponent(message)
+					}),
 					function(body,status,headers){
 						var json=JSON.parse(body);
 						var refresh=false;

@@ -74,6 +74,8 @@ jQuery.noConflict();
 						})
 						.html(inner)
 						.on('click',function(){
+							sessionStorage.setItem('fromdate_timetable-monthly',vars.fromdate.format('Y-m-d').dateformat());
+							sessionStorage.setItem('todate_timetable-monthly',vars.todate.format('Y-m-d').dateformat());
 							window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+$(this).find('input#id').val()+'&mode=show';
 						})
 						.append($('<input type="hidden">').attr('id','id').val(filter[i]['$id'].value))
@@ -106,6 +108,8 @@ jQuery.noConflict();
 							var query='';
 							query+='view='+vars.config.datetimetable;
 							query+='&'+vars.config['date']+'='+day.format('Y-m-d');
+							sessionStorage.setItem('fromdate_timetable-monthly',vars.fromdate.format('Y-m-d').dateformat());
+							sessionStorage.setItem('todate_timetable-monthly',vars.todate.format('Y-m-d').dateformat());
 							window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/?'+query;
 						}))
 					);
@@ -263,6 +267,16 @@ jQuery.noConflict();
 		if ($('.timetable-dayfeed').size()) $('.timetable-dayfeed').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
+		if (sessionStorage.getItem('fromdate_timetable-monthly'))
+		{
+			vars.fromdate=new Date(sessionStorage.getItem('fromdate_timetable-monthly'));
+			sessionStorage.removeItem('fromdate_timetable-monthly');
+		}
+		if (sessionStorage.getItem('todate_timetable-monthly'))
+		{
+			vars.todate=new Date(sessionStorage.getItem('todate_timetable-monthly'));
+			sessionStorage.removeItem('todate_timetable-monthly');
+		}
 		vars.fromdate=vars.fromdate.calc('first-of-month');
 		vars.todate=vars.fromdate.calc('1 month').calc('-1 day');
 		month.text(vars.fromdate.format('Y-m-d')+' ～ '+vars.todate.format('Y-m-d'));

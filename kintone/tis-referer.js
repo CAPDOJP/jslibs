@@ -662,11 +662,13 @@ jQuery.fn.fileselect=function(){
 */
 var MultiSelect=function(options){
 	var options=$.extend({
-		container:null
+		container:null,
+		ismulticells:false
 	},options);
 	/* valiable */
 	var my=this;
 	/* property */
+	this.ismulticells=options.ismulticells;
 	this.dialog=createdialog(600,500);
 	this.contents=this.dialog.contents;
 	this.selection={};
@@ -681,26 +683,27 @@ var MultiSelect=function(options){
 	this.dialog.cover.append(this.dialog.container);
 	options.container.append(this.dialog.cover);
 	/* create template */
-	this.template=$('<tr>')
-	.append(
-		cell.clone(true).css({'padding':'5px'})
-		.append($('<span>'))
-		.append($('<input type="hidden">'))
-		.on('click',function(){
-			if ($(this).find('input').val() in my.selection)
-			{
-				$(this).css({'background-color':'transparent'});
-				delete my.selection[$(this).find('input').val()];
-			}
-			else
-			{
-				$(this).css({'background-color':'#a0d8ef'});
-				my.selection[$(this).find('input').val()]=$(this).find('span').text();
-			}
-		})
-	)
-	.on('mouseover',function(e){$(this).css({'background-color':'#f5b2b2'});})
-	.on('mouseout',function(e){$(this).css({'background-color':'transparent'});});
+	if (!this.ismulticells)
+		this.template=$('<tr>')
+		.append(
+			cell.clone(true).css({'padding':'5px'})
+			.append($('<span>'))
+			.append($('<input type="hidden">'))
+			.on('click',function(){
+				if ($(this).find('input').val() in my.selection)
+				{
+					$(this).css({'background-color':'transparent'});
+					delete my.selection[$(this).find('input').val()];
+				}
+				else
+				{
+					$(this).css({'background-color':'#a0d8ef'});
+					my.selection[$(this).find('input').val()]=$(this).find('span').text();
+				}
+			})
+		)
+		.on('mouseover',function(e){$(this).css({'background-color':'#f5b2b2'});})
+		.on('mouseout',function(e){$(this).css({'background-color':'transparent'});});
 };
 MultiSelect.prototype={
 	/* display referer */
@@ -714,25 +717,76 @@ MultiSelect.prototype={
 		/* buttons callback */
 		$.each(options.buttons,function(key,values){
 			if (my.dialog.footer.find('button#'+key).size())
-				my.dialog.footer.find('button#'+key).off('click').on('click',function(){if (values!=null) values(my.selection);});
+				my.dialog.footer.find('button#'+key).off('click').on('click',function(){
+					if (values!=null) values((my.ismulticells)?Object.values(my.selection):my.selection);
+				});
 		});
+		/* create template */
+		if (this.ismulticells)
+		{
+			this.template=$('<tr>').append($('<input type="hidden">'));
+			$.each(options.datasource[0],function(key,values){
+				my.template
+				.append(
+					cell.clone(true).css({'padding':'5px'})
+					.append($('<span>').addClass(key))
+					.on('click',function(){
+						var row=$(this).closest('tr');
+						if ($('input',row).val() in my.selection)
+						{
+							$('td',row).css({'background-color':'transparent'});
+							delete my.selection[$('input',row).val()];
+						}
+						else
+						{
+							$('td',row).css({'background-color':'#a0d8ef'});
+							my.selection[$('input',row).val()]=$.extend(true,{},options.datasource[parseInt($('input',row).val())]);
+						}
+					})
+				)
+				.on('mouseover',function(e){$(this).css({'background-color':'#f5b2b2'});})
+				.on('mouseout',function(e){$(this).css({'background-color':'transparent'});});
+			});
+		}
 		/* create lists */
 		this.dialog.lists.find('tbody').empty();
 		this.selection={};
-		$.each(options.datasource,function(index){
+		for (var i=0;i<options.datasource.length;i++)
+		{
+			var datas=options.datasource[i];
 			var list=my.template.clone(true);
-			var listtext=options.datasource[index].text;
-			var listvalue=options.datasource[index].value;
-			$('span',list).html(listtext);
-			$('input[type=hidden]',list).val(listvalue);
-			if ($.inArray(listvalue,options.selected)>-1)
+			if (!this.ismulticells)
 			{
-				list.find('td').css({'background-color':'#a0d8ef'});;
-				my.selection[listvalue]=listtext;
+				$('span',list).html(datas.text);
+				$('input[type=hidden]',list).val(datas.value);
+				if ($.inArray(datas.value,options.selected)>-1)
+				{
+					$('td',list).css({'background-color':'#a0d8ef'});;
+					my.selection[datas.value]=datas.text;
+				}
+				else $(this).css({'background-color':'transparent'});
 			}
-			else $(this).css({'background-color':'transparent'});
+			else
+			{
+				$('input[type=hidden]',list).val(i);
+				$.each(datas,function(key,values){
+					$('span.'+key,list).html(values);
+				});
+				if ($.grep(options.selected,function(item,index){
+					var exists=0;
+					$.each(item,function(key,values){
+						if (datas[key]==values) exists++;
+					});
+					return Object.keys(item).length==exists;
+				}).length!=0)
+				{
+					$('td',list).css({'background-color':'#a0d8ef'});;
+					my.selection[i]=$.extend(true,{},datas);
+				}
+				else $(this).css({'background-color':'transparent'});
+			}
 			my.dialog.lists.find('tbody').append(list);
-		});
+		}
 		this.dialog.cover.show();
 	},
 	/* hide referer */
@@ -745,7 +799,12 @@ MultiSelect.prototype={
 	}
 };
 jQuery.fn.multiselect=function(options){
-	return new MultiSelect({container:$(this)});
+	var options=$.extend({
+		container:null,
+		ismulticells:false
+	},options);
+	options.container=this;
+	return new MultiSelect(options);
 };
 /*
 *--------------------------------------------------------------------

@@ -147,6 +147,11 @@ jQuery.noConflict();
 		if ($('.workshift-headermenucontents').size()) $('.workshift-headermenucontents').remove();
 		kintone.app.getHeaderMenuSpaceElement().appendChild(feed[0]);
 		/* setup date value */
+		if (sessionStorage.getItem('date_works'))
+		{
+			vars.date=new Date(sessionStorage.getItem('date_works'));
+			sessionStorage.removeItem('date_works');
+		}
 		date.text(vars.date.format('Y-m-d')+' ('+week[vars.date.getDay()]+')');
 		/* day pickup button */
 		vars.calendar=$('body').calendar({
@@ -190,6 +195,11 @@ jQuery.noConflict();
 					$.each(vars.apps['assignment'],function(key,values){
 						$('select',assignment).append($('<option>').attr('value',key).html('&nbsp;'+values+'&nbsp;'));
 					});
+					if (sessionStorage.getItem('assignment_works'))
+					{
+						$('select',assignment).val(sessionStorage.getItem('assignment_works'));
+						sessionStorage.removeItem('assignment_works');
+					}
 					$('select',assignment).on('change',function(){
 						/* reload view */
 						functions.load();
@@ -213,7 +223,12 @@ jQuery.noConflict();
 						$('<button class="customview-button edit-button">').on('click',function(){
 							var cell=$(this).closest('td');
 							var index=$('.workid',cell).val();
-							if (index.length!=0) window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+index;
+							if (index.length!=0)
+							{
+								sessionStorage.setItem('date_works',vars.date.format('Y-m-d').dateformat());
+								sessionStorage.setItem('assignment_works',$('select',assignment).val());
+								window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+index;
+							}
 						})
 					)
 					.append($('<input type="hidden" class="workid" value="">'))
