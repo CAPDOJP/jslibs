@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone ルックアップ複数レコード選択プラグイン",
+        "ja":"kintone ルックアップレコードコピープラグイン",
         "en":"kintone Multi Picker plug-in",
-        "zh":"kintone ルックアップ複数レコード選択プラグイン"
+        "zh":"kintone ルックアップレコードコピープラグイン"
     },
     "description":{
-        "ja":"ルックアップフィールドに指定した別アプリのレコード値を複数選択し、指定フィールドに連結配置するプラグインです。",
-        "en":"This plug-in selects multiple record values of another application specified in the lookup field and concatenates them in the specified field",
-        "zh":"ルックアップフィールドに指定した別アプリのレコード値を複数選択し、指定フィールドに連結配置するプラグインです。"
+        "ja":"ルックアップフィールドに指定した別アプリのレコードを指定フィールドやテーブルにコピーするプラグインです。",
+        "en":"This plug-in copies the record of another application specified in the lookup field to specified field or table",
+        "zh":"ルックアップフィールドに指定した別アプリのレコードを指定フィールドやテーブルにコピーするプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -24,7 +24,7 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
             "js/sweetalert.min.js",
-            "js/multipicker.js"
+            "js/lookupcopy.js"
         ],
         "css":[
             "css/sweetalert.css"

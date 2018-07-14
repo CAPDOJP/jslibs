@@ -726,9 +726,11 @@ MultiSelect.prototype={
 		{
 			this.template=$('<tr>').append($('<input type="hidden">'));
 			$.each(options.datasource[0],function(key,values){
+				var css={'padding':'5px'};
+				if (!values.display) css['display']='none';
 				my.template
 				.append(
-					cell.clone(true).css({'padding':'5px'})
+					cell.clone(true).css(css)
 					.append($('<span>').addClass(key))
 					.on('click',function(){
 						var row=$(this).closest('tr');
@@ -770,7 +772,7 @@ MultiSelect.prototype={
 			{
 				$('input[type=hidden]',list).val(i);
 				$.each(datas,function(key,values){
-					$('span.'+key,list).html(values);
+					$('span.'+key,list).html(values.value);
 				});
 				if ($.grep(options.selected,function(item,index){
 					var exists=0;

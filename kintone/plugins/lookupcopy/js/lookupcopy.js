@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "multipicker"
+* jQuery-Plugin "lookupcopy"
 * Version: 1.0
 * Copyright (c) 2017 TIS
 *
@@ -48,8 +48,8 @@ jQuery.noConflict();
 				swal('Error!',error.message,'error');
 			});
 		},
-		/* setup button */
-		setupbutton:function(setting){
+		/* setup connect button */
+		setupconnectbutton:function(setting){
 			$.each($('body').fields(setting.connected),function(index){
 				var parent=$(this).closest('div');
 				var target=$(this);
@@ -88,24 +88,26 @@ jQuery.noConflict();
 							var datasource=[];
 							var displaytext=fieldinfo.lookup.lookupPickerFields;
 							if (displaytext.length==0) displaytext=[fieldinfo.lookup.relatedKeyField];
-							else
-							{
-								if (displaytext.indexOf(fieldinfo.lookup.relatedKeyField)<0)
-									displaytext.push(fieldinfo.lookup.relatedKeyField);
-							}
 							for (var i=0;i<records.length;i++)
 							{
 								var record=records[i];
 								datasource.push({});
-								for (var i2=0;i2<displaytext.length;i2++) datasource[i][displaytext[i2]]=$.fieldvalue(record[displaytext[i2]]);
+								for (var i2=0;i2<displaytext.length;i2++) datasource[i][displaytext[i2]]={display:true,value:$.fieldvalue(record[displaytext[i2]])};
+								datasource[i]['lookupcopy_record_id']={display:false,value:record['$id'].value};
 							}
-							if (displaytext.length>2) vars.multiselecter.dialog.container.css({'width':(displaytext.length*200).toString()+'px'})
+							if (displaytext.length>3) vars.multiselecter.dialog.container.css({'width':((displaytext.length-1)*200).toString()+'px'})
 							vars.multiselecter.show({
 								datasource:datasource,
 								buttons:{
 									ok:function(selection){
 										var values=[];
-										for (var i=0;i<selection.length;i++) values.push(selection[i][fieldinfo.lookup.relatedKeyField]);
+										for (var i=0;i<selection.length;i++)
+											values.push((function(id){
+												var filter=$.grep(records,function(item,index){
+													return item['$id'].value==id;
+												});
+												return (filter.length!=0)?$.fieldvalue(filter[0][fieldinfo.lookup.relatedKeyField]):'';
+											})(selection[i]['lookupcopy_record_id'].value));
 										target.val(values.join(','));
 										vars.multiselecter.hide();
 									},
@@ -115,8 +117,14 @@ jQuery.noConflict();
 									var res=[];
 									for (var i=0;i<values.length;i++)
 									{
-										res.push({});
-										res[i][fieldinfo.lookup.relatedKeyField]=values[i];
+										var filter=$.grep(records,function(item,index){
+											return $.fieldvalue(item[fieldinfo.lookup.relatedKeyField])==values[i];
+										});
+										for (var i2=0;i2<filter.length;i2++)
+										{
+											res.push({});
+											res[i]['lookupcopy_record_id']=filter[i2]['$id'].value;
+										}
 									}
 									return res;
 								})(target.val().split(','))
@@ -125,6 +133,70 @@ jQuery.noConflict();
 					})
 				);
 			});
+		},
+		/* setup copy button */
+		setupcopybutton:function(setting){
+			var fieldinfo=vars.fieldinfos[setting.lookup];
+			var table=$('body').fields(setting.copies[0].copyto)[0].closest('table');
+			$('<button type="button">')
+			.css({
+				'border':'1px solid #e3e7e8',
+				'background-color':'transparent',
+				'color':'#3498db',
+				'display':'block',
+				'margin':'10px 0px',
+				'margin-left':((table.css('margin-left'))?table.css('margin-left'):'0px'),
+				'padding':'10px',
+				'width':'auto'
+			})
+			.text(fieldinfo.label+'からレコードをコピー')
+			.on('click',function(){
+				vars.offset=0;
+				functions.loaddatas(fieldinfo,[],function(records){
+					var datasource=[];
+					var displaytext=fieldinfo.lookup.lookupPickerFields;
+					if (displaytext.length==0) displaytext=[fieldinfo.lookup.relatedKeyField];
+					for (var i=0;i<records.length;i++)
+					{
+						var record=records[i];
+						datasource.push({});
+						for (var i2=0;i2<displaytext.length;i2++) datasource[i][displaytext[i2]]={display:true,value:$.fieldvalue(record[displaytext[i2]])};
+						datasource[i]['lookupcopy_record_id']={display:false,value:record['$id'].value};
+					}
+					if (displaytext.length>3) vars.multiselecter.dialog.container.css({'width':((displaytext.length-1)*200).toString()+'px'})
+					vars.multiselecter.show({
+						datasource:datasource,
+						buttons:{
+							ok:function(selection){
+								var record=kintone.app.record.get();
+								for (var i=0;i<selection.length;i++)
+								{
+									var filter=$.grep(records,function(item,index){
+										return item['$id'].value==selection[i]['lookupcopy_record_id'].value;
+									});
+									var isempty=false;
+									if (record.record[setting.tablecode].value.length==0)
+										if ($.isemptyrow(record.record[setting.tablecode].value[0].value)) isempty=true;
+									if (filter.length!=0)
+									{
+										var row={value:{}};
+										$.each(setting.tablefields,function(key,values){
+											row.value[key]={type:values.type,value:null};
+											for (var i2=0;i2<setting.copies.length;i2++)
+												if (key==setting.copies[i2].copyto) row.value[key].value=filter[0][setting.copies[i2].copyfrom].value;
+										});
+										if (isempty) record.record[setting.tablecode].value=[row];
+										else record.record[setting.tablecode].value.push(row);
+									}
+								}
+								kintone.app.record.set(record);
+								vars.multiselecter.hide();
+							},
+							cancel:function(){vars.multiselecter.hide();}
+						}
+					});
+				});
+			}).insertBefore(table);
 		}
 	};
 	/*---------------------------------------------------------------
@@ -144,19 +216,28 @@ jQuery.noConflict();
 			{
 				var setting=vars.settings[i];
 				var tablecode=vars.fieldinfos[setting.lookup].tablecode;
-				functions.setupbutton(setting);
-				if (tablecode)
+				if (setting.connected)
 				{
-					var events=[];
-					events.push('app.record.create.change.'+tablecode);
-					events.push('app.record.edit.change.'+tablecode);
-					(function(setting,events){
-						kintone.events.on(events,function(event){
-							functions.setupbutton(setting);
-							return event;
-						});
-					})(setting,events)
+					functions.setupconnectbutton(setting);
+					if (tablecode)
+					{
+						var events=[];
+						events.push('app.record.create.change.'+tablecode);
+						events.push('app.record.edit.change.'+tablecode);
+						(function(setting,events){
+							kintone.events.on(events,function(event){
+								functions.setupconnectbutton(setting);
+								return event;
+							});
+						})(setting,events)
+					}
 				}
+				if (setting.copies.length!=0)
+					if (setting.tablecode in resp.properties)
+					{
+						setting['tablefields']=resp.properties[setting.tablecode].fields
+						functions.setupcopybutton(setting);
+					}
 			}
 			vars.multiselecter=$('body').multiselect({ismulticells:true});
 		},function(error){

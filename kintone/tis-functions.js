@@ -395,6 +395,25 @@ jQuery.extend({
 		}
 		return value;
 	},
+	isemptyrow:function(row){
+		var isempty=true;
+		for (var key in row)
+			switch (row[key].type)
+			{
+				case 'CHECK_BOX':
+				case 'FILE':
+				case 'GROUP_SELECT':
+				case 'MULTI_SELECT':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					if (row[key].value.length!=0) isempty=false;
+					break;
+				default:
+					if (row[key].value) isempty=false;
+					break;
+			}
+		return isempty;
+	},
 	isvalidtype:function(criteria,target){
 		var types=[];
 		switch (criteria.type)
