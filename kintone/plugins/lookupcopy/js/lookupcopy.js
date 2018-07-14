@@ -175,7 +175,7 @@ jQuery.noConflict();
 										return item['$id'].value==selection[i]['lookupcopy_record_id'].value;
 									});
 									var isempty=false;
-									if (record.record[setting.tablecode].value.length==0)
+									if (record.record[setting.tablecode].value.length==1)
 										if ($.isemptyrow(record.record[setting.tablecode].value[0].value)) isempty=true;
 									if (filter.length!=0)
 									{

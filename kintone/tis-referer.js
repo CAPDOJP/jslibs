@@ -777,7 +777,7 @@ MultiSelect.prototype={
 				if ($.grep(options.selected,function(item,index){
 					var exists=0;
 					$.each(item,function(key,values){
-						if (datas[key]==values) exists++;
+						if (datas[key].value==values) exists++;
 					});
 					return Object.keys(item).length==exists;
 				}).length!=0)
