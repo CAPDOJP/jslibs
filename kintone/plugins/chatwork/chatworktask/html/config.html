@@ -1,0 +1,97 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">タスクIDフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">登録したタスクIDを格納するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="taskid">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">チャットルームIDフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">タスク登録先となるチャットルームIDを格納するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="roomid">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">チャットルーム名フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">タスク登録先となるチャットルーム名を格納するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="roomname">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">タスク担当メンバーフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">タスク担当者となるチャットワークメンバー名を格納するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="member">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">タスク期限フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">タスク期限をを格納するフィールドを指定して下さい。【日付】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="limit">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">タスク内容フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">タスク内容を入力するフィールドを指定して下さい。【文字列(1行)・文字列(複数行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="task">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">タスクステータスフィールド</div>
+		<div class="kintoneplugin-desc">一覧からタスクのステータスを取得する場合は、そのフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="status">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">クライアントID<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">OAuthクライアント作成時に取得したクライアントIDを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="client_id" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">クライアントシークレット<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">OAuthクライアント作成時に取得したクライアントシークレットを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="client_secret" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

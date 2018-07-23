@@ -5,7 +5,7 @@
 				<tr>
 					<td>
 						<div class="kintoneplugin-row">
-							<div class="kintoneplugin-label">ルックアップフィールド</div>
+							<div class="kintoneplugin-label">コピー元アプリ指定フィールド【ルックアップフィールド】</div>
 							<div class="kintoneplugin-select-outer">
 								<div class="kintoneplugin-select">
 									<select id="lookup">
@@ -13,14 +13,17 @@
 									</select>
 								</div>
 							</div>
+							<div class="kintoneplugin-input-checkbox-item">
+								<label><input type="checkbox" id="hidden" value="0">フィールドを非表示にする</label>
+							</div>
 							<div class="buttons">
 								<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addsetting" alt="+" title="追加">
 								<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delsetting" alt="x" title="削除">
 							</div>
 						</div>
 						<div class="kintoneplugin-row">
-							<div class="kintoneplugin-label">連結表示フィールド</div>
-							<div class="kintoneplugin-desc">ルックアップフィールド設定画面の「コピー元のフィールド」に指定したフィールド値を連結表示する場合は、そのフィールドを指定して下さい。</div>
+							<div class="kintoneplugin-label">選択レコード表示フィールド【文字列(1行)フィールド】</div>
+							<div class="kintoneplugin-desc">コピー元アプリ指定フィールド設定画面の「コピー元のフィールド」に指定したフィールド値のみを表示する場合は、そのフィールドを指定して下さい。</div>
 							<div class="kintoneplugin-select-outer">
 								<div class="kintoneplugin-select">
 									<select id="connected">
@@ -32,7 +35,7 @@
 						</div>
 						<div class="container">
 							<div class="kintoneplugin-row">
-								<div class="kintoneplugin-label">テーブルコピー設定</div>
+								<div class="kintoneplugin-label">テーブルコピー</div>
 								<div class="kintoneplugin-desc">取得したレコードをテーブルに追加する場合は、それらを指定して下さい。</div>
 								<table class="inner copies">
 									<thead>

@@ -91,13 +91,14 @@ div#splash p span.dot.progress5{
 		transform:translateY(0);
 	}
 }
-div.itemstock-dayfeed{
+div.itemstock-headermenucontents{
   display:inline-block;
-  line-height:30px;
-  padding-top:9px;
-}
-div.itemstock-dayfeed *{
+  height:48px;
+  line-height:48px;
   vertical-align:top;
+}
+div.itemstock-headermenucontents *{
+  vertical-align:middle;
 }
 /* individual style (create) */
 table.itemstock{

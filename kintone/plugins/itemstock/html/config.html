@@ -45,6 +45,29 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">倉庫・店舗アプリ</div>
+		<div class="kintoneplugin-desc">倉庫・店舗毎に在庫を管理したい場合は、入出庫アプリの双方に関連付けられている倉庫・店舗アプリを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="storageapp">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">倉庫・店舗名フィールド</div>
+		<div class="kintoneplugin-desc">倉庫・店舗アプリを指定した場合は、その名称となるフィールドを指定して下さい。【文字列(1行)フィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="storagename">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="kintoneplugin-caution">*指定出来るフィールドは「必須項目にする」「値の重複を禁止する」双方にチェックが付いているフィールドのみとなります。</div>
+	</div>
+	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">出庫アプリ<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">商品の出庫情報を保持しているアプリを指定して下さい。</div>
 		<div class="kintoneplugin-select-outer">
@@ -72,6 +95,17 @@
 		<div class="kintoneplugin-select-outer">
 			<div class="kintoneplugin-select">
 				<select id="shipmentitem">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">出庫倉庫・店舗フィールド</div>
+		<div class="kintoneplugin-desc">倉庫・店舗アプリが指定されているフィールドを指定して下さい。【ルックアップフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="shipmentstorage">
 					<option value=""></option>
 				</select>
 			</div>
@@ -122,6 +156,17 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">入庫倉庫・店舗フィールド</div>
+		<div class="kintoneplugin-desc">倉庫・店舗アプリが指定されているフィールドを指定して下さい。【ルックアップフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="arrivalstorage">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">入庫数量フィールド<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">商品の入庫数が入力されたフィールドを指定して下さい。【数値/計算フィールド】</div>
 		<div class="kintoneplugin-select-outer">
@@ -155,6 +200,17 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">棚卸倉庫・店舗フィールド</div>
+		<div class="kintoneplugin-desc">倉庫・店舗アプリが指定されているフィールドを指定して下さい。【ルックアップフィールド】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="inventorystorage">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">棚卸数量フィールド<span class="kintoneplugin-require">*</span></div>
 		<div class="kintoneplugin-desc">棚卸時の在庫差異を入力するフィールドを指定して下さい。【数値フィールド】</div>
 		<div class="kintoneplugin-select-outer">
@@ -164,7 +220,6 @@
 				</select>
 			</div>
 		</div>
-	</div>
 	</div>
 </div>
 <div class="block">

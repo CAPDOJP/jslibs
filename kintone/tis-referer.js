@@ -1233,7 +1233,8 @@ var FieldsForm=function(options){
 					this.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+					if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+					else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.search',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
@@ -1273,7 +1274,8 @@ var FieldsForm=function(options){
 					this.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-					$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+					if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+					else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.search',receiver).on('click',function(){
 						var target=$(this);
 						my.referer[target.closest('.container').attr('id')].show({
@@ -1981,7 +1983,8 @@ var ConditionsForm=function(options){
 								my.loaddatas(fieldinfo);
 								receiver=referer.clone(true);
 								$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-								$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+								if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+								else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 								$('.search',receiver).on('click',function(){
 									var target=$(this);
 									my.referer[$('.field',container).val()].show({
@@ -2030,7 +2033,8 @@ var ConditionsForm=function(options){
 								my.loaddatas(fieldinfo);
 								receiver=referer.clone(true);
 								$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-								$('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+								if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+								else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 								$('.search',receiver).on('click',function(){
 									var target=$(this);
 									my.referer[$('.field',container).val()].show({

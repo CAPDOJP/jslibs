@@ -153,16 +153,17 @@ jQuery.noConflict();
 				for (var i=0;i<settings.length;i++)
 				{
 					if (i>0) vars.settingtable.addrow();
-					$('select#lookup',vars.settingtable.rows.last()).val(settings[i].lookup);
-					$('select#connected',vars.settingtable.rows.last()).val(settings[i].connected);
+					row=vars.settingtable.rows.last();
+					$('select#lookup',row).val(settings[i].lookup);
+					$('select#connected',row).val(settings[i].connected);
+					if (settings[i].hidden=='1') $('input#hidden',row).prop('checked',true);
 					(function(params,copies){
 						functions.reloadcopies(params,function(){
 							for (var i2=0;i2<copies.length;i2++)
 							{
 								if (i2>0) params.copies.addrow();
-								row=params.copies.rows.last();
-								$('select#copyfrom',row).val(copies[i2].copyfrom);
-								$('select#copyto',row).val(copies[i2].copyto);
+								$('select#copyfrom',params.copies.rows.last()).val(copies[i2].copyfrom);
+								$('select#copyto',params.copies.rows.last()).val(copies[i2].copyto);
 							}
 						});
 					})(vars.settingparams[i],settings[i]['copies']);
@@ -182,7 +183,7 @@ jQuery.noConflict();
 		/* check values */
 		for (var i=0;i<vars.settingparams.length;i++)
 		{
-			var setting={lookup:'',connected:'',copies:[],tablecode:''};
+			var setting={lookup:'',connected:'',copies:[],hidden:'0',tablecode:''};
 			row=vars.settingparams[i].container;
 			if (!$('select#lookup',row).val()) continue;
 			if ($('select#connected',row).val())
@@ -193,6 +194,7 @@ jQuery.noConflict();
 				}
 			setting.lookup=$('select#lookup',row).val();
 			setting.connected=$('select#connected',row).val();
+			setting.hidden=($('input#hidden',row).prop('checked'))?'1':'0';
 			for (var i2=0;i2<vars.settingparams[i].copies.rows.length;i2++)
 			{
 				row=vars.settingparams[i].copies.rows.eq(i2);

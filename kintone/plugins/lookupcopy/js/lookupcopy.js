@@ -95,7 +95,7 @@ jQuery.noConflict();
 								for (var i2=0;i2<displaytext.length;i2++) datasource[i][displaytext[i2]]={display:true,value:$.fieldvalue(record[displaytext[i2]])};
 								datasource[i]['lookupcopy_record_id']={display:false,value:record['$id'].value};
 							}
-							if (displaytext.length>3) vars.multiselecter.dialog.container.css({'width':((displaytext.length-1)*200).toString()+'px'})
+							if (displaytext.length>2) vars.multiselecter.dialog.container.css({'width':(displaytext.length*200).toString()+'px'})
 							vars.multiselecter.show({
 								datasource:datasource,
 								buttons:{
@@ -138,65 +138,83 @@ jQuery.noConflict();
 		setupcopybutton:function(setting){
 			var fieldinfo=vars.fieldinfos[setting.lookup];
 			var table=$('body').fields(setting.copies[0].copyto)[0].closest('table');
-			$('<button type="button">')
-			.css({
-				'border':'1px solid #e3e7e8',
-				'background-color':'transparent',
-				'color':'#3498db',
-				'display':'block',
-				'margin':'10px 0px',
-				'margin-left':((table.css('margin-left'))?table.css('margin-left'):'0px'),
-				'padding':'10px',
-				'width':'auto'
-			})
-			.text(fieldinfo.label+'からレコードをコピー')
-			.on('click',function(){
-				vars.offset=0;
-				functions.loaddatas(fieldinfo,[],function(records){
-					var datasource=[];
-					var displaytext=fieldinfo.lookup.lookupPickerFields;
-					if (displaytext.length==0) displaytext=[fieldinfo.lookup.relatedKeyField];
-					for (var i=0;i<records.length;i++)
-					{
-						var record=records[i];
-						datasource.push({});
-						for (var i2=0;i2<displaytext.length;i2++) datasource[i][displaytext[i2]]={display:true,value:$.fieldvalue(record[displaytext[i2]])};
-						datasource[i]['lookupcopy_record_id']={display:false,value:record['$id'].value};
-					}
-					if (displaytext.length>3) vars.multiselecter.dialog.container.css({'width':((displaytext.length-1)*200).toString()+'px'})
-					vars.multiselecter.show({
-						datasource:datasource,
-						buttons:{
-							ok:function(selection){
-								var record=kintone.app.record.get();
-								for (var i=0;i<selection.length;i++)
-								{
-									var filter=$.grep(records,function(item,index){
-										return item['$id'].value==selection[i]['lookupcopy_record_id'].value;
-									});
-									var isempty=false;
-									if (record.record[setting.tablecode].value.length==1)
-										if ($.isemptyrow(record.record[setting.tablecode].value[0].value)) isempty=true;
-									if (filter.length!=0)
-									{
-										var row={value:{}};
-										$.each(setting.tablefields,function(key,values){
-											row.value[key]={type:values.type,value:null};
-											for (var i2=0;i2<setting.copies.length;i2++)
-												if (key==setting.copies[i2].copyto) row.value[key].value=filter[0][setting.copies[i2].copyfrom].value;
-										});
-										if (isempty) record.record[setting.tablecode].value=[row];
-										else record.record[setting.tablecode].value.push(row);
-									}
+			if (!$('.lookupcopy-'+setting.tablecode+'-buttons').size())
+			{
+				$('<div class="lookupcopy-buttons lookupcopy-'+setting.tablecode+'-buttons">')
+				.css({
+					'margin':'10px 0px',
+					'margin-left':((table.css('margin-left'))?table.css('margin-left'):'0px'),
+					'width':'auto'
+				}).insertBefore(table);
+			}
+			$('.lookupcopy-'+setting.tablecode+'-buttons').append(
+				$('<button type="button">')
+				.css({
+					'border':'1px solid #e3e7e8',
+					'background-color':'transparent',
+					'color':'#3498db',
+					'display':'inline-block',
+					'margin':'0px 10px 0px 0px',
+					'padding':'10px',
+					'width':'auto'
+				})
+				.text(fieldinfo.label+'からレコードをコピー')
+				.on('click',function(){
+					vars.offset=0;
+					functions.loaddatas(fieldinfo,[],function(records){
+						if (records.length!=0)
+						{
+							var datasource=[];
+							var displaytext=fieldinfo.lookup.lookupPickerFields;
+							if (displaytext.length==0) displaytext=[fieldinfo.lookup.relatedKeyField];
+							for (var i=0;i<records.length;i++)
+							{
+								var record=records[i];
+								datasource.push({});
+								for (var i2=0;i2<displaytext.length;i2++) datasource[i][displaytext[i2]]={display:true,value:$.fieldvalue(record[displaytext[i2]])};
+								datasource[i]['lookupcopy_record_id']={display:false,value:record['$id'].value};
+							}
+							if (displaytext.length>2) vars.multiselecter.dialog.container.css({'width':(displaytext.length*200).toString()+'px'})
+							vars.multiselecter.show({
+								datasource:datasource,
+								buttons:{
+									ok:function(selection){
+										var record=kintone.app.record.get();
+										for (var i=0;i<selection.length;i++)
+										{
+											var filter=$.grep(records,function(item,index){
+												return item['$id'].value==selection[i]['lookupcopy_record_id'].value;
+											});
+											var isempty=false;
+											if (record.record[setting.tablecode].value.length==1)
+												if ($.isemptyrow(record.record[setting.tablecode].value[0].value)) isempty=true;
+											if (filter.length!=0)
+											{
+												var row={value:{}};
+												$.each(setting.tablefields,function(key,values){
+													row.value[key]={type:values.type,value:null};
+													for (var i2=0;i2<setting.copies.length;i2++)
+														if (key==setting.copies[i2].copyto)
+														{
+															row.value[key].value=filter[0][setting.copies[i2].copyfrom].value;
+															if (vars.fieldinfos[setting.copies[i2].copyto].lookup) row.value[key]['lookup']=true;
+														}
+												});
+												if (isempty) record.record[setting.tablecode].value=[row];
+												else record.record[setting.tablecode].value.push(row);
+											}
+										}
+										kintone.app.record.set(record);
+										vars.multiselecter.hide();
+									},
+									cancel:function(){vars.multiselecter.hide();}
 								}
-								kintone.app.record.set(record);
-								vars.multiselecter.hide();
-							},
-							cancel:function(){vars.multiselecter.hide();}
+							});
 						}
+						else swal('Error!',fieldinfo.label+'の条件に合致するレコードが見つかりませんでした。','error');
 					});
-				});
-			}).insertBefore(table);
+				})
+			);
 		}
 	};
 	/*---------------------------------------------------------------
@@ -208,6 +226,7 @@ jQuery.noConflict();
 		if (!('settings' in vars.config)) return event;
 		/* initialize valiable */
 		vars.settings=JSON.parse(vars.config['settings']);
+		if ($('.lookupcopy-buttons').size()) $('.lookupcopy-buttons').remove();
 		/* get fields of app */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			vars.fieldinfos=$.fieldparallelize(resp.properties);
@@ -238,6 +257,7 @@ jQuery.noConflict();
 						setting['tablefields']=resp.properties[setting.tablecode].fields
 						functions.setupcopybutton(setting);
 					}
+				if (setting.hidden=='1') kintone.app.record.setFieldShown(setting.lookup,false);
 			}
 			vars.multiselecter=$('body').multiselect({ismulticells:true});
 		},function(error){
