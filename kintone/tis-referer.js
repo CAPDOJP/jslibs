@@ -1493,7 +1493,7 @@ FieldsForm.prototype={
 				/* create reference box */
 				my.referer[fieldinfo.code]=$('body').referer({
 					datasource:my.apps[fieldinfo.code],
-					displaytext:fieldinfo.lookup.lookupPickerFields
+					displaytext:((fieldinfo.lookup.lookupPickerFields.length!=0)?fieldinfo.lookup.lookupPickerFields:[fieldinfo.lookup.relatedKeyField])
 				});
 			}
 		},function(error){});
@@ -2233,7 +2233,7 @@ ConditionsForm.prototype={
 				/* create reference box */
 				my.referer[fieldinfo.code]=$('body').referer({
 					datasource:my.apps[fieldinfo.code],
-					displaytext:fieldinfo.lookup.lookupPickerFields
+					displaytext:((fieldinfo.lookup.lookupPickerFields.length!=0)?fieldinfo.lookup.lookupPickerFields:[fieldinfo.lookup.relatedKeyField])
 				});
 			}
 		},function(error){});
