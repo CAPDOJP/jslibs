@@ -146,6 +146,7 @@ jQuery.noConflict();
 								$('select#zip2').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#information').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#introducer').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#barcodetext').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#familyname').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#givenname').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
@@ -188,6 +189,7 @@ jQuery.noConflict();
 					$('select#lng').val(config['lng']);
 					$('select#spacer').val(config['spacer']);
 					$('select#information').val(config['information']);
+					$('select#introducer').val(config['introducer']);
 					$('select#action').val(config['action']);
 					$('select#datespan').val(config['datespan']);
 					$('select#rank').val(config['rank']);
@@ -302,6 +304,11 @@ jQuery.noConflict();
 		if ($('select#information').val()=='')
 		{
 			swal('Error!','表示フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#introducer').val()=='')
+		{
+			swal('Error!','紹介者フィールドを選択して下さい。','error');
 			return;
 		}
 		if ($('select#action').val()=='')
@@ -438,6 +445,7 @@ jQuery.noConflict();
 		config['lng']=$('select#lng').val();
 		config['spacer']=$('select#spacer').val();
 		config['information']=$('select#information').val();
+		config['introducer']=$('select#introducer').val();
 		config['action']=$('select#action').val();
 		config['datespan']=$('select#datespan').val();
 		config['rank']=$('select#rank').val();

@@ -126,7 +126,7 @@ table.ganttchart tbody tr td.ganttchart-merge p.ganttchart-merge-p{
   padding:3px 3px 0px 23px;
   position:absolute;
   text-overflow:ellipsis;
-  top:50%;
+  top:0px;
   vertical-align:top;
   white-space:nowrap;
   width:100%;

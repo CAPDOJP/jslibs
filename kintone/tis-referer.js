@@ -1689,8 +1689,8 @@ var ConditionsForm=function(options){
 		add:'img.add',
 		del:'img.del',
 		addcallback:function(row){
-			$('.comp',row).empty().append($('<option>').attr('value','').text(''))
 			$('.field',row).on('change',function(){
+				$('.comp',row).empty().append($('<option>').attr('value','').text(''));
 				if ($(this).val())
 				{
 					var container=row;
@@ -2173,11 +2173,7 @@ var ConditionsForm=function(options){
 							break;
 					}
 				}
-				else
-				{
-					$('.comp',row).empty().append($('<option>').attr('value','').text(''));
-					$('.value',row).empty();
-				}
+				else $('.value',row).empty();
 			});
 		},
 	});

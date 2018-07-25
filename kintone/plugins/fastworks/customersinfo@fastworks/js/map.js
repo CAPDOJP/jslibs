@@ -88,7 +88,7 @@ var RouteMap=function(options){
 	/* setup google map */
 	if (!options.isreload)
 	{
-		var api=$('<script>');
+		var api=$('<script id="mapscript">');
 		api.attr('type','text/javascript');
 		api.attr('src','https://maps.googleapis.com/maps/api/js?key='+options.apiikey);
 		$('head').append(api);
@@ -392,45 +392,84 @@ RouteMap.prototype={
 	inaddress:function(options){
 		var options=$.extend({
 			target:null,
+			address:'',
 			lat:0,
 			lng:0,
-			callback:null
+			callback:null,
+			fali:null
 		},options);
-		this.geocoder.geocode({
-			'location':new google.maps.LatLng(options.lat,options.lng)
-		},
-		function(results,status){
-			switch (status)
-			{
-				case google.maps.GeocoderStatus.ZERO_RESULTS:
-					break;
-				case google.maps.GeocoderStatus.OVER_QUERY_LIMIT:
-					alert('リクエストが割り当て量を超えています。');
-					break;
-				case google.maps.GeocoderStatus.REQUEST_DENIED:
-					alert('リクエストが拒否されました。');
-					break;
-				case google.maps.GeocoderStatus.INVALID_REQUEST:
-					alert('クエリが不足しています。');
-					break;
-				case 'OK':
-					if (options.target!=null)
-					{
-						switch (options.target.prop('tagName').toLowerCase())
+		if (options.address)
+		{
+			this.geocoder.geocode({
+				'address':options.address,
+				'region': 'jp'
+			},
+			function(results,status){
+				switch (status)
+				{
+					case google.maps.GeocoderStatus.ZERO_RESULTS:
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.OVER_QUERY_LIMIT:
+						alert('リクエストが割り当て量を超えています。');
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.REQUEST_DENIED:
+						alert('リクエストが拒否されました。');
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.INVALID_REQUEST:
+						alert('クエリが不足しています。');
+						if (options.fali) options.fali();
+						break;
+					case 'OK':
+						if (options.callback) options.callback(results[0]);
+						break;
+				}
+			});
+		}
+		else
+		{
+			this.geocoder.geocode({
+				'location':new google.maps.LatLng(options.lat,options.lng)
+			},
+			function(results,status){
+				switch (status)
+				{
+					case google.maps.GeocoderStatus.ZERO_RESULTS:
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.OVER_QUERY_LIMIT:
+						alert('リクエストが割り当て量を超えています。');
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.REQUEST_DENIED:
+						alert('リクエストが拒否されました。');
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.INVALID_REQUEST:
+						alert('クエリが不足しています。');
+						if (options.fali) options.fali();
+						break;
+					case 'OK':
+						if (options.target)
 						{
-							case 'input':
-							case 'textarea':
-								options.target.val(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
-								break;
-							default:
-								options.target.text(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
-								break;
+							switch (options.target.prop('tagName').toLowerCase())
+							{
+								case 'input':
+								case 'textarea':
+									options.target.val(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
+									break;
+								default:
+									options.target.text(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
+									break;
+							}
 						}
-					}
-					if (options.callback!=null) options.callback(results[0]);
-					break;
-			}
-		});
+						if (options.callback) options.callback(results[0]);
+						break;
+				}
+			});
+		}
 	},
 	inbounds:function(){
 		var bounds=this.map.getBounds();

@@ -27,6 +27,7 @@ jQuery.noConflict();
 		displayrank:null,
 		editor:null,
 		editorconfirm:null,
+		latlngmap:null,
 		map:null,
 		progress:null,
 		splash:null,
@@ -316,44 +317,20 @@ jQuery.noConflict();
 				callback:null
 			},options);
 			if (options.address.length!=0)
-				kintone.proxy(
-					'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURIComponent(options.address),
-					'GET',
-					{},
-					{},
-					function(body,status,headers){
-						if (status>=200 && status<300){
-							var json=JSON.parse(body);
-							switch (json.status)
-							{
-								case 'ZERO_RESULTS':
-									alert('地図座標が取得出来ませんでした。');
-									break;
-								case 'OVER_QUERY_LIMIT':
-									alert('リクエストが割り当て量を超えています。');
-									break;
-								case 'REQUEST_DENIED':
-									alert('リクエストが拒否されました。');
-									break;
-								case 'INVALID_REQUEST':
-									alert('クエリが不足しています。');
-									break;
-								case 'OK':
-									var lat=json.results[0].geometry.location.lat
-									var lng=json.results[0].geometry.location.lng;
-									var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(options.address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
-									if (vars.map!=null)
-									{
-										vars.map.empty();
-										vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
-									}
-									if (options.callback!=null) options.callback(json);
-									break;
-							}
+				vars.latlngmap.inaddress({
+					address:options.address,
+					callback:function(result){
+						var lat=result.geometry.location.lat();
+						var lng=result.geometry.location.lng();
+						var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(options.address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
+						if (vars.map!=null)
+						{
+							vars.map.empty();
+							vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
 						}
-					},
-					function(error){alert('地図座標取得に失敗しました。\n'+error);}
-				);
+						if (options.callback!=null) options.callback(result);
+					}
+				})
 			if (options.latlng.length!=0)
 			{
 				var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+options.latlng+'&amp;ie=UTF8&amp;ll='+options.latlng+'&amp;z=14&amp;t=m&amp;output=embed';
@@ -460,6 +437,8 @@ jQuery.noConflict();
 								$('#'+vars.config['address'],vars.editor.contents).find('.remarks').text('集合住宅やビルは部屋番号または階数を追記して下さい');
 								$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val('');
 								$('#'+vars.config['information'],vars.editor.contents).find('.remarks').text('名前、会社名、ポスター、２連ポスター、その他メモ等');
+								$('#'+vars.config['introducer'],vars.editor.contents).find('.receiver').val('');
+								$('#'+vars.config['introducer'],vars.editor.contents).find('.remarks').text('姓と名の間はスペース不要です');
 								$('#'+vars.fieldinfos[vars.config['rank']].defaultValue,$('#'+vars.config['rank'],vars.editor.contents)).prop('checked',true);
 								$('#'+vars.config['rank'],vars.editor.contents).show();
 								$('#'+vars.config['action'],vars.editor.contents).hide();
@@ -495,6 +474,7 @@ jQuery.noConflict();
 													lng:latlng.lng(),
 													size:vars.config['markersize'],
 													extensionindex:'0',
+													introducer:$('#'+vars.config['introducer'],vars.editor.contents).find('.receiver').val(),
 													datespan:new Date().format('Y-m-d'),
 													rank:$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val(),
 													modifier:kintone.getLoginUser(),
@@ -507,6 +487,7 @@ jQuery.noConflict();
 											body.record[vars.config['lat']]={value:latlng.lat()};
 											body.record[vars.config['lng']]={value:latlng.lng()};
 											body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
+											body.record[vars.config['introducer']]={value:$('#'+vars.config['introducer'],vars.editor.contents).find('.receiver').val()};
 											body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
 											body.record[vars.config['rank']]={value:$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val()};
 											zip=zip.replace(/[^0-9]/g,'');
@@ -566,6 +547,7 @@ jQuery.noConflict();
 							var latlng=vars.markers[index].lat+','+vars.markers[index].lng;
 							var zoom=(($(window).width()>1024)?14:21-Math.ceil($(window).width()/250));
 							var link='https://www.google.co.jp/maps?q='+latlng+'&z='+zoom.toString();
+							var detaillink=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+target;
 							$('.head',vars.editor.container).text('ピン情報');
 							$('#'+vars.config['datespan'],vars.editor.contents).find('.label').text(vars.markers[index].datespan);
 							$('#'+vars.config['datespan'],vars.editor.contents).find('.receiver').val(vars.markers[index].datespan);
@@ -577,7 +559,9 @@ jQuery.noConflict();
 							$('#'+vars.config['address'],vars.editor.contents).find('.receiver').hide();
 							$('#'+vars.config['address'],vars.editor.contents).find('.remarks').text('');
 							$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val(vars.markers[index].label.replace(/<br>.*$/g,''));
-							$('#'+vars.config['information'],vars.editor.contents).find('.remarks').text('');
+							$('#'+vars.config['information'],vars.editor.contents).find('.remarks').html('<a href="'+detaillink+'" style="font-size:1.25em;line-height:2em;" target="_blank">名簿を見る</a>');
+							$('#'+vars.config['introducer'],vars.editor.contents).find('.receiver').val(vars.markers[index].introducer);
+							$('#'+vars.config['introducer'],vars.editor.contents).find('.remarks').text('');
 							$('#'+vars.markers[index].rank,$('#'+vars.config['rank'],vars.editor.contents)).prop('checked',true);
 							$('#'+vars.config['rank'],vars.editor.contents).show();
 							$('#'+vars.markers[index].action,$('#'+vars.config['action'],vars.editor.contents)).prop('checked',true);
@@ -602,6 +586,7 @@ jQuery.noConflict();
 													record:{}
 												};
 												body.record[vars.config['information']]={value:$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val()};
+												body.record[vars.config['introducer']]={value:$('#'+vars.config['introducer'],vars.editor.contents).find('.receiver').val()};
 												body.record[vars.config['datespan']]={value:new Date().format('Y-m-d')};
 												body.record[vars.config['rank']]={value:$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val()};
 												body.record[vars.config['action']]={value:action};
@@ -613,6 +598,7 @@ jQuery.noConflict();
 														vars.markers[index].label+=$('#'+vars.config['information'],vars.editor.contents).find('.receiver').val();
 														vars.markers[index].label+='<br><a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+vars.config['app']+'/show#record='+vars.markers[index].id+'" target="_blank">詳細画面へ</a>';
 														vars.markers[index].extensionindex='0';
+														vars.markers[index].introducer=$('#'+vars.config['introducer'],vars.editor.contents).find('.receiver').val();
 														vars.markers[index].datespan=new Date().format('Y-m-d');
 														vars.markers[index].rank=$('[name='+vars.config['rank']+']:checked',vars.editor.contents).val();
 														vars.markers[index].modifier=kintone.getLoginUser();
@@ -905,6 +891,7 @@ jQuery.noConflict();
 								vars.fieldinfos[vars.config['modifier']],
 								vars.fieldinfos[vars.config['address']],
 								vars.fieldinfos[vars.config['information']],
+								vars.fieldinfos[vars.config['introducer']],
 								vars.fieldinfos[vars.config['rank']],
 								vars.fieldinfos[vars.config['action']]
 							]
@@ -955,6 +942,7 @@ jQuery.noConflict();
 						lng:lng,
 						size:vars.config['markersize'],
 						extensionindex:datespan,
+						introducer:record[vars.config['introducer']].value,
 						datespan:record[vars.config['datespan']].value,
 						rank:record[vars.config['rank']].value,
 						modifier:record[vars.config['modifier']].value,
@@ -1349,258 +1337,235 @@ jQuery.noConflict();
 		}
 		/* map action  */
 		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
-		/* the initial display when editing */
-		if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
-		/* display map in value change event */
-		if (event.type.match(/(create|edit)/g)!=null)
-		{
-			var button=null;
-			var input=null;
-			var height=0;
-			var events=[];
-			input=$('body').fields(vars.config['address'])[0];
-			button=$('<button class="customsearch-button">');
-			height=input.outerHeight(false);
-			if (height-30>0) button.css({'margin':((height-30)/2).toString()+'px','min-height':'30px','min-width':'30px'});
-			else button.css({'background-size':height.toString()+'px '+height.toString()+'px','margin':'0px','min-height':height.toString()+'px','min-width':height.toString()+'px'});
-			input.css({'padding-right':height.toString()+'px'})
-			.closest('div').append(
-				button.on('click',function(){
-					var target=$(this).closest('div').find('input');
-					functions.displaymap({
-						address:target.val(),
-						callback:function(json){
-							var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
-							var zip='';
-							for (var i=0;i<json.results[0].address_components.length;i++)
-								if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
-							record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
-							record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
-							record.record[vars.config['zip']].value=zip;
-							zip=zip.replace(/[^0-9]/g,'');
-							if (zip.length==7)
-							{
-								record.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
-									return String.fromCharCode(s.charCodeAt(0)+65248);
-								});
-								record.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
-									return String.fromCharCode(s.charCodeAt(0)+65248);
-								});
-							}
-							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
-							else kintone.app.record.set(record);
-						}
-					});
-				})
-			);
-			events=[];
-			events.push('app.record.create.change.'+vars.config['address']);
-			events.push('mobile.app.record.create.change.'+vars.config['address']);
-			events.push('app.record.edit.change.'+vars.config['address']);
-			events.push('mobile.app.record.edit.change.'+vars.config['address']);
-			events.push('app.record.index.edit.change.'+vars.config['address']);
-			kintone.events.on(events,function(event){
-				if (event.changes.field.value)
-				{
-					functions.displaymap({
-						address:event.changes.field.value,
-						callback:function(json){
-							var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
-							var zip='';
-							for (var i=0;i<json.results[0].address_components.length;i++)
-								if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
-							record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
-							record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
-							record.record[vars.config['zip']].value=zip;
-							zip=zip.replace(/[^0-9]/g,'');
-							if (zip.length==7)
-							{
-								record.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
-									return String.fromCharCode(s.charCodeAt(0)+65248);
-								});
-								record.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
-									return String.fromCharCode(s.charCodeAt(0)+65248);
-								});
-							}
-							functions.createbarcode(record.record,'show',function(record){
-								if (record)
+		vars.latlngmap=$('body').routemap(vars.config['apikey'],function(){
+			/* the initial display when editing */
+			if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
+			/* display map in value change event */
+			if (event.type.match(/(create|edit)/g)!=null)
+			{
+				var button=null;
+				var input=null;
+				var height=0;
+				var events=[];
+				input=$('body').fields(vars.config['address'])[0];
+				button=$('<button class="customsearch-button">');
+				height=input.outerHeight(false);
+				if (height-30>0) button.css({'margin':((height-30)/2).toString()+'px','min-height':'30px','min-width':'30px'});
+				else button.css({'background-size':height.toString()+'px '+height.toString()+'px','margin':'0px','min-height':height.toString()+'px','min-width':height.toString()+'px'});
+				input.css({'padding-right':height.toString()+'px'})
+				.closest('div').append(
+					button.on('click',function(){
+						var target=$(this).closest('div').find('input');
+						functions.displaymap({
+							address:target.val(),
+							callback:function(result){
+								var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+								var zip='';
+								for (var i=0;i<result.address_components.length;i++)
+									if (result.address_components[i].types[0]==="postal_code") zip=result.address_components[i].long_name;
+								record.record[vars.config['lat']].value=result.geometry.location.lat;
+								record.record[vars.config['lng']].value=result.geometry.location.lng;
+								record.record[vars.config['zip']].value=zip;
+								zip=zip.replace(/[^0-9]/g,'');
+								if (zip.length==7)
 								{
-									var zip=record[vars.config['zip']].value.replace(/[０-９]/g,function(s){
-										return String.fromCharCode(s.charCodeAt(0)-65248);
-									})
-									.replace(/[^0-9]/g,'');
-									if (zip.length==7)
-									{
-										record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
-											return String.fromCharCode(s.charCodeAt(0)+65248);
-										});
-										record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
-											return String.fromCharCode(s.charCodeAt(0)+65248);
-										});
-									}
-									if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
-									else kintone.app.record.set({'record':record});
+									record.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+										return String.fromCharCode(s.charCodeAt(0)+65248);
+									});
+									record.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+										return String.fromCharCode(s.charCodeAt(0)+65248);
+									});
 								}
-							});
-						}
-					});
-				}
-				else
-				{
-					event.record[vars.config['lat']].value=null;
-					event.record[vars.config['lng']].value=null;
-					event.record[vars.config['zip']].value=null;
-					event.record[vars.config['zip1']].value=null;
-					event.record[vars.config['zip2']].value=null;
-				}
-				return event;
-			});
-			events=[];
-			events.push('app.record.create.change.'+vars.config['zip']);
-			events.push('mobile.app.record.create.change.'+vars.config['zip']);
-			events.push('app.record.edit.change.'+vars.config['zip']);
-			events.push('mobile.app.record.edit.change.'+vars.config['zip']);
-			events.push('app.record.index.edit.change.'+vars.config['zip']);
-			kintone.events.on(events,function(event){
-				if (event.changes.field.value)
-				{
-					var zip=event.changes.field.value.replace(/[^0-9]/g,'');
-					if (zip.length==7)
-					{
-						event.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
-							return String.fromCharCode(s.charCodeAt(0)+65248);
+								if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
+								else kintone.app.record.set(record);
+							}
 						});
-						event.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
-							return String.fromCharCode(s.charCodeAt(0)+65248);
+					})
+				);
+				events=[];
+				events.push('app.record.create.change.'+vars.config['address']);
+				events.push('mobile.app.record.create.change.'+vars.config['address']);
+				events.push('app.record.edit.change.'+vars.config['address']);
+				events.push('mobile.app.record.edit.change.'+vars.config['address']);
+				events.push('app.record.index.edit.change.'+vars.config['address']);
+				kintone.events.on(events,function(event){
+					if (event.changes.field.value)
+					{
+						functions.displaymap({
+							address:event.changes.field.value,
+							callback:function(result){
+								var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+								var zip='';
+								for (var i=0;i<result.address_components.length;i++)
+									if (result.address_components[i].types[0]==="postal_code") zip=result.address_components[i].long_name;
+								record.record[vars.config['lat']].value=result.geometry.location.lat;
+								record.record[vars.config['lng']].value=result.geometry.location.lng;
+								record.record[vars.config['zip']].value=zip;
+								zip=zip.replace(/[^0-9]/g,'');
+								if (zip.length==7)
+								{
+									record.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+										return String.fromCharCode(s.charCodeAt(0)+65248);
+									});
+									record.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+										return String.fromCharCode(s.charCodeAt(0)+65248);
+									});
+								}
+								functions.createbarcode(record.record,'show',function(record){
+									if (record)
+									{
+										var zip=record[vars.config['zip']].value.replace(/[０-９]/g,function(s){
+											return String.fromCharCode(s.charCodeAt(0)-65248);
+										})
+										.replace(/[^0-9]/g,'');
+										if (zip.length==7)
+										{
+											record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+												return String.fromCharCode(s.charCodeAt(0)+65248);
+											});
+											record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+												return String.fromCharCode(s.charCodeAt(0)+65248);
+											});
+										}
+										if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set({'record':record});
+										else kintone.app.record.set({'record':record});
+									}
+								});
+							}
 						});
 					}
-				}
-				else
+					else
+					{
+						event.record[vars.config['lat']].value=null;
+						event.record[vars.config['lng']].value=null;
+						event.record[vars.config['zip']].value=null;
+						event.record[vars.config['zip1']].value=null;
+						event.record[vars.config['zip2']].value=null;
+					}
+					return event;
+				});
+				events=[];
+				events.push('app.record.create.change.'+vars.config['zip']);
+				events.push('mobile.app.record.create.change.'+vars.config['zip']);
+				events.push('app.record.edit.change.'+vars.config['zip']);
+				events.push('mobile.app.record.edit.change.'+vars.config['zip']);
+				events.push('app.record.index.edit.change.'+vars.config['zip']);
+				kintone.events.on(events,function(event){
+					if (event.changes.field.value)
+					{
+						var zip=event.changes.field.value.replace(/[^0-9]/g,'');
+						if (zip.length==7)
+						{
+							event.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+								return String.fromCharCode(s.charCodeAt(0)+65248);
+							});
+							event.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+								return String.fromCharCode(s.charCodeAt(0)+65248);
+							});
+						}
+					}
+					else
+					{
+						event.record[vars.config['zip1']].value=null;
+						event.record[vars.config['zip2']].value=null;
+					}
+					return event;
+				});
+				var mailingoptions=JSON.parse(vars.config['mailingoptions']);
+				events=[];
+				events.push('app.record.create.change.'+vars.config['mailing']);
+				events.push('mobile.app.record.create.change.'+vars.config['mailing']);
+				events.push('app.record.edit.change.'+vars.config['mailing']);
+				events.push('mobile.app.record.edit.change.'+vars.config['mailing']);
+				events.push('app.record.index.edit.change.'+vars.config['mailing']);
+				kintone.events.on(events,function(event){
+					switch (event.record[vars.config['mailing']].value)
+					{
+						case mailingoptions[0].option:
+							if (mailingoptions[0].sync.length!=0)
+							{
+								event.record[mailingoptions[0].sync].value=[mailingoptions[0].option];
+							}
+							break;
+						case mailingoptions[1].option:
+							if (mailingoptions[1].sync.length!=0)
+							{
+								event.record[mailingoptions[1].sync].value=[mailingoptions[1].option];
+							}
+							break;
+						case mailingoptions[2].option:
+							if (mailingoptions[2].sync.length!=0)
+							{
+								event.record[mailingoptions[2].sync].value=[mailingoptions[2].option];
+							}
+							break;
+						case mailingoptions[3].option:
+							if (mailingoptions[3].sync.length!=0)
+							{
+								event.record[mailingoptions[3].sync].value=[mailingoptions[3].option];
+							}
+							break;
+					}
+					return event;
+				});
+				if (mailingoptions[0].sync.length!=0)
 				{
-					event.record[vars.config['zip1']].value=null;
-					event.record[vars.config['zip2']].value=null;
+					events=[];
+					events.push('app.record.create.change.'+mailingoptions[0].sync);
+					events.push('mobile.app.record.create.change.'+mailingoptions[0].sync);
+					events.push('app.record.edit.change.'+mailingoptions[0].sync);
+					events.push('mobile.app.record.edit.change.'+mailingoptions[0].sync);
+					events.push('app.record.index.edit.change.'+mailingoptions[0].sync);
+					kintone.events.on(events,function(event){
+						if ($.inArray(mailingoptions[0].option,event.record[mailingoptions[0].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[0].option;
+						return event;
+					});
 				}
-				return event;
-			});
-			var mailingoptions=JSON.parse(vars.config['mailingoptions']);
-			events=[];
-			events.push('app.record.create.change.'+vars.config['mailing']);
-			events.push('mobile.app.record.create.change.'+vars.config['mailing']);
-			events.push('app.record.edit.change.'+vars.config['mailing']);
-			events.push('mobile.app.record.edit.change.'+vars.config['mailing']);
-			events.push('app.record.index.edit.change.'+vars.config['mailing']);
-			kintone.events.on(events,function(event){
-				switch (event.record[vars.config['mailing']].value)
+				if (mailingoptions[1].sync.length!=0)
 				{
-					case mailingoptions[0].option:
-						if (mailingoptions[0].sync.length!=0)
-						{
-							event.record[mailingoptions[0].sync].value=[mailingoptions[0].option];
-						}
-						break;
-					case mailingoptions[1].option:
-						if (mailingoptions[1].sync.length!=0)
-						{
-							event.record[mailingoptions[1].sync].value=[mailingoptions[1].option];
-						}
-						break;
-					case mailingoptions[2].option:
-						if (mailingoptions[2].sync.length!=0)
-						{
-							event.record[mailingoptions[2].sync].value=[mailingoptions[2].option];
-						}
-						break;
-					case mailingoptions[3].option:
-						if (mailingoptions[3].sync.length!=0)
-						{
-							event.record[mailingoptions[3].sync].value=[mailingoptions[3].option];
-						}
-						break;
+					events=[];
+					events.push('app.record.create.change.'+mailingoptions[1].sync);
+					events.push('mobile.app.record.create.change.'+mailingoptions[1].sync);
+					events.push('app.record.edit.change.'+mailingoptions[1].sync);
+					events.push('mobile.app.record.edit.change.'+mailingoptions[1].sync);
+					events.push('app.record.index.edit.change.'+mailingoptions[1].sync);
+					kintone.events.on(events,function(event){
+						if ($.inArray(mailingoptions[1].option,event.record[mailingoptions[1].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[1].option;
+						return event;
+					});
 				}
-				return event;
-			});
-			if (mailingoptions[0].sync.length!=0)
-			{
-				events=[];
-				events.push('app.record.create.change.'+mailingoptions[0].sync);
-				events.push('mobile.app.record.create.change.'+mailingoptions[0].sync);
-				events.push('app.record.edit.change.'+mailingoptions[0].sync);
-				events.push('mobile.app.record.edit.change.'+mailingoptions[0].sync);
-				events.push('app.record.index.edit.change.'+mailingoptions[0].sync);
-				kintone.events.on(events,function(event){
-					if ($.inArray(mailingoptions[0].option,event.record[mailingoptions[0].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[0].option;
-					return event;
-				});
+				if (mailingoptions[2].sync.length!=0)
+				{
+					events=[];
+					events.push('app.record.create.change.'+mailingoptions[2].sync);
+					events.push('mobile.app.record.create.change.'+mailingoptions[2].sync);
+					events.push('app.record.edit.change.'+mailingoptions[2].sync);
+					events.push('mobile.app.record.edit.change.'+mailingoptions[2].sync);
+					events.push('app.record.index.edit.change.'+mailingoptions[2].sync);
+					kintone.events.on(events,function(event){
+						if ($.inArray(mailingoptions[2].option,event.record[mailingoptions[2].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[2].option;
+						return event;
+					});
+				}
+				if (mailingoptions[3].sync.length!=0)
+				{
+					events=[];
+					events.push('app.record.create.change.'+mailingoptions[3].sync);
+					events.push('mobile.app.record.create.change.'+mailingoptions[3].sync);
+					events.push('app.record.edit.change.'+mailingoptions[3].sync);
+					events.push('mobile.app.record.edit.change.'+mailingoptions[3].sync);
+					events.push('app.record.index.edit.change.'+mailingoptions[3].sync);
+					kintone.events.on(events,function(event){
+						if ($.inArray(mailingoptions[3].option,event.record[mailingoptions[3].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[3].option;
+						return event;
+					});
+				}
 			}
-			if (mailingoptions[1].sync.length!=0)
-			{
-				events=[];
-				events.push('app.record.create.change.'+mailingoptions[1].sync);
-				events.push('mobile.app.record.create.change.'+mailingoptions[1].sync);
-				events.push('app.record.edit.change.'+mailingoptions[1].sync);
-				events.push('mobile.app.record.edit.change.'+mailingoptions[1].sync);
-				events.push('app.record.index.edit.change.'+mailingoptions[1].sync);
-				kintone.events.on(events,function(event){
-					if ($.inArray(mailingoptions[1].option,event.record[mailingoptions[1].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[1].option;
-					return event;
-				});
-			}
-			if (mailingoptions[2].sync.length!=0)
-			{
-				events=[];
-				events.push('app.record.create.change.'+mailingoptions[2].sync);
-				events.push('mobile.app.record.create.change.'+mailingoptions[2].sync);
-				events.push('app.record.edit.change.'+mailingoptions[2].sync);
-				events.push('mobile.app.record.edit.change.'+mailingoptions[2].sync);
-				events.push('app.record.index.edit.change.'+mailingoptions[2].sync);
-				kintone.events.on(events,function(event){
-					if ($.inArray(mailingoptions[2].option,event.record[mailingoptions[2].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[2].option;
-					return event;
-				});
-			}
-			if (mailingoptions[3].sync.length!=0)
-			{
-				events=[];
-				events.push('app.record.create.change.'+mailingoptions[3].sync);
-				events.push('mobile.app.record.create.change.'+mailingoptions[3].sync);
-				events.push('app.record.edit.change.'+mailingoptions[3].sync);
-				events.push('mobile.app.record.edit.change.'+mailingoptions[3].sync);
-				events.push('app.record.index.edit.change.'+mailingoptions[3].sync);
-				kintone.events.on(events,function(event){
-					if ($.inArray(mailingoptions[3].option,event.record[mailingoptions[3].sync].value)>-1) event.record[vars.config['mailing']].value=mailingoptions[3].option;
-					return event;
-				});
-			}
-		}
+		},$('script#mapscript').size());
 		if (!vars.ismobile) kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
 	});
 	kintone.events.on(events.save,function(event){
-		var getlatlng=function(address,success,error){
-			kintone.proxy(
-				'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+address,
-				'GET',
-				{},
-				{},
-				function(body,status,headers){
-					if (status>=200 && status<300){
-						var json=JSON.parse(body);
-						switch (json.status)
-						{
-							case 'ZERO_RESULTS':
-							case 'OVER_QUERY_LIMIT':
-							case 'REQUEST_DENIED':
-							case 'INVALID_REQUEST':
-								error();
-								break;
-							case 'OK':
-								success(json);
-								break;
-						}
-					}
-				}
-			);
-		};
 		return new kintone.Promise(function(resolve,reject){
 			var mailingoptions=JSON.parse(vars.config['mailingoptions']);
 			var checkmailing=function(callback){
@@ -1651,29 +1616,30 @@ jQuery.noConflict();
 					});
 				});
 			};
-			getlatlng(encodeURIComponent(event.record[vars.config['address']].value),function(json){
-				var lat=json.results[0].geometry.location.lat
-				var lng=json.results[0].geometry.location.lng;
-				var zip='';
-				for (var i=0;i<json.results[0].address_components.length;i++)
-					if (json.results[0].address_components[i].types[0]==="postal_code") zip=json.results[0].address_components[i].long_name;
-				event.record[vars.config['lat']].value=lat;
-				event.record[vars.config['lng']].value=lng;
-				event.record[vars.config['zip']].value=zip;
-				zip=zip.replace(/[^0-9]/g,'');
-				if (zip.length==7)
-				{
-					event.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
-						return String.fromCharCode(s.charCodeAt(0)+65248);
-					});
-					event.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
-						return String.fromCharCode(s.charCodeAt(0)+65248);
-					});
-				}
-				checkmailing();
-			},
-			function(){
-				checkmailing();
+			vars.map.inaddress({
+				address:encodeURIComponent(event.record[vars.config['address']].value),
+				callback:function(result){
+					var lat=result.geometry.location.lat();
+					var lng=result.geometry.location.lng();
+					var zip='';
+					for (var i=0;i<result.address_components.length;i++)
+						if (result.address_components[i].types[0]==="postal_code") zip=result.address_components[i].long_name;
+					event.record[vars.config['lat']].value=lat;
+					event.record[vars.config['lng']].value=lng;
+					event.record[vars.config['zip']].value=zip;
+					zip=zip.replace(/[^0-9]/g,'');
+					if (zip.length==7)
+					{
+						event.record[vars.config['zip1']].value=zip.substring(0,3).replace(/[0-9]/g,function(s){
+							return String.fromCharCode(s.charCodeAt(0)+65248);
+						});
+						event.record[vars.config['zip2']].value=zip.substring(3,7).replace(/[0-9]/g,function(s){
+							return String.fromCharCode(s.charCodeAt(0)+65248);
+						});
+					}
+					checkmailing();
+				},
+				fali:function(){checkmailing();}
 			});
 		});
 	});
