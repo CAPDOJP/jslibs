@@ -159,7 +159,6 @@ jQuery.noConflict();
 					$('select#attachment').val(config['attachment']);
 					$('select#revisionbody').val(config['revisionbody']);
 					$('input#client_id').val(config['client_id']);
-					if (config['draft']=='1') $('input#draft').prop('checked',true);
 					functions.reloadapp(function(){
 						$('select#mailtomedia').val(config['mailtomedia']);
 						$('select#mailtosegment').val(config['mailtosegment']);
@@ -289,7 +288,6 @@ jQuery.noConflict();
 		config['attachment']=$('select#attachment').val();
 		config['revisionbody']=$('select#revisionbody').val();
 		config['client_id']=$('input#client_id').val();
-		config['draft']=($('input#draft').prop('checked'))?'1':'0';
 		/* save config */
 		kintone.plugin.app.setConfig(config);
 	});

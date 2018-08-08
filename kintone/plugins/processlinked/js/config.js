@@ -48,9 +48,7 @@ jQuery.noConflict();
 				case 'UPDATED_TIME':
 					break;
 				default:
-					/* exclude lookup */
-					if (!values.lookup)
-						if ($.inArray(values.code,mappings)<0) $('select#field').append($('<option>').attr('value',values.code).text(values.label));
+					if ($.inArray(values.code,mappings)<0) $('select#field').append($('<option>').attr('value',values.code).text(values.label));
 					break;
 			}
 		});

@@ -547,7 +547,7 @@ jQuery.noConflict();
 							var latlng=vars.markers[index].lat+','+vars.markers[index].lng;
 							var zoom=(($(window).width()>1024)?14:21-Math.ceil($(window).width()/250));
 							var link='https://www.google.co.jp/maps?q='+latlng+'&z='+zoom.toString();
-							var detaillink=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+target;
+							var detaillink=kintone.api.url('/k/', true).replace(/\.json/g,'')+((vars.ismobile)?'m/':'')+vars.config['app']+'/show?record='+target;
 							$('.head',vars.editor.container).text('ピン情報');
 							$('#'+vars.config['datespan'],vars.editor.contents).find('.label').text(vars.markers[index].datespan);
 							$('#'+vars.config['datespan'],vars.editor.contents).find('.receiver').val(vars.markers[index].datespan);
@@ -1363,8 +1363,8 @@ jQuery.noConflict();
 								var zip='';
 								for (var i=0;i<result.address_components.length;i++)
 									if (result.address_components[i].types[0]==="postal_code") zip=result.address_components[i].long_name;
-								record.record[vars.config['lat']].value=result.geometry.location.lat;
-								record.record[vars.config['lng']].value=result.geometry.location.lng;
+								record.record[vars.config['lat']].value=result.geometry.location.lat();
+								record.record[vars.config['lng']].value=result.geometry.location.lng();
 								record.record[vars.config['zip']].value=zip;
 								zip=zip.replace(/[^0-9]/g,'');
 								if (zip.length==7)
@@ -1398,8 +1398,8 @@ jQuery.noConflict();
 								var zip='';
 								for (var i=0;i<result.address_components.length;i++)
 									if (result.address_components[i].types[0]==="postal_code") zip=result.address_components[i].long_name;
-								record.record[vars.config['lat']].value=result.geometry.location.lat;
-								record.record[vars.config['lng']].value=result.geometry.location.lng;
+								record.record[vars.config['lat']].value=result.geometry.location.lat();
+								record.record[vars.config['lng']].value=result.geometry.location.lng();
 								record.record[vars.config['zip']].value=zip;
 								zip=zip.replace(/[^0-9]/g,'');
 								if (zip.length==7)
@@ -1616,8 +1616,8 @@ jQuery.noConflict();
 					});
 				});
 			};
-			vars.map.inaddress({
-				address:encodeURIComponent(event.record[vars.config['address']].value),
+			vars.latlngmap.inaddress({
+				address:event.record[vars.config['address']].value,
 				callback:function(result){
 					var lat=result.geometry.location.lat();
 					var lng=result.geometry.location.lng();
@@ -1637,7 +1637,7 @@ jQuery.noConflict();
 							return String.fromCharCode(s.charCodeAt(0)+65248);
 						});
 					}
-					checkmailing();
+					functions.createbarcode(event.record,'show',function(record){checkmailing();});
 				},
 				fali:function(){checkmailing();}
 			});

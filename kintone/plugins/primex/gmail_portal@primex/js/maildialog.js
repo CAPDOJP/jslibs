@@ -1,6 +1,6 @@
 /*
 *--------------------------------------------------------------------
-* jQuery-Plugin "mailselect"
+* jQuery-Plugin "maildialog"
 * Version: 1.0
 * Copyright (c) 2016 TIS
 *
@@ -62,6 +62,28 @@ var radio=$('<label>').css({
 })
 .append($('<input type="radio" class="receiver">'))
 .append(span.clone(true).addClass('label').css({'padding':'0px 10px 0px 5px'}));
+var textarea=$('<textarea>').css({
+	'border':'1px solid #C9C9C9',
+	'border-radius':'3px',
+	'box-sizing':'border-box',
+	'display':'inline-block',
+	'height':'calc(7.5em + 10px)',
+	'line-height':'1.5em',
+	'padding':'5px',
+	'vertical-align':'top',
+	'width':'calc(100% - 5em)'
+});
+var textline=$('<input type="text">').css({
+	'border':'1px solid #C9C9C9',
+	'border-radius':'3px',
+	'box-sizing':'border-box',
+	'display':'inline-block',
+	'height':'30px',
+	'line-height':'30px',
+	'padding':'0px 5px',
+	'vertical-align':'top',
+	'width':'calc(100% - 5em)'
+});
 var title=$('<label class="title">').css({
 	'box-sizing':'border-box',
 	'border-left':'5px solid #3498db',
@@ -72,7 +94,7 @@ var title=$('<label class="title">').css({
 	'padding-left':'10px',
 	'width':'5em'
 });
-var createdialog=function(){
+var createdialog=function(width){
 	return {
 		cover:div.clone(true).css({
 			'background-color':'rgba(0,0,0,0.5)',
@@ -98,7 +120,7 @@ var createdialog=function(){
 			'position':'absolute',
 			'right':'0',
 			'top':'0',
-			'width':'700px'
+			'width':((width)?width:'calc(100% - 1em)')
 		}),
 		contents:div.clone(true).css({
 			'height':'100%',
@@ -157,8 +179,7 @@ var MailSelect=function(options){
 	this.datasource=options.datasource;
 	this.config=options.config;
 	this.fields=options.fields;
-	this.dialog=createdialog();
-	this.contents=this.dialog.contents;
+	this.dialog=createdialog('700px');
 	this.selectionto={};
 	this.selectioncc={};
 	this.selectionbcc={};
@@ -354,5 +375,75 @@ jQuery.fn.mailselect=function(options){
 	},options);
 	options.container=this;
 	return new MailSelect(options);
+};
+var PreviewForm=function(options){
+	var options=$.extend({
+		container:null,
+		fields:[]
+	},options);
+	/* valiable */
+	var my=this;
+	/* property */
+	this.fields=options.fields;
+	this.dialog=createdialog();
+	/* append elements */
+	this.fieldcontainer=div.clone(true).addClass('container').css({'padding':'5px','width':'100%'}).append(title.clone(true));
+	for (var i=0;i<this.fields.length;i++)
+	{
+		var fieldinfo=this.fields[i];
+		var fieldcontainer=this.fieldcontainer.clone(true).attr('id',fieldinfo.code);
+		var fieldoptions=[];
+		var receiver=null;
+		fieldcontainer.find('.title').text(fieldinfo.label);
+		switch (fieldinfo.type)
+		{
+			case 'SINGLE_LINE_TEXT':
+				receiver=textline.clone(true).addClass('receiver');
+				if (fieldinfo.disabled) receiver.prop('disabled',true);
+				fieldcontainer.append(receiver);
+				break;
+			case 'MULTI_LINE_TEXT':
+				receiver=textarea.clone(true).addClass('receiver');
+				if (fieldinfo.disabled) receiver.prop('disabled',true);
+				fieldcontainer.append(receiver);
+				break;
+		}
+		this.dialog.contents.append(fieldcontainer);
+	}
+	this.dialog.container.append(this.dialog.contents);
+	this.dialog.container.append(
+		this.dialog.footer
+		.append(button.clone(true).attr('id','ok').text('OK'))
+		.append(button.clone(true).attr('id','cancel').text('キャンセル'))
+	);
+	this.dialog.cover.append(this.dialog.container);
+	options.container.append(this.dialog.cover);
+};
+PreviewForm.prototype={
+	/* display form */
+	show:function(options){
+		var options=$.extend({
+			buttons:{}
+		},options);
+		var my=this;
+		/* buttons callback */
+		$.each(options.buttons,function(key,values){
+			if (my.dialog.footer.find('button#'+key).size())
+				my.dialog.footer.find('button#'+key).off('click').on('click',function(){if (values!=null) values();});
+		});
+		this.dialog.cover.show();
+	},
+	/* hide form */
+	hide:function(){
+		this.dialog.cover.hide();
+	}
+};
+jQuery.fn.previewform=function(options){
+	var options=$.extend({
+		container:null,
+		fields:{}
+	},options);
+	options.container=this;
+	return new PreviewForm(options);
 };
 })(jQuery);

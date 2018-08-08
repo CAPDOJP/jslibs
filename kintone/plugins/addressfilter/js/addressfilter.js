@@ -15,6 +15,7 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
+		addressselect:null,
 		template:null,
 		config:{}
 	};
@@ -143,7 +144,43 @@ jQuery.noConflict();
 						case 200:
 							if (json.records.length!=0)
 							{
-								if (callback) callback(json.records[0]);
+								if (json.records.length>1)
+								{
+									var records=[];
+									for (var i=0;i<json.records.length;i++)
+									{
+										records.push({
+											index:{value:i.toString()},
+											city:{value:json.records[i]['city']},
+											cityname:{value:json.records[i]['cityname']},
+											id:{value:json.records[i]['id']},
+											name:{value:json.records[i]['name']},
+											prefecture:{value:json.records[i]['prefecture']},
+											prefecturename:{value:json.records[i]['prefecturename']},
+											street:{value:json.records[i]['street']},
+											streetname:{value:json.records[i]['streetname']}
+										});
+									}
+									vars.addressselect.datasource=records;
+									vars.addressselect.search();
+									vars.addressselect.show({
+										buttons:{
+											cancel:function(){
+												/* close the reference box */
+												vars.addressselect.hide();
+											}
+										},
+										callback:function(row){
+											/* close the reference box */
+											vars.addressselect.hide();
+											if (callback) callback(json.records[parseInt(row.find('#index').val())]);
+										}
+									});
+								}
+								else
+								{
+									if (callback) callback(json.records[0]);
+								}
 							}
 							else swal('Error!','入力された郵便番号に該当する住所が見つかりませんでした。','error');
 							break;
@@ -372,6 +409,11 @@ jQuery.noConflict();
 				});
 			}
 		}
+		/* create addressselect */
+		vars.addressselect=$('body').referer({
+			datasource:null,
+			displaytext:['name']
+		});
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

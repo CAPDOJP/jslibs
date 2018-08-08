@@ -56,6 +56,7 @@ jQuery.noConflict();
 					{
 						case 'FILE':
 							$('select#file').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#seal').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
 					}
 				}
@@ -65,6 +66,11 @@ jQuery.noConflict();
 			{
 				$('select#space').val(config['space']);
 				$('select#file').val(config['file']);
+				$('select#seal').val(config['seal']);
+				$('input#sealwidth').val(config['sealwidth']);
+				$('input#sealheight').val(config['sealheight']);
+				$('input#sealright').val(config['sealright']);
+				$('input#sealbottom').val(config['sealbottom']);
 				$('input#image').val(config['image']);
 				$('div.image').append($('<img>').attr('src',$('input#image').val()));
 			}
@@ -107,6 +113,31 @@ jQuery.noConflict();
 			swal('Error!','添付ファイルフィールドを選択して下さい。','error');
 			return;
 		}
+		if ($('select#seal').val()=='')
+		{
+			swal('Error!','電子印ファイルフィールドを選択して下さい。','error');
+			return;
+		}
+		if (!$.isNumeric($('input#sealwidth').val()))
+		{
+			swal('Error!','電子印設定は数値を入力して下さい。','error');
+			return;
+		}
+		if (!$.isNumeric($('input#sealheight').val()))
+		{
+			swal('Error!','電子印設定は数値を入力して下さい。','error');
+			return;
+		}
+		if (!$.isNumeric($('input#sealright').val()))
+		{
+			swal('Error!','電子印設定は数値を入力して下さい。','error');
+			return;
+		}
+		if (!$.isNumeric($('input#sealbottom').val()))
+		{
+			swal('Error!','電子印設定は数値を入力して下さい。','error');
+			return;
+		}
 		if ($('input#image').val()=='')
 		{
 			swal('Error!','透かし画像を選択して下さい。','error');
@@ -115,6 +146,11 @@ jQuery.noConflict();
 		/* setup config */
 		config['space']=$('select#space').val();
 		config['file']=$('select#file').val();
+		config['seal']=$('select#seal').val();
+		config['sealwidth']=$('input#sealwidth').val();
+		config['sealheight']=$('input#sealheight').val();
+		config['sealright']=$('input#sealright').val();
+		config['sealbottom']=$('input#sealbottom').val();
 		config['image']=$('input#image').val();
 		/* save config */
 		kintone.plugin.app.setConfig(config);

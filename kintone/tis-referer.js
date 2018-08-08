@@ -1593,9 +1593,10 @@ FieldsForm.prototype={
 					if (key in my.apps)
 					{
 						$('.label',fieldcontainer).text('');
-						for (var i=0;i<my.apps[key].length;i++)
-							if (my.apps[key][i][$('.key',fieldcontainer).val()].value==values.value)
-								$('.label',fieldcontainer).html(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
+						if (my.apps[key])
+							for (var i=0;i<my.apps[key].length;i++)
+								if (my.apps[key][i][$('.key',fieldcontainer).val()].value==values.value)
+									$('.label',fieldcontainer).html(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
 					}
 					$('.receiver',fieldcontainer).val(values.value);
 					break;

@@ -20,6 +20,7 @@ jQuery.noConflict();
 		offset:0,
 		button:null,
 		mailselect:null,
+		previewform:null,
 		progress:null,
 		config:{},
 		fieldinfos:{}
@@ -75,7 +76,7 @@ jQuery.noConflict();
 			});
 		},
 		/* gmail send */
-		mailsend:function(record,mailto,mailcc,mailbcc,mailname,type){
+		mailsend:function(record,type){
 			var body='';
 			var subject='';
 			var table=null;
@@ -86,40 +87,20 @@ jQuery.noConflict();
 				mixed:functions.boundary()
 			};
 			var send=function(maildata){
-				if (vars.config['draft']=='0')
-				{
-					gapi.client.gmail.users.messages.send({
-						'userId':'me',
-						'resource':{'raw':window.btoa(unescape(encodeURIComponent(maildata.join('\n').trim()))).replace(/\+/g, '-').replace(/\//g, '_')}
-					}).execute(function(resp){
-						if ('id' in resp)
-						{
-							swal({
-								title:'送信完了',
-								text:'メールを送信しました。',
-								type:'success'
-							},function(){location.reload(true);});
-						}
-						else swal('送信エラー',resp.error.message,'error');
-					});
-				}
-				else
-				{
-					gapi.client.gmail.users.drafts.create({
-						'userId':'me',
-						'resource':{'message':{'raw':window.btoa(unescape(encodeURIComponent(maildata.join('\n').trim()))).replace(/\+/g, '-').replace(/\//g, '_')}}
-					}).execute(function(resp){
-						if ('id' in resp)
-						{
-							swal({
-								title:'送信完了',
-								text:'メールを下書き保存しました。',
-								type:'success'
-							},function(){location.reload(true);});
-						}
-						else swal('送信エラー',resp.error.message,'error');
-					});
-				}
+				gapi.client.gmail.users.messages.send({
+					'userId':'me',
+					'resource':{'raw':window.btoa(unescape(encodeURIComponent(maildata.join('\n').trim()))).replace(/\+/g, '-').replace(/\//g, '_')}
+				}).execute(function(resp){
+					if ('id' in resp)
+					{
+						swal({
+							title:'送信完了',
+							text:'メールを送信しました。',
+							type:'success'
+						},function(){location.reload(true);});
+					}
+					else swal('送信エラー',resp.error.message,'error');
+				});
 			};
 			if (vars.auth)
 			{
@@ -135,128 +116,175 @@ jQuery.noConflict();
 						}
 				}
 				else swal('送信エラー','テーブル内にデータがありません。','error');
-				switch (type)
-				{
-					case 1:
-						subject='【申込書送付依頼】';
-						body='';
-						body+=mailname.join(',')+'\n\n';
-						body+='いつもお世話になっております、プライムクロスの入稿センターでございます。\n';
-						body+='下記、案件につきまして、お申込書の送付をお願い致します。\n';
-						body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
-						body+='・広告主：'+record[vars.config['customer']].value+'\n';
-						body+='・案件名：'+record[vars.config['subject']].value+'\n';
-						body+='・代理店名：株式会社プライムクロス\n';
-						body+='・営業担当者：'+record[vars.config['charger']].value[0].name+'\n';
-						body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
-						for (var i=0;i<table.value.length;i++)
-						{
-							body+='・メニュー：'+table.value[i].value[vars.config['menu']].value+'\n';
-							body+='・期間：'+table.value[i].value[vars.config['datefrom']].value+'\n';
-							body+='・申込金額：'+String(table.value[i].value[vars.config['price']].value).replace(/(\d)(?=(\d\d\d)+(?!\d))/g,'$1,')+'円\n';
-							body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
-						}
-						break;
-					case 2:
-						subject='【申込】';
-						body='';
-						body+='*************************************************************************\n';
-						body+='株式会社プライムクロスより、正式発注のご連絡を致します。\n';
-						body+='*************************************************************************\n';
-						body+=mailname.join(',')+'\n\n';
-						body+='いつもお世話になっております、プライムクロスの入稿センターでございます。\n';
-						body+='添付致しました内容にて、正式発注をさせていただきます。\n';
-						body+='内容をご確認の上、受領の旨を本メール全員返信にて\n';
-						body+='お戻し頂けますようお願い致します。\n';
-						body+='■プライムクロス注文番号：\n';
-						body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
-						for (var i=0;i<table.value.length;i++) body+=table.value[i].value[vars.config['orderno']].value+'\n';
-						body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
-						if (vars.config['attachment']) Array.prototype.push.apply(attachment,record[vars.config['attachment']].value);
-						break;
-					case 3:
-						subject='【訂正】【申込】';
-						body='';
-						body+=record[vars.config['revisionbody']].value+'\n';
-						body+='*************************************************************************\n';
-						body+='株式会社プライムクロスより、正式発注のご連絡を致します。\n';
-						body+='*************************************************************************\n';
-						body+=mailname.join(',')+'\n\n';
-						body+='いつもお世話になっております、プライムクロスの入稿センターでございます。\n';
-						body+='添付致しました内容にて、正式発注をさせていただきます。\n';
-						body+='内容をご確認の上、受領の旨を本メール全員返信にて\n';
-						body+='お戻し頂けますようお願い致します。\n';
-						body+='■プライムクロス注文番号：\n';
-						body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
-						for (var i=0;i<table.value.length;i++) body+=table.value[i].value[vars.config['orderno']].value+'\n';
-						body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
-						if (vars.config['attachment']) Array.prototype.push.apply(attachment,record[vars.config['attachment']].value);
-						break;
-				}
-				if (mailto.length>0)
-				{
-					subject+=record[vars.config['customer']].value+'/';
-					subject+=record[vars.config['subject']].value+'/';
-					subject+=table.value[0].value[vars.config['media']].value+'/';
-					subject+=table.value[0].value[vars.config['menu']].value;
-					subject+=(table.value.length>1)?'（他）/':'/';
-					subject+=table.value[0].value[vars.config['datefrom']].value+'～';
-					subject+=table.value[0].value[vars.config['dateto']].value;
-					subject+=(table.value.length>1)?'（他）':'';
-					maildata.push('To: '+mailto.join(','));
-					if (mailcc.length!=0) maildata.push('CC: '+mailcc.join(','));
-					if (mailbcc.length!=0) maildata.push('BCC: '+mailbcc.join(','));
-					maildata.push('Subject: =?utf-8?B?'+window.btoa(unescape(encodeURIComponent(subject)))+'?=');
-					maildata.push('MIME-Version: 1.0');
-					if (attachment.length!=0)
-					{
-						maildata.push('Content-Type: multipart/mixed; boundary="'+boundaries.mixed+'"');
-						maildata.push('');
-						maildata.push('--'+boundaries.mixed);
-						maildata.push('Content-Type: multipart/alternative; boundary="'+boundaries.alternative+'"');
-						maildata.push('');
-						maildata.push('--'+boundaries.alternative);
-					}
-					maildata.push('Content-Type: text/html;charset=iso-8859-1');
-					maildata.push('Content-Transfer-Encoding: 7bit');
-					maildata.push('');
-					maildata.push('<html><body>'+body.replace(/\r/g,'').replace(/\n/g,'<br>')+'</body></html>');
-					if (attachment.length!=0)
-					{
-						maildata.push('');
-						maildata.push('--'+boundaries.alternative+'--');
-						var counter=0;
-						for (var i=0;i<attachment.length;i++)
-						{
-							(function(file){
-								functions.download(file.fileKey).then(function(blob){
-									var reader=new FileReader();
-									reader.onabort=function(event){error();};
-									reader.onerror=function(event){error();};
-									reader.onload=function(event){
-										maildata.push('');
-										maildata.push('--'+boundaries.mixed);
-										maildata.push('Content-Type: '+file.contentType+'; name="'+file.name+'"');
-										maildata.push('Content-Transfer-Encoding: base64');
-										maildata.push('Content-Disposition: attachment; filename="'+file.name+'"');
-										maildata.push('');
-										maildata.push(event.target.result.replace(/^.+,/,''));
-										counter++;
-										if (counter==attachment.length)
+				vars.mailselect.show({
+					buttons:{
+						ok:function(selectionto,selectioncc,selectionbcc){
+							var mailto=[];
+							var mailcc=[];
+							var mailbcc=[];
+							var mailname=[];
+							for (var i=0;i<selectionto.length;i++)
+							{
+								mailto.push(selectionto[i].mail);
+								mailname.push(selectionto[i].name);
+							}
+							for (var i=0;i<selectioncc.length;i++) mailcc.push(selectioncc[i].mail);
+							for (var i=0;i<selectionbcc.length;i++) mailbcc.push(selectionbcc[i].mail);
+							vars.mailselect.hide();
+							if (mailto.length>0)
+							{
+								switch (type)
+								{
+									case 1:
+										subject='【申込書送付依頼】';
+										body='';
+										body+=mailname.join(',')+'\n\n';
+										body+='いつもお世話になっております、プライムクロスの入稿センターでございます。\n';
+										body+='下記、案件につきまして、お申込書の送付をお願い致します。\n';
+										body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
+										body+='・広告主：'+record[vars.config['customer']].value+'\n';
+										body+='・案件名：'+record[vars.config['subject']].value+'\n';
+										body+='・代理店名：株式会社プライムクロス\n';
+										body+='・営業担当者：'+record[vars.config['charger']].value[0].name+'\n';
+										body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
+										for (var i=0;i<table.value.length;i++)
 										{
-											maildata.push('');
-											maildata.push('--'+boundaries.mixed+'--');
-											send(maildata);
+											body+='・メニュー：'+table.value[i].value[vars.config['menu']].value+'\n';
+											body+='・期間：'+table.value[i].value[vars.config['datefrom']].value+'\n';
+											body+='・申込金額：'+String(table.value[i].value[vars.config['price']].value).replace(/(\d)(?=(\d\d\d)+(?!\d))/g,'$1,')+'円\n';
+											body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
+										}
+										break;
+									case 2:
+										subject='【申込】';
+										body='';
+										body+='*************************************************************************\n';
+										body+='株式会社プライムクロスより、正式発注のご連絡を致します。\n';
+										body+='*************************************************************************\n';
+										body+=mailname.join(',')+'\n\n';
+										body+='いつもお世話になっております、プライムクロスの入稿センターでございます。\n';
+										body+='添付致しました内容にて、正式発注をさせていただきます。\n';
+										body+='内容をご確認の上、受領の旨を本メール全員返信にて\n';
+										body+='お戻し頂けますようお願い致します。\n';
+										body+='■プライムクロス注文番号：\n';
+										body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
+										for (var i=0;i<table.value.length;i++) body+=table.value[i].value[vars.config['orderno']].value+'\n';
+										body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
+										if (vars.config['attachment']) Array.prototype.push.apply(attachment,record[vars.config['attachment']].value);
+										break;
+									case 3:
+										subject='【訂正】【申込】';
+										body='';
+										body+=record[vars.config['revisionbody']].value+'\n';
+										body+='*************************************************************************\n';
+										body+='株式会社プライムクロスより、正式発注のご連絡を致します。\n';
+										body+='*************************************************************************\n';
+										body+=mailname.join(',')+'\n\n';
+										body+='いつもお世話になっております、プライムクロスの入稿センターでございます。\n';
+										body+='添付致しました内容にて、正式発注をさせていただきます。\n';
+										body+='内容をご確認の上、受領の旨を本メール全員返信にて\n';
+										body+='お戻し頂けますようお願い致します。\n';
+										body+='■プライムクロス注文番号：\n';
+										body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
+										for (var i=0;i<table.value.length;i++) body+=table.value[i].value[vars.config['orderno']].value+'\n';
+										body+='－－－－－－－－－－－－－－－－－－－－－－－－－－－－\n';
+										if (vars.config['attachment']) Array.prototype.push.apply(attachment,record[vars.config['attachment']].value);
+										break;
+								}
+								subject+=record[vars.config['customer']].value+'/';
+								subject+=record[vars.config['subject']].value+'/';
+								subject+=table.value[0].value[vars.config['media']].value+'/';
+								subject+=table.value[0].value[vars.config['menu']].value;
+								subject+=(table.value.length>1)?'（他）/':'/';
+								subject+=table.value[0].value[vars.config['datefrom']].value+'～';
+								subject+=table.value[0].value[vars.config['dateto']].value;
+								subject+=(table.value.length>1)?'（他）':'';
+								$('#mailto',vars.previewform.dialog.contents).find('.receiver').val(mailto.join(','));
+								$('#mailcc',vars.previewform.dialog.contents).find('.receiver').val(mailcc.join(','));
+								$('#mailbcc',vars.previewform.dialog.contents).find('.receiver').val(mailbcc.join(','));
+								$('#subject',vars.previewform.dialog.contents).find('.receiver').val(subject);
+								$('#body',vars.previewform.dialog.contents).find('.receiver').css({'height':'100%'}).val(body);
+								$('#body',vars.previewform.dialog.contents).css({'height':'calc(100% - 160px)'});
+								vars.previewform.show({
+									buttons:{
+										ok:function(){
+											vars.previewform.hide();
+											swal({
+												title:'確認',
+												text:'メールを送信します。宜しいですか？',
+												type:'info',
+												showCancelButton:true,
+												cancelButtonText:'Cancel'
+											},
+											function(){
+												subject=$('#subject',vars.previewform.dialog.contents).find('.receiver').val();
+												body=$('#body',vars.previewform.dialog.contents).find('.receiver').val();
+												maildata.push('To: '+mailto.join(','));
+												if (mailcc.length!=0) maildata.push('CC: '+mailcc.join(','));
+												if (mailbcc.length!=0) maildata.push('BCC: '+mailbcc.join(','));
+												maildata.push('Subject: =?utf-8?B?'+window.btoa(unescape(encodeURIComponent(subject)))+'?=');
+												maildata.push('MIME-Version: 1.0');
+												if (attachment.length!=0)
+												{
+													maildata.push('Content-Type: multipart/mixed; boundary="'+boundaries.mixed+'"');
+													maildata.push('');
+													maildata.push('--'+boundaries.mixed);
+													maildata.push('Content-Type: multipart/alternative; boundary="'+boundaries.alternative+'"');
+													maildata.push('');
+													maildata.push('--'+boundaries.alternative);
+												}
+												maildata.push('Content-Type: text/html;charset=iso-8859-1');
+												maildata.push('Content-Transfer-Encoding: 7bit');
+												maildata.push('');
+												maildata.push('<html><body>'+body.replace(/\r/g,'').replace(/\n/g,'<br>')+'</body></html>');
+												if (attachment.length!=0)
+												{
+													maildata.push('');
+													maildata.push('--'+boundaries.alternative+'--');
+													var counter=0;
+													for (var i=0;i<attachment.length;i++)
+													{
+														(function(file){
+															functions.download(file.fileKey).then(function(blob){
+																var reader=new FileReader();
+																reader.onabort=function(event){error();};
+																reader.onerror=function(event){error();};
+																reader.onload=function(event){
+																	maildata.push('');
+																	maildata.push('--'+boundaries.mixed);
+																	maildata.push('Content-Type: '+file.contentType+'; name="'+file.name+'"');
+																	maildata.push('Content-Transfer-Encoding: base64');
+																	maildata.push('Content-Disposition: attachment; filename="'+file.name+'"');
+																	maildata.push('');
+																	maildata.push(event.target.result.replace(/^.+,/,''));
+																	counter++;
+																	if (counter==attachment.length)
+																	{
+																		maildata.push('');
+																		maildata.push('--'+boundaries.mixed+'--');
+																		send(maildata);
+																	}
+																}
+																reader.readAsDataURL(blob);
+															});
+														})(attachment[i]);
+													}
+												}
+												else send(maildata);
+											});
+										},
+										cancel:function(){
+											/* close previewform */
+											vars.previewform.hide();
 										}
 									}
-									reader.readAsDataURL(blob);
 								});
-							})(attachment[i]);
-						}
+							}
+							else swal('送信エラー','宛先を選択して下さい。','error');
+						},
+						cancel:function(){vars.mailselect.hide();}
 					}
-					else send(maildata);
-				}
-				else swal('送信エラー','宛先を選択して下さい。','error');
+				});
 			}
 		},
 		/* load app datas */
@@ -315,110 +343,60 @@ jQuery.noConflict();
 							config:vars.config,
 							fields:fields
 						});
+						vars.previewform=$('body').previewform({
+							fields:[
+								{
+									code:'mailto',
+									disabled:true,
+									label:'To',
+									type:'SINGLE_LINE_TEXT'
+								},
+								{
+									code:'mailcc',
+									disabled:true,
+									label:'Cc',
+									type:'SINGLE_LINE_TEXT'
+								},
+								{
+									code:'mailbcc',
+									disabled:true,
+									label:'Bcc',
+									type:'SINGLE_LINE_TEXT'
+								},
+								{
+									code:'subject',
+									disabled:false,
+									label:'件名',
+									type:'SINGLE_LINE_TEXT'
+								},
+								{
+									code:'body',
+									disabled:false,
+									label:'本文',
+									type:'MULTI_LINE_TEXT'
+								}
+							]
+						});
 						$('.gaia-argoui-app-toolbar-statusmenu')
 						.append(
 							vars.button.clone(true).text('申込書送付依頼')
 							.on('click',function(e){
 								if (!vars.auth) return;
-								swal({
-									title:'確認',
-									text:'申込書送付依頼メールを送信します。宜しいですか？',
-									type:'info',
-									showCancelButton:true,
-									cancelButtonText:'Cancel'
-								},
-								function(){
-									vars.mailselect.show({
-										buttons:{
-											ok:function(selectionto,selectioncc,selectionbcc){
-												var mailto=[];
-												var mailcc=[];
-												var mailbcc=[];
-												var mailname=[];
-												for (var i=0;i<selectionto.length;i++)
-												{
-													mailto.push(selectionto[i].mail);
-													mailname.push(selectionto[i].name);
-												}
-												for (var i=0;i<selectioncc.length;i++) mailcc.push(selectioncc[i].mail);
-												for (var i=0;i<selectionbcc.length;i++) mailbcc.push(selectionbcc[i].mail);
-												functions.mailsend(kintone.app.record.get().record,mailto,mailcc,mailbcc,mailname,1);
-												vars.mailselect.hide();
-											},
-											cancel:function(){vars.mailselect.hide();}
-										}
-									});
-								});
+								functions.mailsend(kintone.app.record.get().record,1);
 							})
 						)
 						.append(
 							vars.button.clone(true).text('申込書送付')
 							.on('click',function(e){
 								if (!vars.auth) return;
-								swal({
-									title:'確認',
-									text:'申込書送付メールを送信します。宜しいですか？',
-									type:'info',
-									showCancelButton:true,
-									cancelButtonText:'Cancel'
-								},
-								function(){
-									vars.mailselect.show({
-										buttons:{
-											ok:function(selectionto,selectioncc,selectionbcc){
-												var mailto=[];
-												var mailcc=[];
-												var mailbcc=[];
-												var mailname=[];
-												for (var i=0;i<selectionto.length;i++)
-												{
-													mailto.push(selectionto[i].mail);
-													mailname.push(selectionto[i].name);
-												}
-												for (var i=0;i<selectioncc.length;i++) mailcc.push(selectioncc[i].mail);
-												for (var i=0;i<selectionbcc.length;i++) mailbcc.push(selectionbcc[i].mail);
-												functions.mailsend(kintone.app.record.get().record,mailto,mailcc,mailbcc,mailname,2);
-												vars.mailselect.hide();
-											},
-											cancel:function(){vars.mailselect.hide();}
-										}
-									});
-								});
+								functions.mailsend(kintone.app.record.get().record,2);
 							})
 						)
 						.append(
 							vars.button.clone(true).text('訂正申込')
 							.on('click',function(e){
 								if (!vars.auth) return;
-								swal({
-									title:'確認',
-									text:'訂正申込メールを送信します。宜しいですか？',
-									type:'info',
-									showCancelButton:true,
-									cancelButtonText:'Cancel'
-								},
-								function(){
-									vars.mailselect.show({
-										buttons:{
-											ok:function(selectionto,selectioncc,selectionbcc){
-												var mailto=[];
-												var mailcc=[];
-												var mailbcc=[];
-												var mailname=[];
-												for (var i=0;i<selectionto.length;i++)
-												{
-													mailto.push(selectionto[i].mail);
-													mailname.push(selectionto[i].name);
-												}
-												for (var i=0;i<selectioncc.length;i++) mailcc.push(selectioncc[i].mail);
-												for (var i=0;i<selectionbcc.length;i++) mailbcc.push(selectionbcc[i].mail);
-												functions.mailsend(kintone.app.record.get().record,mailto,mailcc,mailbcc,mailname,3);
-												vars.mailselect.hide();
-											},
-											cancel:function(){vars.mailselect.hide();}
-										}
-									});
-								});
+								functions.mailsend(kintone.app.record.get().record,3);
 							})
 						)
 						.append(

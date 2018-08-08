@@ -475,3 +475,9 @@ div.image{
   margin-top:10px;
   margin-bottom:10px;
 }
+div.setting{
+  padding:3px 0px;
+}
+div.setting .caption{
+  width:4em;
+}

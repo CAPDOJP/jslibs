@@ -711,21 +711,26 @@ jQuery.noConflict();
 		var code=e.keyCode||e.which;
 		if (code==13)
 		{
-			var targets=$(this).closest('table').find('input[type=text]:visible:not(:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)');
-			var total=targets.length;
-			var index=targets.index(this);
-			if (e.shiftKey)
-			{
-				if (index==0) index=total;
-				index--;
-			}
-			else
-			{
-				index++;
-				if (index==total) index=0;
-			}
-			targets.eq(index).focus();
-			return false;
+			var table=$(this).closest('table');
+			if (table)
+				if (table.attr('id')=='grideditor')
+				{
+					var targets=$(this).closest('table').find('input[type=text]:visible:not(:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)');
+					var total=targets.length;
+					var index=targets.index(this);
+					if (e.shiftKey)
+					{
+						if (index==0) index=total;
+						index--;
+					}
+					else
+					{
+						index++;
+						if (index==total) index=0;
+					}
+					targets.eq(index).focus();
+					return false;
+				}
 		}
 	});
 	/*---------------------------------------------------------------

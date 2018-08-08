@@ -495,10 +495,11 @@ div.kintoneplugin-row table tbody tr td div.buttons{
 }
 div.kintoneplugin-row table tbody tr td div.buttons img{
   cursor:pointer;
-  display:block;
+  display:inline-block;
   margin:0px 3px;
   padding:0px;
-  width:24px;
+  vertical-align:top;
+  width:28px;
 }
 div.kintoneplugin-row table tbody tr td div.kintoneplugin-select-outer{
   margin:2px 0px;

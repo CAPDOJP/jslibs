@@ -497,6 +497,7 @@ div.kintoneplugin-row table tbody tr td{
   white-space:nowrap;
 }
 div.kintoneplugin-row table tbody tr td.button{
+  min-width:28px;
   width:28px;
 }
 div.kintoneplugin-row table tbody tr td.button img{

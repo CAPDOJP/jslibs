@@ -45,15 +45,16 @@ jQuery.noConflict();
 				var items=[];
 				var opened=[];
 				var settings=vars.fields[i]['setting'];
-				switch (event.record[vars.fields[i]['field']].type)
+				var target=vars.fields[i]['field'];
+				switch (event.record[target].type)
 				{
 					case 'CHECK_BOX':
 					case 'MULTI_SELECT':
-						items=event.record[vars.fields[i]['field']].value;
+						items=event.record[target].value;
 						break;
 					case 'DROP_DOWN':
 					case 'RADIO_BUTTON':
-						items.push(event.record[vars.fields[i]['field']].value);
+						items.push(event.record[target].value);
 						break;
 				}
 				if (!isdetail)
@@ -79,10 +80,10 @@ jQuery.noConflict();
 								}
 							}
 						}
-				$.each(vars.groups,function(key,values){
+				$.each(vars.groups[target],function(key,values){
 					for (var i2=0;i2<values.length;i2++)
 					{
-						switch (event.record[vars.fields[i]['field']].type)
+						switch (event.record[target].type)
 						{
 							case 'CHECK_BOX':
 							case 'MULTI_SELECT':
@@ -103,7 +104,7 @@ jQuery.noConflict();
 						}
 					}
 				});
-				$.each(vars.groups,function(key,values){
+				$.each(vars.groups[target],function(key,values){
 					for (var i2=0;i2<values.length;i2++)
 						if ($.inArray(values[i2][0],opened)==-1)
 							if (values[i2].attr('aria-expanded')=='true') values[i2].trigger('click');
@@ -123,18 +124,20 @@ jQuery.noConflict();
 		for (var i=0;i<vars.fields.length;i++)
 		{
 			var settings=vars.fields[i]['setting'];
-			vars.events.push('app.record.create.change.'+vars.fields[i]['field']);
-			vars.events.push('mobile.app.record.create.change.'+vars.fields[i]['field']);
-			vars.events.push('app.record.edit.change.'+vars.fields[i]['field']);
-			vars.events.push('mobile.app.record.edit.change.'+vars.fields[i]['field']);
-			vars.events.push('app.record.index.edit.change.'+vars.fields[i]['field']);
+			var target=vars.fields[i]['field'];
+			vars.events.push('app.record.create.change.'+target);
+			vars.events.push('mobile.app.record.create.change.'+target);
+			vars.events.push('app.record.edit.change.'+target);
+			vars.events.push('mobile.app.record.edit.change.'+target);
+			vars.events.push('app.record.index.edit.change.'+target);
 			kintone.events.on(vars.events,function(event){
 				return functions.checksetting(event);
 			});
+			vars.groups[target]={};
 			$.each(settings,function(key,values){
-				vars.groups[key]=[];
+				vars.groups[target][key]=[];
 				for (var i2=0;i2<values.groups.length;i2++)
-					vars.groups[key].push($('.group-label-gaia',$('body').fields(values.groups[i2],true)[0]));
+					vars.groups[target][key].push($('.group-label-gaia',$('body').fields(values.groups[i2],true)[0]));
 			});
 		}
 		return functions.checksetting(event,event.type.match(/detail/g));

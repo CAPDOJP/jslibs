@@ -24,7 +24,7 @@
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
             "https://apis.google.com/js/api.js",
             "js/sweetalert.min.js",
-            "js/mailselect.js",
+            "js/maildialog.js",
             "js/gmail.js"
         ],
         "css":[
