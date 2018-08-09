@@ -97,7 +97,7 @@ var RouteMap=function(options){
 	);
 	this.container.append(this.contents);
 	if (this.isfullscreen) this.container.append(this.buttonblock);
-	if (options.container!=null) options.container.append(this.container);
+	if (options.container) options.container.append(this.container);
 	/* setup google map */
 	if (!options.isreload)
 	{
@@ -118,7 +118,7 @@ var RouteMap=function(options){
 	this.geocoder=null;
 	this.loaded=false;
 	/* loading wait */
-	if (options.container!=null) waitgoogle(function(){
+	if (options.container) waitgoogle(function(){
 		var latlng=new google.maps.LatLng(0,0);
 		var param={
 			center:latlng,
@@ -141,8 +141,8 @@ var RouteMap=function(options){
 		my.directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true});
 		my.directionsService=new google.maps.DirectionsService();
 		my.geocoder=new google.maps.Geocoder();
-		if (my.loadedcallback!=null) google.maps.event.addListener(my.map,'idle',function(){if (!my.loaded) my.loadedcallback();my.loaded=true;});
-		if (my.clickcallback!=null)
+		if (my.loadedcallback) google.maps.event.addListener(my.map,'idle',function(){if (!my.loaded) my.loadedcallback();my.loaded=true;});
+		if (my.clickcallback)
 		{
 			google.maps.event.addListener(my.map,'click',function(e){
 				my.inaddress({
@@ -173,7 +173,7 @@ RouteMap.prototype={
 		{
 			var userAgent=window.navigator.userAgent.toLowerCase();
 			if (userAgent.indexOf('msie')!=-1 || userAgent.indexOf('trident')!=-1) alert('Internet Explorerでは正常に動作しません。\nMicrosoft Edgeかその他のブラウザを利用して下さい。');
-			if (this.watchID!=null) options.callback(this.currentlatlng);
+			if (this.watchID) options.callback(this.currentlatlng);
 			else
 			{
 				var watchparam={
@@ -191,7 +191,7 @@ RouteMap.prototype={
 								param.latlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
 							}
 							param.counter++;
-							if (watchparam.counter>watchparam.limit-1 && callback!=null) callback(param.latlng);
+							if (watchparam.counter>watchparam.limit-1 && callback) callback(param.latlng);
 							navigator.geolocation.clearWatch(watchID);
 						},
 						function(error){
@@ -205,8 +205,8 @@ RouteMap.prototype={
 									break;
 							}
 							param.counter++;
-							if (param.latlng!=null)
-								if (watchparam.counter>watchparam.limit-1 && callback!=null) callback(param.latlng);
+							if (param.latlng)
+								if (watchparam.counter>watchparam.limit-1 && callback) callback(param.latlng);
 							navigator.geolocation.clearWatch(watchID);
 						},
 						{
@@ -270,7 +270,7 @@ RouteMap.prototype={
 				map:map,
 				position:markeroptions.latlng
 			});
-			if (markeroptions.icon!=null) marker.setIcon(markeroptions.icon);
+			if (markeroptions.icon) marker.setIcon(markeroptions.icon);
 			else
 			{
 				marker.setIcon({
@@ -289,7 +289,7 @@ RouteMap.prototype={
 					text:markeroptions.label.toString(),
 					fontSize:markeroptions.fontsize+'px',
 				});
-			if (my.markerclickcallback!=null)
+			if (my.markerclickcallback)
 			{
 				google.maps.event.addListener(marker,'click',function(e){
 					my.markerclickcallback(index);
@@ -340,7 +340,7 @@ RouteMap.prototype={
 				);
 				/* setup center position */
 				map.setCenter(new google.maps.LatLng(values.lat,values.lng));
-				if (options.callback!=null) options.callback();
+				if (options.callback) options.callback();
 				break;
 			default:
 				if (this.needroute)
@@ -416,7 +416,7 @@ RouteMap.prototype={
 							});
 							renderer.setDirections(result);
 							renderer.setMap(map);
-							if (options.callback!=null) options.callback();
+							if (options.callback) options.callback();
 						}
 					});
 				}
@@ -453,7 +453,7 @@ RouteMap.prototype={
 					});
 					/* setup center position */
 					map.setCenter(new google.maps.LatLng(options.markers[0].lat,options.markers[0].lng));
-					if (options.callback!=null) options.callback();
+					if (options.callback) options.callback();
 				}
 				break;
 		}
@@ -462,45 +462,84 @@ RouteMap.prototype={
 	inaddress:function(options){
 		var options=$.extend({
 			target:null,
+			address:'',
 			lat:0,
 			lng:0,
-			callback:null
+			callback:null,
+			fali:null
 		},options);
-		this.geocoder.geocode({
-			'location':new google.maps.LatLng(options.lat,options.lng)
-		},
-		function(results,status){
-			switch (status)
-			{
-				case google.maps.GeocoderStatus.ZERO_RESULTS:
-					break;
-				case google.maps.GeocoderStatus.OVER_QUERY_LIMIT:
-					alert('リクエストが割り当て量を超えています。');
-					break;
-				case google.maps.GeocoderStatus.REQUEST_DENIED:
-					alert('リクエストが拒否されました。');
-					break;
-				case google.maps.GeocoderStatus.INVALID_REQUEST:
-					alert('クエリが不足しています。');
-					break;
-				case 'OK':
-					if (options.target!=null)
-					{
-						switch (options.target.prop('tagName').toLowerCase())
+		if (options.address)
+		{
+			this.geocoder.geocode({
+				'address':options.address,
+				'region': 'jp'
+			},
+			function(results,status){
+				switch (status)
+				{
+					case google.maps.GeocoderStatus.ZERO_RESULTS:
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.OVER_QUERY_LIMIT:
+						alert('リクエストが割り当て量を超えています。');
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.REQUEST_DENIED:
+						alert('リクエストが拒否されました。');
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.INVALID_REQUEST:
+						alert('クエリが不足しています。');
+						if (options.fali) options.fali();
+						break;
+					case 'OK':
+						if (options.callback) options.callback(results[0]);
+						break;
+				}
+			});
+		}
+		else
+		{
+			this.geocoder.geocode({
+				'location':new google.maps.LatLng(options.lat,options.lng)
+			},
+			function(results,status){
+				switch (status)
+				{
+					case google.maps.GeocoderStatus.ZERO_RESULTS:
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.OVER_QUERY_LIMIT:
+						alert('リクエストが割り当て量を超えています。');
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.REQUEST_DENIED:
+						alert('リクエストが拒否されました。');
+						if (options.fali) options.fali();
+						break;
+					case google.maps.GeocoderStatus.INVALID_REQUEST:
+						alert('クエリが不足しています。');
+						if (options.fali) options.fali();
+						break;
+					case 'OK':
+						if (options.target)
 						{
-							case 'input':
-							case 'textarea':
-								options.target.val(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
-								break;
-							default:
-								options.target.text(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
-								break;
+							switch (options.target.prop('tagName').toLowerCase())
+							{
+								case 'input':
+								case 'textarea':
+									options.target.val(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
+									break;
+								default:
+									options.target.text(results[0].formatted_address.replace(/日本(,|、)[ ]*/g,''));
+									break;
+							}
 						}
-					}
-					if (options.callback!=null) options.callback(results[0]);
-					break;
-			}
-		});
+						if (options.callback) options.callback(results[0]);
+						break;
+				}
+			});
+		}
 	},
 	inbounds:function(){
 		var bounds=this.map.getBounds();
@@ -523,7 +562,7 @@ RouteMap.prototype={
 			this.watchID=navigator.geolocation.watchPosition(
 				function(pos){
 					my.currentlatlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
-					if (options.callback!=null) options.callback(my.currentlatlng);
+					if (options.callback) options.callback(my.currentlatlng);
 				},
 				function(error){
 					if (my.currentlatlng==null) my.currentlatlng=new google.maps.LatLng(0,0);

@@ -160,11 +160,11 @@ jQuery.noConflict();
 				row=vars.informationtable.rows.eq(i);
 				if ($('select#information',row).val().length!=0) informations.push($('select#information',row).val());
 			}
-			if ($('input#apikey').val()=='')
-			{
-				swal('Error!','Google Maps APIキーを入力して下さい。','error');
-				return;
-			}
+		}
+		if ($('input#apikey').val()=='')
+		{
+			swal('Error!','Google Maps APIキーを入力して下さい。','error');
+			return;
 		}
 		/* setup config */
 		config['address']=$('select#address').val();

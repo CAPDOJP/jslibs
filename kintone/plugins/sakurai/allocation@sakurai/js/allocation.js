@@ -22,6 +22,7 @@ jQuery.noConflict();
 		displaymarkers:null,
 		displaytraffic:null,
 		allocation:null,
+		latlngmap:null,
 		map:null,
 		config:{},
 		fieldinfos:{},
@@ -146,44 +147,20 @@ jQuery.noConflict();
 				callback:null
 			},options);
 			if (options.address.length!=0)
-				kintone.proxy(
-					'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURIComponent(options.address),
-					'GET',
-					{},
-					{},
-					function(body,status,headers){
-						if (status>=200 && status<300){
-							var json=JSON.parse(body);
-							switch (json.status)
-							{
-								case 'ZERO_RESULTS':
-									alert('地図座標が取得出来ませんでした。');
-									break;
-								case 'OVER_QUERY_LIMIT':
-									alert('リクエストが割り当て量を超えています。');
-									break;
-								case 'REQUEST_DENIED':
-									alert('リクエストが拒否されました。');
-									break;
-								case 'INVALID_REQUEST':
-									alert('クエリが不足しています。');
-									break;
-								case 'OK':
-									var lat=json.results[0].geometry.location.lat
-									var lng=json.results[0].geometry.location.lng;
-									var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(options.address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
-									if (vars.map!=null)
-									{
-										vars.map.empty();
-										vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
-									}
-									if (options.callback!=null) options.callback(json);
-									break;
-							}
+				vars.latlngmap.inaddress({
+					address:options.address,
+					callback:function(result){
+						var lat=result.geometry.location.lat();
+						var lng=result.geometry.location.lng();
+						var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(options.address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
+						if (vars.map!=null)
+						{
+							vars.map.empty();
+							vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
 						}
-					},
-					function(error){alert('地図座標取得に失敗しました。\n'+error);}
-				);
+						if (options.callback!=null) options.callback(result);
+					}
+				})
 			if (options.latlng.length!=0)
 				if (vars.map!=null)
 				{
@@ -758,38 +735,40 @@ jQuery.noConflict();
 			}
 			/* map action  */
 			vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
-			/* the initial display when editing */
-			if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
-			if (!vars.ismobile) spacer.append(vars.map);
-			if ('address' in vars.config)
-			{
-				vars.events.push('app.record.create.change.'+vars.config['address']);
-				vars.events.push('mobile.app.record.create.change.'+vars.config['address']);
-				vars.events.push('app.record.edit.change.'+vars.config['address']);
-				vars.events.push('mobile.app.record.edit.change.'+vars.config['address']);
-				/* display map in value change event */
-				kintone.events.on(vars.events,function(event){
-					if (event.changes.field.value)
-					{
-						functions.displaymap({
-							address:event.changes.field.value,
-							callback:function(json){
-								var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
-								record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
-								record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
-								if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
-								else kintone.app.record.set(record);
-							}
-						});
-					}
-					else
-					{
-						event.record[vars.config['lat']].value=null;
-						event.record[vars.config['lng']].value=null;
-					}
-					return event;
-				});
-			}
+			vars.latlngmap=$('body').routemap(vars.config['apikey'],function(){
+				/* the initial display when editing */
+				if (event.type.match(/(edit|detail)/g)!=null) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
+				if (!vars.ismobile) spacer.append(vars.map);
+				if ('address' in vars.config)
+				{
+					vars.events.push('app.record.create.change.'+vars.config['address']);
+					vars.events.push('mobile.app.record.create.change.'+vars.config['address']);
+					vars.events.push('app.record.edit.change.'+vars.config['address']);
+					vars.events.push('mobile.app.record.edit.change.'+vars.config['address']);
+					/* display map in value change event */
+					kintone.events.on(vars.events,function(event){
+						if (event.changes.field.value)
+						{
+							functions.displaymap({
+								address:event.changes.field.value,
+								callback:function(json){
+									var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+									record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
+									record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
+									if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
+									else kintone.app.record.set(record);
+								}
+							});
+						}
+						else
+						{
+							event.record[vars.config['lat']].value=null;
+							event.record[vars.config['lng']].value=null;
+						}
+						return event;
+					});
+				}
+			},$('script#mapscript').size());
 		},function(error){});
 		return event;
 	});

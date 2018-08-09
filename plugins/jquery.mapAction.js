@@ -22,13 +22,15 @@
 jQuery.fn.staticMapAction = function(options){
 	var options=$.extend({
 		address:'',
+		apikey:'',
 		latlng:'',
 		callback:null
 	},options);
 	var target=$(this);
+	var apikey=(options.apikey)?'&key='+options.apikey:'';
 	if (options.address.length!=0)
 		$.ajax({
-			url:window.location.protocol+'//maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address),
+			url:window.location.protocol+'//maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURI(options.address)+apikey,
 			type:'get',
 			datatype:'json'
 		})
