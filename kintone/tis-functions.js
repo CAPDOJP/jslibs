@@ -243,6 +243,47 @@ jQuery.extend({
 		for (var i=0;i<taxdatas.length;i++) if (new Date(taxdatas[i].startdate.dateformat())<date) rate=parseFloat(taxdatas[i].rate);
 		return rate;
 	},
+	createrow:function(fields){
+		var row={value:{}};
+		for (var key in fields)
+		{
+			row.value[key]={type:fields[key].type,value:null};
+			var hasdefault=fields[key].defaultValue;
+			switch (fields[key].type)
+			{
+				case 'CHECK_BOX':
+				case 'FILE':
+				case 'GROUP_SELECT':
+				case 'MULTI_SELECT':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					row.value[key].value=[];
+					if (fields[key].type!='FILE') hasdefault=fields[key].defaultValue.length;
+					break;
+			}
+			/* check default value */
+			if (hasdefault)
+			{
+				switch (fields[key].type)
+				{
+					case 'CHECK_BOX':
+					case 'MULTI_SELECT':
+						row.value[key].value=fields[key].defaultValue;
+						break;
+					case 'GROUP_SELECT':
+					case 'ORGANIZATION_SELECT':
+					case 'USER_SELECT':
+						$.each(fields[key].defaultValue,function(index,values){
+							row.value[key].value.push({code:values.code});
+						});
+						break;
+					default:
+						row.value[key].value=fields[key].defaultValue;
+						break;
+				}
+			}
+		}
+	},
 	downloadtext:function(values,character,filename){
 		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}
 		var strtoarray=function(str){

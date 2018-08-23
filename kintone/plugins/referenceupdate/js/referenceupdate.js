@@ -178,7 +178,15 @@ jQuery.noConflict();
 									resolve(event);
 								},function(){
 									vars.progress.hide();
-									resolve(event);
+									if (event.error)
+									{
+										swal({
+											title:'Error!',
+											text:event.error,
+											type:'error'
+										},function(){resolve(event);});
+									}
+									else resolve(event);
 								});
 						}
 					}

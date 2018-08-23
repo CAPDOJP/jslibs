@@ -187,19 +187,16 @@ jQuery.noConflict();
 											});
 											var isempty=false;
 											if (record.record[setting.tablecode].value.length==1)
-												if ($.isemptyrow(record.record[setting.tablecode].value[0].value)) isempty=true;
+												if ($.isemptyrow(record.record[setting.tablecode].value[0].value,setting.tablefields)) isempty=true;
 											if (filter.length!=0)
 											{
-												var row={value:{}};
-												$.each(setting.tablefields,function(key,values){
-													row.value[key]={type:values.type,value:null};
-													for (var i2=0;i2<setting.copies.length;i2++)
-														if (key==setting.copies[i2].copyto)
-														{
-															row.value[key].value=filter[0][setting.copies[i2].copyfrom].value;
-															if (vars.fieldinfos[setting.copies[i2].copyto].lookup) row.value[key]['lookup']=true;
-														}
-												});
+												var row=$.createrow(setting.tablefields);
+												for (var i2=0;i2<setting.copies.length;i2++)
+												{
+													var key=setting.copies[i2].copyto;
+													row.value[key].value=filter[0][setting.copies[i2].copyfrom].value;
+													if (vars.fieldinfos[key].lookup) row.value[key]['lookup']=true;
+												}
 												if (isempty) record.record[setting.tablecode].value=[row];
 												else record.record[setting.tablecode].value.push(row);
 											}
