@@ -3,14 +3,14 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone グリッドエディタープラグイン",
-        "en":"kintone Grid Editor plug-in",
-        "zh":"kintone グリッドエディタープラグイン"
+        "ja":"kintone テーブル行自動追加プラグイン",
+        "en":"kintone Auto Addition plug-in",
+        "zh":"kintone テーブル行自動追加プラグイン"
     },
     "description":{
-        "ja":"レコードを一覧画面で編集するプラグインです。住所/緯度/経度フィールドを指定すれば、住所入力時に自動的に緯度/経度を登録します。",
-        "en":"This plug-in to edit the list screen records",
-        "zh":"レコードを一覧画面で編集するプラグインです。住所/緯度/経度フィールドを指定すれば、住所入力時に自動的に緯度/経度を登録します。"
+        "ja":"テーブルに値が入力された時点で新しい行を自動追加するするプラグインです。",
+        "en":"This plug-in automatically adds new row when a value is entered in the table.",
+        "zh":"テーブルに値が入力された時点で新しい行を自動追加するするプラグインです。"
     },
     "icon": "image/icon.png",
     "homepage_url":{
@@ -22,16 +22,11 @@
         "js":[
             "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
             "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
-            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-route.js",
             "js/sweetalert.min.js",
-            "js/grideditor.js"
+            "js/autoaddition.js"
         ],
         "css":[
-            "css/51-modern-default.css",
-            "css/sweetalert.css",
-            "css/desktop/common.css",
-            "css/desktop/grideditor.css"
+            "css/sweetalert.css"
         ]
     },
     "config":{

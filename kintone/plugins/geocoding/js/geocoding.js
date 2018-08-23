@@ -18,6 +18,7 @@ jQuery.noConflict();
 		istransit:false,
 		infowindow:null,
 		currentlocation:null,
+		latlngmap:null,
 		map:null,
 		config:{},
 		events:[],
@@ -42,44 +43,20 @@ jQuery.noConflict();
 				callback:null
 			},options);
 			if (options.address.length!=0)
-				kintone.proxy(
-					'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ja&address='+encodeURIComponent(options.address),
-					'GET',
-					{},
-					{},
-					function(body,status,headers){
-						if (status>=200 && status<300){
-							var json=JSON.parse(body);
-							switch (json.status)
-							{
-								case 'ZERO_RESULTS':
-									alert('地図座標が取得出来ませんでした。');
-									break;
-								case 'OVER_QUERY_LIMIT':
-									alert('リクエストが割り当て量を超えています。');
-									break;
-								case 'REQUEST_DENIED':
-									alert('リクエストが拒否されました。');
-									break;
-								case 'INVALID_REQUEST':
-									alert('クエリが不足しています。');
-									break;
-								case 'OK':
-									var lat=json.results[0].geometry.location.lat
-									var lng=json.results[0].geometry.location.lng;
-									var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(options.address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
-									if (vars.map!=null)
-									{
-										vars.map.empty();
-										vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
-									}
-									if (options.callback!=null) options.callback(json);
-									break;
-							}
+				vars.latlngmap.inaddress({
+					address:options.address,
+					callback:function(result){
+						var lat=result.geometry.location.lat();
+						var lng=result.geometry.location.lng();
+						var src='https://maps.google.co.jp/maps?f=q&amp;hl=ja&amp;q='+encodeURIComponent(options.address)+'@'+lat+','+lng+'&amp;ie=UTF8&amp;ll='+lat+','+lng+'&amp;z=14&amp;t=m&amp;output=embed';
+						if (vars.map!=null)
+						{
+							vars.map.empty();
+							vars.map.append($('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+src+'"></iframe>').css({'height':'100%','width':'100%'}));
 						}
-					},
-					function(error){alert('地図座標取得に失敗しました。\n'+error);}
-				);
+						if (options.callback!=null) options.callback(result);
+					}
+				})
 			if (options.latlng.length!=0)
 				if (vars.map!=null)
 				{
@@ -203,45 +180,47 @@ jQuery.noConflict();
 		kintone.app.record.setFieldShown(vars.config['lng'],false);
 		/* map action  */
 		vars.map=$('<div id="map">').css({'height':'100%','width':'100%'});
-		/* the initial display when editing */
-		if (event.type.match(/(edit|detail)/g)!=null || vars.istransit)
-			functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
+		vars.latlngmap=$('body').routemap(vars.config['apikey'],false,false,function(){
+			/* the initial display when editing */
+			if (event.type.match(/(edit|detail)/g)!=null || vars.istransit) functions.displaymap({latlng:event.record[vars.config['lat']].value+','+event.record[vars.config['lng']].value});
+			if ('address' in vars.config)
+			{
+				vars.events.push('app.record.create.change.'+vars.config['address']);
+				vars.events.push('mobile.app.record.create.change.'+vars.config['address']);
+				vars.events.push('app.record.edit.change.'+vars.config['address']);
+				vars.events.push('mobile.app.record.edit.change.'+vars.config['address']);
+				/* display map in value change event */
+				kintone.events.on(vars.events,function(event){
+					var type=event.type.split('.');
+					if (type[type.length-1]!=vars.config['address']) return event;
+					if (!vars.istransit)
+					{
+						if (event.changes.field.value)
+						{
+							functions.displaymap({
+								address:event.changes.field.value,
+								callback:function(result){
+									var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
+									record.record[vars.config['lat']].value=result.geometry.location.lat();
+									record.record[vars.config['lng']].value=result.geometry.location.lng();
+									if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
+									else kintone.app.record.set(record);
+								}
+							});
+						}
+						else
+						{
+							event.record[vars.config['lat']].value=null;
+							event.record[vars.config['lng']].value=null;
+						}
+					}
+					vars.istransit=false;
+					return event;
+				});
+				vars.latlngmap.container.hide();
+			}
+		},$('script#mapscript').size());
 		kintone.app.record.getSpaceElement(vars.config['spacer']).appendChild(vars.map[0]);
 		return event;
 	});
-	if ('address' in vars.config)
-	{
-		vars.events.push('app.record.create.change.'+vars.config['address']);
-		vars.events.push('mobile.app.record.create.change.'+vars.config['address']);
-		vars.events.push('app.record.edit.change.'+vars.config['address']);
-		vars.events.push('mobile.app.record.edit.change.'+vars.config['address']);
-		/* display map in value change event */
-		kintone.events.on(vars.events,function(event){
-			var type=event.type.split('.');
-			if (type[type.length-1]!=vars.config['address']) return event;
-			if (!vars.istransit)
-			{
-				if (event.changes.field.value)
-				{
-					functions.displaymap({
-						address:event.changes.field.value,
-						callback:function(json){
-							var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
-							record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
-							record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
-							if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
-							else kintone.app.record.set(record);
-						}
-					});
-				}
-				else
-				{
-					event.record[vars.config['lat']].value=null;
-					event.record[vars.config['lng']].value=null;
-				}
-			}
-			vars.istransit=false;
-			return event;
-		});
-	}
 })(jQuery,kintone.$PLUGIN_ID);

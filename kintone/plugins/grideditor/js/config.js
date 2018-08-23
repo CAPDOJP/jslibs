@@ -12,7 +12,8 @@ jQuery.noConflict();
 (function($,PLUGIN_ID){
 	"use strict";
 	var vars={
-		fieldtable:null
+		fieldtable:null,
+		viewtable:null
 	};
 	var VIEW_NAME='一括編集';
 	var functions={
@@ -38,86 +39,106 @@ jQuery.noConflict();
 	/*---------------------------------------------------------------
 	 initialize fields
 	---------------------------------------------------------------*/
-	kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
-		var sorted=functions.fieldsort(resp.layout);
-		/* get fieldinfo */
-		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
-			var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-			$.each(sorted,function(index){
-				if (sorted[index] in resp.properties)
-				{
-					var fieldinfo=resp.properties[sorted[index]];
-					/* check field type */
-					switch (fieldinfo.type)
+	kintone.api(kintone.api.url('/k/v1/app/views',true),'GET',{app:kintone.app.getId()},function(resp){
+		$.each(resp.views,function(key,values){
+			$('select#view').append($('<option>').attr('value',values.id).text(key));
+		});
+		kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:kintone.app.getId()},function(resp){
+			var sorted=functions.fieldsort(resp.layout);
+			/* get fieldinfo */
+			kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+				var config=kintone.plugin.app.getConfig(PLUGIN_ID);
+				$.each(sorted,function(index){
+					if (sorted[index] in resp.properties)
 					{
-						case 'CALC':
-						case 'CATEGORY':
-						case 'CREATED_TIME':
-						case 'CREATOR':
-						case 'GROUP':
-						case 'MODIFIER':
-						case 'RECORD_NUMBER':
-						case 'REFERENCE_TABLE':
-						case 'RICH_TEXT':
-						case 'STATUS':
-						case 'STATUS_ASSIGNEE':
-						case 'SUBTABLE':
-						case 'UPDATED_TIME':
-							break;
-						default:
-							$('select#field').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-							switch (fieldinfo.type)
-							{
-								case 'NUMBER':
-									/* exclude lookup */
-									if (!fieldinfo.lookup)
-									{
-										/* check scale */
-										if (fieldinfo.displayScale)
-											if (fieldinfo.displayScale>8)
-											{
-												$('select#lat').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-												$('select#lng').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-											}
-									}
-									break;
-								case 'SINGLE_LINE_TEXT':
-									/* exclude lookup */
-									if (!fieldinfo.lookup) $('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
-									break;
-							}
-							break;
+						var fieldinfo=resp.properties[sorted[index]];
+						/* check field type */
+						switch (fieldinfo.type)
+						{
+							case 'CALC':
+							case 'CATEGORY':
+							case 'CREATED_TIME':
+							case 'CREATOR':
+							case 'GROUP':
+							case 'MODIFIER':
+							case 'RECORD_NUMBER':
+							case 'REFERENCE_TABLE':
+							case 'RICH_TEXT':
+							case 'STATUS':
+							case 'STATUS_ASSIGNEE':
+							case 'SUBTABLE':
+							case 'UPDATED_TIME':
+								break;
+							default:
+								$('select#field').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								switch (fieldinfo.type)
+								{
+									case 'NUMBER':
+										/* exclude lookup */
+										if (!fieldinfo.lookup)
+										{
+											/* check scale */
+											if (fieldinfo.displayScale)
+												if (fieldinfo.displayScale>8)
+												{
+													$('select#lat').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+													$('select#lng').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+												}
+										}
+										break;
+									case 'SINGLE_LINE_TEXT':
+										/* exclude lookup */
+										if (!fieldinfo.lookup) $('select#address').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										break;
+								}
+								break;
+						}
 					}
-				}
-			});
-			vars.fieldtable=$('.fields').adjustabletable({
-				add:'img.add',
-				del:'img.del'
-			});
-			var add=false;
-			var row=null;
-			var fields=[];
-			if (Object.keys(config).length!==0)
-			{
-				fields=config['field'].split(',');
-				$('select#address').val(config['address']);
-				$('select#lat').val(config['lat']);
-				$('select#lng').val(config['lng']);
-				if (config['fieldselect']=='1') $('input#fieldselect').prop('checked',true);
-				$.each(fields,function(index){
-					if (add) vars.fieldtable.addrow();
-					else add=true;
-					row=vars.fieldtable.rows.last();
-					$('select#field',row).val(fields[index]);
 				});
-			}
-			/* events */
-			$('input#fieldselect').on('change',function(){
-				if ($(this).prop('checked')) vars.fieldtable.container.show();
-				else vars.fieldtable.container.hide();
-			}).trigger('change');
+				vars.fieldtable=$('.fields').adjustabletable({
+					add:'img.add',
+					del:'img.del'
+				});
+				vars.viewtable=$('.views').adjustabletable({
+					add:'img.add',
+					del:'img.del'
+				});
+				var add=false;
+				var row=null;
+				var fields=[];
+				var views=[];
+				if (Object.keys(config).length!==0)
+				{
+					if ('field' in config) fields=config['field'].split(',');
+					if ('view' in config) views=config['view'].split(',');
+					$('select#address').val(config['address']);
+					$('select#lat').val(config['lat']);
+					$('select#lng').val(config['lng']);
+					$('input#apikey').val(config['apikey']);
+					if (config['fieldselect']=='1') $('input#fieldselect').prop('checked',true);
+					add=false;
+					$.each(fields,function(index){
+						if (add) vars.fieldtable.addrow();
+						else add=true;
+						row=vars.fieldtable.rows.last();
+						$('select#field',row).val(fields[index]);
+					});
+					add=false;
+					$.each(views,function(index){
+						if (add) vars.viewtable.addrow();
+						else add=true;
+						row=vars.viewtable.rows.last();
+						$('select#view',row).val(views[index]);
+					});
+				}
+				/* events */
+				$('input#fieldselect').on('change',function(){
+					if ($(this).prop('checked')) vars.fieldtable.container.show();
+					else vars.fieldtable.container.hide();
+				}).trigger('change');
+			},function(error){});
 		},function(error){});
-	},function(error){});
+	});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/
@@ -125,6 +146,7 @@ jQuery.noConflict();
 		var row=null;
 		var config=[];
 		var fields=[];
+		var views=[];
 		/* check values */
 		if ($('select#address').val()!='')
 		{
@@ -143,11 +165,21 @@ jQuery.noConflict();
 				swal('Error!','緯度表示フィールドと経度表示フィールドは異なるフィールドを選択して下さい。','error');
 				return;
 			}
+			if ($('input#apikey').val()=='')
+			{
+				swal('Error!','Google Maps APIキーを入力して下さい。','error');
+				return;
+			}
 		}
 		for (var i=0;i<vars.fieldtable.rows.length;i++)
 		{
 			row=vars.fieldtable.rows.eq(i);
 			if ($('select#field',row).val().length!=0) fields.push($('select#field',row).val());
+		}
+		for (var i=0;i<vars.viewtable.rows.length;i++)
+		{
+			row=vars.viewtable.rows.eq(i);
+			if ($('select#view',row).val().length!=0) views.push($('select#view',row).val());
 		}
 		var body={
 			app:kintone.app.getId()
@@ -178,7 +210,9 @@ jQuery.noConflict();
 				config['lat']=$('select#lat').val();
 				config['lng']=$('select#lng').val();
 				config['lng']=$('select#lng').val();
+				config['apikey']=$('input#apikey').val();
 				config['field']=fields.join(',');
+				config['view']=views.join(',');
 				config['fieldselect']=($('input#fieldselect').prop('checked'))?'1':'0';
 				config['grideditorview']=resp.views[VIEW_NAME].id;
 				/* save config */

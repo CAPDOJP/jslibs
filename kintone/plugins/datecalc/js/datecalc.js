@@ -55,7 +55,7 @@ jQuery.noConflict();
 						todate=todate.calc('first-of-month').calc('1 month').calc('-1 day');
 						break;
 					default:
-						todate=todate.calc(day+' day');
+						if ($.isNumeric(day)) todate=todate.calc(day+' day');
 						break;
 				}
 				record[calculation.todate].value=todate.format('Y-m-d');

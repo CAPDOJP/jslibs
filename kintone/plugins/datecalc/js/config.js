@@ -82,6 +82,9 @@ jQuery.noConflict();
 								$('select#monthfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#dayfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							}
+							break;
+						case 'SINGLE_LINE_TEXT':
+							if (!fieldinfo.lookup) $('select#dayfield').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 					}
 				}
 			});

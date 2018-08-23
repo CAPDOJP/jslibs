@@ -1616,7 +1616,8 @@ jQuery.noConflict();
 					});
 				});
 			};
-			vars.latlngmap.inaddress({
+			var map=(vars.latlngmap)?vars.latlngmap:vars.map
+			map.inaddress({
 				address:event.record[vars.config['address']].value,
 				callback:function(result){
 					var lat=result.geometry.location.lat();

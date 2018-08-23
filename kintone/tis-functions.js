@@ -395,23 +395,63 @@ jQuery.extend({
 		}
 		return value;
 	},
-	isemptyrow:function(row){
+	isemptyrow:function(row,fields){
 		var isempty=true;
+		var value=null;
 		for (var key in row)
+		{
+			value=row[key].value;
 			switch (row[key].type)
 			{
 				case 'CHECK_BOX':
-				case 'FILE':
-				case 'GROUP_SELECT':
 				case 'MULTI_SELECT':
+					if (fields)
+					{
+						fields[key].defaultValue.sort(function(a,b){
+							if(a<b) return -1;
+							if(a>b) return 1;
+							return 0;
+						});
+						value.sort(function(a,b){
+							if(a<b) return -1;
+							if(a>b) return 1;
+							return 0;
+						});
+						value=(JSON.stringify(fields[key].defaultValue)==JSON.stringify(value))?[]:value;
+					}
+					break;
+				case 'FILE':
+					break;
+				case 'GROUP_SELECT':
 				case 'ORGANIZATION_SELECT':
 				case 'USER_SELECT':
-					if (row[key].value.length!=0) isempty=false;
+					if (fields)
+					{
+						var defaults=[];
+						var values=[];
+						for (var i=0;i<fields[key].defaultValue.length;i++) defaults.push(fields[key].defaultValue[i].code);
+						for (var i=0;i<value.length;i++) values.push(value[i].code);
+						defaults.sort(function(a,b){
+							if(a<b) return -1;
+							if(a>b) return 1;
+							return 0;
+						});
+						values.sort(function(a,b){
+							if(a<b) return -1;
+							if(a>b) return 1;
+							return 0;
+						});
+						value=(JSON.stringify(defaults)==JSON.stringify(values))?[]:values;
+					}
 					break;
 				default:
-					if (row[key].value) isempty=false;
+					if (fields)
+						if (fields[key].defaultValue) value=(value==fields[key].defaultValue)?null:value;
+					value=(value)?value.toString():'';
 					break;
 			}
+			if (value.length!=0) isempty=false;
+		}
 		return isempty;
 	},
 	isvalidtype:function(criteria,target){

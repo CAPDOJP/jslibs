@@ -117,8 +117,6 @@ jQuery.noConflict();
 					if (student['status'].value=='退塾') continue;
 					/* check admissiondate */
 					if (vars.todate<admissiondate) continue;
-					/* check leave of absence */
-					if (vars.todate>loafrom.calc('-1 day') && vars.todate<loato.calc('1 day')) continue;
 					updatevalue={
 						app:vars.config['student'],
 						id:student['$id'].value,
@@ -166,45 +164,50 @@ jQuery.noConflict();
 							if (vars.fromdate<courseenddate.calc('1 day') && vars.todate>courseenddate.calc('-1 day')) exists=true;
 							if (exists) precourses.push(row);
 						}
-						if (courses.length!=1)
+						/* check leave of absence */
+						if (!(billto>loafrom.calc('-1 day') && billto<loato.calc('1 day')))
 						{
-							for (var i3=0;i3<courses.length;i3++)
+							if (courses.length!=1)
 							{
-								var coursestartdate=null;
-								var courseenddate=null;
-								coursestartdate=new Date(courses[i3]['coursestartdate'].value.dateformat());
-								courseenddate=new Date(courses[i3]['courseenddate'].value.dateformat());
-								if (coursestartdate<billfrom) coursestartdate=billfrom;
-								if (courseenddate>billto) courseenddate=billto;
-								course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==courses[i3]['coursecode'].value);})[0];
+								for (var i3=0;i3<courses.length;i3++)
+								{
+									var coursestartdate=null;
+									var courseenddate=null;
+									coursestartdate=new Date(courses[i3]['coursestartdate'].value.dateformat());
+									courseenddate=new Date(courses[i3]['courseenddate'].value.dateformat());
+									if (coursestartdate<billfrom) coursestartdate=billfrom;
+									if (courseenddate>billto) courseenddate=billto;
+									course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==courses[i3]['coursecode'].value);})[0];
+									coursegrade=$.coursegrade(course,student['gradecode'].value);
+									if (coursegrade!=null)
+										entryvalue.billtable.value.push({
+											value:{
+												studentname:{value:student['name'].value},
+												breakdown:{value:lecturename+'('+course['name'].value+')日割り受講料'},
+												billprice:{value:functions.createirregularfee(courses[i3],coursestartdate,courseenddate,coursegrade)},
+												taxsegment:{value:'課税'},
+												billsegment:{value:'授業料'}
+											}
+										});
+								}
+							}
+							else
+							{
+								course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==courses[0]['coursecode'].value);})[0];
 								coursegrade=$.coursegrade(course,student['gradecode'].value);
 								if (coursegrade!=null)
 									entryvalue.billtable.value.push({
 										value:{
 											studentname:{value:student['name'].value},
-											breakdown:{value:lecturename+'('+course['name'].value+')日割り受講料'},
-											billprice:{value:functions.createirregularfee(courses[i3],coursestartdate,courseenddate,coursegrade)},
+											breakdown:{value:lecturename+'('+course['name'].value+')受講料'},
+											billprice:{value:coursegrade['fee'].value},
 											taxsegment:{value:'課税'},
 											billsegment:{value:'授業料'}
 										}
 									});
 							}
 						}
-						else
-						{
-							course=$.grep(vars.apps[vars.lectures[lectureindex].code],function(item,index){return (item['code'].value==courses[0]['coursecode'].value);})[0];
-							coursegrade=$.coursegrade(course,student['gradecode'].value);
-							if (coursegrade!=null)
-								entryvalue.billtable.value.push({
-									value:{
-										studentname:{value:student['name'].value},
-										breakdown:{value:lecturename+'('+course['name'].value+')受講料'},
-										billprice:{value:coursegrade['fee'].value},
-										taxsegment:{value:'課税'},
-										billsegment:{value:'授業料'}
-									}
-								});
-						}
+						else addtextbookfee=false;
 						if (precourses.length!=1)
 						{
 							var prefee=0;

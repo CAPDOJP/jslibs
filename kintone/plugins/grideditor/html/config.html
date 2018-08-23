@@ -33,7 +33,14 @@
 		</div>
 	</div>
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-caution">*入力した住所から緯度/経度を自動取得する場合は、上記3項目を指定して下さい。</div>
+		<div class="kintoneplugin-label">Google Maps APIキー<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">Google Maps APIキーを取得し、取得したキーを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="apikey" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-caution">*入力した住所から緯度/経度を自動取得する場合は、上記4項目を指定して下さい。</div>
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">編集フィールド</div>
@@ -48,6 +55,27 @@
 						<div class="kintoneplugin-select-outer">
 							<div class="kintoneplugin-select">
 								<select id="field">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+					</td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
+					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">編集一覧</div>
+		<div class="kintoneplugin-desc">一括編集以外に本プラグインを使用したい一覧があれば、その一覧をリストより選択して下さい。</div>
+		<table class="views">
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="view">
 									<option value=""></option>
 								</select>
 							</div>

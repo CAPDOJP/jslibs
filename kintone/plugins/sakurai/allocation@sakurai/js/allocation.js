@@ -751,10 +751,10 @@ jQuery.noConflict();
 						{
 							functions.displaymap({
 								address:event.changes.field.value,
-								callback:function(json){
+								callback:function(result){
 									var record=(event.type.match(/mobile/g)!=null)?kintone.mobile.app.record.get():kintone.app.record.get();
-									record.record[vars.config['lat']].value=json.results[0].geometry.location.lat;
-									record.record[vars.config['lng']].value=json.results[0].geometry.location.lng;
+									record.record[vars.config['lat']].value=result.geometry.location.lat();
+									record.record[vars.config['lng']].value=result.geometry.location.lng();
 									if (event.type.match(/mobile/g)!=null) kintone.mobile.app.record.set(record);
 									else kintone.app.record.set(record);
 								}
