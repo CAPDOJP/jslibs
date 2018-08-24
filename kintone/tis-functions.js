@@ -283,6 +283,7 @@ jQuery.extend({
 				}
 			}
 		}
+		return row;
 	},
 	downloadtext:function(values,character,filename){
 		if (!Encoding) {alert('encoding.jsを読み込んで下さい。');return;}
