@@ -138,7 +138,7 @@ jQuery.noConflict();
 				}).trigger('change');
 			},function(error){});
 		},function(error){});
-	});
+	},function(error){swal('Error!',error.message,'error');});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/
@@ -218,7 +218,7 @@ jQuery.noConflict();
 				/* save config */
 				kintone.plugin.app.setConfig(config);
 			},function(error){});
-		},function(error){});
+		},function(error){swal('Error!',error.message,'error');});
 	});
 	$('button#cancel').on('click',function(e){
 		history.back();

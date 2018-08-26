@@ -16,6 +16,10 @@ table#grideditor th{
     border:none;
     white-space:nowrap;
 }
+table#grideditor tr td.adjust,
+table#grideditor tr th.adjust{
+    cursor:col-resize;
+}
 table#grideditor thead tr th{
 	padding:0px;
 	position:-webkit-sticky;
@@ -62,14 +66,16 @@ table#grideditor tbody tr td.multiselectcell button{
     z-index:999;
 }
 table#grideditor tbody tr td.multiselectcell label{
-    width:125px;
+    display:inline-block;
+    width:100%;
 }
 table#grideditor tbody tr td.multiselectcell span{
+    display:inline-block;
     overflow:hidden;
     padding-right:30px;
 	text-overflow:ellipsis;
 	white-space:nowrap;
-    width:125px;
+    width:100%;
     z-index:888;
 }
 table#grideditor tbody tr td.lookupcell{

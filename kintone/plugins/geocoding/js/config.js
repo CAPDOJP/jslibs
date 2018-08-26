@@ -107,7 +107,7 @@ jQuery.noConflict();
 			}
 			$('span#color').colorSelector(vars.colors,$('span#color').closest('tr').find('input#color'));
 		},function(error){});
-	});
+	},function(error){swal('Error!',error.message,'error');});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/

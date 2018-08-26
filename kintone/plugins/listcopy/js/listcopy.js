@@ -229,7 +229,7 @@ jQuery.noConflict();
 					swal('Error!','コピー元一覧が存在しません。','error');
 					return;
 				}
-			});
+			},function(error){swal('Error!',error.message,'error');});
 		},
 		loaddatas:function(appkey,filter,sort,callback){
 			var query=''

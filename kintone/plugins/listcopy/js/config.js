@@ -156,7 +156,7 @@ jQuery.noConflict();
 					}
 					if (viewid.length!=0) $('select#copyview').val(viewid);
 					functions.reloadview(callback);
-				});
+				},function(error){swal('Error!',error.message,'error');});
 			});
 		},
 		reloadview:function(callback){

@@ -30,8 +30,8 @@
         "css":[
             "css/51-modern-default.css",
             "css/sweetalert.css",
-            "css/desktop/common.css",
-            "css/desktop/grideditor.css"
+            "css/common.css",
+            "css/grideditor.css"
         ]
     },
     "config":{

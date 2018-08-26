@@ -172,7 +172,7 @@ jQuery.noConflict();
 				$('select#lookup').on('change',function(){functions.reloadlevels()});
 			},function(error){});
 		},function(error){});
-	});
+	},function(error){swal('Error!',error.message,'error');});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/

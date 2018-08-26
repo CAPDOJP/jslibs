@@ -52,7 +52,7 @@ jQuery.noConflict();
 					});
 					for (var i=0;i<views.length;i++) $('select#view',row).append($('<option>').attr('value',views[i].id).text(views[i].name));
 					if (callback) callback();
-				});
+				},function(error){swal('Error!',error.message,'error');});
 			}
 			else
 			{
@@ -184,7 +184,7 @@ jQuery.noConflict();
 				/* save config */
 				kintone.plugin.app.setConfig(config);
 			},function(error){});
-		},function(error){});
+		},function(error){swal('Error!',error.message,'error');});
 	});
 	$('button#cancel').on('click',function(e){
 		history.back();

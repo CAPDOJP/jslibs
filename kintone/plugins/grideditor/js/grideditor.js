@@ -25,6 +25,15 @@ jQuery.noConflict();
 		filebox:null,
 		selectbox:null,
 		template:null,
+		drag:{
+			capture:false,
+			cells:[],
+			keep:{
+				column:0,
+				container:0,
+				position:0
+			}
+		},
 		exports:{
 			groups:[],
 			organizations:[],
@@ -426,7 +435,7 @@ jQuery.noConflict();
 					$.each(resp.views,function(key,values){
 						if (values.type.toUpperCase()=='LIST' && values.id==vars.userviewId) callback(values.fields)
 					})
-				});
+				},function(error){swal('Error!',error.message,'error');});
 			}
 			else
 			{
@@ -764,6 +773,50 @@ jQuery.noConflict();
 		vars.grid.append($('<thead>').append(vars.header));
 		vars.grid.append(vars.rows);
 		vars.container.empty().append($('<p class="grideditor-caution">')).append(vars.grid);
+		/* mouse events */
+		$('thead',vars.grid).on('mousemove','td,th',function(e){
+			if (vars.drag.capture) return;
+			var left=e.pageX-$(this).offset().left;
+			var hit=true;
+			if (left<$(this).outerWidth(false)-5) hit=false;
+			if (left>$(this).outerWidth(false)) hit=false;
+			if (hit) $(this).addClass('adjust');
+			else $(this).removeClass('adjust');
+		});
+		$('thead',vars.grid).on('mousedown','td,th',function(e){
+			if (!$(this).hasClass('adjust')) return;
+			vars.drag.capture=true;
+			vars.drag.keep.column=$(this).outerWidth(false);
+			vars.drag.keep.container=vars.container.outerWidth(false);
+			vars.drag.keep.position=e.pageX;
+			/* setup resize column */
+			vars.drag.cells=[];
+			$.each($('td,th',vars.grid),function(index){
+				if (e.pageX>$(this).offset().left && e.pageX<$(this).offset().left+$(this).outerWidth(false)) vars.drag.cells.push($(this));
+			});
+			e.stopPropagation();
+			e.preventDefault();
+		});
+		$(window).on('mousemove',function(e){
+			if (!vars.drag.capture) return;
+			var width=0;
+			width=vars.drag.keep.column+e.pageX-vars.drag.keep.position;
+			if (width<15) width=15;
+			/* resize column */
+			$.each(vars.drag.cells,function(index){
+				vars.drag.cells[index].css({'min-width':width.toString()+'px','width':width.toString()+'px'});
+			});
+			/* resize container */
+			vars.container.css({'width':(vars.drag.keep.container-vars.drag.keep.column+width).toString()+'px'});
+			e.stopPropagation();
+			e.preventDefault();
+		});
+		$(window).on('mouseup',function(e){
+			if (!vars.drag.capture) return;
+			vars.drag.capture=false;
+			e.stopPropagation();
+			e.preventDefault();
+		});
 		/* fixed header */
 		var headeractions=$('div.contents-actionmenu-gaia');
 		var headerspace=$(kintone.app.getHeaderSpaceElement());

@@ -741,7 +741,7 @@ jQuery.noConflict();
 					},function(error){});
 				}
 			})
-		});
+		},function(error){swal('Error!',error.message,'error');});
 		return event;
 	});
 })(jQuery,kintone.$PLUGIN_ID);

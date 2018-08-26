@@ -235,7 +235,7 @@ jQuery.noConflict();
 				$('select#segment').on('change',function(){functions.reloadsettings()});
 			},function(error){});
 		},function(error){});
-	});
+	},function(error){swal('Error!',error.message,'error');});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/

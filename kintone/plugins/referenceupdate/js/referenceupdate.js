@@ -193,7 +193,11 @@ jQuery.noConflict();
 					else
 					{
 						vars.progress.hide();
-						resolve(event);
+						swal({
+							title:'Error!',
+							text:event.error,
+							type:'error'
+						},function(){resolve(event);});
 					}
 				});
 			},function(error){});

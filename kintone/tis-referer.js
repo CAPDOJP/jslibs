@@ -2527,344 +2527,357 @@ jQuery.fn.conditionsform=function(options){
 };
 jQuery.extend({
 	conditionsmatch:function(record,fieldinfos,conditions){
-		var match=true;
+		var res=$.extend(true,{},record);
+		var ismatch=function(value,condition,fieldinfo){
+			var match=true;
+			switch (fieldinfo.type)
+			{
+				case 'CALC':
+					switch(fieldinfo.format.toUpperCase())
+					{
+						case 'NUMBER':
+						case 'NUMBER_DIGIT':
+							switch (condition.comp.code)
+							{
+								case '0':
+									if (!value) value='';
+									if (value!=condition.value) match=false;
+									break;
+								case '1':
+									if (!value) value='';
+									if (value==condition.value) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (parseFloat(value)>parseFloat(condition.value)) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (parseFloat(value)<parseFloat(condition.value)) match=false;
+									}
+									break;
+							}
+							break;
+						case 'DATE':
+						case 'DATETIME':
+						case 'DAY_HOUR_MINUTE':
+							switch (condition.comp.code)
+							{
+								case '0':
+									if (!value) value='';
+									if (value.dateformat()!=condition.value.dateformat()) match=false;
+									break;
+								case '1':
+									if (!value) value='';
+									if (value.dateformat()==condition.value.dateformat()) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())>new Date(condition.value)) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
+									}
+									break;
+								case '4':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())<new Date(condition.value)) match=false;
+									}
+									break;
+								case '5':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
+									}
+									break;
+							}
+							break;
+						case 'HOUR_MINUTE':
+						case 'TIME':
+							var date=new Date().format('Y-m-d')+' ';
+							switch (condition.comp.code)
+							{
+								case '0':
+									if (!value) value='';
+									if (value!=condition.value) match=false;
+									break;
+								case '1':
+									if (!value) value='';
+									if (value==condition.value) match=false;
+									break;
+								case '2':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')>new Date(date+condition.value+':00')) match=false;
+									}
+									break;
+								case '3':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')>=new Date(date+condition.value+':00')) match=false;
+									}
+									break;
+								case '4':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')<new Date(date+condition.value+':00')) match=false;
+									}
+									break;
+								case '5':
+									if (!value) match=false;
+									else
+									{
+										if (new Date(date+value+':00')<=new Date(date+condition.value+':00')) match=false;
+									}
+									break;
+							}
+							break;
+					}
+					break;
+				case 'CHECK_BOX':
+				case 'MULTI_SELECT':
+					var hit=0;
+					for (var i2=0;i2<value.length;i2++) if (condition.value.indexOf(value[i2])>-1) hit++;
+					switch (condition.comp.code)
+					{
+						case '0':
+							if (hit<1) match=false;
+							break;
+						case '1':
+							if (hit>0) match=false;
+							break;
+					}
+					break;
+				case 'DROP_DOWN':
+				case 'RADIO_BUTTON':
+				case 'STATUS':
+					if (!value) value='';
+					switch (condition.comp.code)
+					{
+						case '0':
+							if (condition.value.indexOf(value)<0) match=false;
+							break;
+						case '1':
+							if (condition.value.indexOf(value)>-1) match=false;
+							break;
+					}
+					break;
+				case 'CREATED_TIME':
+				case 'DATE':
+				case 'DATETIME':
+				case 'UPDATED_TIME':
+					switch (condition.comp.code)
+					{
+						case '0':
+							if (!value) value='';
+							if (value.dateformat()!=condition.value.dateformat()) match=false;
+							break;
+						case '1':
+							if (!value) value='';
+							if (value.dateformat()==condition.value.dateformat()) match=false;
+							break;
+						case '2':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(value.dateformat())>new Date(condition.value)) match=false;
+							}
+							break;
+						case '3':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
+							}
+							break;
+						case '4':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(value.dateformat())<new Date(condition.value)) match=false;
+							}
+							break;
+						case '5':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
+							}
+							break;
+					}
+					break;
+				case 'GROUP_SELECT':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					switch (condition.comp.code)
+					{
+						case '0':
+							if ($.grep(value,function(item,index){
+								return condition.value.indexOf(item.code)>-1;
+							}).length==0) match=false;
+							break;
+						case '1':
+							if ($.grep(value,function(item,index){
+								return condition.value.indexOf(item.code)>-1;
+							}).length!=0) match=false;
+							break;
+					}
+					break;
+				case 'LINK':
+				case 'SINGLE_LINE_TEXT':
+					if (!value) value='';
+					switch (condition.comp.code)
+					{
+						case '0':
+							if (value!=condition.value) match=false;
+							break;
+						case '1':
+							if (value==condition.value) match=false;
+							break;
+						case '2':
+							if (!value.match(new RegExp(condition.value,'g'))) match=false;
+							break;
+						case '3':
+							if (value.match(new RegExp(condition.value,'g'))) match=false;
+							break;
+					}
+					break;
+				case 'MULTI_LINE_TEXT':
+				case 'RICH_TEXT':
+					if (!value) value='';
+					switch (condition.comp.code)
+					{
+						case '0':
+							if (!value.match(new RegExp(condition.value,'g'))) match=false;
+							break;
+						case '1':
+							if (value.match(new RegExp(condition.value,'g'))) match=false;
+							break;
+					}
+					break;
+				case 'NUMBER':
+				case 'RECORD_NUMBER':
+					switch (condition.comp.code)
+					{
+						case '0':
+							if (!value) value='';
+							if (value!=condition.value) match=false;
+							break;
+						case '1':
+							if (!value) value='';
+							if (value==condition.value) match=false;
+							break;
+						case '2':
+							if (!value) match=false;
+							else
+							{
+								if (parseFloat(value)>parseFloat(condition.value)) match=false;
+							}
+							break;
+						case '3':
+							if (!value) match=false;
+							else
+							{
+								if (parseFloat(value)<parseFloat(condition.value)) match=false;
+							}
+							break;
+					}
+					break;
+				case 'CREATOR':
+				case 'MODIFIER':
+				case 'STATUS_ASSIGNEE':
+					switch (condition.comp.code)
+					{
+						case '0':
+							if (condition.value.indexOf((value.code)?value.code:'')<0) match=false;
+							break;
+						case '1':
+							if (condition.value.indexOf((value.code)?value.code:'')>-1) match=false;
+							break;
+					}
+					break;
+				case 'TIME':
+					var date=new Date().format('Y-m-d')+' ';
+					switch (condition.comp.code)
+					{
+						case '0':
+							if (!value) value='';
+							if (value!=condition.value) match=false;
+							break;
+						case '1':
+							if (!value) value='';
+							if (value==condition.value) match=false;
+							break;
+						case '2':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(date+value+':00')>new Date(date+condition.value+':00')) match=false;
+							}
+							break;
+						case '3':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(date+value+':00')>=new Date(date+condition.value+':00')) match=false;
+							}
+							break;
+						case '4':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(date+value+':00')<new Date(date+condition.value+':00')) match=false;
+							}
+							break;
+						case '5':
+							if (!value) match=false;
+							else
+							{
+								if (new Date(date+value+':00')<=new Date(date+condition.value+':00')) match=false;
+							}
+							break;
+					}
+					break;
+			}
+			return match;
+		};
 		for (var i=0;i<conditions.length;i++)
 		{
 			var condition=conditions[i];
 			if (!condition.comp.code) continue;
-			if (condition.field in record)
+			if (condition.field in fieldinfos)
 			{
 				var fieldinfo=fieldinfos[condition.field];
-				var value=record[condition.field].value;
-				switch (fieldinfo.type)
+				if (fieldinfo.tablecode)
 				{
-					case 'CALC':
-						switch(fieldinfo.format.toUpperCase())
-						{
-							case 'NUMBER':
-							case 'NUMBER_DIGIT':
-								switch (condition.comp.code)
-								{
-									case '0':
-										if (!value) value='';
-										if (value!=condition.value) match=false;
-										break;
-									case '1':
-										if (!value) value='';
-										if (value==condition.value) match=false;
-										break;
-									case '2':
-										if (!value) match=false;
-										else
-										{
-											if (parseFloat(value)>parseFloat(condition.value)) match=false;
-										}
-										break;
-									case '3':
-										if (!value) match=false;
-										else
-										{
-											if (parseFloat(value)<parseFloat(condition.value)) match=false;
-										}
-										break;
-								}
-								break;
-							case 'DATE':
-							case 'DATETIME':
-							case 'DAY_HOUR_MINUTE':
-								switch (condition.comp.code)
-								{
-									case '0':
-										if (!value) value='';
-										if (value.dateformat()!=condition.value.dateformat()) match=false;
-										break;
-									case '1':
-										if (!value) value='';
-										if (value.dateformat()==condition.value.dateformat()) match=false;
-										break;
-									case '2':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(value.dateformat())>new Date(condition.value)) match=false;
-										}
-										break;
-									case '3':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
-										}
-										break;
-									case '4':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(value.dateformat())<new Date(condition.value)) match=false;
-										}
-										break;
-									case '5':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
-										}
-										break;
-								}
-								break;
-							case 'HOUR_MINUTE':
-							case 'TIME':
-								var date=new Date().format('Y-m-d')+' ';
-								switch (condition.comp.code)
-								{
-									case '0':
-										if (!value) value='';
-										if (value!=condition.value) match=false;
-										break;
-									case '1':
-										if (!value) value='';
-										if (value==condition.value) match=false;
-										break;
-									case '2':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(date+value+':00')>new Date(date+condition.value+':00')) match=false;
-										}
-										break;
-									case '3':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(date+value+':00')>=new Date(date+condition.value+':00')) match=false;
-										}
-										break;
-									case '4':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(date+value+':00')<new Date(date+condition.value+':00')) match=false;
-										}
-										break;
-									case '5':
-										if (!value) match=false;
-										else
-										{
-											if (new Date(date+value+':00')<=new Date(date+condition.value+':00')) match=false;
-										}
-										break;
-								}
-								break;
-						}
-						break;
-					case 'CHECK_BOX':
-					case 'MULTI_SELECT':
-						var hit=0;
-						for (var i2=0;i2<value.length;i2++) if (condition.value.indexOf(value[i2])>-1) hit++;
-						switch (condition.comp.code)
-						{
-							case '0':
-								if (hit<1) match=false;
-								break;
-							case '1':
-								if (hit>0) match=false;
-								break;
-						}
-						break;
-					case 'DROP_DOWN':
-					case 'RADIO_BUTTON':
-					case 'STATUS':
-						if (!value) value='';
-						switch (condition.comp.code)
-						{
-							case '0':
-								if (condition.value.indexOf(value)<0) match=false;
-								break;
-							case '1':
-								if (condition.value.indexOf(value)>-1) match=false;
-								break;
-						}
-						break;
-					case 'CREATED_TIME':
-					case 'DATE':
-					case 'DATETIME':
-					case 'UPDATED_TIME':
-						switch (condition.comp.code)
-						{
-							case '0':
-								if (!value) value='';
-								if (value.dateformat()!=condition.value.dateformat()) match=false;
-								break;
-							case '1':
-								if (!value) value='';
-								if (value.dateformat()==condition.value.dateformat()) match=false;
-								break;
-							case '2':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(value.dateformat())>new Date(condition.value)) match=false;
-								}
-								break;
-							case '3':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
-								}
-								break;
-							case '4':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(value.dateformat())<new Date(condition.value)) match=false;
-								}
-								break;
-							case '5':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
-								}
-								break;
-						}
-						break;
-					case 'GROUP_SELECT':
-					case 'ORGANIZATION_SELECT':
-					case 'USER_SELECT':
-						switch (condition.comp.code)
-						{
-							case '0':
-								if ($.grep(value,function(item,index){
-									return condition.value.indexOf(item.code)>-1;
-								}).length==0) match=false;
-								break;
-							case '1':
-								if ($.grep(value,function(item,index){
-									return condition.value.indexOf(item.code)>-1;
-								}).length!=0) match=false;
-								break;
-						}
-						break;
-					case 'LINK':
-					case 'SINGLE_LINE_TEXT':
-						if (!value) value='';
-						switch (condition.comp.code)
-						{
-							case '0':
-								if (value!=condition.value) match=false;
-								break;
-							case '1':
-								if (value==condition.value) match=false;
-								break;
-							case '2':
-								if (!value.match(new RegExp(condition.value,'g'))) match=false;
-								break;
-							case '3':
-								if (value.match(new RegExp(condition.value,'g'))) match=false;
-								break;
-						}
-						break;
-					case 'MULTI_LINE_TEXT':
-					case 'RICH_TEXT':
-						if (!value) value='';
-						switch (condition.comp.code)
-						{
-							case '0':
-								if (!value.match(new RegExp(condition.value,'g'))) match=false;
-								break;
-							case '1':
-								if (value.match(new RegExp(condition.value,'g'))) match=false;
-								break;
-						}
-						break;
-					case 'NUMBER':
-					case 'RECORD_NUMBER':
-						switch (condition.comp.code)
-						{
-							case '0':
-								if (!value) value='';
-								if (value!=condition.value) match=false;
-								break;
-							case '1':
-								if (!value) value='';
-								if (value==condition.value) match=false;
-								break;
-							case '2':
-								if (!value) match=false;
-								else
-								{
-									if (parseFloat(value)>parseFloat(condition.value)) match=false;
-								}
-								break;
-							case '3':
-								if (!value) match=false;
-								else
-								{
-									if (parseFloat(value)<parseFloat(condition.value)) match=false;
-								}
-								break;
-						}
-						break;
-					case 'CREATOR':
-					case 'MODIFIER':
-					case 'STATUS_ASSIGNEE':
-						switch (condition.comp.code)
-						{
-							case '0':
-								if (condition.value.indexOf((value.code)?value.code:'')<0) match=false;
-								break;
-							case '1':
-								if (condition.value.indexOf((value.code)?value.code:'')>-1) match=false;
-								break;
-						}
-						break;
-					case 'TIME':
-						var date=new Date().format('Y-m-d')+' ';
-						switch (condition.comp.code)
-						{
-							case '0':
-								if (!value) value='';
-								if (value!=condition.value) match=false;
-								break;
-							case '1':
-								if (!value) value='';
-								if (value==condition.value) match=false;
-								break;
-							case '2':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(date+value+':00')>new Date(date+condition.value+':00')) match=false;
-								}
-								break;
-							case '3':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(date+value+':00')>=new Date(date+condition.value+':00')) match=false;
-								}
-								break;
-							case '4':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(date+value+':00')<new Date(date+condition.value+':00')) match=false;
-								}
-								break;
-							case '5':
-								if (!value) match=false;
-								else
-								{
-									if (new Date(date+value+':00')<=new Date(date+condition.value+':00')) match=false;
-								}
-								break;
-						}
-						break;
+					res[fieldinfo.tablecode].value=$.grep(res[fieldinfo.tablecode].value,function(item,index){
+						return (!ismatch(item.value[fieldinfo.code].value,condition,fieldinfo))?false:true;
+					});
+				}
+				else
+				{
+					if (!ismatch(record[fieldinfo.code].value,condition,fieldinfo)) return false;
 				}
 			}
 		}
-		return match;
+		return res;
 	}
 });
 })(jQuery);

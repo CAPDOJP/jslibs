@@ -86,7 +86,7 @@ jQuery.noConflict();
 				}
 			},function(error){});
 		},function(error){});
-	});
+	},function(error){swal('Error!',error.message,'error');});
 	/*---------------------------------------------------------------
 	 button events
 	---------------------------------------------------------------*/
