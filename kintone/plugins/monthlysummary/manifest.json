@@ -1,0 +1,52 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 各種月次集計プラグイン",
+        "en":"kintone Monthly Summary plugin",
+        "zh":"kintone 各種月次集計プラグイン"
+    },
+    "description":{
+        "ja":"様々な集計結果を基に月次テーブルを作成するプラグインです。",
+        "en":"This plug-in creates a monthly table based on various aggregation results",
+        "zh":"様々な集計結果を基に月次テーブルを作成するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/monthlysummary.js"
+        ],
+        "css":[
+            "css/sweetalert.css",
+            "css/common.css",
+            "css/monthlysummary.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

@@ -1233,7 +1233,7 @@ var FieldsForm=function(options){
 					this.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-					if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+					if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields.join(','));
 					else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.search',receiver).on('click',function(){
 						var target=$(this);
@@ -1245,7 +1245,10 @@ var FieldsForm=function(options){
 								}
 							},
 							callback:function(row){
-								target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
+								var labels=[];
+								var pickers=target.closest('.container').find('.picker').val().split(',');
+								for (var i2=0;i2<pickers.length;i2++) labels.push(row.find('#'+pickers[i2]).val());
+								target.closest('.container').find('.label').html(labels.join('/'));
 								target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
 								/* close the reference box */
 								my.referer[target.closest('.container').attr('id')].hide();
@@ -1274,7 +1277,7 @@ var FieldsForm=function(options){
 					this.loaddatas(fieldinfo);
 					receiver=referer.clone(true);
 					$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-					if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+					if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields.join(','));
 					else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 					$('.search',receiver).on('click',function(){
 						var target=$(this);
@@ -1286,7 +1289,10 @@ var FieldsForm=function(options){
 								}
 							},
 							callback:function(row){
-								target.closest('.container').find('.label').html(row.find('#'+target.closest('.container').find('.picker').val()).val());
+								var labels=[];
+								var pickers=target.closest('.container').find('.picker').val().split(',');
+								for (var i2=0;i2<pickers.length;i2++) labels.push(row.find('#'+pickers[i2]).val());
+								target.closest('.container').find('.label').html(labels.join('/'));
 								target.closest('.container').find('.receiver').val(row.find('#'+target.closest('.container').find('.key').val()).val());
 								/* close the reference box */
 								my.referer[target.closest('.container').attr('id')].hide();
@@ -1596,7 +1602,12 @@ FieldsForm.prototype={
 						if (my.apps[key])
 							for (var i=0;i<my.apps[key].length;i++)
 								if (my.apps[key][i][$('.key',fieldcontainer).val()].value==values.value)
-									$('.label',fieldcontainer).html(my.apps[key][i][$('.picker',fieldcontainer).val()].value);
+								{
+									var labels=[];
+									var pickers=$('.picker',fieldcontainer).val().split(',');
+									for (var i2=0;i2<pickers.length;i2++) labels.push(my.apps[key][i][pickers[i2]].value);
+									$('.label',fieldcontainer).html(labels.join('/'));
+								}
 					}
 					$('.receiver',fieldcontainer).val(values.value);
 					break;
@@ -1984,7 +1995,7 @@ var ConditionsForm=function(options){
 								my.loaddatas(fieldinfo);
 								receiver=referer.clone(true);
 								$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-								if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+								if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields.join(','));
 								else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 								$('.search',receiver).on('click',function(){
 									var target=$(this);
@@ -1996,7 +2007,10 @@ var ConditionsForm=function(options){
 											}
 										},
 										callback:function(row){
-											$('.label',container).html(row.find('#'+$('.picker',container).val()).val());
+											var labels=[];
+											var pickers=$('.picker',container).val().split(',');
+											for (var i2=0;i2<pickers.length;i2++) labels.push(row.find('#'+pickers[i2]).val());
+											$('.label',container).html(labels.join('/'));
 											$('.receiver',container).val(row.find('#'+$('.key',container).val()).val());
 											/* close the reference box */
 											my.referer[$('.field',container).val()].hide();
@@ -2034,7 +2048,7 @@ var ConditionsForm=function(options){
 								my.loaddatas(fieldinfo);
 								receiver=referer.clone(true);
 								$('.key',receiver).val(fieldinfo.lookup.relatedKeyField);
-								if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields[0]);
+								if (fieldinfo.lookup.lookupPickerFields.length!=0) $('.picker',receiver).val(fieldinfo.lookup.lookupPickerFields.join(','));
 								else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 								$('.search',receiver).on('click',function(){
 									var target=$(this);
@@ -2046,7 +2060,10 @@ var ConditionsForm=function(options){
 											}
 										},
 										callback:function(row){
-											$('.label',container).html(row.find('#'+$('.picker',container).val()).val());
+											var labels=[];
+											var pickers=$('.picker',container).val().split(',');
+											for (var i2=0;i2<pickers.length;i2++) labels.push(row.find('#'+pickers[i2]).val());
+											$('.label',container).html(labels.join('/'));
 											$('.receiver',container).val(row.find('#'+$('.key',container).val()).val());
 											/* close the reference box */
 											my.referer[$('.field',container).val()].hide();

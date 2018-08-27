@@ -1,0 +1,146 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">日付フィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">集計対象となるフィールドを選択して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="date">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">集計設定</div>
+		<table class="kintoneplugin-table outer">
+			<tbody>
+				<tr>
+					<td>
+						<span class="kintoneplugin-unit">使用一覧</span>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="view">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+						</div>
+						<table class="kintoneplugin-table inner">
+							<thead>
+								<tr>
+									<th>見出し</th>
+									<th>集計方法</th>
+									<th>集計フィールド</th>
+									<th colspan="2">集計条件</th>
+									<th>配色</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										<div class="kintoneplugin-input-outer">
+											<input type="text" id="caption" class="kintoneplugin-input-text" value="" >
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="pattern">
+													<option value="0">合計</option>
+													<option value="1">合計比率(月間)</option>
+													<option value="2">合計比率(年間)</option>
+													<option value="3">合計累計</option>
+													<option value="4">平均</option>
+													<option value="5">件数</option>
+													<option value="6">件数比率(月間)</option>
+													<option value="7">件数比率(年間)</option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="kintoneplugin-select-outer">
+											<div class="kintoneplugin-select">
+												<select id="field">
+													<option value=""></option>
+												</select>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="buttons">
+											<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png" class="search" alt="条件を追加" title="条件を追加">
+										</div>
+									</td>
+									<td>
+										<table class="kintoneplugin-table">
+											<tbody>
+												<tr>
+													<td class="field"></td>
+													<td class="comp"></td>
+													<td class="value"></td>
+												</tr>
+											</tbody>
+										</table>
+										<input type="hidden" id="conditions">
+									</td>
+									<td>
+										<span class="kintoneplugin-unit">背景色</span>
+										<span id="backcolor" class="kintoneplugin-unit color">&nbsp;</span>
+										<input type="hidden" id="backcolor" value="">
+										<span class="kintoneplugin-unit">前景色</span>
+										<span id="forecolor" class="kintoneplugin-unit color">&nbsp;</span>
+										<input type="hidden" id="forecolor" value="">
+									</td>
+									<td>
+										<div class="buttons">
+											<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="addsummary" alt="+" title="追加">
+											<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="delsummary" alt="x" title="削除">
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-caution">特定の条件に合致するレコードのみを集計対象とする場合は、虫眼鏡ボタンを押下して下さい。</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">端数<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="round">
+					<option value="1">切り捨て</option>
+					<option value="2">切り上げ</option>
+					<option value="3">四捨五入</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">小数点以下表示桁数<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">平均・比率算出時の小数点以下表示桁数を入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="digit" class="kintoneplugin-input-text" value="0" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">集計開始月<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">集計の起算点となる月を入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="basemonth" class="kintoneplugin-input-text" value="1" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>
