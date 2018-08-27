@@ -50,13 +50,13 @@ jQuery.noConflict();
 						events.push('app.record.create.change.'+key);
 						events.push('app.record.edit.change.'+key);
 					}
-					(function(addition,events){
+					(function(addition,fields,events){
 						kintone.events.on(events,function(event){
 							var rows=event.record[addition].value;
 							if (!$.isemptyrow(rows[rows.length-1].value,fields)) rows.push($.createrow(fields));
 							return event;
 						});
-					})(addition,events)
+					})(addition,fields,events)
 				}
 			}
 		},function(error){

@@ -509,6 +509,10 @@
 .kintoneplugin-table td select{
   margin:2px 0px;
 }
+.kintoneplugin-table td input{
+  margin:2px 0px;
+  min-width: 5em;
+}
 .kintoneplugin-table th{
   text-align:center;
 }

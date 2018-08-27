@@ -104,9 +104,6 @@ jQuery.noConflict();
 									}
 									switch (summary.pattern)
 									{
-										case '3':
-											totalamount+=amount;
-											break;
 										case '4':
 											counter++;
 											break;
@@ -137,6 +134,12 @@ jQuery.noConflict();
 								monthlyamount++;
 								break;
 						}
+					}
+					switch (summary.pattern)
+					{
+						case '3':
+							totalamount+=amount;
+							break;
 					}
 					return res;
 				})($.grep(records,function(item,index){
@@ -264,13 +267,30 @@ jQuery.noConflict();
 						.append($('<span class="dot progress5">').text('.'))
 					);
 					/* append elements */
+					$('.gaia-argoui-app-index-pager').hide();
 					if ($('.monthlysummary-headermenucontents').size()) $('.monthlysummary-headermenucontents').remove();
 					kintone.app.getHeaderMenuSpaceElement().appendChild(
 						$('<div class="monthlysummary-headermenucontents">')
 						.append($('<button class="customview-button prev-button">').on('click',function(){setupyear(-1)}))
 						.append($('<span id="year" class="customview-span">'))
 						.append($('<button class="customview-button next-button">').on('click',function(){setupyear(1)}))
-						[0]
+						.append($('<button class="customview-button download-button">').on('click',function(){
+							var output='';
+							output+=',';
+							for (var i=0;i<12;i++)
+							{
+								output+=$('thead th',vars.table.container).eq(i+1).text();
+								if (i<11) output+=',';
+							}
+							output+='\n';
+							for (var i=0;i<vars.table.rows.length;i++)
+								$.each($('td',vars.table.rows[i]),function(index){
+									output+=$(this).text().replace(/,/g,'');
+									if (index<12) output+=',';
+									else output+='\n';
+								});
+							$.downloadtext(output,'SJIS',values.name+'.csv');
+						}))[0]
 					);
 					$('body').append(vars.splash);
 					/* fixed header */
