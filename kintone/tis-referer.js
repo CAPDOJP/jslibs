@@ -2887,6 +2887,7 @@ jQuery.extend({
 					res[fieldinfo.tablecode].value=$.grep(res[fieldinfo.tablecode].value,function(item,index){
 						return (!ismatch(item.value[fieldinfo.code].value,condition,fieldinfo))?false:true;
 					});
+					if (res[fieldinfo.tablecode].value.length==0) return false;
 				}
 				else
 				{

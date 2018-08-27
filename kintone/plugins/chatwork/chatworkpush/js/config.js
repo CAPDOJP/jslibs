@@ -106,27 +106,29 @@ jQuery.noConflict();
 		/* get fieldinfo */
 		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 			var config=kintone.plugin.app.getConfig(PLUGIN_ID);
-			var conditionfield=null;
-			var conditioninfos=Object.values(resp.properties);
+			var fieldinfo=null;
 			vars.fieldinfos=resp.properties;
-			conditionfield=$.grep(conditioninfos,function(item,index){return item.type=='RECORD_NUMBER'})[0];
-			vars.conditioninfos[conditionfield.code]=conditionfield;
-			conditionfield=$.grep(conditioninfos,function(item,index){return item.type=='MODIFIER'})[0];
-			vars.conditioninfos[conditionfield.code]=conditionfield;
-			conditionfield=$.grep(conditioninfos,function(item,index){return item.type=='CREATOR'})[0];
-			vars.conditioninfos[conditionfield.code]=conditionfield;
-			conditionfield=$.grep(conditioninfos,function(item,index){return item.type=='UPDATED_TIME'})[0];
-			vars.conditioninfos[conditionfield.code]=conditionfield;
-			conditionfield=$.grep(conditioninfos,function(item,index){return item.type=='CREATED_TIME'})[0];
-			vars.conditioninfos[conditionfield.code]=conditionfield;
-			conditionfield=$.grep(conditioninfos,function(item,index){return item.type=='STATUS'})[0];
-			vars.conditioninfos[conditionfield.code]=conditionfield;
-			conditionfield=$.grep(conditioninfos,function(item,index){return item.type=='STATUS_ASSIGNEE'})[0];
-			vars.conditioninfos[conditionfield.code]=conditionfield;
+			fieldinfo=$.grep(Object.values(resp.properties),function(item,index){return item.type=='RECORD_NUMBER'})[0];
+			vars.conditioninfos[fieldinfo.code]=fieldinfo;
+			fieldinfo=$.grep(Object.values(resp.properties),function(item,index){return item.type=='MODIFIER'})[0];
+			vars.conditioninfos[fieldinfo.code]=fieldinfo;
+			fieldinfo=$.grep(Object.values(resp.properties),function(item,index){return item.type=='CREATOR'})[0];
+			vars.conditioninfos[fieldinfo.code]=fieldinfo;
+			fieldinfo=$.grep(Object.values(resp.properties),function(item,index){return item.type=='UPDATED_TIME'})[0];
+			vars.conditioninfos[fieldinfo.code]=fieldinfo;
+			fieldinfo=$.grep(Object.values(resp.properties),function(item,index){return item.type=='CREATED_TIME'})[0];
+			vars.conditioninfos[fieldinfo.code]=fieldinfo;
+			fieldinfo=$.grep(Object.values(resp.properties),function(item,index){return item.type=='STATUS'})[0];
+			if (fieldinfo.enabled)
+			{
+				vars.conditioninfos[fieldinfo.code]=fieldinfo;
+				fieldinfo=$.grep(Object.values(resp.properties),function(item,index){return item.type=='STATUS_ASSIGNEE'})[0];
+				vars.conditioninfos[fieldinfo.code]=fieldinfo;
+			}
 			$.each(sorted,function(index){
 				if (sorted[index] in vars.fieldinfos)
 				{
-					var fieldinfo=vars.fieldinfos[sorted[index]];
+					fieldinfo=vars.fieldinfos[sorted[index]];
 					/* check field type */
 					switch (fieldinfo.type)
 					{

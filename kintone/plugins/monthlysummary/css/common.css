@@ -62,6 +62,14 @@ div.customview-container{
 	font-size:13px;
 	width:100%;
 }
+img.customview-imagebutton{
+	cursor:pointer;
+	display:inline-block;
+	height:48px;
+	margin:0px;
+	vertical-align:top;
+	width:48px;
+}
 p.customview-p{
 	box-sizing:border-box;
     line-height:30px;

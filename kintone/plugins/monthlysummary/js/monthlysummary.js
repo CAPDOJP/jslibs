@@ -143,7 +143,8 @@ jQuery.noConflict();
 					}
 					return res;
 				})($.grep(records,function(item,index){
-					return (new Date(item[vars.config.date].value)>=fromdate && new Date(item[vars.config.date].value)<=todate);
+					var date=new Date(new Date(item[vars.config.date].value.dateformat()).format('Y-m-d').dateformat());
+					return (date>=fromdate && date<=todate);
 				}));
 				switch (summary.pattern)
 				{
@@ -202,7 +203,9 @@ jQuery.noConflict();
 				app:kintone.app.getId(),
 				query:kintone.app.getQueryCondition()
 			};
-			body.query+=((body.query)?' and ':'')+vars.config.date+'>="'+fromdate.format('Y-m-d')+'" and '+vars.config.date+'<="'+todate.format('Y-m-d')+'"';
+			body.query+=((body.query)?' and ':'');
+			if (vars.fieldinfos[vars.config.date].type=='DATE') body.query+=vars.config.date+'>="'+fromdate.format('Y-m-d')+'" and '+vars.config.date+'<="'+todate.format('Y-m-d')+'"';
+			else body.query+=vars.config.date+'>="'+fromdate.format('Y-m-d')+'T00:00:00+0900" and '+vars.config.date+'<="'+todate.format('Y-m-d')+'T23:59:59+0900"';
 			body.query+=' limit '+vars.limit.toString();
 			body.query+=' offset '+vars.offset.toString();
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -274,23 +277,26 @@ jQuery.noConflict();
 						.append($('<button class="customview-button prev-button">').on('click',function(){setupyear(-1)}))
 						.append($('<span id="year" class="customview-span">'))
 						.append($('<button class="customview-button next-button">').on('click',function(){setupyear(1)}))
-						.append($('<button class="customview-button download-button">').on('click',function(){
-							var output='';
-							output+=',';
-							for (var i=0;i<12;i++)
-							{
-								output+=$('thead th',vars.table.container).eq(i+1).text();
-								if (i<11) output+=',';
-							}
-							output+='\n';
-							for (var i=0;i<vars.table.rows.length;i++)
-								$.each($('td',vars.table.rows[i]),function(index){
-									output+=$(this).text().replace(/,/g,'');
-									if (index<12) output+=',';
-									else output+='\n';
-								});
-							$.downloadtext(output,'SJIS',values.name+'.csv');
-						}))[0]
+						.append(
+							$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/download.svg" class="customview-imagebutton" alt="ダウンロード" title="ダウンロード" />')
+							.on('click',function(){
+								var output='';
+								output+=',';
+								for (var i=0;i<12;i++)
+								{
+									output+=$('thead th',vars.table.container).eq(i+1).text();
+									if (i<11) output+=',';
+								}
+								output+='\n';
+								for (var i=0;i<vars.table.rows.length;i++)
+									$.each($('td',vars.table.rows[i]),function(index){
+										output+=$(this).text().replace(/,/g,'');
+										if (index<12) output+=',';
+										else output+='\n';
+									});
+								$.downloadtext(output,'SJIS',values.name+'.csv');
+							})
+						)[0]
 					);
 					$('body').append(vars.splash);
 					/* fixed header */

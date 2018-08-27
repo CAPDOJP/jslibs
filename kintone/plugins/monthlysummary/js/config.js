@@ -129,6 +129,7 @@ jQuery.noConflict();
 								}
 								break;
 							case 'DATE':
+							case 'DATETIME':
 								if (!fieldinfo.tablecode) $('select#date').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								break;
 							case 'NUMBER':
