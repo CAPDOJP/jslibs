@@ -26,7 +26,7 @@ jQuery.noConflict();
 		summaries:[],
 	};
 	var events={
-		show:[
+		lists:[
 			'app.record.index.show'
 		]
 	};
@@ -145,39 +145,39 @@ jQuery.noConflict();
 				switch (summary.pattern)
 				{
 					case '0':
-						$('td',row).eq(i).text(amount.comma());
-						if (unitposition=='BEFORE') $('td',row).eq(i).text(unit+$('td',row).eq(i).text());
-						else $('td',row).eq(i).text($('td',row).eq(i).text()+unit);
+						$('td',row).eq(i+1).text(amount.comma());
+						if (unitposition=='BEFORE') $('td',row).eq(i+1).text(unit+$('td',row).eq(i+1).text());
+						else $('td',row).eq(i+1).text($('td',row).eq(i+1).text()+unit);
 						break;
 					case '1':
-						if (monthlyamount!=0) $('td',row).eq(i).text(functions.rounding(amount/monthlyamount).comma()+'%');
-						else $('td',row).eq(i).text('0%');
+						if (monthlyamount!=0) $('td',row).eq(i+1).text(functions.rounding(amount/monthlyamount*100).comma()+'%');
+						else $('td',row).eq(i+1).text('0%');
 						break;
 					case '2':
-						if (totalamount!=0) $('td',row).eq(i).text(functions.rounding(amount/totalamount).comma()+'%');
-						else $('td',row).eq(i).text('0%');
+						if (totalamount!=0) $('td',row).eq(i+1).text(functions.rounding(amount/totalamount*100).comma()+'%');
+						else $('td',row).eq(i+1).text('0%');
 						break;
 					case '3':
-						$('td',row).eq(i).text(totalamount.comma());
-						if (unitposition=='BEFORE') $('td',row).eq(i).text(unit+$('td',row).eq(i).text());
-						else $('td',row).eq(i).text($('td',row).eq(i).text()+unit);
+						$('td',row).eq(i+1).text(totalamount.comma());
+						if (unitposition=='BEFORE') $('td',row).eq(i+1).text(unit+$('td',row).eq(i+1).text());
+						else $('td',row).eq(i+1).text($('td',row).eq(i+1).text()+unit);
 						break;
 					case '4':
-						if (counter!=0) $('td',row).eq(i).text(functions.rounding(amount/counter).comma());
-						else $('td',row).eq(i).text('0');
-						if (unitposition=='BEFORE') $('td',row).eq(i).text(unit+$('td',row).eq(i).text());
-						else $('td',row).eq(i).text($('td',row).eq(i).text()+unit);
+						if (counter!=0) $('td',row).eq(i+1).text(functions.rounding(amount/counter).comma());
+						else $('td',row).eq(i+1).text('0');
+						if (unitposition=='BEFORE') $('td',row).eq(i+1).text(unit+$('td',row).eq(i+1).text());
+						else $('td',row).eq(i+1).text($('td',row).eq(i+1).text()+unit);
 						break;
 					case '5':
-						$('td',row).eq(i).text(amount.comma()+'件');
+						$('td',row).eq(i+1).text(amount.comma()+'件');
 						break;
 					case '6':
-						if (monthlyamount!=0) $('td',row).eq(i).text(functions.rounding(amount/monthlyamount).comma()+'%');
-						else $('td',row).eq(i).text('0%');
+						if (monthlyamount!=0) $('td',row).eq(i+1).text(functions.rounding(amount/monthlyamount*100).comma()+'%');
+						else $('td',row).eq(i+1).text('0%');
 						break;
 					case '7':
-						if (totalamount!=0) $('td',row).eq(i).text(functions.rounding(amount/totalamount).comma()+'%');
-						else $('td',row).eq(i).text('0%');
+						if (totalamount!=0) $('td',row).eq(i+1).text(functions.rounding(amount/totalamount*100).comma()+'%');
+						else $('td',row).eq(i+1).text('0%');
 						break;
 				}
 			}
@@ -186,7 +186,7 @@ jQuery.noConflict();
 		load:function(){
 			vars.splash.removeClass('hide');
 			vars.offset=0;
-			functions.loaddatas(records,function(records){
+			functions.loaddatas([],function(records){
 				for (var i=0;i<vars.summaries.length;i++) functions.summary($('tr',vars.table.contents).eq(i),records,vars.summaries[i]);
 				vars.splash.addClass('hide');
 			});
@@ -199,7 +199,7 @@ jQuery.noConflict();
 				app:kintone.app.getId(),
 				query:kintone.app.getQueryCondition()
 			};
-			body.query+=((body.query)?' and ':'')+vars.config.date+'>='+fromdate.format('Y-m-d')+' and '+vars.config.date+'<='+todate.format('Y-m-d');
+			body.query+=((body.query)?' and ':'')+vars.config.date+'>="'+fromdate.format('Y-m-d')+'" and '+vars.config.date+'<="'+todate.format('Y-m-d')+'"';
 			body.query+=' limit '+vars.limit.toString();
 			body.query+=' offset '+vars.offset.toString();
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -293,8 +293,6 @@ jQuery.noConflict();
 						});
 						$('div#view-list-data-gaia').css({'margin-top':(headeractions.outerHeight(false)+headerspace.outerHeight(false))+'px','overflow-x':'visible'});
 					});
-					/* setup year value */
-					setupyear(0);
 					/* get fields of app */
 					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 						vars.fieldinfos=$.fieldparallelize(resp.properties);
@@ -320,7 +318,7 @@ jQuery.noConflict();
 						{
 							var summary=vars.summaries[i];
 							vars.table.insertrow(null,function(row){
-								$('td',row).first(summary.caption).css({'text-align':'left'});
+								$('td',row).first().text(summary.caption).css({'text-align':'left'});
 								$('td',row).each(function(index){
 									$(this).css({
 										'background-color':'#'+summary.backcolor,
@@ -330,8 +328,8 @@ jQuery.noConflict();
 								});
 							});
 						}
-						/* reload view */
-						functions.load();
+						/* setup year value */
+						setupyear(0);
 					},function(error){swal('Error!',error.message,'error');});
 				}
 			})

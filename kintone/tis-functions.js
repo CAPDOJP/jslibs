@@ -85,6 +85,8 @@ Date.prototype.format=function(pattern){
 	if (pattern.match(/^Y-m-d H:i:s$/g)!=null) return year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;
 	//month-day
 	if (pattern.match(/^m-d$/g)!=null) return month+'-'+day;
+	//month
+	if (pattern.match(/^m$/g)!=null) return month;
 	//day
 	if (pattern.match(/^d$/g)!=null) return day;
 	//H

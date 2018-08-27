@@ -95,7 +95,10 @@ div.monthlysummary-headermenucontents{
 	display:inline-block;
 	height:48px;
 	line-height:48px;
-	vertical-align:top;
+	vertical-align:middle;
+}
+div.monthlysummary-headermenucontents *{
+	vertical-align:middle !important;
 }
 div.monthlysummary-headermenucontents *{
 	vertical-align:middle;
@@ -110,4 +113,7 @@ table#monthlysummary tr th{
 	text-overflow:'';
 	vertical-align:top;
     white-space:nowrap;
+}
+table#monthlysummary tr th:nth-of-type(n+2){
+	width:8.5%;
 }
