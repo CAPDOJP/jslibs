@@ -1091,7 +1091,7 @@ var FieldsForm=function(options){
 				{
 					receiver=checkbox.clone(true);
 					$('.label',receiver).html(fieldoptions[i2]);
-					$('.receiver',receiver).attr('id',fieldoptions[i2]).val(fieldoptions[i2]);
+					$('.receiver',receiver).attr('id',fieldoptions[i2].replace(/[ ]+/g,'tisspace')).val(fieldoptions[i2]);
 					fieldcontainer.append(receiver);
 				}
 				break;
@@ -1374,7 +1374,7 @@ var FieldsForm=function(options){
 				{
 					receiver=radio.clone(true);
 					$('.label',receiver).html(fieldoptions[i2]);
-					$('.receiver',receiver).attr('id',fieldoptions[i2]).attr('name',fieldinfo.code).val(fieldoptions[i2]).prop('checked',checked);
+					$('.receiver',receiver).attr('id',fieldoptions[i2].replace(/[ ]+/g,'tisspace')).attr('name',fieldinfo.code).val(fieldoptions[i2]).prop('checked',checked);
 					fieldcontainer.append(receiver);
 					checked=false;
 				}
@@ -1529,7 +1529,8 @@ FieldsForm.prototype={
 						$(this).prop('checked',false);
 					});
 					/* initialize value */
-					for (var i=0;i<values.value.length;i++) $('#'+values.value[i].replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
+					for (var i=0;i<values.value.length;i++)
+						$('#'+values.value[i].replace(/'/g,'\\\'').replace(/[ ]+/g,'tisspace'),fieldcontainer).prop('checked',true);
 					break;
 				case 'DATE':
 					/* clear value */
@@ -1579,7 +1580,7 @@ FieldsForm.prototype={
 					$('.receiver',fieldcontainer).val(receiver.join(','));
 					break;
 				case 'RADIO_BUTTON':
-					$('#'+values.value.replace(/'/g,'\\\''),fieldcontainer).prop('checked',true);
+					$('#'+values.value.replace(/'/g,'\\\'').replace(/[ ]+/g,'tisspace'),fieldcontainer).prop('checked',true);
 					break;
 				case 'TIME':
 					/* clear value */
@@ -1819,7 +1820,7 @@ var ConditionsForm=function(options){
 							{
 								receiver=checkbox.clone(true);
 								$('.label',receiver).html(fieldoptions[i]);
-								$('.receiver',receiver).attr('id',fieldoptions[i]).val(fieldoptions[i]);
+								$('.receiver',receiver).attr('id',fieldoptions[i].replace(/[ ]+/g,'tisspace')).val(fieldoptions[i]);
 								$('.value',row).append(receiver);
 							}
 							break;
@@ -2447,7 +2448,9 @@ ConditionsForm.prototype={
 						$(this).prop('checked',false);
 					});
 					/* initialize value */
-					if (condition.value) for (var i2=0;i2<condition.value.length;i2++) $('#'+condition.value[i2].replace(/'/g,'\\\''),row).prop('checked',true);
+					if (condition.value)
+						for (var i2=0;i2<condition.value.length;i2++)
+							$('#'+condition.value[i2].replace(/'/g,'\\\'').replace(/[ ]+/g,'tisspace'),row).prop('checked',true);
 					break;
 				case 'CREATED_TIME':
 				case 'DATETIME':

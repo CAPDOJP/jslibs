@@ -73,11 +73,14 @@ jQuery.noConflict();
 										$('select#mailtomedia').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#mailtosegment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#mailtoarea').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										$('select#mailtotype').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										break;
 									case 'LINK':
 										$('select#mailtoaddress').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										break;
 									case 'SINGLE_LINE_TEXT':
+										$('select#mailtodepartment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										$('select#mailtocustomer').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#mailtoname').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#mailtoaddress').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										break;
@@ -122,6 +125,10 @@ jQuery.noConflict();
 						case 'NUMBER':
 							if (fieldinfo.tablecode) $('select#price').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							break;
+						case 'RADIO_BUTTON':
+							$('select#segment').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#area').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							break;
 						case 'SINGLE_LINE_TEXT':
 							if (fieldinfo.tablecode)
 							{
@@ -133,6 +140,7 @@ jQuery.noConflict();
 							{
 								$('select#customer').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 								$('select#subject').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+								$('select#department').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 							}
 							break;
 						case 'USER_SELECT':
@@ -149,7 +157,10 @@ jQuery.noConflict();
 					$('select#mailtoapp').val(config['mailtoapp']);
 					$('select#customer').val(config['customer']);
 					$('select#subject').val(config['subject']);
+					$('select#department').val(config['department']);
 					$('select#charger').val(config['charger']);
+					$('select#segment').val(config['segment']);
+					$('select#area').val(config['area']);
 					$('select#orderno').val(config['orderno']);
 					$('select#media').val(config['media']);
 					$('select#menu').val(config['menu']);
@@ -163,6 +174,9 @@ jQuery.noConflict();
 						$('select#mailtomedia').val(config['mailtomedia']);
 						$('select#mailtosegment').val(config['mailtosegment']);
 						$('select#mailtoarea').val(config['mailtoarea']);
+						$('select#mailtodepartment').val(config['mailtodepartment']);
+						$('select#mailtocustomer').val(config['mailtocustomer']);
+						$('select#mailtotype').val(config['mailtotype']);
 						$('select#mailtoname').val(config['mailtoname']);
 						$('select#mailtoaddress').val(config['mailtoaddress']);
 					});
@@ -199,6 +213,21 @@ jQuery.noConflict();
 			swal('Error!','宛先アプリエリアフィールドを選択して下さい。','error');
 			return;
 		}
+		if ($('select#mailtodepartment').val()=='')
+		{
+			swal('Error!','宛先アプリ注文担当部署フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#mailtocustomer').val()=='')
+		{
+			swal('Error!','宛先アプリ得意先フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#mailtotype').val()=='')
+		{
+			swal('Error!','宛先アプリ宛先区分フィールドを選択して下さい。','error');
+			return;
+		}
 		if ($('select#mailtoname').val()=='')
 		{
 			swal('Error!','宛先アプリ宛先フィールドを選択して下さい。','error');
@@ -219,9 +248,24 @@ jQuery.noConflict();
 			swal('Error!','案件名フィールドを選択して下さい。','error');
 			return;
 		}
+		if ($('select#department').val()=='')
+		{
+			swal('Error!','注文担当部署フィールドを選択して下さい。','error');
+			return;
+		}
 		if ($('select#charger').val()=='')
 		{
 			swal('Error!','営業担当者フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#segment').val()=='')
+		{
+			swal('Error!','区分フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#area').val()=='')
+		{
+			swal('Error!','エリアフィールドを選択して下さい。','error');
 			return;
 		}
 		if ($('select#orderno').val()=='')
@@ -274,11 +318,17 @@ jQuery.noConflict();
 		config['mailtomedia']=$('select#mailtomedia').val();
 		config['mailtosegment']=$('select#mailtosegment').val();
 		config['mailtoarea']=$('select#mailtoarea').val();
+		config['mailtodepartment']=$('select#mailtodepartment').val();
+		config['mailtocustomer']=$('select#mailtocustomer').val();
+		config['mailtotype']=$('select#mailtotype').val();
 		config['mailtoname']=$('select#mailtoname').val();
 		config['mailtoaddress']=$('select#mailtoaddress').val();
 		config['customer']=$('select#customer').val();
 		config['subject']=$('select#subject').val();
+		config['department']=$('select#department').val();
 		config['charger']=$('select#charger').val();
+		config['segment']=$('select#segment').val();
+		config['area']=$('select#area').val();
 		config['orderno']=$('select#orderno').val();
 		config['media']=$('select#media').val();
 		config['menu']=$('select#menu').val();
