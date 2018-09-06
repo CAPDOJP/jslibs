@@ -428,6 +428,7 @@ jQuery.extend({
 					case 'TIME':
 						if (fieldinfo.defaultNowValue) res.value=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
 						else res.value='00:00';
+						break;
 					case 'USER_SELECT':
 						if (uservalues) res.value=[{code:uservalues[0].value}];
 						else res.error='【'+fieldinfo.label+'】初期値を設定して下さい。';
