@@ -325,6 +325,7 @@ jQuery.extend({
 		}
 	},
 	fielddefault:function(fieldinfo,lookupvalues,uservalues,organizationvalues,groupvalues){
+		var date=new Date();
 		var res={error:'',value:null};
 		var hasdefault=fieldinfo.defaultValue;
 		switch (fieldinfo.type)
@@ -337,6 +338,11 @@ jQuery.extend({
 			case 'USER_SELECT':
 				if (fieldinfo.type!='FILE') hasdefault=fieldinfo.defaultValue.length;
 				break;
+			case 'DATE':
+			case 'DATETIME':
+			case 'TIME':
+				hasdefault=fieldinfo.defaultNowValue;
+				break;
 		}
 		/* check default value */
 		if (hasdefault)
@@ -347,6 +353,14 @@ jQuery.extend({
 				case 'MULTI_SELECT':
 					res.value=fieldinfo.defaultValue;
 					break;
+				case 'DATE':
+					res.value=date.format('Y-m-d');
+					break;
+				case 'DATETIME':
+					res.value='';
+					res.value+=date.format('Y-m-d');
+					res.value+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'+0900';
+					break;
 				case 'GROUP_SELECT':
 				case 'ORGANIZATION_SELECT':
 				case 'USER_SELECT':
@@ -354,6 +368,9 @@ jQuery.extend({
 					$.each(fieldinfo.defaultValue,function(index,values){
 						res.value.push({code:values.code});
 					});
+					break;
+				case 'TIME':
+					res.value=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
 					break;
 				default:
 					res.value=fieldinfo.defaultValue;
@@ -365,7 +382,6 @@ jQuery.extend({
 			/* check required */
 			if (fieldinfo.required)
 			{
-				var date=new Date();
 				switch (fieldinfo.type)
 				{
 					case 'CHECK_BOX':
@@ -383,17 +399,10 @@ jQuery.extend({
 						})(fieldinfo.options);
 						break;
 					case 'DATE':
-						if (fieldinfo.defaultNowValue) res.value=date.format('Y-m-d');
-						else res.value='1000-01-01';
+						res.value='1000-01-01';
 						break;
 					case 'DATETIME':
-						if (fieldinfo.defaultNowValue)
-						{
-							res.value='';
-							res.value+=date.format('Y-m-d');
-							res.value+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'+0900';
-						}
-						else res.value='1000-01-01T00:00:00+0900';
+						res.value='1000-01-01T00:00:00+0900';
 						break;
 					case 'FILE':
 						res.error='【'+fieldinfo.label+'】入力が必須になっています。';
@@ -426,8 +435,7 @@ jQuery.extend({
 						else res.error='【'+fieldinfo.label+'】初期値を設定して下さい。';
 						break;
 					case 'TIME':
-						if (fieldinfo.defaultNowValue) res.value=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
-						else res.value='00:00';
+						res.value='00:00';
 						break;
 					case 'USER_SELECT':
 						if (uservalues) res.value=[{code:uservalues[0].value}];
