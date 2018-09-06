@@ -24,6 +24,7 @@ jQuery.noConflict();
 		tocalendar:null,
 		table:null,
 		records:[],
+		mealplaces:[],
 		rooms:[],
 		config:{},
 		fieldinfos:{}
@@ -38,7 +39,7 @@ jQuery.noConflict();
 		build:function(filter,heads){
 			/* insert row */
 			vars.table.insertrow(null,function(row){
-				var baserow=row;
+				var baserow=row.css({'background-color':'#ffcdd2'});
 				baserow.find('td').first().append($('<p>').addClass('customview-p').html(heads[vars.config['roomname']].value));
 				if (filter.length!=0)
 				{
@@ -74,6 +75,7 @@ jQuery.noConflict();
 						if (isinsertrow)
 						{
 							vars.table.insertrow(null,function(row){
+								row.css({'background-color':'#ffcdd2'});
 								fromindex=vars.table.mergecellindex(row,from);
 								toindex=vars.table.mergecellindex(row,to);
 								functions.mergeaftervalue(row,fromindex,toindex,filter[i]);
@@ -82,6 +84,67 @@ jQuery.noConflict();
 							});
 						}
 						else functions.mergeaftervalue(mergerow,fromindex,toindex,filter[i]);
+					}
+				}
+			});
+		},
+		buildmealplace:function(filter,heads){
+			/* insert row */
+			vars.table.insertrow(null,function(row){
+				var baserow=row.css({'background-color':'#dcedc8'});
+				var fieldinfo=vars.fieldinfos[vars.config['mealplace']];
+				baserow.find('td').first().append($('<p>').addClass('customview-p').html(heads[vars.config['mealplacename']].value));
+				if (filter.length!=0)
+				{
+					for (var i=0;i<filter.length;i++)
+					{
+						var records=$.grep(filter[i][fieldinfo.tablecode].value,function(item,index){
+							return (item.value[vars.config['mealplace']].value==heads[fieldinfo.lookup.relatedKeyField].value);
+						});
+						for (var i2=0;i2<records.length;i2++)
+						{
+							/* create cell */
+							var datecalc=$.hotelmanagementdatecalc(
+								new Date((records[i2].value[vars.config['mealdate']].value+'T'+records[i2].value[vars.config['mealstarttime']].value+':00+09:00').dateformat()),
+								new Date((records[i2].value[vars.config['mealdate']].value+'T'+records[i2].value[vars.config['mealendtime']].value+':00+09:00').dateformat()),
+								new Date((vars.fromdate.format('Y-m-d')+'T00:00:00+0900').dateformat())
+							);
+							if (datecalc.to.hour<0) continue;
+							var from=(datecalc.from.hour*parseInt(vars.config['scale']))+Math.floor(datecalc.from.minute/(60/parseInt(vars.config['scale'])));
+							var to=(datecalc.to.hour*parseInt(vars.config['scale']))+Math.ceil(datecalc.to.minute/(60/parseInt(vars.config['scale'])))-1;
+							var fromindex=0;
+							var toindex=0;
+							if (from<0) from=0;
+							if (to>((vars.datecalc.diffhours+1)*parseInt(vars.config['scale']))-1) to=((vars.datecalc.diffhours+1)*parseInt(vars.config['scale']))-1;
+							from++;
+							to++;
+							if (from>to) continue;
+							/* check cell merged */
+							var isinsertrow=true;
+							var mergerow=baserow;
+							for (var i3=vars.table.contents.find('tr').index(baserow);i3<vars.table.contents.find('tr').length;i3++)
+							{
+								mergerow=vars.table.contents.find('tr').eq(i3);
+								fromindex=vars.table.mergecellindex(mergerow,from);
+								toindex=vars.table.mergecellindex(mergerow,to);
+								if (!mergerow.find('td').eq(fromindex).hasClass('dailyschedule-merge') && !mergerow.find('td').eq(toindex).hasClass('dailyschedule-merge')) {isinsertrow=false;break;}
+							}
+							/* merge cell */
+							records[i2].value['$id']=filter[i]['$id'];
+							records[i2].value[vars.config['visitor']]=filter[i][vars.config['visitor']];
+							if (isinsertrow)
+							{
+								vars.table.insertrow(null,function(row){
+									row.css({'background-color':'#dcedc8'});
+									fromindex=vars.table.mergecellindex(row,from);
+									toindex=vars.table.mergecellindex(row,to);
+									functions.mergeaftervalue(row,fromindex,toindex,records[i2].value);
+									/* check row heads */
+									row.find('td').eq(0).html(baserow.find('td').eq(0).html());
+								});
+							}
+							else functions.mergeaftervalue(mergerow,fromindex,toindex,records[i2].value);
+						}
 					}
 				}
 			});
@@ -166,6 +229,17 @@ jQuery.noConflict();
 						return false;
 					}),vars.rooms[i]);
 				}
+				for (var i=0;i<vars.mealplaces.length;i++)
+				{
+					var mealplace=vars.mealplaces[i];
+					/* rebuild view */
+					functions.buildmealplace($.grep(vars.records,function(item,index){
+						var fieldinfo=vars.fieldinfos[vars.config['mealplace']];
+						for (var i2=0;i2<item[fieldinfo.tablecode].value.length;i2++)
+							if (item[fieldinfo.tablecode].value[i2].value[vars.config['mealplace']].value==mealplace[fieldinfo.lookup.relatedKeyField].value) return true;
+						return false;
+					}),vars.mealplaces[i]);
+				}
 				/* merge row */
 				var rowspan={cache:'',index:-1,span:0};
 				$.each(vars.table.contents.find('tr'),function(index){
@@ -222,6 +296,22 @@ jQuery.noConflict();
 				Array.prototype.push.apply(vars.records,resp.records);
 				vars.offset+=vars.limit;
 				if (resp.records.length==vars.limit) functions.loaddatas(callback);
+				else callback();
+			},function(error){
+				swal('Error!',error.message,'error');
+			});
+		},
+		/* reload mealplace datas */
+		loadmealplaces:function(callback){
+			var body={
+				app:vars.fieldinfos[vars.config['mealplace']].lookup.relatedApp.app,
+				query:vars.fieldinfos[vars.config['mealplace']].lookup.filterCond
+			};
+			body.query+=' order by '+vars.fieldinfos[vars.config['mealplace']].lookup.sort+' limit '+vars.limit.toString()+' offset '+vars.offset.toString();
+			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
+				Array.prototype.push.apply(vars.mealplaces,resp.records);
+				vars.offset+=vars.limit;
+				if (resp.records.length==vars.limit) functions.loadmealplaces(callback);
 				else callback();
 			},function(error){
 				swal('Error!',error.message,'error');
@@ -356,9 +446,15 @@ jQuery.noConflict();
 					/* get fields of app */
 					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 						vars.fieldinfos=$.fieldparallelize(resp.properties);
+						vars.offset=0;
+						vars.rooms=[];
 						functions.loadrooms(function(){
-							/* reload view */
-							functions.load();
+							vars.offset=0;
+							vars.mealplaces=[];
+							functions.loadmealplaces(function(){
+								/* reload view */
+								functions.load();
+							});
 						});
 					},function(error){});
 				}

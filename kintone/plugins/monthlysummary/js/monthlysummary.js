@@ -15,14 +15,16 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		year:parseInt(new Date().format('Y')),
-		splash:null,
-		table:null,
+		date:'',
 		limit:500,
 		offset:0,
+		splash:null,
+		table:null,
+		year:parseInt(new Date().format('Y')),
 		config:{},
 		fieldinfos:{},
 		views:{},
+		calculations:[],
 		summaries:[],
 	};
 	var events={
@@ -56,21 +58,13 @@ jQuery.noConflict();
 									res+=parseFloat(records[i][summary.field].value);
 							}
 							break;
-						case '7':
+						case '8':
 							res++;
 							break;
 					}
 				}
 				return res;
 			})();
-			var unit=(function(field){
-				if (field) return (vars.fieldinfos[field].unit)?vars.fieldinfos[field].unit:'';
-				return '';
-			})(summary.field);
-			var unitposition=(function(field){
-				if (field) return (vars.fieldinfos[field].unitPosition)?vars.fieldinfos[field].unitPosition.toUpperCase():'BEFORE';
-				return '';
-			})(summary.field);
 			for (var i=0;i<12;i++)
 			{
 				var counter=0;
@@ -92,6 +86,7 @@ jQuery.noConflict();
 								case '2':
 								case '3':
 								case '4':
+								case '5':
 									if (tablecode)
 									{
 										for (var i3=0;i3<match[tablecode].value.length;i3++)
@@ -104,14 +99,15 @@ jQuery.noConflict();
 									}
 									switch (summary.pattern)
 									{
-										case '4':
+										case '5':
 											counter++;
 											break;
 									}
 									break;
-								case '5':
 								case '6':
 								case '7':
+								case '8':
+								case '9':
 									amount++;
 									break;
 							}
@@ -130,58 +126,49 @@ jQuery.noConflict();
 										monthlyamount+=parseFloat(filter[i2][summary.field].value);
 								}
 								break;
-							case '6':
+							case '7':
 								monthlyamount++;
 								break;
 						}
 					}
 					switch (summary.pattern)
 					{
-						case '3':
+						case '4':
 							totalamount+=amount;
 							break;
 					}
 					return res;
 				})($.grep(records,function(item,index){
-					var date=new Date(new Date(item[vars.config.date].value.dateformat()).format('Y-m-d').dateformat());
+					var date=new Date(new Date(item[vars.date].value.dateformat()).format('Y-m-d').dateformat());
 					return (date>=fromdate && date<=todate);
 				}));
 				switch (summary.pattern)
 				{
 					case '0':
-						$('td',row).eq(i+1).text(amount.comma());
-						if (unitposition=='BEFORE') $('td',row).eq(i+1).text(unit+$('td',row).eq(i+1).text());
-						else $('td',row).eq(i+1).text($('td',row).eq(i+1).text()+unit);
+					case '3':
+					case '9':
+						row[i]=amount;
 						break;
 					case '1':
-						if (monthlyamount!=0) $('td',row).eq(i+1).text(functions.rounding(amount/monthlyamount*100).comma()+'%');
-						else $('td',row).eq(i+1).text('0%');
+						if (monthlyamount!=0) row[i]=amount/monthlyamount*100;
 						break;
 					case '2':
-						if (totalamount!=0) $('td',row).eq(i+1).text(functions.rounding(amount/totalamount*100).comma()+'%');
-						else $('td',row).eq(i+1).text('0%');
-						break;
-					case '3':
-						$('td',row).eq(i+1).text(totalamount.comma());
-						if (unitposition=='BEFORE') $('td',row).eq(i+1).text(unit+$('td',row).eq(i+1).text());
-						else $('td',row).eq(i+1).text($('td',row).eq(i+1).text()+unit);
+						if (totalamount!=0) row[i]=amount/totalamount*100;
 						break;
 					case '4':
-						if (counter!=0) $('td',row).eq(i+1).text(functions.rounding(amount/counter).comma());
-						else $('td',row).eq(i+1).text('0');
-						if (unitposition=='BEFORE') $('td',row).eq(i+1).text(unit+$('td',row).eq(i+1).text());
-						else $('td',row).eq(i+1).text($('td',row).eq(i+1).text()+unit);
+						row[i]=totalamount;
 						break;
 					case '5':
-						$('td',row).eq(i+1).text(amount.comma()+'件');
+						if (counter!=0) row[i]=amount/counter;
 						break;
 					case '6':
-						if (monthlyamount!=0) $('td',row).eq(i+1).text(functions.rounding(amount/monthlyamount*100).comma()+'%');
-						else $('td',row).eq(i+1).text('0%');
+						row[i]=amount;
 						break;
 					case '7':
-						if (totalamount!=0) $('td',row).eq(i+1).text(functions.rounding(amount/totalamount*100).comma()+'%');
-						else $('td',row).eq(i+1).text('0%');
+						if (monthlyamount!=0) row[i]=amount/monthlyamount*100;
+						break;
+					case '8':
+						if (totalamount!=0) row[i]=amount/totalamount*100;
 						break;
 				}
 			}
@@ -191,7 +178,71 @@ jQuery.noConflict();
 			vars.splash.removeClass('hide');
 			vars.offset=0;
 			functions.loaddatas([],function(records){
-				for (var i=0;i<vars.summaries.length;i++) functions.summary($('tr',vars.table.contents).eq(i),records,vars.summaries[i]);
+				vars.calculations=[];
+				for (var i=0;i<vars.summaries.length;i++)
+				{
+					vars.calculations.push([0,0,0,0,0,0,0,0,0,0,0,0]);
+					functions.summary(vars.calculations[i],records,vars.summaries[i]);
+				}
+				for (var i=0;i<vars.summaries.length;i++)
+					(function(row,record,denominators,summary){
+						var unit=(function(field){
+							if (field) return (vars.fieldinfos[field].unit)?vars.fieldinfos[field].unit:'';
+							return '';
+						})(summary.field);
+						var unitposition=(function(field){
+							if (field) return (vars.fieldinfos[field].unitPosition)?vars.fieldinfos[field].unitPosition.toUpperCase():'BEFORE';
+							return '';
+						})(summary.field);
+						for (var i2=0;i2<12;i2++)
+						{
+							var cell=$('td',row).eq(i2+1);
+							var denominator=0;
+							switch (summary.pattern)
+							{
+								case '0':
+									cell.text(record[i2].comma());
+									if (unitposition=='BEFORE') cell.text(unit+cell.text());
+									else cell.text(cell.text()+unit);
+									break;
+								case '1':
+									cell.text(functions.rounding(record[i2]).comma()+'%');
+									break;
+								case '2':
+									cell.text(functions.rounding(record[i2]).comma()+'%');
+									break;
+								case '3':
+									denominator=denominators[parseInt(summary.denominator)][i2];
+									if (denominator) cell.text(functions.rounding((record[i2]/denominator*100)).comma()+'%');
+									else cell.text('0%');
+									break;
+								case '4':
+									cell.text(record[i2].comma());
+									if (unitposition=='BEFORE') cell.text(unit+cell.text());
+									else cell.text(cell.text()+unit);
+									break;
+								case '5':
+									cell.text(functions.rounding(record[i2]).comma());
+									if (unitposition=='BEFORE') cell.text(unit+cell.text());
+									else cell.text(cell.text()+unit);
+									break;
+								case '6':
+									cell.text(record[i2].comma()+'件');
+									break;
+								case '7':
+									cell.text(functions.rounding(record[i2]).comma()+'%');
+									break;
+								case '8':
+									cell.text(functions.rounding(record[i2]).comma()+'%');
+									break;
+								case '9':
+									denominator=denominators[parseInt(summary.denominator)][i2];
+									if (denominator) cell.text(functions.rounding((record[i2]/denominator*100)).comma()+'%');
+									else cell.text('0%');
+									break;
+							}
+						}
+					})($('tr',vars.table.contents).eq(i),vars.calculations[i],vars.calculations,vars.summaries[i]);
 				vars.splash.addClass('hide');
 			});
 		},
@@ -204,8 +255,8 @@ jQuery.noConflict();
 				query:kintone.app.getQueryCondition()
 			};
 			body.query+=((body.query)?' and ':'');
-			if (vars.fieldinfos[vars.config.date].type=='DATE') body.query+=vars.config.date+'>="'+fromdate.format('Y-m-d')+'" and '+vars.config.date+'<="'+todate.format('Y-m-d')+'"';
-			else body.query+=vars.config.date+'>="'+fromdate.format('Y-m-d')+'T00:00:00+0900" and '+vars.config.date+'<="'+todate.format('Y-m-d')+'T23:59:59+0900"';
+			if (vars.fieldinfos[vars.date].type=='DATE') body.query+=vars.date+'>="'+fromdate.format('Y-m-d')+'" and '+vars.date+'<="'+todate.format('Y-m-d')+'"';
+			else body.query+=vars.date+'>="'+fromdate.format('Y-m-d')+'T00:00:00+0900" and '+vars.date+'<="'+todate.format('Y-m-d')+'T23:59:59+0900"';
 			body.query+=' limit '+vars.limit.toString();
 			body.query+=' offset '+vars.offset.toString();
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
@@ -259,7 +310,8 @@ jQuery.noConflict();
 						functions.load();
 					};
 					/* initialize valiable */
-					vars.summaries=vars.views['_'+event.viewId.toString()];
+					vars.date=vars.views['_'+event.viewId.toString()].date;
+					vars.summaries=vars.views['_'+event.viewId.toString()].summaries;
 					vars.splash=$('<div id="splash">').append(
 						$('<p>')
 						.append($('<span>').text('now loading'))

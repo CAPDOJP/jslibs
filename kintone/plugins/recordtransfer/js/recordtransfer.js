@@ -195,121 +195,13 @@ jQuery.noConflict();
 																{
 																	if (error) break;
 																	var field=additional[i3];
-																	var value=null;
-																	var hasdefault=field.defaultValue;
-																	switch (field.type)
+																	var res=$.fielddefault(field);
+																	if (res.error)
 																	{
-																		case 'CHECK_BOX':
-																		case 'FILE':
-																		case 'GROUP_SELECT':
-																		case 'MULTI_SELECT':
-																		case 'ORGANIZATION_SELECT':
-																		case 'USER_SELECT':
-																			value=[];
-																			if (field.type!='FILE') hasdefault=field.defaultValue.length;
-																			break;
+																		swal('Error!',res.error,'error');
+																		error=true;
 																	}
-																	if (!value) value='';
-																	if (value.length==0)
-																	{
-																		/* check required */
-																		if (field.required)
-																		{
-																			/* check default value */
-																			if (hasdefault)
-																			{
-																				switch (field.type)
-																				{
-																					case 'CHECK_BOX':
-																					case 'MULTI_SELECT':
-																						value=field.defaultValue;
-																						break;
-																					case 'GROUP_SELECT':
-																					case 'ORGANIZATION_SELECT':
-																					case 'USER_SELECT':
-																						value=[];
-																						$.each(field.defaultValue,function(index,values){
-																							value.push({code:values.code});
-																						});
-																						break;
-																					default:
-																						value=field.defaultValue;
-																						break;
-																				}
-																			}
-																			else
-																			{
-																				var date=new Date();
-																				switch (field.type)
-																				{
-																					case 'CHECK_BOX':
-																					case 'MULTI_SELECT':
-																						value=[field.options[Object.keys(field.options)[0]].label];
-																						break;
-																					case 'DROP_DOWN':
-																					case 'RADIO_BUTTON':
-																						value=(function(options){
-																							var res='';
-																							$.each(options,function(key,values){
-																								if (values.index==0) res=key;
-																							});
-																							return res;
-																						})(field.options);
-																						break;
-																					case 'DATE':
-																						if (field.defaultNowValue) value=date.format('Y-m-d');
-																						else value='1000-01-01';
-																						break;
-																					case 'DATETIME':
-																						if (field.defaultNowValue)
-																						{
-																							value='';
-																							value+=date.format('Y-m-d');
-																							value+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'+0900';
-																						}
-																						else value='1000-01-01T00:00:00+0900';
-																						break;
-																					case 'FILE':
-																						swal('Error!','テーブル内の添付ファイルフィールドの入力が必須の場合はコピー出来ません。','error');
-																						error=true;
-																						break;
-																					case 'GROUP_SELECT':
-																					case 'ORGANIZATION_SELECT':
-																					case 'USER_SELECT':
-																						var fieldname=''
-																						switch (field.type)
-																						{
-																							case 'GROUP_SELECT':
-																								fieldname='グループ選択';
-																								break;
-																							case 'ORGANIZATION_SELECT':
-																								fieldname='組織選択';
-																								break;
-																							case 'USER_SELECT':
-																								fieldname='ユーザー選択';
-																								break;
-																						}
-																						swal('Error!','テーブル内の'+fieldname+'フィールドの入力が必須の場合は、初期値を設定して下さい。','error');
-																						error=true;
-																						break;
-																					case 'LINK':
-																					case 'MULTI_LINE_TEXT':
-																					case 'RICH_TEXT':
-																					case 'SINGLE_LINE_TEXT':
-																						value='必須項目です';
-																						break;
-																					case 'NUMBER':
-																						value=((field.minValue)?field.minValue:((field.maxValue)?field.maxValue:'0'));
-																						break;
-																					case 'TIME':
-																						if (field.defaultNowValue) value=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
-																						else value='00:00';
-																						break;
-																				}
-																			}
-																		}
-																	}
-																	row.value[field.code]={value:value};
+																	else row.value[field.code]={value:res.value};
 																}
 																body.record[tablecode].value.push(row);
 															}

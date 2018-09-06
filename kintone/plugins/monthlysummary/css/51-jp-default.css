@@ -532,11 +532,15 @@
 
 /* Custom */
 .kintoneplugin-table.inner{
-  margin-left:2em;
+  margin-top:6px;
 }
 .kintoneplugin-table.inner tr{
   background-color:transparent;
 }
 .kintoneplugin-table.inner .kintoneplugin-table tr td{
   padding:4px 3px;
+}
+.kintoneplugin-table.inner .kintoneplugin-select-outer~.kintoneplugin-select-outer{
+  display:block;
+  margin-top:6px;
 }

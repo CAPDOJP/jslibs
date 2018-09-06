@@ -296,6 +296,8 @@ jQuery.noConflict();
 					/* get fields of app */
 					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
 						vars.fieldinfos=$.fieldparallelize(resp.properties);
+						vars.offset=0;
+						vars.mealplaces=[];
 						functions.loadmealplaces(function(){
 							/* reload view */
 							functions.load();

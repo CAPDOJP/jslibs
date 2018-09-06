@@ -195,7 +195,7 @@ jQuery.noConflict();
 			);
 		},
 		/* reset fields */
-		resetfields(list,prefecture,city,street,address,zip,level,callback){
+		resetfields:function(list,prefecture,city,street,address,zip,level,callback){
 			if (level==0)
 			{
 				prefecture.input.val('');

@@ -324,6 +324,119 @@ jQuery.extend({
 			success(records);
 		}
 	},
+	fielddefault:function(fieldinfo,lookupvalues,uservalues,organizationvalues,groupvalues){
+		var res={error:'',value:null};
+		var hasdefault=fieldinfo.defaultValue;
+		switch (fieldinfo.type)
+		{
+			case 'CHECK_BOX':
+			case 'FILE':
+			case 'GROUP_SELECT':
+			case 'MULTI_SELECT':
+			case 'ORGANIZATION_SELECT':
+			case 'USER_SELECT':
+				if (fieldinfo.type!='FILE') hasdefault=fieldinfo.defaultValue.length;
+				break;
+		}
+		/* check required */
+		if (fieldinfo.required)
+		{
+			/* check default value */
+			if (hasdefault)
+			{
+				switch (fieldinfo.type)
+				{
+					case 'CHECK_BOX':
+					case 'MULTI_SELECT':
+						res.value=fieldinfo.defaultValue;
+						break;
+					case 'GROUP_SELECT':
+					case 'ORGANIZATION_SELECT':
+					case 'USER_SELECT':
+						res.value=[];
+						$.each(fieldinfo.defaultValue,function(index,values){
+							res.value.push({code:values.code});
+						});
+						break;
+					default:
+						res.value=fieldinfo.defaultValue;
+						break;
+				}
+			}
+			else
+			{
+				var date=new Date();
+				switch (fieldinfo.type)
+				{
+					case 'CHECK_BOX':
+					case 'MULTI_SELECT':
+						res.value=[fieldinfo.options[Object.keys(fieldinfo.options)[0]].label];
+						break;
+					case 'DROP_DOWN':
+					case 'RADIO_BUTTON':
+						res.value=(function(options){
+							var value='';
+							$.each(options,function(key,values){
+								if (values.index==0) value=key;
+							});
+							return value;
+						})(fieldinfo.options);
+						break;
+					case 'DATE':
+						if (fieldinfo.defaultNowValue) res.value=date.format('Y-m-d');
+						else res.value='1000-01-01';
+						break;
+					case 'DATETIME':
+						if (fieldinfo.defaultNowValue)
+						{
+							res.value='';
+							res.value+=date.format('Y-m-d');
+							res.value+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'+0900';
+						}
+						else res.value='1000-01-01T00:00:00+0900';
+						break;
+					case 'FILE':
+						res.error='【'+fieldinfo.label+'】入力が必須になっています。';
+						break;
+					case 'GROUP_SELECT':
+						if (groupvalues) res.value=[{code:groupvalues[0].value}];
+						else res.error='【'+fieldinfo.label+'】初期値を設定して下さい。';
+						break;
+					case 'LINK':
+					case 'MULTI_LINE_TEXT':
+					case 'RICH_TEXT':
+					case 'SINGLE_LINE_TEXT':
+						if (fieldinfo.lookup)
+						{
+							if (lookupvalues) res.value=lookupvalues[fieldinfo.code];
+							else res.error='【'+fieldinfo.label+'】入力が必須になっています。';
+						}
+						else res.value='＊';
+						break;
+					case 'NUMBER':
+						if (fieldinfo.lookup)
+						{
+							if (lookupvalues) res.value=lookupvalues[fieldinfo.code];
+							else res.error='【'+fieldinfo.label+'】入力が必須になっています。';
+						}
+						else res.value=((fieldinfo.minValue)?fieldinfo.minValue:((fieldinfo.maxValue)?fieldinfo.maxValue:'0'));
+						break;
+					case 'ORGANIZATION_SELECT':
+						if (organizationvalues) res.value=[{code:organizationvalues[0].value}];
+						else res.error='【'+fieldinfo.label+'】初期値を設定して下さい。';
+						break;
+					case 'TIME':
+						if (fieldinfo.defaultNowValue) res.value=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
+						else res.value='00:00';
+					case 'USER_SELECT':
+						if (uservalues) res.value=[{code:uservalues[0].value}];
+						else res.error='【'+fieldinfo.label+'】初期値を設定して下さい。';
+						break;
+				}
+			}
+		}
+		return res;
+	},
 	fieldparallelize:function(properties){
 		var tablecode='';
 		var fields={};

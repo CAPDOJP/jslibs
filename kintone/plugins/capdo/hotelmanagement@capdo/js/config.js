@@ -44,7 +44,7 @@ jQuery.noConflict();
 			var target=$('select#mealplace');
 			/* initinalize elements */
 			$('select#mealplacename').empty().append($('<option>').attr('value','').text(''));
-			if (target.val().length!=0)
+			if (target.val())
 			{
 				kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:vars.fieldinfos[target.val()].lookup.relatedApp.app},function(resp){
 					var sorted=functions.fieldsort(resp.layout);
@@ -71,7 +71,7 @@ jQuery.noConflict();
 			var target=$('select#room');
 			/* initinalize elements */
 			$('select#roomname').empty().append($('<option>').attr('value','').text(''));
-			if (target.val().length!=0)
+			if (target.val())
 			{
 				kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:vars.fieldinfos[target.val()].lookup.relatedApp.app},function(resp){
 					var sorted=functions.fieldsort(resp.layout);

@@ -508,7 +508,6 @@ jQuery.noConflict();
 		/* get field value */
 		fieldvalue:function(cell,fieldinfo){
 			var fieldvalue=null;
-			var hasdefault=fieldinfo.defaultValue;
 			switch (fieldinfo.type)
 			{
 				case 'CHECK_BOX':
@@ -518,7 +517,6 @@ jQuery.noConflict();
 				case 'ORGANIZATION_SELECT':
 				case 'USER_SELECT':
 					fieldvalue=[];
-					if (fieldinfo.type!='FILE') hasdefault=fieldinfo.defaultValue.length;
 					break;
 			}
 			if (cell.val())
@@ -590,86 +588,7 @@ jQuery.noConflict();
 						break;
 				}
 			if (!fieldvalue) fieldvalue='';
-			if (fieldvalue.length==0)
-			{
-				/* check required */
-				if (fieldinfo.required)
-				{
-					/* check default value */
-					if (hasdefault)
-					{
-						switch (fieldinfo.type)
-						{
-							case 'CHECK_BOX':
-							case 'MULTI_SELECT':
-								fieldvalue=fieldinfo.defaultValue;
-								break;
-							case 'GROUP_SELECT':
-							case 'ORGANIZATION_SELECT':
-							case 'USER_SELECT':
-								fieldvalue=[];
-								$.each(fieldinfo.defaultValue,function(index,values){
-									fieldvalue.push({code:values.code});
-								});
-								break;
-							default:
-								fieldvalue=fieldinfo.defaultValue;
-								break;
-						}
-					}
-					else
-					{
-						var date=new Date();
-						switch (fieldinfo.type)
-						{
-							case 'CHECK_BOX':
-							case 'MULTI_SELECT':
-								fieldvalue=[fieldinfo.options[Object.keys(fieldinfo.options)[0]].label];
-								break;
-							case 'DROP_DOWN':
-							case 'RADIO_BUTTON':
-								fieldvalue=cell.find('option').eq(1).val();
-								break;
-							case 'DATE':
-								if (fieldinfo.defaultNowValue) fieldvalue=date.format('Y-m-d');
-								else fieldvalue='1000-01-01';
-								break;
-							case 'DATETIME':
-								if (fieldinfo.defaultNowValue)
-								{
-									fieldvalue='';
-									fieldvalue+=date.format('Y-m-d');
-									fieldvalue+='T'+date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2)+':'+date.getSeconds().toString().lpad('0',2)+'+0900';
-								}
-								else fieldvalue='1000-01-01T00:00:00+0900';
-								break;
-							case 'GROUP_SELECT':
-								fieldvalue=[{code:vars.exports.groups[0].value}];
-								break;
-							case 'LINK':
-							case 'MULTI_LINE_TEXT':
-							case 'SINGLE_LINE_TEXT':
-								if (fieldinfo.lookup) fieldvalue=vars.requiredvalue[fieldinfo.code];
-								else fieldvalue='必須項目です';
-								break;
-							case 'NUMBER':
-								if (fieldinfo.lookup) fieldvalue=vars.requiredvalue[fieldinfo.code];
-								else fieldvalue=(fieldinfo.minValue)?(fieldinfo.minValue.toString().match(/^-?[0-9]+/g))?fieldinfo.minValue:'0':'0';
-								break;
-							case 'ORGANIZATION_SELECT':
-								fieldvalue=[{code:vars.exports.organizations[0].value}];
-								break;
-							case 'TIME':
-								if (fieldinfo.defaultNowValue) fieldvalue=date.getHours().toString().lpad('0',2)+':'+date.getMinutes().toString().lpad('0',2);
-								else fieldvalue='00:00';
-								break;
-							case 'USER_SELECT':
-								fieldvalue=[{code:vars.exports.users[0].value}];
-								break;
-						}
-					}
-				}
-			}
+			if (fieldvalue.length==0) fieldvalue=$.fielddefault(fieldinfo,vars.requiredvalue,vars.exports.users,vars.exports.organizations,vars.exports.groups).value;
 			return fieldvalue;
 		},
 		filevalue:function(files){

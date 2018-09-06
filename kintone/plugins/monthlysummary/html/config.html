@@ -1,16 +1,5 @@
 <div class="block">
 	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">日付フィールド<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">集計対象となるフィールドを選択して下さい。</div>
-		<div class="kintoneplugin-select-outer">
-			<div class="kintoneplugin-select">
-				<select id="date">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-	</div>
-	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">集計設定</div>
 		<table class="kintoneplugin-table outer">
 			<tbody>
@@ -20,6 +9,14 @@
 						<div class="kintoneplugin-select-outer">
 							<div class="kintoneplugin-select">
 								<select id="view">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+						<span class="kintoneplugin-unit">集計基準日付フィールド</span>
+						<div class="kintoneplugin-select-outer">
+							<div class="kintoneplugin-select">
+								<select id="date">
 									<option value=""></option>
 								</select>
 							</div>
@@ -53,11 +50,20 @@
 													<option value="0">合計</option>
 													<option value="1">合計比率(月間)</option>
 													<option value="2">合計比率(年間)</option>
-													<option value="3">合計累計</option>
-													<option value="4">平均</option>
-													<option value="5">件数</option>
-													<option value="6">件数比率(月間)</option>
-													<option value="7">件数比率(年間)</option>
+													<option value="3">合計比率(他集計)</option>
+													<option value="4">合計累計</option>
+													<option value="5">平均</option>
+													<option value="6">件数</option>
+													<option value="7">件数比率(月間)</option>
+													<option value="8">件数比率(年間)</option>
+													<option value="9">件数比率(他集計)</option>
+												</select>
+											</div>
+										</div>
+										<div class="kintoneplugin-select-outer" style="display:none">
+											<div class="kintoneplugin-select">
+												<select id="denominator">
+													<option value="">分母となる集計</option>
 												</select>
 											</div>
 										</div>

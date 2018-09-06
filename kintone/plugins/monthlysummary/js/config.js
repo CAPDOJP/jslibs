@@ -41,6 +41,33 @@ jQuery.noConflict();
 		]
 	};
 	var functions={
+		denominatoradd:function(rows){
+			var captions=[];
+			for (var i=0;i<rows.length-1;i++)
+			{
+				$('select#denominator',rows.eq(i)).append($('<option>').attr('value',rows.length-1).text(''));
+				$('select#denominator',rows.eq(rows.length-1)).append($('<option>').attr('value',i).text($('input#caption',rows.eq(i)).val()));
+			}
+			$('select#denominator',rows.eq(rows.length-1)).append($('<option>').attr('value',rows.length-1).text(''));
+		},
+		denominatordelete:function(rows,index){
+			for (var i=0;i<rows.length;i++)
+			{
+				var denominator=$('select#denominator',rows.eq(i));
+				var value=denominator.val();
+				if ($.isNumeric(value))
+				{
+					if (parseInt(value)==index) value='';
+					if (parseInt(value)>index) value=(parseInt(value)-1).toString();
+				}
+				$('option',denominator).eq(index+1).remove();
+				for (var i2=index;i2<$('option',denominator).length;i2++) $('option',denominator).eq(i2).attr('value',i2-1);
+				denominator.val(value);
+			}
+		},
+		denominatorupdate:function(rows,index,caption){
+			for (var i=0;i<rows.length;i++) $('select#denominator option',rows.eq(i)).eq(index+1).text(caption);
+		},
 		fieldsort:function(layout){
 			var codes=[];
 			$.each(layout,function(index,values){
@@ -161,7 +188,20 @@ jQuery.noConflict();
 										functions.loadconditions(summaryinfo.conditions[index],resp);
 									});
 								});
+								$('input#caption',row).off('change').on('change',function(){
+									functions.denominatorupdate(summaryinfo.table.rows,summaryinfo.table.rows.index(row),$(this).val());
+								});
 								$('select#pattern',row).off('change').on('change',function(){
+									switch ($(this).val())
+									{
+										case '3':
+										case '9':
+											$('select#denominator',row).closest('.kintoneplugin-select-outer').show();
+											break;
+										default:
+											$('select#denominator',row).closest('.kintoneplugin-select-outer').hide();
+											break;
+									}
 									switch ($(this).val())
 									{
 										case '0':
@@ -169,6 +209,7 @@ jQuery.noConflict();
 										case '2':
 										case '3':
 										case '4':
+										case '5':
 											$('select#field',row).closest('.kintoneplugin-select-outer').show();
 											break;
 										default:
@@ -180,11 +221,14 @@ jQuery.noConflict();
 								$('input#forecolor',row).val(vars.colors[15].replace('#',''));
 								$('span#backcolor',row).colorSelector(vars.colors,$('input#backcolor',row));
 								$('span#forecolor',row).colorSelector(vars.colors,$('input#forecolor',row));
+								if (summaryinfo.table) functions.denominatoradd(summaryinfo.table.rows);
 							},
 							delcallback:function(index){
+								functions.denominatordelete(summaryinfo.table.rows,index);
 								summaryinfo.conditions.splice(index,1);
 							}
 						});
+						functions.denominatoradd(summaryinfo.table.rows);
 						vars.views.summaryinfos.push(summaryinfo);
 					},
 					delcallback:function(index){
@@ -197,7 +241,6 @@ jQuery.noConflict();
 				if (Object.keys(config).length!==0)
 				{
 					views=JSON.parse(config['views']);
-					$('select#date').val(config['date']);
 					$('select#round').val(config['round']);
 					$('input#digit').val(config['digit']);
 					$('input#basemonth').val(config['basemonth']);
@@ -205,32 +248,49 @@ jQuery.noConflict();
 					{
 						if (index>0) vars.views.table.addrow();
 						$('select#view',vars.views.table.rows.last()).val(key.replace(/^_/g,''));
-						for (var i=0;i<views[key].length;i++)
+						$('select#date',vars.views.table.rows.last()).val(views[key].date);
+						for (var i=0;i<views[key].summaries.length;i++)
 						{
 							if (i>0) vars.views.summaryinfos[index].table.addrow();
 							row=vars.views.summaryinfos[index].table.rows.last();
-							$('select#pattern',row).val(views[key][i].pattern);
-							$('select#field',row).val(views[key][i].field);
-							$('input#caption',row).val(views[key][i].caption);
-							$('input#conditions',row).val(views[key][i].conditions);
-							functions.loadconditions(vars.views.summaryinfos[index].conditions[i],JSON.parse(views[key][i].conditions));
-							switch (views[key][i].pattern)
+							$('select#pattern',row).val(views[key].summaries[i].pattern);
+							$('select#field',row).val(views[key].summaries[i].field);
+							$('input#caption',row).val(views[key].summaries[i].caption);
+							$('input#conditions',row).val(views[key].summaries[i].conditions);
+							functions.loadconditions(vars.views.summaryinfos[index].conditions[i],JSON.parse(views[key].summaries[i].conditions));
+							switch (views[key].summaries[i].pattern)
+							{
+								case '3':
+								case '9':
+									$('select#denominator',row).closest('.kintoneplugin-select-outer').show();
+									break;
+								default:
+									$('select#denominator',row).closest('.kintoneplugin-select-outer').hide();
+									break;
+							}
+							switch (views[key].summaries[i].pattern)
 							{
 								case '0':
 								case '1':
 								case '2':
 								case '3':
 								case '4':
+								case '5':
 									$('select#field',row).closest('.kintoneplugin-select-outer').show();
 									break;
 								default:
 									$('select#field',row).closest('.kintoneplugin-select-outer').hide();
 									break;
 							}
-							$('input#backcolor',row).val(views[key][i].backcolor.replace('#',''));
-							$('input#forecolor',row).val(views[key][i].forecolor.replace('#',''));
+							$('input#backcolor',row).val(views[key].summaries[i].backcolor.replace('#',''));
+							$('input#forecolor',row).val(views[key].summaries[i].forecolor.replace('#',''));
 							$('span#backcolor',row).colorSelector(vars.colors,$('input#backcolor',row));
 							$('span#forecolor',row).colorSelector(vars.colors,$('input#forecolor',row));
+						}
+						for (var i=0;i<views[key].summaries.length;i++)
+						{
+							functions.denominatorupdate(vars.views.summaryinfos[index].table.rows,i,views[key].summaries[i].caption);
+							$('select#denominator',vars.views.summaryinfos[index].table.rows.eq(i)).val(views[key].summaries[i].denominator);
 						}
 						index++;
 					}
@@ -250,11 +310,6 @@ jQuery.noConflict();
 		var config=[];
 		var views={};
 		/* check values */
-		if ($('select#date').val()=='')
-		{
-			swal('Error!','日付フィールドを選択して下さい。','error');
-			return;
-		}
 		for (var i=0;i<vars.views.table.rows.length;i++)
 		{
 			row=vars.views.table.rows.eq(i);
@@ -262,15 +317,24 @@ jQuery.noConflict();
 			else
 			{
 				key='_'+$('select#view',row).val();
-				views[key]=[];
+				views[key]={date:'',summaries:[]};
 			}
+			if ($('select#date',row).val()=='')
+			{
+				swal('Error!','集計基準日付フィールドを選択して下さい。','error');
+				return;
+			}
+			else views[key].date=$('select#date',row).val();
 			for (var i2=0;i2<vars.views.summaryinfos[i].table.rows.length;i2++)
 			{
 				var summary={
 					pattern:'',
 					caption:'',
+					denominator:'',
 					field:'',
-					conditions:''
+					conditions:'',
+					backcolor:'',
+					forecolor:''
 				};
 				row=vars.views.summaryinfos[i].table.rows.eq(i2);
 				if (!$('select#pattern',row).val()) continue;
@@ -283,11 +347,23 @@ jQuery.noConflict();
 				else summary.caption=$('input#caption',row).val();
 				switch (summary.pattern)
 				{
+					case '3':
+					case '9':
+						if ($('select#denominator',row).val()=='')
+						{
+							swal('Error!','分母となる集計を選択して下さい。','error');
+							return;
+						}
+						break;
+				}
+				switch (summary.pattern)
+				{
 					case '0':
 					case '1':
 					case '2':
 					case '3':
 					case '4':
+					case '5':
 						if ($('select#field',row).val()=='')
 						{
 							swal('Error!','集計フィールドを選択して下さい。','error');
@@ -295,13 +371,14 @@ jQuery.noConflict();
 						}
 						break;
 				}
+				summary.denominator=$('select#denominator',row).val();
 				summary.field=$('select#field',row).val();
 				summary.conditions=($('input#conditions',row).val())?$('input#conditions',row).val():'[]';
 				summary.backcolor=$('input#backcolor',row).val();
 				summary.forecolor=$('input#forecolor',row).val();
-				views[key].push(summary);
+				views[key].summaries.push(summary);
 			}
-			if (views[key].length==0)
+			if (views[key].summaries.length==0)
 			{
 				swal('Error!','集計設定を指定して下さい。','error');
 				return;
@@ -313,7 +390,6 @@ jQuery.noConflict();
 			return;
 		}
 		/* setup config */
-		config['date']=$('select#date').val();
 		config['round']=$('select#round').val();
 		config['digit']=(($('input#digit').val().match(/^[0-9]+$/g))?$('input#digit').val():'0');
 		config['basemonth']=(($('input#basemonth').val().match(/^([1-9]{1}|1[1-2]{1})+$/g))?$('input#basemonth').val():'1');
