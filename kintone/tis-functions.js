@@ -366,7 +366,8 @@ jQuery.extend({
 				case 'USER_SELECT':
 					res.value=[];
 					$.each(fieldinfo.defaultValue,function(index,values){
-						res.value.push({code:values.code});
+						if (values.code=='LOGINUSER()') res.value.push({code:kintone.getLoginUser().code});
+						else res.value.push({code:values.code});
 					});
 					break;
 				case 'TIME':
