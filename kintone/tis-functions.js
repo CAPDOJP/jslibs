@@ -336,6 +336,7 @@ jQuery.extend({
 			case 'MULTI_SELECT':
 			case 'ORGANIZATION_SELECT':
 			case 'USER_SELECT':
+				res.value=[];
 				if (fieldinfo.type!='FILE') hasdefault=fieldinfo.defaultValue.length;
 				break;
 			case 'DATE':
