@@ -338,32 +338,32 @@ jQuery.extend({
 				if (fieldinfo.type!='FILE') hasdefault=fieldinfo.defaultValue.length;
 				break;
 		}
-		/* check required */
-		if (fieldinfo.required)
+		/* check default value */
+		if (hasdefault)
 		{
-			/* check default value */
-			if (hasdefault)
+			switch (fieldinfo.type)
 			{
-				switch (fieldinfo.type)
-				{
-					case 'CHECK_BOX':
-					case 'MULTI_SELECT':
-						res.value=fieldinfo.defaultValue;
-						break;
-					case 'GROUP_SELECT':
-					case 'ORGANIZATION_SELECT':
-					case 'USER_SELECT':
-						res.value=[];
-						$.each(fieldinfo.defaultValue,function(index,values){
-							res.value.push({code:values.code});
-						});
-						break;
-					default:
-						res.value=fieldinfo.defaultValue;
-						break;
-				}
+				case 'CHECK_BOX':
+				case 'MULTI_SELECT':
+					res.value=fieldinfo.defaultValue;
+					break;
+				case 'GROUP_SELECT':
+				case 'ORGANIZATION_SELECT':
+				case 'USER_SELECT':
+					res.value=[];
+					$.each(fieldinfo.defaultValue,function(index,values){
+						res.value.push({code:values.code});
+					});
+					break;
+				default:
+					res.value=fieldinfo.defaultValue;
+					break;
 			}
-			else
+		}
+		else
+		{
+			/* check required */
+			if (fieldinfo.required)
 			{
 				var date=new Date();
 				switch (fieldinfo.type)
