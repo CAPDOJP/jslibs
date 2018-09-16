@@ -1709,18 +1709,104 @@ var ConditionsForm=function(options){
 					var fieldinfo=my.fields[$(this).val()];
 					var fieldoptions=[];
 					var receiver=null;
+					var fixedvalue=select.clone(true).addClass('fixed').css({'width':'100px'}).on('change',function(){
+						$('.receiver',row).val($(this).val());
+						if ($(this).val()) $('.receiver',row).closest('div').hide();
+						else $('.receiver',row).closest('div').css({'display':'inline-block'});
+					});
+					var setupdatereceiver=function(row,receiver,fixedvalue){
+						$('.comp',row)
+						.append($('<option>').attr('value','0').text('等しい'))
+						.append($('<option>').attr('value','1').text('等しくない'))
+						.append($('<option>').attr('value','2').text('以前'))
+						.append($('<option>').attr('value','3').text('より前'))
+						.append($('<option>').attr('value','4').text('以降'))
+						.append($('<option>').attr('value','5').text('より後'));
+						fixedvalue
+						.append($('<option>').attr('value','').text('日付指定'))
+						.append($('<option>').attr('value','TODAY').text('今日'))
+						.append($('<option>').attr('value','LASTWEEK').text('先週'))
+						.append($('<option>').attr('value','THISWEEK').text('今週'))
+						.append($('<option>').attr('value','LASTMONTH').text('先月'))
+						.append($('<option>').attr('value','THISMONTH').text('今月'))
+						.append($('<option>').attr('value','THISYEAR').text('今年'));
+						receiver=referer.clone(true);
+						$('.label',receiver).closest('div').css({'width':'calc(100% - 100px)'});
+						$('.search',receiver).on('click',function(){
+							var target=$(this);
+							/* day pickup */
+							var calendar=$('body').calendar({
+								selected:function(cell,value){
+									$('.label',row).text(value);
+									$('.receiver',row).val(value);
+								}
+							});
+							calendar.show({activedate:new Date($('.label',row).text().dateformat())});
+						});
+						$('.clear',receiver).on('click',function(){
+							var target=$(this);
+							$('.label',row).text('');
+							$('.receiver',row).val('');
+						});
+						$('.value',row).append(fixedvalue);
+						$('.value',row).append(receiver);
+					};
+					var setupdatetimereceiver=function(row,receiver,fixedvalue){
+						$('.comp',row)
+						.append($('<option>').attr('value','0').text('等しい'))
+						.append($('<option>').attr('value','1').text('等しくない'))
+						.append($('<option>').attr('value','2').text('以前'))
+						.append($('<option>').attr('value','3').text('より前'))
+						.append($('<option>').attr('value','4').text('以降'))
+						.append($('<option>').attr('value','5').text('より後'));
+						fixedvalue
+						.append($('<option>').attr('value','').text('日付指定'))
+						.append($('<option>').attr('value','NOW').text('当時刻'))
+						.append($('<option>').attr('value','TODAY').text('今日'))
+						.append($('<option>').attr('value','LASTWEEK').text('先週'))
+						.append($('<option>').attr('value','THISWEEK').text('今週'))
+						.append($('<option>').attr('value','LASTMONTH').text('先月'))
+						.append($('<option>').attr('value','THISMONTH').text('今月'))
+						.append($('<option>').attr('value','THISYEAR').text('今年'));
+						receiver=referer.clone(true).append(time.clone(true));
+						$('.label',receiver).closest('div').css({'width':'calc(100% - 100px)'});
+						$('.label',receiver).css({'width':'calc(100% - 135px)'});
+						$('.search',receiver).on('click',function(){
+							var target=$(this);
+							/* day pickup */
+							var calendar=$('body').calendar({
+								selected:function(cell,value){
+									$('.label',row).text(value);
+									$('.receiver',row).val(my.datetimevalue(row));
+								}
+							});
+							calendar.show({activedate:new Date($('.label',row).text().dateformat())});
+						});
+						$('.clear',receiver).on('click',function(){
+							var target=$(this);
+							$('.label',row).text('');
+							$('.receiver',row).val('');
+						});
+						$('.receiverhour',receiver).on('change',function(){
+							$('.receiver',row).val(my.datetimevalue(row));
+						});
+						$('.receiverminute',receiver).on('change',function(){
+							$('.receiver',row).val(my.datetimevalue(row));
+						});
+						$('.value',row).append(fixedvalue);
+						$('.value',row).append(receiver);
+					};
 					$('.value',row).empty();
 					switch (fieldinfo.type)
 					{
 						case 'CALC':
-							$('.comp',row)
-							.append($('<option>').attr('value','0').text('等しい'))
-							.append($('<option>').attr('value','1').text('等しくない'));
 							switch(fieldinfo.format.toUpperCase())
 							{
 								case 'NUMBER':
 								case 'NUMBER_DIGIT':
 									$('.comp',row)
+									.append($('<option>').attr('value','0').text('等しい'))
+									.append($('<option>').attr('value','1').text('等しくない'))
 									.append($('<option>').attr('value','2').text('以下'))
 									.append($('<option>').attr('value','3').text('以上'));
 									receiver=textline.clone(true).addClass('receiver');
@@ -1728,66 +1814,17 @@ var ConditionsForm=function(options){
 									$('.value',row).append(receiver);
 									break;
 								case 'DATE':
-									$('.comp',row)
-									.append($('<option>').attr('value','2').text('以前'))
-									.append($('<option>').attr('value','3').text('より前'))
-									.append($('<option>').attr('value','4').text('以降'))
-									.append($('<option>').attr('value','5').text('より後'));
-									receiver=referer.clone(true);
-									$('.search',receiver).on('click',function(){
-										var target=$(this);
-										/* day pickup */
-										var calendar=$('body').calendar({
-											selected:function(cell,value){
-												$('.label',container).text(value);
-												$('.receiver',container).val(value);
-											}
-										});
-										calendar.show({activedate:new Date($('.label',container).text().dateformat())});
-									});
-									$('.clear',receiver).on('click',function(){
-										var target=$(this);
-										$('.label',container).text('');
-										$('.receiver',container).val('');
-									});
-									$('.value',row).append(receiver);
+									setupdatereceiver(row,receiver,fixedvalue);
 									break;
 								case 'DATETIME':
 								case 'DAY_HOUR_MINUTE':
-									$('.comp',row)
-									.append($('<option>').attr('value','2').text('以前'))
-									.append($('<option>').attr('value','3').text('より前'))
-									.append($('<option>').attr('value','4').text('以降'))
-									.append($('<option>').attr('value','5').text('より後'));
-									receiver=referer.clone(true).append(time.clone(true));
-									$('.label',receiver).css({'width':'calc(100% - 150px)'});
-									$('.search',receiver).on('click',function(){
-										var target=$(this);
-										/* day pickup */
-										var calendar=$('body').calendar({
-											selected:function(cell,value){
-												$('.label',container).text(value);
-												$('.receiver',container).val(my.datetimevalue(container));
-											}
-										});
-										calendar.show({activedate:new Date($('.label',container).text().dateformat())});
-									});
-									$('.clear',receiver).on('click',function(){
-										var target=$(this);
-										$('.label',container).text('');
-										$('.receiver',container).val('');
-									});
-									$('.receiverhour',receiver).on('change',function(){
-										$('.receiver',container).val(my.datetimevalue(container));
-									});
-									$('.receiverminute',receiver).on('change',function(){
-										$('.receiver',container).val(my.datetimevalue(container));
-									});
-									$('.value',row).append(receiver);
+									setupdatetimereceiver(row,receiver,fixedvalue);
 									break;
 								case 'TIME':
 								case 'HOUR_MINUTE':
 									$('.comp',row)
+									.append($('<option>').attr('value','0').text('等しい'))
+									.append($('<option>').attr('value','1').text('等しくない'))
 									.append($('<option>').attr('value','2').text('以前'))
 									.append($('<option>').attr('value','3').text('より前'))
 									.append($('<option>').attr('value','4').text('以降'))
@@ -1795,10 +1832,10 @@ var ConditionsForm=function(options){
 									receiver=time.clone(true);
 									receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
 									$('.receiverhour',receiver).on('change',function(){
-										$('.receiver',container).val(my.timevalue(container));
+										$('.receiver',row).val(my.timevalue(row));
 									});
 									$('.receiverminute',receiver).on('change',function(){
-										$('.receiver',container).val(my.timevalue(container));
+										$('.receiver',row).val(my.timevalue(row));
 									});
 									$('.value',row).append(receiver);
 									break;
@@ -1826,38 +1863,7 @@ var ConditionsForm=function(options){
 						case 'CREATED_TIME':
 						case 'DATETIME':
 						case 'UPDATED_TIME':
-							$('.comp',row)
-							.append($('<option>').attr('value','0').text('等しい'))
-							.append($('<option>').attr('value','1').text('等しくない'))
-							.append($('<option>').attr('value','2').text('以前'))
-							.append($('<option>').attr('value','3').text('より前'))
-							.append($('<option>').attr('value','4').text('以降'))
-							.append($('<option>').attr('value','5').text('より後'));
-							receiver=referer.clone(true).append(time.clone(true));
-							$('.label',receiver).css({'width':'calc(100% - 150px)'});
-							$('.search',receiver).on('click',function(){
-								var target=$(this);
-								/* day pickup */
-								var calendar=$('body').calendar({
-									selected:function(cell,value){
-										$('.label',container).text(value);
-										$('.receiver',container).val(my.datetimevalue(container));
-									}
-								});
-								calendar.show({activedate:new Date($('.label',container).text().dateformat())});
-							});
-							$('.clear',receiver).on('click',function(){
-								var target=$(this);
-								$('.label',container).text('');
-								$('.receiver',container).val('');
-							});
-							$('.receiverhour',receiver).on('change',function(){
-								$('.receiver',container).val(my.datetimevalue(container));
-							});
-							$('.receiverminute',receiver).on('change',function(){
-								$('.receiver',container).val(my.datetimevalue(container));
-							});
-							$('.value',row).append(receiver);
+							setupdatetimereceiver(row,receiver,fixedvalue);
 							break;
 						case 'CREATOR':
 						case 'MODIFIER':
@@ -1888,8 +1894,8 @@ var ConditionsForm=function(options){
 									datasource:my.usersource,
 									buttons:{
 										ok:function(selection){
-											$('.label',container).text(Object.values(selection).join(','));
-											$('.receiver',container).val(Object.keys(selection).join(','));
+											$('.label',row).text(Object.values(selection).join(','));
+											$('.receiver',row).val(Object.keys(selection).join(','));
 											/* close the selectbox */
 											my.selectbox.hide();
 										},
@@ -1898,42 +1904,18 @@ var ConditionsForm=function(options){
 											my.selectbox.hide();
 										}
 									},
-									selected:$('.receiver',container).val().split(',')
+									selected:$('.receiver',row).val().split(',')
 								});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								$('.label',container).text('');
-								$('.receiver',container).val('');
+								$('.label',row).text('');
+								$('.receiver',row).val('');
 							});
 							$('.value',row).append(receiver);
 							break;
 						case 'DATE':
-							$('.comp',row)
-							.append($('<option>').attr('value','0').text('等しい'))
-							.append($('<option>').attr('value','1').text('等しくない'))
-							.append($('<option>').attr('value','2').text('以前'))
-							.append($('<option>').attr('value','3').text('より前'))
-							.append($('<option>').attr('value','4').text('以降'))
-							.append($('<option>').attr('value','5').text('より後'));
-							receiver=referer.clone(true);
-							$('.search',receiver).on('click',function(){
-								var target=$(this);
-								/* day pickup */
-								var calendar=$('body').calendar({
-									selected:function(cell,value){
-										$('.label',container).text(value);
-										$('.receiver',container).val(value);
-									}
-								});
-								calendar.show({activedate:new Date($('.label',container).text().dateformat())});
-							});
-							$('.clear',receiver).on('click',function(){
-								var target=$(this);
-								$('.label',container).text('');
-								$('.receiver',container).val('');
-							});
-							$('.value',row).append(receiver);
+							setupdatereceiver(row,receiver,fixedvalue);
 							break;
 						case 'GROUP_SELECT':
 							$('.comp',row)
@@ -1961,8 +1943,8 @@ var ConditionsForm=function(options){
 									datasource:my.groupsource,
 									buttons:{
 										ok:function(selection){
-											$('.label',container).text(Object.values(selection).join(','));
-											$('.receiver',container).val(Object.keys(selection).join(','));
+											$('.label',row).text(Object.values(selection).join(','));
+											$('.receiver',row).val(Object.keys(selection).join(','));
 											/* close the selectbox */
 											my.selectbox.hide();
 										},
@@ -1971,13 +1953,13 @@ var ConditionsForm=function(options){
 											my.selectbox.hide();
 										}
 									},
-									selected:$('.receiver',container).val().split(',')
+									selected:$('.receiver',row).val().split(',')
 								});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								$('.label',container).text('');
-								$('.receiver',container).val('');
+								$('.label',row).text('');
+								$('.receiver',row).val('');
 							});
 							$('.value',row).append(receiver);
 							break;
@@ -1999,11 +1981,11 @@ var ConditionsForm=function(options){
 								else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 								$('.search',receiver).on('click',function(){
 									var target=$(this);
-									my.referer[$('.field',container).val()].show({
+									my.referer[$('.field',row).val()].show({
 										buttons:{
 											cancel:function(){
 												/* close the reference box */
-												my.referer[$('.field',container).val()].hide();
+												my.referer[$('.field',row).val()].hide();
 											}
 										},
 										callback:function(row){
@@ -2019,8 +2001,8 @@ var ConditionsForm=function(options){
 								});
 								$('.clear',receiver).on('click',function(){
 									var target=$(this);
-									$('.label',container).text('');
-									$('.receiver',container).val('');
+									$('.label',row).text('');
+									$('.receiver',row).val('');
 								});
 							}
 							else receiver=textline.clone(true).addClass('receiver');
@@ -2052,11 +2034,11 @@ var ConditionsForm=function(options){
 								else $('.picker',receiver).val(fieldinfo.lookup.relatedKeyField);
 								$('.search',receiver).on('click',function(){
 									var target=$(this);
-									my.referer[$('.field',container).val()].show({
+									my.referer[$('.field',row).val()].show({
 										buttons:{
 											cancel:function(){
 												/* close the reference box */
-												my.referer[$('.field',container).val()].hide();
+												my.referer[$('.field',row).val()].hide();
 											}
 										},
 										callback:function(row){
@@ -2072,8 +2054,8 @@ var ConditionsForm=function(options){
 								});
 								$('.clear',receiver).on('click',function(){
 									var target=$(this);
-									$('.label',container).text('');
-									$('.receiver',container).val('');
+									$('.label',row).text('');
+									$('.receiver',row).val('');
 								});
 							}
 							else
@@ -2109,8 +2091,8 @@ var ConditionsForm=function(options){
 									datasource:my.organizationsource,
 									buttons:{
 										ok:function(selection){
-											$('.label',container).text(Object.values(selection).join(','));
-											$('.receiver',container).val(Object.keys(selection).join(','));
+											$('.label',row).text(Object.values(selection).join(','));
+											$('.receiver',row).val(Object.keys(selection).join(','));
 											/* close the selectbox */
 											my.selectbox.hide();
 										},
@@ -2119,13 +2101,13 @@ var ConditionsForm=function(options){
 											my.selectbox.hide();
 										}
 									},
-									selected:$('.receiver',container).val().split(',')
+									selected:$('.receiver',row).val().split(',')
 								});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								$('.label',container).text('');
-								$('.receiver',container).val('');
+								$('.label',row).text('');
+								$('.receiver',row).val('');
 							});
 							$('.value',row).append(receiver);
 							break;
@@ -2151,8 +2133,8 @@ var ConditionsForm=function(options){
 									datasource:my.statussource,
 									buttons:{
 										ok:function(selection){
-											$('.label',container).text(Object.values(selection).join(','));
-											$('.receiver',container).val(Object.keys(selection).join(','));
+											$('.label',row).text(Object.values(selection).join(','));
+											$('.receiver',row).val(Object.keys(selection).join(','));
 											/* close the selectbox */
 											my.selectbox.hide();
 										},
@@ -2161,13 +2143,13 @@ var ConditionsForm=function(options){
 											my.selectbox.hide();
 										}
 									},
-									selected:$('.receiver',container).val().split(',')
+									selected:$('.receiver',row).val().split(',')
 								});
 							});
 							$('.clear',receiver).on('click',function(){
 								var target=$(this);
-								$('.label',container).text('');
-								$('.receiver',container).val('');
+								$('.label',row).text('');
+								$('.receiver',row).val('');
 							});
 							$('.value',row).append(receiver);
 							break;
@@ -2182,10 +2164,10 @@ var ConditionsForm=function(options){
 							receiver=time.clone(true);
 							receiver.append($('<input type="hidden" class="receiver">').val('00:00'))
 							$('.receiverhour',receiver).on('change',function(){
-								$('.receiver',container).val(my.timevalue(container));
+								$('.receiver',row).val(my.timevalue(row));
 							});
 							$('.receiverminute',receiver).on('change',function(){
-								$('.receiver',container).val(my.timevalue(container));
+								$('.receiver',row).val(my.timevalue(row));
 							});
 							$('.value',row).append(receiver);
 							break;
@@ -2287,12 +2269,24 @@ ConditionsForm.prototype={
 								}
 								break;
 						}
-						res.push({
-							field:$('.field',row).val(),
-							comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
-							label:receivevalue,
-							value:receivevalue
-						});
+						if ($('.fixed',row).size())
+						{
+							res.push({
+								field:$('.field',row).val(),
+								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
+								label:($('.fixed',row).val())?$('.fixed option:selected',row).text():receivevalue,
+								value:receivevalue
+							});
+						}
+						else
+						{
+							res.push({
+								field:$('.field',row).val(),
+								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
+								label:receivevalue,
+								value:receivevalue
+							});
+						}
 						break;
 					case 'CHECK_BOX':
 					case 'DROP_DOWN':
@@ -2363,12 +2357,24 @@ ConditionsForm.prototype={
 						}
 						else
 						{
-							res.push({
-								field:$('.field',row).val(),
-								comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
-								label:receivevalue,
-								value:receivevalue
-							});
+							if ($('.fixed',row).size())
+							{
+								res.push({
+									field:$('.field',row).val(),
+									comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
+									label:($('.fixed',row).val())?$('.fixed option:selected',row).text():receivevalue,
+									value:receivevalue
+								});
+							}
+							else
+							{
+								res.push({
+									field:$('.field',row).val(),
+									comp:{code:$('.comp',row).val(),name:$('.comp option:selected',row).text()},
+									label:receivevalue,
+									value:receivevalue
+								});
+							}
 						}
 						break;
 				}
@@ -2381,6 +2387,49 @@ ConditionsForm.prototype={
 		{
 			var condition=options.conditions[i];
 			var fieldinfo=options.fieldinfos[condition.field];
+			var setupdatevalue=function(row,condition){
+				switch (condition.value)
+				{
+					case 'TODAY':
+					case 'LASTWEEK':
+					case 'THISWEEK':
+					case 'LASTMONTH':
+					case 'THISMONTH':
+					case 'THISYEAR':
+						$('.fixed',row).val(condition.value);
+						$('.receiver',row).val(condition.value);
+						$('.receiver',row).closest('div').hide();
+						break;
+					default:
+						$('.label',row).text(condition.value);
+						$('.receiver',row).val(condition.value);
+						$('.receiver',row).closest('div').css({'display':'inline-block'});
+						break;
+				}
+			};
+			var setupdatetimevalue=function(row,condition){
+				switch (condition.value)
+				{
+					case 'NOW':
+					case 'TODAY':
+					case 'LASTWEEK':
+					case 'THISWEEK':
+					case 'LASTMONTH':
+					case 'THISMONTH':
+					case 'THISYEAR':
+						$('.fixed',row).val(condition.value);
+						$('.receiver',row).val(condition.value);
+						$('.receiver',row).closest('div').hide();
+						break;
+					default:
+						$('.label',row).text(new Date(condition.value.dateformat()).format('Y-m-d'));
+						$('.receiver',row).val(condition.value);
+						$('.receiverhour',row).val(new Date(condition.value.dateformat()).format('H'));
+						$('.receiverminute',row).val(new Date(condition.value.dateformat()).format('i'));
+						$('.receiver',row).closest('div').css({'display':'inline-block'});
+						break;
+				}
+			};
 			this.conditiontable.addrow();
 			row=this.conditiontable.rows.last();
 			$('.field',row).val(condition.field).trigger('change');
@@ -2400,11 +2449,7 @@ ConditionsForm.prototype={
 							$('.label',row).text('');
 							$('.receiver',row).val('');
 							/* initialize value */
-							if (condition.value)
-							{
-								$('.label',row).text(condition.value);
-								$('.receiver',row).val(condition.value);
-							}
+							if (condition.value) setupdatevalue(row,condition);
 							break;
 						case 'DATETIME':
 						case 'DAY_HOUR_MINUTE':
@@ -2414,13 +2459,7 @@ ConditionsForm.prototype={
 							$('.receiverhour',row).val('00');
 							$('.receiverminute',row).val('00');
 							/* initialize value */
-							if (condition.value)
-							{
-								$('.label',row).text(new Date(condition.value.dateformat()).format('Y-m-d'));
-								$('.receiver',row).val(condition.value);
-								$('.receiverhour',row).val(new Date(condition.value.dateformat()).format('H'));
-								$('.receiverminute',row).val(new Date(condition.value.dateformat()).format('i'));
-							}
+							if (condition.value) setupdatetimevalue(row,condition);
 							break;
 						case 'TIME':
 						case 'HOUR_MINUTE':
@@ -2458,13 +2497,7 @@ ConditionsForm.prototype={
 					$('.receiverhour',row).val('00');
 					$('.receiverminute',row).val('00');
 					/* initialize value */
-					if (condition.value)
-					{
-						$('.label',row).text(new Date(condition.value.dateformat()).format('Y-m-d'));
-						$('.receiver',row).val(condition.value);
-						$('.receiverhour',row).val(new Date(condition.value.dateformat()).format('H'));
-						$('.receiverminute',row).val(new Date(condition.value.dateformat()).format('i'));
-					}
+					if (condition.value) setupdatetimevalue(row,condition);
 					break;
 				case 'CREATOR':
 				case 'GROUP_SELECT':
@@ -2490,11 +2523,7 @@ ConditionsForm.prototype={
 					$('.label',row).text('');
 					$('.receiver',row).val('');
 					/* initialize value */
-					if (condition.value)
-					{
-						$('.label',row).text(condition.value);
-						$('.receiver',row).val(condition.value);
-					}
+					if (condition.value) setupdatevalue(row,condition);
 					break;
 				case 'TIME':
 					/* clear value */
@@ -2547,6 +2576,99 @@ jQuery.extend({
 		var res=$.extend(true,{},record);
 		var ismatch=function(value,condition,fieldinfo){
 			var match=true;
+			var isdatematch=function(value,condition,isdatetime){
+				var res=true;
+				var firstday=new Date();
+				var lastday=new Date();
+				switch (condition.value)
+				{
+					case 'NOW':
+						firstday=new Date();
+						lastday=new Date();
+						break;
+					case 'TODAY':
+						firstday=new Date(new Date().format('Y-m-d')+'T00:00:00+0900');
+						lastday=new Date(new Date().format('Y-m-d')+'T23:59:59+0900');
+						break;
+					case 'LASTWEEK':
+						firstday=new Date(new Date().calc('first-of-week').calc('-7 day').format('Y-m-d')+'T00:00:00+0900');
+						lastday=new Date(new Date().calc('first-of-week').calc('-1 day').format('Y-m-d')+'T23:59:59+0900');
+						break;
+					case 'THISWEEK':
+						firstday=new Date(new Date().calc('first-of-week').format('Y-m-d')+'T00:00:00+0900');
+						lastday=new Date(new Date().calc('first-of-week').calc('6 day').format('Y-m-d')+'T23:59:59+0900');
+						break;
+					case 'LASTMONTH':
+						firstday=new Date(new Date().calc('first-of-month').calc('-1 month').format('Y-m-d')+'T00:00:00+0900');
+						lastday=new Date(new Date().calc('first-of-month').calc('-1 day').format('Y-m-d')+'T23:59:59+0900');
+						break;
+					case 'THISMONTH':
+						firstday=new Date(new Date().calc('first-of-month').format('Y-m-d')+'T00:00:00+0900');
+						lastday=new Date(new Date().calc('first-of-month').calc('1 month').calc('-1 day').format('Y-m-d')+'T23:59:59+0900');
+						break;
+					case 'THISYEAR':
+						firstday=new Date(new Date().calc('first-of-year').format('Y-m-d')+'T00:00:00+0900');
+						lastday=new Date(new Date().calc('first-of-year').calc('1 year').calc('-1 day').format('Y-m-d')+'T23:59:59+0900');
+						break;
+					default:
+						firstday=new Date(condition.value);
+						lastday=new Date(condition.value);
+						break;
+				}
+				switch (condition.comp.code)
+				{
+					case '0':
+						if (!value)
+						{
+							if (condition.value) res=false;
+						}
+						else
+						{
+							if (new Date(value.dateformat())<firstday) res=false;
+							if (new Date(value.dateformat())>lastday) res=false;
+						}
+						break;
+					case '1':
+						if (!value)
+						{
+							if (!condition.value) res=false;
+						}
+						else
+						{
+							if (new Date(value.dateformat())>=firstday && new Date(value.dateformat())<=lastday) res=false;
+						}
+						break;
+					case '2':
+						if (!value) res=false;
+						else
+						{
+							if (new Date(value.dateformat())>lastday) res=false;
+						}
+						break;
+					case '3':
+						if (!value) res=false;
+						else
+						{
+							if (new Date(value.dateformat())>=firstday) res=false;
+						}
+						break;
+					case '4':
+						if (!value) res=false;
+						else
+						{
+							if (new Date(value.dateformat())<firstday) res=false;
+						}
+						break;
+					case '5':
+						if (!value) res=false;
+						else
+						{
+							if (new Date(value.dateformat())<=lastday) res=false;
+						}
+						break;
+				}
+				return res;
+			};
 			switch (fieldinfo.type)
 			{
 				case 'CALC':
@@ -2583,45 +2705,7 @@ jQuery.extend({
 						case 'DATE':
 						case 'DATETIME':
 						case 'DAY_HOUR_MINUTE':
-							switch (condition.comp.code)
-							{
-								case '0':
-									if (!value) value='';
-									if (value.dateformat()!=condition.value.dateformat()) match=false;
-									break;
-								case '1':
-									if (!value) value='';
-									if (value.dateformat()==condition.value.dateformat()) match=false;
-									break;
-								case '2':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(value.dateformat())>new Date(condition.value)) match=false;
-									}
-									break;
-								case '3':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
-									}
-									break;
-								case '4':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(value.dateformat())<new Date(condition.value)) match=false;
-									}
-									break;
-								case '5':
-									if (!value) match=false;
-									else
-									{
-										if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
-									}
-									break;
-							}
+							match=isdatematch(value,condition,(fieldinfo.format.toUpperCase()!='DATE'));
 							break;
 						case 'HOUR_MINUTE':
 						case 'TIME':
@@ -2700,45 +2784,7 @@ jQuery.extend({
 				case 'DATE':
 				case 'DATETIME':
 				case 'UPDATED_TIME':
-					switch (condition.comp.code)
-					{
-						case '0':
-							if (!value) value='';
-							if (value.dateformat()!=condition.value.dateformat()) match=false;
-							break;
-						case '1':
-							if (!value) value='';
-							if (value.dateformat()==condition.value.dateformat()) match=false;
-							break;
-						case '2':
-							if (!value) match=false;
-							else
-							{
-								if (new Date(value.dateformat())>new Date(condition.value)) match=false;
-							}
-							break;
-						case '3':
-							if (!value) match=false;
-							else
-							{
-								if (new Date(value.dateformat())>=new Date(condition.value)) match=false;
-							}
-							break;
-						case '4':
-							if (!value) match=false;
-							else
-							{
-								if (new Date(value.dateformat())<new Date(condition.value)) match=false;
-							}
-							break;
-						case '5':
-							if (!value) match=false;
-							else
-							{
-								if (new Date(value.dateformat())<=new Date(condition.value)) match=false;
-							}
-							break;
-					}
+					match=isdatematch(value,condition,(fieldinfo.type!='DATE'));
 					break;
 				case 'GROUP_SELECT':
 				case 'ORGANIZATION_SELECT':
