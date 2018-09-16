@@ -52,6 +52,8 @@ Date.prototype.calc=function(pattern){
 	if (pattern.match(/^first-of-year$/g)!=null) {month=1;day=1};
 	//first day of month
 	if (pattern.match(/^first-of-month$/g)!=null) day=1;
+	//first day of week
+	if (pattern.match(/^first-of-week$/g)!=null) day-=this.getDay();
 	if (month<1){year--;month=12;}
 	if (month>12){year++;month=1;}
 	return new Date(year,(month-1),day);

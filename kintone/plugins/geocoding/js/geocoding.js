@@ -21,6 +21,7 @@ jQuery.noConflict();
 		latlngmap:null,
 		map:null,
 		config:{},
+		fieldinfos:{},
 		events:[],
 		markers:[]
 	};
@@ -80,92 +81,102 @@ jQuery.noConflict();
 			if ('excludeview' in vars.config)
 				if ($.inArray(event.viewId.toString(),JSON.parse(vars.config['excludeview']))>-1) return event;
 		}
-		/* initialize valiable */
-		vars.markers=[];
-		/* create currentlocation checkbox */
-		vars.currentlocation=$('<label class="customview-checkbox">')
-		.append($('<input type="checkbox" id="currentlocation">')
-			.on('change',function(e){
-				if ($(this).prop('checked'))
-				{
-					vars.map.currentlocation({callback:function(latlng){
-						var markers=$.extend(true,[],vars.markers);
-						/* start from current location */
-						markers.unshift({
-							colors:0,
-							label:'現在地',
-							lat:latlng.lat(),
-							lng:latlng.lng(),
-							serialnumber:false
-						});
-						/* display map */
-						vars.map.reloadmap({markers:markers,isopeninfowindow:$('#infowindow').prop('checked')});
-					}});
-				}
-				else
-				{
-					/* display map */
-					vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
-				}
-			})
-		)
-		.append($('<span>現在地を表示</span>'));
-		/* create informationwindow checkbox */
-		vars.infowindow=$('<label class="customview-checkbox">')
-		.append($('<input type="checkbox" id="infowindow">')
-			.on('change',function(e){
-				if ($(this).prop('checked')) vars.map.openinfowindow();
-				else vars.map.closeinfowindow();
-			})
-		)
-		.append($('<span>情報ウインドウを表示</span>'));
-		/* create map controller */
-		var mapcontainer=$('<div id="map">').css({'height':vars.config['mapheight']+'vh','width':'100%'});
-		var isreload=(vars.map!=null);
-		vars.map=mapcontainer.routemap(vars.config['apikey'],false,false,function(){
-			/* create map */
-			$.each(event.records,function(index,values){
-				var record=values
-				var lat=parseFloat('0'+record[vars.config['lat']].value);
-				var lng=parseFloat('0'+record[vars.config['lng']].value);
-				var informations=JSON.parse(vars.config['information']);
-				var label='';
-				if (lat+lng!=0)
-				{
-					label='';
-					if (informations.length==0) label+=record[vars.config['address']].value;
+		/* get fields of app */
+		kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:kintone.app.getId()},function(resp){
+			vars.fieldinfos=$.fieldparallelize(resp.properties);
+			/* initialize valiable */
+			vars.markers=[];
+			/* create currentlocation checkbox */
+			vars.currentlocation=$('<label class="customview-checkbox">')
+			.append($('<input type="checkbox" id="currentlocation">')
+				.on('change',function(e){
+					if ($(this).prop('checked'))
+					{
+						vars.map.currentlocation({callback:function(latlng){
+							var markers=$.extend(true,[],vars.markers);
+							/* start from current location */
+							markers.unshift({
+								colors:0,
+								label:'現在地',
+								lat:latlng.lat(),
+								lng:latlng.lng(),
+								serialnumber:false
+							});
+							/* display map */
+							vars.map.reloadmap({markers:markers,isopeninfowindow:$('#infowindow').prop('checked')});
+						}});
+					}
 					else
 					{
-						for (var i=0;i<informations.length;i++) label+=record[informations[i]].value+'<br>';
-						label=label.replace(/\<br\>$/g,'');
+						/* display map */
+						vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
 					}
-					label+='<br><a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
-					vars.markers.push({
-						colors:vars.config['color'],
-						label:label,
-						lat:lat,
-						lng:lng
-					});
-				}
+				})
+			)
+			.append($('<span>現在地を表示</span>'));
+			/* create informationwindow checkbox */
+			vars.infowindow=$('<label class="customview-checkbox">')
+			.append($('<input type="checkbox" id="infowindow">')
+				.on('change',function(e){
+					if ($(this).prop('checked')) vars.map.openinfowindow();
+					else vars.map.closeinfowindow();
+				})
+			)
+			.append($('<span>情報ウインドウを表示</span>'));
+			/* create map controller */
+			var mapcontainer=$('<div id="map">').css({'height':vars.config['mapheight']+'vh','width':'100%'});
+			var isreload=(vars.map!=null);
+			var colors=('colors' in vars.config)?JSON.parse(vars.config['colors']):[];
+			vars.map=mapcontainer.routemap(vars.config['apikey'],false,false,function(){
+				/* create map */
+				$.each(event.records,function(index,values){
+					var record=values
+					var lat=parseFloat('0'+record[vars.config['lat']].value);
+					var lng=parseFloat('0'+record[vars.config['lng']].value);
+					var informations=JSON.parse(vars.config['information']);
+					var color='0';
+					var label='';
+					if (lat+lng!=0)
+					{
+						for (var i=0;i<colors.length;i++)
+						{
+							var match=$.conditionsmatch(record,vars.fieldinfos,JSON.parse(colors[i].conditions));
+							if (match) color=colors[i].color;
+						}
+						if (informations.length==0) label+=record[vars.config['address']].value;
+						else
+						{
+							for (var i=0;i<informations.length;i++) label+=record[informations[i]].value+'<br>';
+							label=label.replace(/\<br\>$/g,'');
+						}
+						label+='<br><a href="'+kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+record['$id'].value+'" target="_blank">詳細画面へ</a>';
+						vars.markers.push({
+							colors:color,
+							label:label,
+							lat:lat,
+							lng:lng
+						});
+					}
+				});
+				if (vars.markers.length==0) return;
+				/* display map */
+				vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
+			},
+			isreload,
+			function(results,latlng){
+				if (vars.config['usegeocoder']!='1') return;
+				var query='';
+				query+=vars.config['address']+'='+results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
+				query+='&'+vars.config['lat']+'='+latlng.lat();
+				query+='&'+vars.config['lng']+'='+latlng.lng();
+				window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
 			});
-			if (vars.markers.length==0) return;
-			/* display map */
-			vars.map.reloadmap({markers:vars.markers,isopeninfowindow:$('#infowindow').prop('checked')});
-		},
-		isreload,
-		function(results,latlng){
-			if (vars.config['usegeocoder']!='1') return;
-			var query='';
-			query+=vars.config['address']+'='+results.formatted_address.replace(/日本(,|、)[ ]*〒[0-9]{3}-[0-9]{4}[ ]*/g,'');
-			query+='&'+vars.config['lat']+'='+latlng.lat();
-			query+='&'+vars.config['lng']+'='+latlng.lng();
-			window.location.href=kintone.api.url('/k/', true).replace(/\.json/g,'')+kintone.app.getId()+'/edit?'+query;
-		});
-		/* append elements */
-		if ($('.customview-checkbox').size()) $('.customview-checkbox').remove();
-		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
-		kintone.app.getHeaderMenuSpaceElement().appendChild(vars.infowindow[0]);
-		if (!isreload) kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
+			/* append elements */
+			if ($('.customview-checkbox').size()) $('.customview-checkbox').remove();
+			kintone.app.getHeaderMenuSpaceElement().appendChild(vars.currentlocation[0]);
+			kintone.app.getHeaderMenuSpaceElement().appendChild(vars.infowindow[0]);
+			if (!isreload) kintone.app.getHeaderSpaceElement().appendChild(mapcontainer[0]);
+		},function(error){swal('Error!',error.message,'error');});
 		return event;
 	});
 	kintone.events.on(events.show,function(event){

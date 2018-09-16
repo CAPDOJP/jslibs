@@ -59,9 +59,57 @@
 		<span class="kintoneplugin-unit">%</span>
 	</div>
 	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">マーカー色<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">一覧地図に表示するマーカー色を選択して下さい。</div>
+		<table class="kintoneplugin-table colors">
+			<thead>
+				<tr>
+					<th>色</th>
+					<th colspan="2">条件</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<span id="color" class="kintoneplugin-unit color">&nbsp;</span>
+						<input type="hidden" id="color" value="">
+					</td>
+					<td>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png" class="search" alt="条件を追加" title="条件を追加">
+						</div>
+					</td>
+					<td>
+						<table class="kintoneplugin-table inner">
+							<tbody>
+								<tr>
+									<td class="field"></td>
+									<td class="comp"></td>
+									<td class="value"></td>
+								</tr>
+							</tbody>
+						</table>
+						<input type="hidden" id="conditions">
+					</td>
+					<td>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-caution">条件合致の優先順位は下段の方が高くなります。</div>
+		<div class="kintoneplugin-caution">条件を指定しない行については、すべてのマーカーが指定した色で表示されます。</div>
+	</div>
+	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">除外一覧</div>
 		<div class="kintoneplugin-desc">地図を表示しない一覧があれば、その一覧をリストより選択して下さい。</div>
-		<table class="excludeviews">
+		<table class="kintoneplugin-table excludeviews">
 			<tbody>
 				<tr>
 					<td>
@@ -73,8 +121,12 @@
 							</div>
 						</div>
 					</td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+					<td>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+						</div>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -82,7 +134,7 @@
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">表示フィールド</div>
 		<div class="kintoneplugin-desc">各マーカーの情報ウインドウに表示するフィールドを選択して下さい。【文字列(1行)フィールド】<br>指定がない場合は住所入力フィールドで指定したフィールドが表示されます。</div>
-		<table class="informations">
+		<table class="kintoneplugin-table informations">
 			<tbody>
 				<tr>
 					<td>
@@ -94,17 +146,15 @@
 							</div>
 						</div>
 					</td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加"></td>
-					<td class="button"><img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除"></td>
+					<td>
+						<div class="buttons">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/add.png" class="add" alt="+" title="追加">
+							<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png" class="del" alt="x" title="削除">
+						</div>
+					</td>
 				</tr>
 			</tbody>
 		</table>
-	</div>
-	<div class="kintoneplugin-row">
-		<div class="kintoneplugin-label">マーカー色<span class="kintoneplugin-require">*</span></div>
-		<div class="kintoneplugin-desc">一覧地図に表示するマーカー色を選択して下さい。</div>
-		<span id="color" class="kintoneplugin-unit color">&nbsp;</span>
-		<input type="hidden" id="color" value="">
 	</div>
 	<div class="kintoneplugin-row">
 		<div class="kintoneplugin-label">位置情報取得</div>

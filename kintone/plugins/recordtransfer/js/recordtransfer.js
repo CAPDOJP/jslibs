@@ -212,19 +212,23 @@ jQuery.noConflict();
 													if (!values.expression)
 														if ($.inArray(values.code,mappings)<0)
 														{
+															var res=$.fielddefault(values);
+															body.record[values.code]={value:res.value};
 															if (values.code in vars.fieldinfos)
-																if (values.type==vars.fieldinfos[values.code].type)
-																{
-																	body.record[values.code]={value:null}
-																	functions.setupvalue(event.record[values.code],body.record[values.code],files);
-																}
+																if (values.type==vars.fieldinfos[values.code].type)	functions.setupvalue(event.record[values.code],body.record[values.code],files);
 															for (var i2=0;i2<app.fields.length;i2++)
 															{
 																var field=app.fields[i2];
-																if (field.to==values.code)
+																if (field.to==values.code) functions.setupvalue(event.record[field.from],body.record[values.code],files);
+															}
+															if (res.error)
+															{
+																var value=(body.record[values.code].value)?body.record[values.code].value:null;
+																if (!value) value='';
+																if (value.length==0)
 																{
-																	body.record[field.to]={value:null};
-																	functions.setupvalue(event.record[field.from],body.record[field.to],files);
+																	swal('Error!',res.error,'error');
+																	error=true;
 																}
 															}
 														}
