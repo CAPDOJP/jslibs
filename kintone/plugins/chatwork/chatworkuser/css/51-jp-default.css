@@ -532,12 +532,3 @@
 .kintoneplugin-table tbody > tr:nth-of-type(even){
   background-color:#fffcf2;
 }
-
-
-/* Custom */
-.kintoneplugin-table.inner{
-  margin-top:6px;
-}
-.kintoneplugin-table.inner tr{
-  background-color:transparent;
-}

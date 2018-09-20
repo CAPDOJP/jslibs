@@ -1,0 +1,48 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone チャットワーク連携プラグイン【ユーザー情報取得編】",
+        "en":"kintone ChatWork User plug-in",
+        "zh":"kintone チャットワーク連携プラグイン【ユーザー情報取得編】"
+    },
+    "description":{
+        "ja":"チャットワークのコンタクト一覧からユーザー情報を取得し、関連メッセージを一覧表示するプラグインです。",
+        "en":"This plug-in acquires user information from the contact list of chatwork and displays a list of related messages.",
+        "zh":"チャットワークのコンタクト一覧からユーザー情報を取得し、関連メッセージを一覧表示するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-calendar.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-referer.js",
+			"https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/chatworkuser.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

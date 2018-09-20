@@ -57,7 +57,7 @@ jQuery.noConflict();
 							text:'コピーしました。',
 							type:'success'
 						},function(){
-							window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+app.app);
+							window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+app.app+'/');
 						});
 					}
 				};

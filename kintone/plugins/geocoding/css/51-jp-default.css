@@ -506,12 +506,16 @@
   vertical-align:top;
   width:28px;
 }
-.kintoneplugin-table td select{
-  margin:2px 0px;
-}
 .kintoneplugin-table td input{
   margin:2px 0px;
   min-width: 5em;
+}
+.kintoneplugin-table td select{
+  margin:2px 0px;
+}
+.kintoneplugin-table td span.caption{
+  display:inline-block;
+  line-height:28px;
 }
 .kintoneplugin-table th{
   text-align:center;
