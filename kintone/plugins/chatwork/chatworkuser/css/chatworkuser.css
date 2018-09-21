@@ -1,0 +1,44 @@
+.table-chatworkuser{
+  margin:0.5em 0px;
+}
+.table-chatworkuser td{
+  border-bottom:1px solid #e3e7e8;
+  padding:0px;
+  vertical-align:top;
+}
+.table-chatworkuser th{
+  padding:0px 0.5em;
+  text-align:center;
+}
+.table-chatworkuser img{
+  cursor:pointer;
+  display:inline-block;
+  height:2em;
+  width:2em;
+}
+.table-chatworkuser span{
+  display:inline-block;
+  line-height:1.5em;
+  padding:0.5em;
+}
+.table-chatworkuser span.small{
+  display:block;
+  font-size:0.8em;
+  padding:0px;
+  margin-bottom:0.5em;
+}
+.table-chatworkuser .quote{
+  border-left:3px solid #e3e7e8;
+  color:#ef5350;
+  margin:0px 0px 1em 1em;
+  padding-left:1em;
+}
+.table-chatworkuser .reply{
+  border-left:3px solid #e3e7e8;
+  color:#3498db;
+  margin:1em 0px 0px 1em;
+  padding-left:1em;
+}
+.table-chatworkuser .reply p{
+  margin:0.5em 0px;
+}

@@ -326,6 +326,7 @@ AdjustTable.prototype={
 			$(this.del,this.rows.first()).css({'display':'none'});
 		}
 		if (this.addcallback!=null) this.addcallback(row);
+		return row;
 	},
 	delrow:function(row){
 		var index=this.rows.index(row);

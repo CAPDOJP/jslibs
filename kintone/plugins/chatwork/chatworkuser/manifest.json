@@ -29,7 +29,8 @@
             "js/chatworkuser.js"
         ],
         "css":[
-            "css/sweetalert.css"
+            "css/sweetalert.css",
+            "css/chatworkuser.css"
         ]
     },
     "config":{
