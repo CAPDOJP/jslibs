@@ -67,8 +67,14 @@ jQuery.noConflict();
 			reader.onload=function(event){callback(event.target.result.replace(/^.+,/,''))};
 			reader.readAsDataURL(blob);
 		},
-		/* create push message */
-		createmessage:function(headers,footers,record,fields){
+		/* array join */
+		join:function(param){
+			return Object.keys(param).map((key) => {
+				return key+'='+param[key];
+			}).join('&');
+    	},
+		/* create message */
+		messagecreate:function(headers,footers,record,fields){
 			var res='';
 			if (headers.length>0) res+=headers.join('\n');
 			if (fields.length>0)
@@ -144,14 +150,8 @@ jQuery.noConflict();
 			if (footers.length>0) res+=footers.join('\n');
 			return res;
 		},
-		/* array join */
-		join:function(param){
-			return Object.keys(param).map((key) => {
-				return key+'='+param[key];
-			}).join('&');
-    	},
-		/* push */
-		push:function(room_id,message,success,fail){
+		/* push message */
+		messagepush:function(room_id,message,success,fail){
 			var accesstoken=sessionStorage.getItem('accesstoken');
 			if (accesstoken)
 			{
@@ -175,7 +175,7 @@ jQuery.noConflict();
 						if (refresh)
 						{
 							functions.token(null,sessionStorage.getItem('refreshtoken'),function(){
-								functions.push(room_id,message,success,fail);
+								functions.messagepush(room_id,message,success,fail);
 							});
 						}
 						else
@@ -286,7 +286,7 @@ jQuery.noConflict();
 								{
 									body.push({
 										room_id:rooms[i].room,
-										message:functions.createmessage(
+										message:functions.messagecreate(
 											['【アプリ名】'+appname+' 【アクション】レコード追加'],
 											[kintone.api.url('/k/',true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+event.record['$id'].value+'&mode=show'],
 											event.record,
@@ -299,7 +299,7 @@ jQuery.noConflict();
 							if (body.length==0) resolve(event);
 							for (var i=0;i<body.length;i++)
 							{
-								functions.push(
+								functions.messagepush(
 									body[i].room_id,
 									body[i].message,
 									function(id){
@@ -324,7 +324,7 @@ jQuery.noConflict();
 								{
 									body.push({
 										room_id:rooms[i].room,
-										message:functions.createmessage(
+										message:functions.messagecreate(
 											['【アプリ名】'+appname+' 【アクション】レコード更新'],
 											[kintone.api.url('/k/',true).replace(/\.json/g,'')+kintone.app.getId()+'/show#record='+event.record['$id'].value+'&mode=show'],
 											event.record,
@@ -337,7 +337,7 @@ jQuery.noConflict();
 							if (body.length==0) resolve(event);
 							for (var i=0;i<body.length;i++)
 							{
-								functions.push(
+								functions.messagepush(
 									body[i].room_id,
 									body[i].message,
 									function(id){
@@ -362,7 +362,7 @@ jQuery.noConflict();
 								{
 									body.push({
 										room_id:rooms[i].room,
-										message:functions.createmessage(
+										message:functions.messagecreate(
 											['【アプリ名】'+appname+' 【アクション】レコード削除'],
 											[],
 											event.record,
@@ -375,7 +375,7 @@ jQuery.noConflict();
 							if (body.length==0) resolve(event);
 							for (var i=0;i<body.length;i++)
 							{
-								functions.push(
+								functions.messagepush(
 									body[i].room_id,
 									body[i].message,
 									function(id){
@@ -400,7 +400,7 @@ jQuery.noConflict();
 								{
 									body.push({
 										room_id:rooms[i].room,
-										message:functions.createmessage(
+										message:functions.messagecreate(
 											[
 												'【アプリ名】'+appname+' 【アクション】ステータス変更',
 												'【変更前ステータス】'+event.status.value+' 【変更後ステータス】'+event.nextStatus.value
@@ -416,7 +416,7 @@ jQuery.noConflict();
 							if (body.length==0) resolve(event);
 							for (var i=0;i<body.length;i++)
 							{
-								functions.push(
+								functions.messagepush(
 									body[i].room_id,
 									body[i].message,
 									function(id){

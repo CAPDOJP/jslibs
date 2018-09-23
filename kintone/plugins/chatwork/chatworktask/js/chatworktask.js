@@ -91,12 +91,12 @@ jQuery.noConflict();
 			});
 		},
 		/* load members */
-		members:function(room,callback){
+		members:function(room_id,callback){
 			var accesstoken=sessionStorage.getItem('accesstoken');
 			if (accesstoken)
 			{
 				kintone.proxy(
-					'https://api.chatwork.com/v2/rooms/'+room+'/members',
+					'https://api.chatwork.com/v2/rooms/'+room_id+'/members',
 					'GET',
 					{
 						'Authorization':'Bearer '+accesstoken
@@ -112,7 +112,7 @@ jQuery.noConflict();
 						if (refresh)
 						{
 							functions.token(null,sessionStorage.getItem('refreshtoken'),function(){
-								functions.members(room,callback);
+								functions.members(room_id,callback);
 							});
 						}
 						else
@@ -161,12 +161,12 @@ jQuery.noConflict();
 			}
 		},
 		/* task get */
-		taskget:function(task,room,callback){
+		taskget:function(task_id,room_id,callback){
 			var accesstoken=sessionStorage.getItem('accesstoken');
 			if (accesstoken)
 			{
 				kintone.proxy(
-					'https://api.chatwork.com/v2/rooms/'+room+'/tasks/'+task,
+					'https://api.chatwork.com/v2/rooms/'+room_id+'/tasks/'+task_id,
 					'GET',
 					{
 						'Authorization':'Bearer '+accesstoken,
@@ -184,7 +184,7 @@ jQuery.noConflict();
 							if (refresh)
 							{
 								functions.token(null,sessionStorage.getItem('refreshtoken'),function(){
-									functions.taskget(task,room,callback);
+									functions.taskget(task_id,room_id,callback);
 								});
 							}
 							else
@@ -208,12 +208,12 @@ jQuery.noConflict();
 			}
 		},
 		/* task register */
-		taskregist:function(record,room,member,limit,success,fail){
+		taskregist:function(record,room_id,member,limit,success,fail){
 			var accesstoken=sessionStorage.getItem('accesstoken');
 			if (accesstoken)
 			{
 				kintone.proxy(
-					'https://api.chatwork.com/v2/rooms/'+room+'/tasks',
+					'https://api.chatwork.com/v2/rooms/'+room_id+'/tasks',
 					'POST',
 					{
 						'Authorization':'Bearer '+accesstoken,
@@ -234,7 +234,7 @@ jQuery.noConflict();
 						if (refresh)
 						{
 							functions.token(null,sessionStorage.getItem('refreshtoken'),function(){
-								functions.taskregist(record,room,member,limit,success,fail);
+								functions.taskregist(record,room_id,member,limit,success,fail);
 							});
 						}
 						else
@@ -400,8 +400,8 @@ jQuery.noConflict();
 									if (!record[vars.config['taskid']].value) continue;
 									if (!record[vars.config['roomid']].value) continue;
 									updates.push({
-										task:record[vars.config['taskid']].value,
-										room:record[vars.config['roomid']].value,
+										task_id:record[vars.config['taskid']].value,
+										room_id:record[vars.config['roomid']].value,
 										record:record
 									})
 								}
@@ -418,7 +418,7 @@ jQuery.noConflict();
 								{
 									if (error) break;
 									(function(task){
-										functions.taskget(task.task,task.room,function(resp){
+										functions.taskget(task.task_id,task.room_id,function(resp){
 											if ('task_id' in resp)
 											{
 												var body={

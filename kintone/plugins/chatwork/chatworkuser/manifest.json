@@ -3,9 +3,9 @@
     "version":1,
     "type":"APP",
     "name":{
-        "ja":"kintone チャットワーク連携プラグイン【ユーザー情報取得編】",
+        "ja":"kintone チャットワーク連携プラグイン【メッセージ履歴表示編】",
         "en":"kintone ChatWork User plug-in",
-        "zh":"kintone チャットワーク連携プラグイン【ユーザー情報取得編】"
+        "zh":"kintone チャットワーク連携プラグイン【メッセージ履歴表示編】"
     },
     "description":{
         "ja":"チャットワークのコンタクト一覧からユーザー情報を取得し、関連メッセージを一覧表示するプラグインです。",
@@ -29,6 +29,7 @@
             "js/chatworkuser.js"
         ],
         "css":[
+            "css/51-modern-default.css",
             "css/sweetalert.css",
             "css/chatworkuser.css"
         ]

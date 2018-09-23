@@ -15,27 +15,34 @@ jQuery.noConflict();
 	 valiable
 	---------------------------------------------------------------*/
 	var vars={
-		account_id:'',
-		account_name:'',
 		room_id:'',
 		redirect:'',
 		button:null,
 		input:null,
 		select:null,
-		replyform:null,
-		userform:null,
+		splash:null,
 		config:{},
 		myinfo:{},
+		account:{
+			id:'',
+			name:''
+		},
 		history:{
-			limit:25,
+			limit:10,
 			offset:0,
 			container:null,
 			next:null,
 			prev:null,
-			search:null,
+			limiter:null,
+			searcher:null,
 			table:null,
-			filters:[],
-			messages:[]
+			messages:[],
+			records:[],
+			limits:[10,25,50]
+		},
+		windows:{
+			reply:null,
+			user:null,
 		}
 	};
 	var events={
@@ -81,19 +88,21 @@ jQuery.noConflict();
 			reader.readAsDataURL(blob);
 		},
 		/* convert tag */
-		convert:function(value){
-			var res=value;
-			res=res.replace(/\[To:[^\]]+\]/g,'');
-			res=res.replace(/\[rp [^\]]+\]/g,'');
-			res=res.replace(/\[qt\]\[qtmeta[^\]]+\]/g,'<div class="quote">');
-			res=res.replace(/\[\/qt\]/g,'</div>');
-			return res.replace(/^[ 　]+/g,'').replace(/\n/g,'<br>');
-		},
-		/* array join */
-		join:function(param){
-			return Object.keys(param).map((key) => {
-				return key+'='+param[key];
-			}).join('&');
+		convert:function(value,to=false){
+			var res=value
+			.replace(/\[To:[^\]]+\]/g,'')
+			.replace(/\[rp [^\]]+\]/g,'')
+			.replace(/\[info\]/g,'')
+			.replace(/\[\/info\]/g,'')
+			.replace(/\[title\]/g,'')
+			.replace(/\[\/title\]/g,'<br>')
+			.replace(/\[qt\]/g,'<div class="quote">')
+			.replace(/\[\/qt\]/g,'</div>')
+			.replace(/\[qtmeta[^\]]+\]/g,'')
+			.replace(/^[ 　]+/g,'')
+			.replace(/\n/g,'<br>');
+			if (to) return '<div class="to">'+res+'</div>';
+			else return res;
 		},
 		/* download files */
 		download:function(file_id){
@@ -128,9 +137,16 @@ jQuery.noConflict();
 								else swal('Error!',json.errors[0],'error');
 							}
 						}
-						else swal('Error!','ファイルがありません。','error');
+						else
+						{
+							vars.splash.addClass('hide');
+							swal('Error!','ファイルがありません。','error');
+						}
 					},
-					function(error){swal('Error!','ChatWorkへの接続に失敗しました。','error');}
+					function(error){
+						vars.splash.addClass('hide');
+						swal('Error!','ChatWorkへの接続に失敗しました。','error');
+					}
 				);
 			}
 		},
@@ -140,7 +156,7 @@ jQuery.noConflict();
 			if (accesstoken)
 			{
 				kintone.proxy(
-					'https://api.chatwork.com/v2/rooms/'+vars.room_id+'/files?account_id='+vars.account_id,
+					'https://api.chatwork.com/v2/rooms/'+vars.room_id+'/files?account_id='+vars.account.id,
 					'GET',
 					{
 						'Authorization':'Bearer '+accesstoken
@@ -169,75 +185,20 @@ jQuery.noConflict();
 						}
 						else callback([]);
 					},
-					function(error){swal('Error!','ChatWorkへの接続に失敗しました。','error');}
+					function(error){
+						vars.splash.addClass('hide');
+						swal('Error!','ChatWorkへの接続に失敗しました。','error');
+					}
 				);
 			}
 		},
-		/* show messages */
-		histories:function(){
-			/* clear rows */
-			vars.history.table.rows.remove();
-			/* create rows */
-			for (var i=vars.history.offset;i<vars.history.offset+vars.history.limit;i++)
-				if (i<vars.history.filters.length)
-				{
-					vars.history.table.addrow();
-					(function(message,row){
-						if (message.file_id)
-						{
-							row.find('td').eq(0).find('.reply-chatworkuser').hide();
-							row.find('td').eq(0).find('.download-chatworkuser').on('click',function(){
-								functions.download(message.file_id);
-							});
-						}
-						else
-						{
-							row.find('td').eq(0).find('.reply-chatworkuser').on('click',function(){
-								vars.replyform.show({
-									buttons:{
-										ok:function(){
-											/* close form */
-											vars.replyform.hide();
-											if ($('#message .receiver',vars.replyform.contents).val())
-											{
-												var reply='';
-												reply+='[rp aid='+vars.account_id+' to='+vars.room_id+'-'+message.message_id+'] '+vars.account_name+'さん\n';
-												reply+=$('#message .receiver',vars.replyform.contents).val();
-												functions.send(reply,function(message_id){
-													message.reply+='<p><span class="small">'+new Date().format('Y-m-d H:i:s')+'</span>'+functions.convert(reply)+'</p>';
-													functions.histories();
-												});
-											}
-										},
-										cancel:function(){
-											/* close form */
-											vars.replyform.hide();
-										}
-									}
-								});
-							});
-							row.find('td').eq(0).find('.download-chatworkuser').hide();
-						}
-						row.find('td').eq(1).find('span').html(message.send_time.format('Y-m-d H:i:s'));
-						row.find('td').eq(2).find('span').html(message.body+((message.reply)?'<div class="reply">'+message.reply+'</div>':''));
-					})(vars.history.filters[i],vars.history.table.rows.last());
-				}
-			if (vars.history.filters.length>vars.history.limit)
-			{
-				if (vars.history.offset>0) vars.history.prev.show();
-				else vars.history.prev.hide();
-				if (vars.history.offset+vars.history.limit<vars.history.filters.length) vars.history.next.show();
-				else vars.history.next.hide();
-			}
-			else
-			{
-				vars.history.prev.hide();
-				vars.history.next.hide();
-			}
-			/* show histories */
-			vars.history.container.show();
+		/* array join */
+		join:function(param){
+			return Object.keys(param).map((key) => {
+				return key+'='+param[key];
+			}).join('&');
 		},
-		/* load me */
+		/* load my informations */
 		me:function(callback){
 			var accesstoken=sessionStorage.getItem('accesstoken');
 			if (accesstoken)
@@ -270,14 +231,21 @@ jQuery.noConflict();
 								else swal('Error!',json.errors[0],'error');
 							}
 						}
-						else swal('Error!','ユーザー情報が見つかりませんでした。','error');
+						else
+						{
+							vars.splash.addClass('hide');
+							swal('Error!','ユーザー情報が見つかりませんでした。','error');
+						}
 					},
-					function(error){swal('Error!','ChatWorkへの接続に失敗しました。','error');}
+					function(error){
+						vars.splash.addClass('hide');
+						swal('Error!','ChatWorkへの接続に失敗しました。','error');
+					}
 				);
 			}
 		},
 		/* load messages */
-		messages:function(callback){
+		messageget:function(callback){
 			var accesstoken=sessionStorage.getItem('accesstoken');
 			if (accesstoken)
 			{
@@ -300,7 +268,7 @@ jQuery.noConflict();
 							if (refresh)
 							{
 								functions.token(null,sessionStorage.getItem('refreshtoken'),function(){
-									functions.messages(callback);
+									functions.messageget(callback);
 								});
 							}
 							else
@@ -311,7 +279,125 @@ jQuery.noConflict();
 						}
 						else callback([]);
 					},
-					function(error){swal('Error!','ChatWorkへの接続に失敗しました。','error');}
+					function(error){
+						vars.splash.addClass('hide');
+						swal('Error!','ChatWorkへの接続に失敗しました。','error');
+					}
+				);
+			}
+		},
+		/* show messages */
+		messagelist:function(){
+			if (vars.history.messages.length>0)
+			{
+				/* clear rows */
+				vars.history.table.rows.remove();
+				/* create rows */
+				for (var i=vars.history.offset;i<vars.history.offset+vars.history.limit;i++)
+					if (i<vars.history.messages.length)
+					{
+						vars.history.table.addrow();
+						(function(row,message){
+							var cells=$('td',row);
+							if (message.file_id)
+							{
+								$('.reply-chatworkuser',cells.eq(0)).hide();
+								$('.download-chatworkuser',cells.eq(0)).on('click',function(){
+									functions.download(message.file_id);
+								});
+							}
+							else
+							{
+								$('.reply-chatworkuser',cells.eq(0)).on('click',function(){
+									vars.windows.reply.show({
+										buttons:{
+											ok:function(){
+												/* close form */
+												vars.windows.reply.hide();
+												if ($('#message .receiver',vars.windows.reply.contents).val())
+												{
+													var reply='';
+													reply+='[rp aid='+vars.account.id+' to='+vars.room_id+'-'+message.message_id+'] '+vars.account.name+'さん\n';
+													reply+=$('#message .receiver',vars.windows.reply.contents).val();
+													functions.messagepush(reply,function(message_id){
+														message.reply+='<p><span class="small">'+new Date().format('Y-m-d H:i:s')+'</span>'+functions.convert(reply)+'</p>';
+														functions.messagelist();
+													});
+												}
+											},
+											cancel:function(){
+												/* close form */
+												vars.windows.reply.hide();
+											}
+										}
+									});
+								});
+								$('.download-chatworkuser',cells.eq(0)).hide();
+							}
+							$('span',cells.eq(1)).html(message.send_time.format('Y-m-d H:i:s'));
+							$('span',cells.eq(2)).html(message.body+((message.reply)?'<div class="reply">'+message.reply+'</div>':''));
+						})(vars.history.table.rows.last(),vars.history.messages[i]);
+					}
+				if (vars.history.messages.length>vars.history.limit)
+				{
+					if (vars.history.offset>0) vars.history.prev.show();
+					else vars.history.prev.hide();
+					if (vars.history.offset+vars.history.limit<vars.history.messages.length) vars.history.next.show();
+					else vars.history.next.hide();
+				}
+				else
+				{
+					vars.history.prev.hide();
+					vars.history.next.hide();
+				}
+				vars.history.container.show();
+			}
+			else vars.history.container.hide();
+		},
+		/* push message */
+		messagepush:function(message,callback){
+			var accesstoken=sessionStorage.getItem('accesstoken');
+			if (accesstoken)
+			{
+				kintone.proxy(
+					'https://api.chatwork.com/v2/rooms/'+vars.room_id+'/messages',
+					'POST',
+					{
+						'Authorization':'Bearer '+accesstoken,
+						'Content-Type':'application/x-www-form-urlencoded'
+					},
+					functions.join({
+						'body':encodeURIComponent(message),
+						'self_unread':0
+					}),
+					function(body,status,headers){
+						if (body)
+						{
+							var json=JSON.parse(body);
+							var refresh=false;
+							$.each(headers,function(key,values){
+								if (key.match(/WWW-Authenticate/g))
+									if (values.match(/The access token expired/g)) refresh=true;
+							});
+							if (refresh)
+							{
+								functions.token(null,sessionStorage.getItem('refreshtoken'),function(){
+									functions.messagepush(message,callback);
+								});
+							}
+							else
+							{
+								if ('message_id' in json) callback(json.message_id);
+								else swal('Error!',json.errors[0],'error');
+							}
+						}
+						else
+						{
+							vars.splash.addClass('hide');
+							swal('Error!','メッセージ送信に失敗しました。','error');
+						}
+					},
+					function(error){}
 				);
 			}
 		},
@@ -363,7 +449,7 @@ jQuery.noConflict();
 														var json=JSON.parse(body);
 														if (status==200)
 														{
-															var filter=$.grep(json,function(item,index){return item.account_id.toString()==vars.account_id});
+															var filter=$.grep(json,function(item,index){return item.account_id.toString()==vars.account.id});
 															if (filter.length!=0)
 															{
 																if (!vars.room_id) vars.room_id=record.room_id.toString();
@@ -378,55 +464,23 @@ jQuery.noConflict();
 											);
 										})(json[i],res);
 								}
-								else swal('Error!','チャットルーム一覧の取得に失敗しました。','error');
+								else
+								{
+									vars.splash.addClass('hide');
+									swal('Error!','チャットルーム一覧の取得に失敗しました。','error');
+								}
 							}
 						}
-						else swal('Error!','チャットルームが見つかりませんでした。','error');
-					},
-					function(error){swal('Error!','ChatWorkへの接続に失敗しました。','error');}
-				);
-			}
-		},
-		/* send message */
-		send:function(message,callback){
-			var accesstoken=sessionStorage.getItem('accesstoken');
-			if (accesstoken)
-			{
-				kintone.proxy(
-					'https://api.chatwork.com/v2/rooms/'+vars.room_id+'/messages',
-					'POST',
-					{
-						'Authorization':'Bearer '+accesstoken,
-						'Content-Type':'application/x-www-form-urlencoded'
-					},
-					functions.join({
-						'body':encodeURIComponent(message),
-						'self_unread':0
-					}),
-					function(body,status,headers){
-						if (body)
+						else
 						{
-							var json=JSON.parse(body);
-							var refresh=false;
-							$.each(headers,function(key,values){
-								if (key.match(/WWW-Authenticate/g))
-									if (values.match(/The access token expired/g)) refresh=true;
-							});
-							if (refresh)
-							{
-								functions.token(null,sessionStorage.getItem('refreshtoken'),function(){
-									functions.send(message,callback);
-								});
-							}
-							else
-							{
-								if ('message_id' in json) callback(json.message_id);
-								else swal('Error!',json.errors[0],'error');
-							}
+							vars.splash.addClass('hide');
+							swal('Error!','チャットルームが見つかりませんでした。','error');
 						}
-						else swal('Error!','メッセージ送信に失敗しました。','error');
 					},
-					function(error){}
+					function(error){
+						vars.splash.addClass('hide');
+						swal('Error!','ChatWorkへの接続に失敗しました。','error');
+					}
 				);
 			}
 		},
@@ -463,9 +517,16 @@ jQuery.noConflict();
 								else swal('Error!',json.errors[0],'error');
 							}
 						}
-						else swal('Error!','コンタクト可能なユーザーが見つかりませんでした。','error');
+						else
+						{
+							vars.splash.addClass('hide');
+							swal('Error!','コンタクト可能なユーザーが見つかりませんでした。','error');
+						}
 					},
-					function(error){swal('Error!','ChatWorkへの接続に失敗しました。','error');}
+					function(error){
+						vars.splash.addClass('hide');
+						swal('Error!','ChatWorkへの接続に失敗しました。','error');
+					}
 				);
 			}
 		},
@@ -535,8 +596,7 @@ jQuery.noConflict();
 	}
 	if (enable)
 	{
-		vars.button=$('<button type="button" class="custom-elements-chatworkuser">')
-		.css({
+		vars.button=$('<button type="button" class="custom-elements-chatworkuser">').css({
 			'background-color':'#f7f9fa',
 			'border':'1px solid #e3e7e8',
 			'box-shadow':'1px 1px 1px #fff inset',
@@ -552,13 +612,15 @@ jQuery.noConflict();
 			'vertical-align':'top',
 			'white-space':'nowrap'
 		});
-		vars.input=$('<div class="kintoneplugin-input-outer custom-elements-chatworkuser">')
+		vars.input=$('<div class="kintoneplugin-input-outer custom-elements-chatworkuser">').css({
+			'margin-top':'0.5em',
+			'padding':'0px'
+		})
 		.append(
 			$('<input type="text">').addClass('kintoneplugin-input-text').css({
 				'height':'40px',
 				'padding-right':'40px',
 				'position':'relative',
-				'z-index':'1',
 				'width':'100%'
 			})
 		)
@@ -574,17 +636,20 @@ jQuery.noConflict();
 				'position':'absolute',
 				'right':'8px',
 				'top':'0px',
-				'width':'40px',
-				'z-index':'2'
+				'width':'40px'
 			})
 			.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAFN++nkAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA7BJREFUeNpiYKAa6J8yMQFK/yfbhP9Qej7RigkpOk+U1QABRLnf92MTZ4LSDkgKHbDpNiDoHZACvIqIChCAAKIIMeLwNtxHhTn5jCTFNHoo4FLPRISZ58mJNQdCwctIauIlKRzwAYAAGqKIkUBcNwIDp4GsRAIqFoC4gBiNAaTmEOQUZkBpWfCeXJtB4AFSMRgAYoNSE9Zyg5R0TVbaRteEnK4JZkn0TAA0rIGcwPxP+4KNWAAQQKO5mVCeg2WdA8DYP0Azi6FZTACILwAtMkQSB4ndxyZHjfbNf2LaE1RNsqBMQ4phUMsdSLEDV04+gBSkRJW3pMY5E45iA2RIIxC/x9cQhEbFeiB2pHqqhlYz/TikHUGOhLZXzpNS6TNSIT2A4nY/MQUuVS0mpibD5gCqt4NwOCARaPkCuhSJ0CyZMFo5wABAAI2iUTCwLRBoLVWAVBI10NRioIUK0JYG0UUhxRaj1TiBQEs2oLWu66FcQaDcB1ItZiHUu8bmK2hQw1op78kp85lw+HY9kUGpiFRnU24xEICaMwSDD+iwBzC3UstiEJhIpBlkta+ZqJAlBahtcT2RZhhQ0+IFxDRvkdrSiVSxGJhoYAa9J1Ca7YeqX0DNoBZE6iXMR7N0P8xRsCyHb0iO3Hb1exwJ6AHQUkUsaohq2JHSTYXF5wegwRfQehMGpLYqqdGgx9Wexms5NfJxIA7x+fiatxRbDK21Ekm1nBo+hmUnnJbTzGIiLKedxXgsF6RbQw7UZCJqZmcUDGsAEKBdq71BEIihhAlYwQ10AnUEJlAnME5g3MAN1AlgA9xAmYAVGEGaVFObA+8LKOZe9I/RpI96vfb1hVdAQMD/qRCazeceB8wuwPAJXdKJDJnTIIwzQ6Fo82scWkvy2TIi/gEC6MzXNiLGYIRRAnowotr7bZzyLuzfAJuztTjCir3DyUVkY84RyPKs72zHBsEljGzqqihiVq9EQin6zrDJ/ECls5wKi46k6bwxN91M9kmYovQcx32oomVLeOlxqEtYBZdxhvG8voNZWblP1MjYUXlKqtJwJVUswNQhsxW53j4SnbjGQyHfwRnc6XRPWJQydo+fm98epHdaCQa++lGIkqhdPP8iit3bhXy/xgeZj05YQX7bvDdR92YAAr9xAh1tKoUXW8HoXlBuVdGAE3ER5teOXYN34mLcviie24isRsTF2ZstiUNxW+jcErE0wpAt3NOZbCbhOBwnmWHLjGubQCfj2G8hPrhiEhAQEDAoXv32txproetaAAAAAElFTkSuQmCC')
 		);
 		vars.select=$('<div class="kintoneplugin-select-outer custom-elements-chatworkuser">')
 		.append(
-			$('<div class="kintoneplugin-select">')
+			$('<div class="kintoneplugin-select">').css({
+				'height':'40px',
+				'line-height':'40px',
+			})
 			.append(
-				$('<select>')
-				.css({
+				$('<select>').css({
+					'height':'40px',
+					'line-height':'40px',
 					'min-width':'auto',
 					'width':'auto'
 				})
@@ -600,20 +665,27 @@ jQuery.noConflict();
 			if (vars.config['history']=='1')
 				if (event.record[vars.config['account_id']].value)
 				{
-					var anchor=vars.button.clone(true).css({'height':'40px','line-height':'40px','margin':'0.25em'});
-					var search=vars.input.clone(true).css({'margin-top':'0.5em','max-width':'30em','width':'100%'});
 					/* initialize valiable */
-					vars.account_id=event.record[vars.config['account_id']].value;
+					vars.account.id=event.record[vars.config['account_id']].value;
 					vars.room_id='';
+					vars.splash=$('<div id="splash">').append(
+						$('<p>')
+						.append($('<span>').text('now loading'))
+						.append($('<span class="dot progress1">').text('.'))
+						.append($('<span class="dot progress2">').text('.'))
+						.append($('<span class="dot progress3">').text('.'))
+						.append($('<span class="dot progress4">').text('.'))
+						.append($('<span class="dot progress5">').text('.'))
+					);
 					/* authorize */
 					functions.authorize(function(){
-						/* load users */
+						/* load my informations */
 						functions.me(function(record){
 							vars.myinfo=record;
 							/* load users */
 							functions.users(function(records){
-								var filter=$.grep(records,function(item,index){return item.account_id.toString()==vars.account_id});
-								if (filter.length!=0) vars.account_name=filter[0].name;
+								var filter=$.grep(records,function(item,index){return item.account_id.toString()==vars.account.id});
+								if (filter.length!=0) vars.account.name=filter[0].name;
 								/* clear elements */
 								if ($('.custom-elements-chatworkuser').size()) $('.custom-elements-chatworkuser').remove();
 								/* create table */
@@ -632,7 +704,7 @@ jQuery.noConflict();
 												$('<td>')
 												.append(
 													$('<img>').addClass('reply-chatworkuser')
-													.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAFN++nkAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA1BJREFUeNpiYKAUMMIY/VMm/keXLMzJZ2RC5qDJK4IIJjQTHiApvI+iAAoUsFlFGQAIIAr9T8jvjmhygsje2o8UOBeA+D2Iz4KsnHr+BQigAQ4nUj0ESwlMeCQ3IAkdwJLGaGAzXQBAAI1EhFyYJACp+UToSQRG1QL0qLpApIVwdciaA6CR/4FA4gjAphmWwhagJ0UovxE9BWJLYQUgRVANhiAaqqkeXSELLifCbAHSOD1PUdpG1vyASD0PhnjyBAigUTQw1QVawm4AUvZUsOMgMGc1EGUx1NJ6KnqwEd1yRnyqgQ4AlYUJFFi4AWhhINFBjeTjD0CNglAxB1h7hQAIBOrZANUDasMpYPMxCwFDBNCKSkWgAQ+ghoIaSQKw1hRQ/ANQDMR/j6/AI7fguw9yCNQxE6HFciLUsv+wFhuphSapoB5q2XxyNDONuHw8CugGAAJoFI2CUUDbIhNava2nkh2g+vkDsZ2J91T03HtsHhyw2omJULeQCuABqdWiABWCHN5UIsrHQEvPgxIEtGlTSGZzlhFkKdAsrA1EXInLANqsAXXjJwDpCUgtRrzBClSvSEyrlFDimg9t3AlADVTEo9YQydL3hJrCLMRmCaBhoIEr0CAhI1pPYwJQvBBq4XrkIQdqWAwCDtDgD4S2oRqQ0gSxjX2K8vF6aFAyEBuslPoYXw9j6LSrRy2mG8CVuASpWR+PNntGwcgAAAHataIbBGEoCAkDMAJuIBvoBowAEwgTECdQJzBOoCOwgY7iCHLhSl4ICaJQq76Lxh/1vXu9lr5r9aVQKBQKh+CP+TIaZvSuDvK41Y1cPOl+mi3p0tGBWzI/dxuIr5A0Rzqn+RA6kD8MysOYsx1/BNGo65DR8NhZljpyKMxpqcgl7HNon21N+5DWf9raSl7j2FX1Z2wCknw6A0nEyWTBGc+oDdh6wn2agrAEAuU8Gq5YcZi8Gd9mkdu8IX1T1LtUGYuavFq5YILqQ9ZXkm/lJv0+Sh8ny9HAfCzMbavOtBn6rVXCEkjqLC4FQGZ7Sn8hRunIQkl1WFkYg5kXGCRdsgAXkoMK1t0FZ8b5b5WwBOZdIqR/8porByubzzGbhLvSLz8R+O92WkpY99I/1h4qFAqFQuEQHjGwTRBLz3OuAAAAAElFTkSuQmCC')
+													.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAFN++nkAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAsVJREFUeNpiYKAq6J8y8T26GBOapACQVsCqACQJpe8DFf3HZcV/bGzKAEAAUc///3H5HcOljMiBgixRmJPPyARlCAKpDzBBILWBMgcCBNDAIUY86UUAyYOENWMLMvTgw2szFgMuALEBEv8DNOjxJ3VssQoUu0+VAAMIoFGEJ2NhA0zkasSqGa2cSSA6bROwsRCYsiYQdDauYAAaPh+nZiw5aAIaP4GokMaRrkHiDnidjSsPQ8UdhngqBAigUTToS4n3lLYJWMho7whQw/Es9LYQb81MgYWNwNzeQEmToB9IFVDoqQtARxjSy8fYgCDQAR9IspiQA9ALV6A6kBpQfRBAqBBmpCRV42uZQdWD2k7nSYl7quZj9B7FKKArAAigUTQKRsGANnsMqDEUwkSqpdBCn4FuFlPTUqItpralRFlMC0uJafrgs7QRiA8AK/gDVLWYDJ8+AGJHoEMeUNLKpCR4CQ8P4bGYGkOWWFuXhBKXIRUsfk9yqga69AI1LMc2tkwwOxFhOThVE7BbANrWJi074Uto2NrU0GGm+WjCG4BqA0kuQEgJdqDaBVAHIafqALKLTFLjHJSaCfUymEgwjOQEh89yJhINIie1F462YkbByAAAAdo1wyOEQRgKo8cAjqCTOIMb2AkcxRU6ghuoE+goHUFyjXeeSgWBEPS9K3/JfQ205BE8EARBmjWTCsQH5CNXVatawFYQ9F5KLGpm2AqCqpD9F9DswNpBswG3Apr8lS4AenLjzHbFVQ1whYz2ZuzyGUSBlSxd6k/sUuDnpi2RSUaX1RefRfgLS3pKG5ftQ1FgheBRfQ7JZ+lvwD0G89KMja401iauJY/2dS9aPMSAf/KPPS9j68bON3/onNmrpRDwWOA3MQh+/xTjpUFV5CtNhwa+VCPvfCixafmag2I8+u1BW6rYb0kInDLawQCAIAiCGtUNf5s2kfrLlk4AAAAASUVORK5CYII=')
 												)
 												.append(
 													$('<img>').addClass('download-chatworkuser')
@@ -643,30 +715,65 @@ jQuery.noConflict();
 											.append($('<td>').append($('<span>')))
 										)
 									).adjustabletable({});
-								vars.history.next=anchor.clone(true)
+								vars.history.next=vars.button.clone(true).css({
+									'height':'40px',
+									'line-height':'40px',
+									'margin':'0.25em'
+								})
 								.text('次へ').on('click',function(){
 									vars.history.offset+=vars.history.limit;
-									functions.histories();
+									functions.messagelist();
 								});
-								vars.history.prev=anchor.clone(true)
+								vars.history.prev=vars.button.clone(true).css({
+									'height':'40px',
+									'line-height':'40px',
+									'margin':'0.25em'
+								})
 								.text('前へ').on('click',function(){
 									vars.history.offset-=vars.history.limit;
-									functions.histories();
+									functions.messagelist();
 								});
-								vars.history.search=search.clone(true);
-								vars.history.search.find('input').attr('placeholder','キーワードでメッセージを絞り込む');
-								vars.history.search.find('img').on('click',function(){
-									vars.history.offset=0;
-									if (vars.history.search.find('input').val())
-									{
-										vars.history.filters=$.grep(vars.history.messages,function(item,index){
-											return item.body.match(new RegExp(vars.history.search.find('input').val(),'g'));
-										});
-									}
-									else vars.history.filters=vars.history.messages;
-									functions.histories();
-								});
-								vars.history.container.append(vars.history.search);
+								vars.history.limiter=(function(){
+									var limiter=vars.select.clone(true).css({
+										'margin':'0.5em 0.5em 0px 0px'
+									});
+									for (var i=0;i<vars.history.limits.length;i++)
+										$('select',limiter).append(
+											$('<option>').attr('value',vars.history.limits[i]).html('&nbsp;'+vars.history.limits[i]+'件&nbsp;').css({
+												'color':'#3498db',
+												'line-height':'20px',
+												'padding':'0px 5px',
+												'-webkit-appearance':'none',
+												'-moz-appearance':'none'
+											})
+										);
+									$('select',limiter)
+									.val(vars.history.limit)
+									.on('change',function(){
+										vars.history.limit=parseInt($(this).val());
+										vars.history.offset=0;
+										functions.messagelist();
+									});
+									return limiter;
+								})();
+								vars.history.searcher=(function(){
+									var searcher=vars.input.clone(true);
+									$('input',searcher).attr('placeholder','キーワードでメッセージを絞り込む');
+									$('img',searcher).on('click',function(){
+										vars.history.offset=0;
+										if ($('input',searcher).val())
+										{
+											vars.history.messages=$.grep(vars.history.records,function(item,index){
+												return item.body.match(new RegExp($('input',searcher).val(),'g'));
+											});
+										}
+										else vars.history.messages=vars.history.records;
+										functions.messagelist();
+									});
+									return searcher;
+								})();
+								vars.history.container.append(vars.history.limiter);
+								vars.history.container.append(vars.history.searcher);
 								vars.history.container.append(vars.history.table.container);
 								vars.history.container.append(vars.history.prev);
 								vars.history.container.append(vars.history.next);
@@ -678,44 +785,40 @@ jQuery.noConflict();
 									'padding':'0px 8px',
 									'width':'100%'
 								});
-								/* create form */
-								vars.replyform=$('body').fieldsform({fields:[{
+								/* create window */
+								vars.windows.reply=$('body').fieldsform({fields:[{
 									code:'message',
 									label:'メッセージ',
 									type:'MULTI_LINE_TEXT'
 								}]});
 								/* append elements */
-								var rooms=$('.gaia-argoui-app-toolbar-statusmenu')
-								.append(
-									vars.select.clone(true)
-									.css({
-										'height':'40px',
-										'line-height':'40px',
-										'margin':'3px 6px 0px 0px'
-									})
-								).find('select');
+								$('body').append(vars.splash);
 								/* load rooms */
 								functions.rooms(function(records){
 									var loadmessages=function(){
+										vars.splash.removeClass('hide');
 										vars.history.offset=0;
-										vars.history.messages=[];
+										vars.history.records=[];
 										functions.files(function(records){
 											for (var i=0;i<records.length;i++)
 											{
 												var record=records[i];
-												vars.history.messages.push({
+												vars.history.records.push({
 													message_id:record.message_id,
 													body:record.filename,
 													send_time:new Date(record.upload_time*1000),
 													file_id:record.file_id
 												});
 											}
-											functions.messages(function(records){
+											functions.messageget(function(records){
 												var filter=$.grep(records,function(item,index){
 													var exists=true;
-													if (item.account.account_id.toString()!=vars.account_id) exists=false;
-													if (item.body.match(/(\[dtext:file_uploaded\]|\[deleted\])/g)) exists=false;
-													if (!item.body.match(new RegExp('aid='+vars.myinfo.account_id,'g')) && !item.body.match(new RegExp('To:'+vars.myinfo.account_id,'g'))) exists=false;
+													if (item.account.account_id.toString()!=vars.account.id &&
+														item.account.account_id.toString()!=vars.myinfo.account_id) exists=false;
+													if (item.body.match(/(\[deleted\]|\[download:|\[task )/g)) exists=false;
+													if (!item.body.match(new RegExp('aid='+vars.myinfo.account_id,'g')) &&
+														!item.body.match(new RegExp('To:'+vars.myinfo.account_id,'g')) &&
+														!item.body.match(new RegExp('To:'+vars.account.id,'g'))) exists=false;
 													return exists;
 												});
 												for (var i=0;i<filter.length;i++)
@@ -723,7 +826,7 @@ jQuery.noConflict();
 													var record=filter[i];
 													var message={
 														message_id:record.message_id,
-														body:functions.convert(record.body),
+														body:functions.convert(record.body,record.body.match(new RegExp('To:'+vars.account.id,'g'))),
 														reply:'',
 														send_time:new Date(record.send_time*1000),
 														file_id:''
@@ -731,42 +834,51 @@ jQuery.noConflict();
 													var reply=$.grep(records,function(item,index){
 														var exists=true;
 														if (item.account.account_id.toString()!=vars.myinfo.account_id) exists=false;
-														if (item.body.match(/(\[dtext:file_uploaded\]|\[deleted\])/g)) exists=false;
-														if (!item.body.match(new RegExp('aid='+vars.account_id+' to='+vars.room_id+'-'+record.message_id,'g'))) exists=false;
+														if (item.body.match(/(\[deleted\]|\[download:|\[task )/g)) exists=false;
+														if (!item.body.match(new RegExp('aid='+vars.account.id+' to='+vars.room_id+'-'+record.message_id,'g'))) exists=false;
 														return exists;
 													});
 													for (var i2=0;i2<reply.length;i2++)
 														message.reply+='<p><span class="small">'+new Date(reply[i2].send_time).format('Y-m-d H:i:s')+'</span>'+functions.convert(reply[i2].body)+'</p>';
-													vars.history.messages.push(message);
+													vars.history.records.push(message);
 												}
-												vars.history.messages.sort(function(a,b){
+												vars.history.records.sort(function(a,b){
 													if(a.send_time>b.send_time) return -1;
 													if(a.send_time<b.send_time) return 1;
 													return 0;
 												});
-												vars.history.filters=vars.history.messages;
-												functions.histories();
+												vars.history.messages=vars.history.records;
+												functions.messagelist();
+												vars.splash.addClass('hide');
 											});
 										});
 									};
-									for (var i=0;i<records.length;i++)
-										rooms.append(
-											$('<option>').attr('value',records[i].room_id).html('&nbsp;'+records[i].name+'&nbsp;')
-											.css({
-												'color':'#3498db',
-												'line-height':'20px',
-												'padding':'0px 5px',
-												'-webkit-appearance':'none',
-												'-moz-appearance':'none'
-											})
-										);
-									rooms
-									.val(vars.room_id)
-									.on('change',function(){
-										vars.room_id=$(this).val();
-										vars.history.search.find('input').val('');
-										loadmessages();
-									});
+									$('.gaia-argoui-app-toolbar-statusmenu')
+									.append(
+										(function(records){
+											var rooms=vars.select.clone(true).css({
+												'margin':'3px 6px 0px 0px'
+											});
+											for (var i=0;i<records.length;i++)
+												$('select',rooms).append(
+													$('<option>').attr('value',records[i].room_id).html('&nbsp;'+records[i].name+'&nbsp;').css({
+														'color':'#3498db',
+														'line-height':'20px',
+														'padding':'0px 5px',
+														'-webkit-appearance':'none',
+														'-moz-appearance':'none'
+													})
+												);
+											$('select',rooms)
+											.val(vars.room_id)
+											.on('change',function(){
+												vars.room_id=$(this).val();
+												$('input',vars.history.searcher).val('');
+												loadmessages();
+											});
+											return rooms;
+										})(records)
+									);
 									loadmessages();
 								});
 							});
@@ -789,8 +901,8 @@ jQuery.noConflict();
 					functions.users(function(records){
 						/* clear elements */
 						if ($('.custom-elements-chatworkuser').size()) $('.custom-elements-chatworkuser').remove();
-						/* create form */
-						vars.userform=$('body').referer({
+						/* create window */
+						vars.windows.user=$('body').referer({
 							datasource:(function(records){
 								var res=[];
 								for (var i=0;i<records.length;i++)
@@ -812,25 +924,24 @@ jQuery.noConflict();
 						/* append elements */
 						$('.gaia-argoui-app-edit-buttons')
 						.append(
-							vars.button.clone(true)
-							.css({
+							vars.button.clone(true).css({
 								'height':'48px',
 								'line-height':'48px',
 								'margin':'0px 0px 0px 16px'
 							})
 							.text('チャットワークユーザー情報取得')
 							.on('click',function(e){
-								vars.userform.show({
+								vars.windows.user.show({
 									buttons:{
 										cancel:function(){
 											/* close the reference box */
-											vars.userform.hide();
+											vars.windows.user.hide();
 										}
 									},
 									callback:function(row){
 										var record=kintone.app.record.get();
 										/* close the reference box */
-										vars.userform.hide();
+										vars.windows.user.hide();
 										if (vars.config['account_id']) record.record[vars.config['account_id']].value=$('#account_id',row).val();
 										if (vars.config['name']) record.record[vars.config['name']].value=$('#name',row).val();
 										if (vars.config['chatwork_id']) record.record[vars.config['chatwork_id']].value=$('#chatwork_id',row).val();
