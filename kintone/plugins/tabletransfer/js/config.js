@@ -63,6 +63,8 @@ jQuery.noConflict();
 			var target=$('select#app',copyinfo.container);
 			copyinfo.fieldinfos={};
 			copyinfo.table.clearrows();
+			$('input#buttonlabel',copyinfo.container).val('');
+			$('select#recordid',copyinfo.container).val('');
 			if (target.val().length!=0)
 			{
 				kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:target.val()},function(resp){
@@ -108,19 +110,13 @@ jQuery.noConflict();
 						$('.container',copyinfo.container).show();
 						if (callback) callback();
 					},function(error){
-						$('input#buttonlabel',copyinfo.container).val('');
 						$('.container',copyinfo.container).hide();
 					});
 				},function(error){
-					$('input#buttonlabel',copyinfo.container).val('');
 					$('.container',copyinfo.container).hide();
 				});
 			}
-			else
-			{
-				$('input#buttonlabel',copyinfo.container).val('');
-				$('.container',copyinfo.container).hide();
-			}
+			else $('.container',copyinfo.container).hide();
 		}
 	};
 	/*---------------------------------------------------------------
@@ -148,8 +144,13 @@ jQuery.noConflict();
 						case 'STATUS_ASSIGNEE':
 						case 'UPDATED_TIME':
 							break;
+						case 'SINGLE_LINE_TEXT':
+							$('select#recordid').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							$('select#fieldfrom').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							break;
 						default:
 							$('select#fieldfrom').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+							break;
 					}
 				}
 			});
@@ -190,6 +191,7 @@ jQuery.noConflict();
 						(function(copyinfo,config){
 							functions.reloadfields(copyinfo,function(){
 								$('input#buttonlabel',copyinfo.container).val(config.buttonlabel);
+								$('select#recordid',copyinfo.container).val(config.recordid);
 								for (var i2=0;i2<config.fields.length;i2++)
 								{
 									if (i2>0) copyinfo.table.addrow();
@@ -215,7 +217,7 @@ jQuery.noConflict();
 		/* check values */
 		for (var i=0;i<vars.app.table.rows.length;i++)
 		{
-			var app={app:'',buttonlabel:'',tablecode:[],fields:[]};
+			var app={app:'',buttonlabel:'',recordid:'',tablecode:[],fields:[]};
 			row=vars.app.table.rows.eq(i);
 			if (!$('select#app',row).val()) continue;
 			else app.app=$('select#app',row).val();
@@ -225,6 +227,7 @@ jQuery.noConflict();
 				return;
 			}
 			else app.buttonlabel=$('input#buttonlabel',row).val();
+			app.recordid=$('select#recordid',row).val();
 			for (var i2=0;i2<vars.app.copyinfos[i].table.rows.length;i2++)
 			{
 				row=vars.app.copyinfos[i].table.rows.eq(i2);
@@ -257,7 +260,27 @@ jQuery.noConflict();
 				swal('Error!','複数テーブルからの一括コピーは出来ません。','error');
 				return;
 			}
-			else app.tablecode=app.tablecode.join('');
+			else
+			{
+				app.tablecode=app.tablecode.join('');
+				if (app.recordid)
+					if (app.tablecode)
+					{
+						if (vars.fieldinfos[app.recordid].tablecode!=app.tablecode)
+						{
+							swal('Error!','レコード番号保存フィールドは同一テーブル内フィールドを指定して下さい。','error');
+							return;
+						}
+					}
+					else
+					{
+						if (vars.fieldinfos[app.recordid].tablecode)
+						{
+							swal('Error!','レコード番号保存フィールドにテーブル内フィールドを指定することは出来ません。','error');
+							return;
+						}
+					}
+			}
 			apps.push(app);
 		}
 		/* setup config */

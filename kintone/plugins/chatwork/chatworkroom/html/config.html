@@ -1,0 +1,53 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ルームIDフィールド<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">チャットワークのルームIDを格納するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="room_id">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">ルーム名フィールド</div>
+		<div class="kintoneplugin-desc">チャットワークのルーム名を格納するフィールドを指定して下さい。【文字列(1行)】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="room_name">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">メッセージ履歴表示スペース<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">ルームIDフィールドで指定されたルーム内のメッセージ履歴を表示するスペースを指定して下さい。【スペース】</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="spacer">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">クライアントID<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">OAuthクライアント作成時に取得したクライアントIDを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="client_id" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">クライアントシークレット<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">OAuthクライアント作成時に取得したクライアントシークレットを入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="client_secret" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

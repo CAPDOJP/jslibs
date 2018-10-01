@@ -69,7 +69,8 @@ jQuery.noConflict();
 					});
 				}
 			},function(reason){
-				swal('Error!',reason.result.error.message,'error');
+				if ('details' in reason) swal('Error!',reason.details,'error');
+				else swal('Error!',reason.result.error.message,'error');
 			});
 		},
 		/* assign values */

@@ -400,7 +400,9 @@ jQuery.noConflict();
 							return (item['studentcode'].value==heads[i]);
 						});
 						/* rebuild view */
-						if (filter.length!=0) functions.build(filter);
+						if (filter.length!=0)
+							if ($.grep(vars.apps[vars.config['student']],function(item,index){return (item['$id'].value==filter[0]['studentcode'].value);}).length>0)
+								functions.build(filter);
 					}
 					/* merge row */
 					var rowspans={cache:'',index:-1,span:0};

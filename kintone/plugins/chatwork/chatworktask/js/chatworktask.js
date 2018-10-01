@@ -118,7 +118,7 @@ jQuery.noConflict();
 						else
 						{
 							if (status==200) callback(json);
-							else swal('Error!','タスク担当メンバ一覧の取得に失敗しました。','error');
+							else swal('Error!',json.errors[0],'error');
 						}
 					},
 					function(error){swal('Error!','ChatWorkへの接続に失敗しました。','error');}
@@ -153,7 +153,7 @@ jQuery.noConflict();
 						else
 						{
 							if (status==200) callback(json);
-							else swal('Error!','チャットルーム一覧の取得に失敗しました。','error');
+							else swal('Error!',json.errors[0],'error');
 						}
 					},
 					function(error){swal('Error!','ChatWorkへの接続に失敗しました。','error');}
@@ -193,7 +193,7 @@ jQuery.noConflict();
 								else
 								{
 									vars.progress.hide();
-									swal('Error!','タスク一覧の取得に失敗しました。','error');
+									swal('Error!',json.errors[0],'error');
 									callback({});
 								}
 							}
@@ -510,8 +510,8 @@ jQuery.noConflict();
 									fields.push({
 										code:'members',
 										label:'担当メンバー',
-										type:'DROP_DOWN',
-										options:['dummy']
+										type:'CHECK_BOX',
+										options:{'dummy':{label:'dummy',index:0}}
 									});
 									fields.push({
 										code:'limit',
@@ -521,38 +521,53 @@ jQuery.noConflict();
 									vars.form=$('body').fieldsform({fields:fields});
 									functions.rooms(function(records){
 										var rooms=$('#rooms .receiver',vars.form.contents);
-										var members=$('#members .receiver',vars.form.contents);
+										var memberscontainer=$('#members .receiver',vars.form.contents).closest('.container');
+										var membersreceiver=$('#members .receiver',vars.form.contents).closest('label').clone(true);
 										var limit=$('#limit .receiver',vars.form.contents);
 										rooms.on('change',function(){
-											members.empty().append($('<option>').attr('value','').text(''));
+											$('#members label:not(.title)',vars.form.contents).remove();
 											if (rooms.val())
 												functions.members(rooms.val(),function(records){
-													for (var i=0;i<records.length;i++) members.append($('<option>').attr('value',records[i].account_id).text(records[i].name));
+													for (var i=0;i<records.length;i++)
+													{
+														var receiver=membersreceiver.clone(true);
+														$('.label',receiver).html(records[i].name);
+														$('.receiver',receiver).attr('id',records[i].account_id).val(records[i].account_id);
+														memberscontainer.append(receiver);
+													}
+													vars.form.dialog.container.css({'height':(vars.form.dialog.contents[0].scrollHeight+45).toString()+'px'});
 												});
 										});
 										rooms.empty().append($('<option>').attr('value','').text(''));
 										for (var i=0;i<records.length;i++) rooms.append($('<option>').attr('value',records[i].room_id).text(records[i].name));
+										$('#members label:not(.title)',vars.form.contents).remove();
 										vars.form.show({
 											buttons:{
 												ok:function(){
+													var membersid=[];
+													var membersname=[];
 													/* close form */
 													vars.form.hide();
 													if (!rooms.val())
 													{
-														swal('Error!',fields.rooms.label+'を指定して下さい。','error');
+														swal('Error!',fields[0].label+'を指定して下さい。','error');
 														return;
 													}
-													if (!members.val())
+													$.each(memberscontainer.find('.receiver:checked'),function(){
+														membersid.push($(this).val());
+														membersname.push($('.label',$(this).closest('label')).text());
+													});
+													if (membersid.length==0)
 													{
-														swal('Error!',fields.members.label+'を指定して下さい。','error');
+														swal('Error!',fields[1].label+'を指定して下さい。','error');
 														return;
 													}
 													if (!limit.val())
 													{
-														swal('Error!',fields.limit.label+'を入力して下さい。','error');
+														swal('Error!',fields[2].label+'を入力して下さい。','error');
 														return;
 													}
-													functions.taskregist(event.record,rooms.val(),members.val(),limit.val(),function(ids){
+													functions.taskregist(event.record,rooms.val(),membersid.join(','),limit.val(),function(ids){
 														var body={
 															app:kintone.app.getId(),
 															id:event.record['$id'].value,
@@ -561,7 +576,7 @@ jQuery.noConflict();
 														body.record[vars.config['taskid']]={value:ids[0]};
 														body.record[vars.config['roomid']]={value:rooms.val()};
 														body.record[vars.config['roomname']]={value:$('option:selected',rooms).text()};
-														body.record[vars.config['member']]={value:$('option:selected',members).text()};
+														body.record[vars.config['member']]={value:membersname.join(',')};
 														body.record[vars.config['limit']]={value:limit.val()};
 														if (vars.config['status']) body.record[vars.config['status']]={value:'未完了'};
 														kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){

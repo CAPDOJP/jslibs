@@ -45,7 +45,8 @@ jQuery.noConflict();
 				if (!vars.auth) gapi.auth2.getAuthInstance().signIn();
 				else functions.setupelements();
 			},function(reason){
-				swal('Error!',reason.result.error.message,'error');
+				if ('details' in reason) swal('Error!',reason.details,'error');
+				else swal('Error!',reason.result.error.message,'error');
 			});
 		},
 		/* create boundary */

@@ -43,21 +43,82 @@ jQuery.noConflict();
 				var files=[];
 				var mappings=[];
 				var bodies=[];
-				var progress=function(){
+				var progress=function(recordid,total){
 					counter++;
-					if (counter<bodies.length)
+					if (counter<total)
 					{
-						vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/bodies.length));
+						vars.progress.find('.progressbar').find('.progresscell').width(vars.progress.find('.progressbar').innerWidth()*(counter/total));
 					}
 					else
 					{
-						vars.progress.hide();
-						swal({
-							title:'コピー完了',
-							text:'コピーしました。',
-							type:'success'
-						},function(){
-							window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+app.app+'/');
+						if (recordid) update(records);
+						else
+						{
+							vars.progress.hide();
+							swal({
+								title:'コピー完了',
+								text:'コピーしました。',
+								type:'success'
+							},function(){
+								window.open(kintone.api.url('/k/', true).replace(/\.json/g,'')+app.app+'/');
+								location.reload(true);
+							});
+						}
+					}
+				};
+				var regist=function(body,method,retry,callback){
+					kintone.api(kintone.api.url('/k/v1/record',true),method,body,function(resp){
+						callback(('id' in resp)?resp.id:null);
+					},function(error){
+						if (retry)
+						{
+							if ('id' in body) delete body.id;
+							regist(body,'POST',false,callback);
+						}
+						else
+						{
+							vars.progress.hide();
+							swal('Error!',error.message,'error');
+						}
+					});
+				};
+				var update=function(records){
+					counter=0;
+					vars.progress.find('.message').text('レコード番号フィールド更新中');
+					vars.progress.find('.progressbar').find('.progresscell').width(0);
+					for (var i=0;i<records.length;i++)
+					{
+						var body={
+							app:kintone.app.getId(),
+							id:records[i]['$id'].value,
+							record:(function(record){
+								var res={};
+								$.each(record,function(key,values){
+									switch (values.type)
+									{
+										case 'CALC':
+										case 'CATEGORY':
+										case 'CREATED_TIME':
+										case 'CREATOR':
+										case 'MODIFIER':
+										case 'RECORD_NUMBER':
+										case 'STATUS':
+										case 'STATUS_ASSIGNEE':
+										case 'UPDATED_TIME':
+											break;
+										default:
+											res[key]=values;
+											break;
+									}
+								});
+								return res;
+							})(records[i])
+						};
+						kintone.api(kintone.api.url('/k/v1/record',true),'PUT',body,function(resp){
+							progress(false,records.length);
+						},function(error){
+							vars.progress.hide();
+							swal('Error!',error.message,'error');
 						});
 					}
 				};
@@ -69,12 +130,14 @@ jQuery.noConflict();
 						for (var i2=0;i2<records[i][app.tablecode].value.length;i2++)
 							body.push({
 								body:{app:app.app,record:{}},
-								files:[]
+								files:[],
+								recordid:((app.recordid)?records[i][app.tablecode].value[i2].value[app.recordid]:null)
 							});
 					}
 					else body.push({
 						body:{app:app.app,record:{}},
-						files:[]
+						files:[],
+						recordid:((app.recordid)?records[i][app.recordid]:null)
 					});
 					/* append lookup mappings fields */
 					$.each(resp.properties,function(key,values){
@@ -141,17 +204,26 @@ jQuery.noConflict();
 						vars.progress.find('.message').text('コピー中');
 						for (var i=0;i<bodies.length;i++)
 						{
-							functions.setupfilevalue(0,bodies[i].files,function(){
-								if (Object.keys(bodies[i].body.record).length!==0)
-								{
-									kintone.api(kintone.api.url('/k/v1/record',true),'POST',bodies[i].body,function(resp){
-										progress();
-									},function(error){
-										vars.progress.hide();
-										swal('Error!',error.message,'error');
-									});
-								}
-							});
+							(function(body){
+								functions.setupfilevalue(0,body.files,function(){
+									if (Object.keys(body.body.record).length!==0)
+									{
+										var method='POST';
+										if (body.recordid)
+											if (body.recordid.value)
+											{
+												body.body['id']=body.recordid.value;
+												method='PUT';
+											}
+										regist(body.body,method,true,function(id){
+											if (id)
+												if (body.recordid) body.recordid.value=id;
+											progress(app.recordid,bodies.length);
+										});
+									}
+									else progress(app.recordid,bodies.length);
+								});
+							})(bodies[i]);
 						}
 					}
 					else

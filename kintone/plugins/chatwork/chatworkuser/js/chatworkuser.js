@@ -764,7 +764,14 @@ jQuery.noConflict();
 										if ($('input',searcher).val())
 										{
 											vars.history.messages=$.grep(vars.history.records,function(item,index){
-												return item.body.match(new RegExp($('input',searcher).val(),'g'));
+												var exists=false;
+												var keywords=$('input',searcher).val().replace(/[ 　]+/g,' ').split(' ');
+												for (var i=0;i<keywords.length;i++)
+												{
+													if (item.body.match(new RegExp(keywords[i],'g'))) exists=true;
+													if (item.reply.match(new RegExp(keywords[i],'g'))) exists=true;
+												}
+												return exists;
 											});
 										}
 										else vars.history.messages=vars.history.records;
@@ -806,6 +813,7 @@ jQuery.noConflict();
 												vars.history.records.push({
 													message_id:record.message_id,
 													body:record.filename,
+													reply:'',
 													send_time:new Date(record.upload_time*1000),
 													file_id:record.file_id
 												});
