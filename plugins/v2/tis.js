@@ -586,7 +586,8 @@ class tisalert{
 		});
 		this.cancel.css({display:'none'});
 		/* setup message */
-		this.contents.html(message);
+		if (message.nodeName) this.contents.append(message);
+		else this.contents.html(message);
 		/* show */
 		this.cover.css({display:'block'});
 		this.contents
@@ -613,7 +614,8 @@ class tisalert{
 			width:'50%'
 		});
 		/* setup message */
-		this.contents.html(message);
+		if (message.nodeName) this.contents.append(message);
+		else this.contents.html(message);
 		/* show */
 		this.cover.css({display:'block'});
 		this.contents

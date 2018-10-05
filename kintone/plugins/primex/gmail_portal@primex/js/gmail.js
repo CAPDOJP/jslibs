@@ -87,13 +87,6 @@ jQuery.noConflict();
 				alternative:functions.boundary(),
 				mixed:functions.boundary()
 			};
-			var queries={
-				media:'',
-				segment:'',
-				area:'',
-				department:'',
-				customer:'',
-			};
 			var send=function(maildata){
 				gapi.client.gmail.users.messages.send({
 					'userId':'me',
@@ -124,32 +117,44 @@ jQuery.noConflict();
 						}
 				}
 				else swal('送信エラー','テーブル内にデータがありません。','error');
-				queries.media=' in ("'+media+'")';
-				queries.segment=' in ("'+record[vars.config['segment']].value+'")';
-				queries.area=' in ("'+record[vars.config['area']].value+'")';
-				queries.department='="'+record[vars.config['department']].value+'"';
-				queries.customer=(record[vars.config['customer']].value!="共通")?'="'+record[vars.config['customer']].value+'"':'="共通"';
+				var query='';
 				/* get user infomation */
-					kintone.api(kintone.api.url('/v1/users',true),'GET',{codes:[record[vars.config['charger']].value[0].code]},function(resp){
-						if (resp.users)
-						{
-							var chargermail=resp.users[0].email;
+				kintone.api(kintone.api.url('/v1/users',true),'GET',{codes:[record[vars.config['charger']].value[0].code]},function(resp){
+					if (resp.users)
+					{
+						var chargermail=resp.users[0].email;
+						query='';
+						query+=vars.config['signatureuser']+' in (LOGINUSER())';
+						vars.offset=0;
+						functions.loaddatas([],vars.config['signatureapp'],query,function(records){
+							var signature='';
+							if (records.length!=0) signature=records[0][vars.config['signaturebody']].value;
+							query='';
+							query+=vars.config['mailtomedia']+' in ("'+media+'") and ';
+							query+=vars.config['mailtosegment']+' in ("'+record[vars.config['segment']].value+'") and ';
+							query+=vars.config['mailtoarea']+' in ("'+record[vars.config['area']].value+'") and ';
+							query+=vars.config['mailtodepartment']+'="'+record[vars.config['department']].value+'" and ';
+							query+=vars.config['mailtocustomer']+' in ("'+record[vars.config['customer']].value+'","共通")';
 							vars.offset=0;
-							functions.loaddatas([],queries,function(records){
+							functions.loaddatas([],vars.config['mailtoapp'],query,function(records){
 								var mailto=[];
 								var mailcc=[];
 								var mailbcc=[];
 								var mailname=[];
-								for (var i=0;i<records.length;i++)
+								var filter=$.grep(records,function(item,index){
+									return item[vars.config['mailtocustomer']].value==record[vars.config['customer']].value;
+								});
+								if (filter.length==0) filter=records;
+								for (var i=0;i<filter.length;i++)
 								{
-									switch (records[i][vars.config['mailtotype']].value.toUpperCase())
+									switch (filter[i][vars.config['mailtotype']].value.toUpperCase())
 									{
 										case 'TO':
-											mailto.push(records[i][vars.config['mailtoaddress']].value);
-											mailname.push(records[i][vars.config['mailtoname']].value+'様');
+											mailto.push(filter[i][vars.config['mailtoaddress']].value);
+											mailname.push(filter[i][vars.config['mailtoname']].value+'様');
 											break;
 										case 'CC':
-											mailcc.push(records[i][vars.config['mailtoaddress']].value);
+											mailcc.push(filter[i][vars.config['mailtoaddress']].value);
 											break;
 									}
 								}
@@ -213,6 +218,7 @@ jQuery.noConflict();
 											if (vars.config['attachment']) Array.prototype.push.apply(attachment,record[vars.config['attachment']].value);
 											break;
 									}
+									if (signature) body+='\n'+signature;
 									subject+=record[vars.config['customer']].value+'/';
 									subject+=record[vars.config['subject']].value+'/';
 									subject+=table.value[0].value[vars.config['media']].value+'/';
@@ -304,29 +310,25 @@ jQuery.noConflict();
 								}
 								else swal('送信エラー','条件に該当する宛先が見つかりませんでした。','error');
 							});
-						}
-						else swal('Error!','注文担当者の情報がありません。','error');
-					},function(error){swal('Error!',error.message,'error');});
+						});
+					}
+					else swal('Error!','注文担当者の情報がありません。','error');
+				},function(error){swal('Error!',error.message,'error');});
 			}
 		},
 		/* load app datas */
-		loaddatas:function(records,queries,callback){
+		loaddatas:function(records,appkey,query,callback){
 			var sort='';
 			var body={
-				app:vars.config['mailtoapp'],
-				query:''
+				app:appkey,
+				query:query
 			};
 			sort=' order by $id asc limit '+vars.limit.toString()+' offset '+vars.offset.toString();
-			body.query+=vars.config['mailtomedia']+queries.media+' and ';
-			body.query+=vars.config['mailtosegment']+queries.segment+' and ';
-			body.query+=vars.config['mailtoarea']+queries.area+' and ';
-			body.query+=vars.config['mailtodepartment']+queries.department+' and ';
-			body.query+=vars.config['mailtocustomer']+queries.customer;
 			body.query+=sort;
 			kintone.api(kintone.api.url('/k/v1/records',true),'GET',body,function(resp){
 				Array.prototype.push.apply(records,resp.records);
 				vars.offset+=vars.limit;
-				if (resp.records.length==vars.limit) functions.loaddatas(records,callback);
+				if (resp.records.length==vars.limit) functions.loaddatas(records,appkey,query,callback);
 				else callback(records);
 			},function(error){
 				swal('Error!',error.message,'error');

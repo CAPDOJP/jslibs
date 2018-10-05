@@ -1,0 +1,67 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">コピー先サブドメイン<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="subdomain" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">コピー先ゲストスペースディレクトリ</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="guest" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">コピー先アプリID<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="appid" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">コピー先APIトークン<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="token" class="kintoneplugin-input-text" value="" >
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">コピー元判定フィールド【文字列(1行)/数値フィールド】</div>
+		<div class="kintoneplugin-desc">コピー先でコピー元の判別を行う必要があれば、コピー時に登録するフィールドコードと判定値を指定して下さい。</div>
+		<table class="kintoneplugin-table">
+			<thead>
+				<tr>
+					<th>コピー元判定フィールドコード</th>
+					<th>コピー元判定値</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<div class="kintoneplugin-input-outer">
+							<input type="text" id="decisionfield" class="kintoneplugin-input-text" value="" >
+						</div>
+					</td>
+					<td>
+						<div class="kintoneplugin-input-outer">
+							<input type="text" id="decisionvalue" class="kintoneplugin-input-text" value="" >
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">レコード番号保存フィールド【文字列(1行)フィールド】<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">コピー済みレコードの上書き用に、コピー先のレコード番号を保持するフィールドを指定して下さい。</div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="recordid">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

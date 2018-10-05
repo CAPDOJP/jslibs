@@ -53,7 +53,7 @@ jQuery.noConflict();
 					/* redirect authorize url */
 					var authurl='https://www.chatwork.com/packages/oauth2/login.php?response_type=code';
 					authurl+='&client_id='+vars.config['client_id'];
-					authurl+='&scope=rooms.messages:write';
+					authurl+='&scope=rooms.all:read_write%20contacts.all:read%20users.profile.me:read';
 					authurl+='&redirect_uri='+encodeURIComponent(vars.redirect);
 					window.location.href=authurl;
 				}

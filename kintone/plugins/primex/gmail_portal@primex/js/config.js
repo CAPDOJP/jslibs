@@ -44,7 +44,11 @@ jQuery.noConflict();
 			kintone.api(kintone.api.url('/k/v1/apps',true),'GET',{offset:vars.offset},function(resp){
 				/* setup app lists */
 				$.each(resp.apps,function(index,values){
-					if (values.appId!=kintone.app.getId()) $('select#mailtoapp').append($('<option>').attr('value',values.appId).text(values.name));
+					if (values.appId!=kintone.app.getId())
+					{
+						$('select#mailtoapp').append($('<option>').attr('value',values.appId).text(values.name));
+						$('select#signatureapp').append($('<option>').attr('value',values.appId).text(values.name));
+					}
 				})
 				vars.offset+=100;
 				if (resp.apps.length==100) functions.loadapps(callback);
@@ -54,7 +58,7 @@ jQuery.noConflict();
 				}
 			},function(error){});
 		},
-		reloadapp:function(callback){
+		reloadmailtoapp:function(callback){
 			var target=$('select#mailtoapp');
 			if (target.val())
 			{
@@ -83,6 +87,35 @@ jQuery.noConflict();
 										$('select#mailtocustomer').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#mailtoname').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										$('select#mailtoaddress').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										break;
+								}
+							}
+						});
+						if (callback!=null) callback();
+					},function(error){});
+				},function(error){});
+			}
+		},
+		reloadsignatureapp:function(callback){
+			var target=$('select#signatureapp');
+			if (target.val())
+			{
+				kintone.api(kintone.api.url('/k/v1/app/form/layout',true),'GET',{app:target.val()},function(resp){
+					var sorted=functions.fieldsort(resp.layout);
+					/* get fieldinfo */
+					kintone.api(kintone.api.url('/k/v1/app/form/fields',true),'GET',{app:target.val()},function(resp){
+						$.each(sorted,function(index){
+							if (sorted[index] in resp.properties)
+							{
+								var fieldinfo=resp.properties[sorted[index]];
+								/* check field type */
+								switch (fieldinfo.type)
+								{
+									case 'MULTI_LINE_TEXT':
+										$('select#signaturebody').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
+										break;
+									case 'USER_SELECT':
+										$('select#signatureuser').append($('<option>').attr('value',fieldinfo.code).text(fieldinfo.label));
 										break;
 								}
 							}
@@ -170,7 +203,7 @@ jQuery.noConflict();
 					$('select#attachment').val(config['attachment']);
 					$('select#revisionbody').val(config['revisionbody']);
 					$('input#client_id').val(config['client_id']);
-					functions.reloadapp(function(){
+					functions.reloadmailtoapp(function(){
 						$('select#mailtomedia').val(config['mailtomedia']);
 						$('select#mailtosegment').val(config['mailtosegment']);
 						$('select#mailtoarea').val(config['mailtoarea']);
@@ -180,10 +213,20 @@ jQuery.noConflict();
 						$('select#mailtoname').val(config['mailtoname']);
 						$('select#mailtoaddress').val(config['mailtoaddress']);
 					});
+					functions.reloadsignatureapp(function(){
+						$('select#signatureapp').val(config['signatureapp']);
+						$('select#signatureuser').val(config['signatureuser']);
+						$('select#signaturebody').val(config['signaturebody']);
+					});
 				}
-				else functions.reloadapp();
+				else
+				{
+					functions.reloadmailtoapp();
+					functions.reloadsignatureapp();
+				}
 				/* events */
-				$('select#mailtoapp').on('change',function(){functions.reloadapp()});
+				$('select#mailtoapp').on('change',function(){functions.reloadmailtoapp()});
+				$('select#signatureapp').on('change',function(){functions.reloadsignatureapp()});
 			});
 		},function(error){});
 	},function(error){});
@@ -308,6 +351,21 @@ jQuery.noConflict();
 			swal('Error!','訂正本文フィールドを選択して下さい。','error');
 			return;
 		}
+		if ($('select#signatureapp').val()=='')
+		{
+			swal('Error!','署名アプリを選択して下さい。','error');
+			return;
+		}
+		if ($('select#signatureuser').val()=='')
+		{
+			swal('Error!','署名アプリ送信者フィールドを選択して下さい。','error');
+			return;
+		}
+		if ($('select#signaturebody').val()=='')
+		{
+			swal('Error!','署名アプリ署名フィールドを選択して下さい。','error');
+			return;
+		}
 		if ($('input#client_id').val()=='')
 		{
 			swal('Error!','Google OAuth クライアントIDを入力して下さい。','error');
@@ -323,6 +381,9 @@ jQuery.noConflict();
 		config['mailtotype']=$('select#mailtotype').val();
 		config['mailtoname']=$('select#mailtoname').val();
 		config['mailtoaddress']=$('select#mailtoaddress').val();
+		config['signatureapp']=$('select#signatureapp').val();
+		config['signatureuser']=$('select#signatureuser').val();
+		config['signaturebody']=$('select#signaturebody').val();
 		config['customer']=$('select#customer').val();
 		config['subject']=$('select#subject').val();
 		config['department']=$('select#department').val();
