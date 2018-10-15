@@ -1,0 +1,48 @@
+<div class="block">
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">集計パターン</div>
+		<div class="kintoneplugin-desc">表示する集計パターンにチェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<input type="checkbox" name="checkbox" value="0" id="total"><label for="total">合計</label>
+		</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<input type="checkbox" name="checkbox" value="0" id="average"><label for="average">平均</label>
+		</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<input type="checkbox" name="checkbox" value="0" id="max"><label for="max">最大</label>
+		</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<input type="checkbox" name="checkbox" value="0" id="min"><label for="min">最小</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">全レコード集計</div>
+		<div class="kintoneplugin-desc">表示する一覧の絞り込み条件に該当するすべてのレコードを集計対象とする場合は、チェックを付けて下さい。</div>
+		<div class="kintoneplugin-input-checkbox-item">
+			<input type="checkbox" id="all" value="0"><label for="all">一覧の絞り込み条件に該当するすべてのレコードを集計対象とする</label>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">端数<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-select-outer">
+			<div class="kintoneplugin-select">
+				<select id="round">
+					<option value="1">切り捨て</option>
+					<option value="2">切り上げ</option>
+					<option value="3">四捨五入</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="kintoneplugin-row">
+		<div class="kintoneplugin-label">小数点以下表示桁数<span class="kintoneplugin-require">*</span></div>
+		<div class="kintoneplugin-desc">平均算出時の小数点以下表示桁数を入力して下さい。</div>
+		<div class="kintoneplugin-input-outer">
+			<input type="text" id="digit" class="kintoneplugin-input-text" value="0" >
+		</div>
+	</div>
+</div>
+<div class="block">
+	<button type="button" id="submit" class="kintoneplugin-button-dialog-ok">保存</button>
+	<button type="button" id="cancel" class="kintoneplugin-button-dialog-cancel">キャンセル</button>
+</div>

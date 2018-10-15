@@ -1,0 +1,45 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 一覧集計プラグイン",
+        "en":"kintone List Summary plug-in",
+        "zh":"kintone 一覧集計プラグイン"
+    },
+    "description":{
+        "ja":"一覧に表示されたレコード内の各数値を集計するプラグインです。",
+        "en":"This plug-in aggregates each numerical value in the record displayed in the list",
+        "zh":"一覧に表示されたレコード内の各数値を集計するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/listsummary.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

@@ -28,10 +28,15 @@ jQuery.noConflict();
 		fieldinfos:{}
 	};
 	var events={
+		delete:[
+			'app.record.detail.delete.submit',
+			'app.record.index.delete.submit'
+		],
 		lists:[
 			'app.record.index.show'
 		],
 		show:[
+			'app.record.detail.show',
 			'app.record.create.show',
 			'app.record.edit.show'
 		],
@@ -70,6 +75,16 @@ jQuery.noConflict();
 				if ('details' in reason) swal('Error!',reason.details,'error');
 				else swal('Error!',reason.result.error.message,'error');
 			});
+		},
+		/* googlecalendar delete */
+		calendardelete:function(eventid,callback){
+			if (eventid)
+			{
+				gapi.client.calendar.events.delete({
+					'calendarId':vars.config['calendarid'],
+					'eventId':eventid
+				}).execute(function(resp){callback();});
+			}
 		},
 		/* googlecalendar get */
 		calendarget:function(records,token,callback){
@@ -443,22 +458,6 @@ jQuery.noConflict();
 						})[0]
 					);
 				}
-				else
-				{
-					$('.gaia-argoui-app-toolbar-statusmenu')
-					.append(
-						$('<img src="https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg" class="auth-googlecalendar button-googlecalendar custom-elements-googlecalendar" alt="認証" title="認証" />')
-						.on('click',function(e){
-							if ($(this).attr('src').match(/unlink.svg$/g))
-							{
-								gapi.auth2.getAuthInstance().signOut();
-								$(this).attr('src','https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/link.svg');
-								vars.auth=false;
-							}
-							else gapi.auth2.getAuthInstance().signIn();
-						})
-					);
-				}
 				if (callback) callback();
 			},function(error){
 				swal('Error!',error.message,'error');
@@ -497,6 +496,17 @@ jQuery.noConflict();
 				functions.calendarregist(event.record,function(){
 					resolve(event);
 				},function(){
+					resolve(event);
+				});
+			});
+		}
+		else return event;
+	});
+	kintone.events.on(events.delete,function(event){
+		if (vars.auth)
+		{
+			return new kintone.Promise(function(resolve,reject){
+				functions.calendardelete(event.record[vars.config['eventid']].value,function(){
 					resolve(event);
 				});
 			});

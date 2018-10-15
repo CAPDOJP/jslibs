@@ -1,0 +1,48 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone 年度更新プラグイン",
+        "en":"kintone Year calculation plug-in",
+        "zh":"kintone 年度更新プラグイン"
+    },
+    "description":{
+        "ja":"指定された日付フィールドの年度を自動更新するプラグインです。",
+        "en":"This plug-in automatically updates the year of the specified date field.",
+        "zh":"指定された日付フィールドの年度を自動更新するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/yearcalc.js"
+        ],
+        "css":[
+            "css/51-modern-default.css",
+            "css/progress.css",
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-table.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}

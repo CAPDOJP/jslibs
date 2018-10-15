@@ -262,7 +262,7 @@ jQuery.extend({
 				case 'ORGANIZATION_SELECT':
 				case 'USER_SELECT':
 					row.value[key].value=[];
-					if (fields[key].type!='FILE') hasdefault=fields[key].defaultValue.length;
+					if (fields[key].type!='FILE') hasdefault=(hasdefault)?fields[key].defaultValue.length:0;
 					break;
 			}
 			/* check default value */
@@ -339,7 +339,7 @@ jQuery.extend({
 			case 'ORGANIZATION_SELECT':
 			case 'USER_SELECT':
 				res.value=[];
-				if (fieldinfo.type!='FILE') hasdefault=fieldinfo.defaultValue.length;
+				if (fieldinfo.type!='FILE') hasdefault=(hasdefault)?fieldinfo.defaultValue.length:0;
 				break;
 			case 'DATE':
 			case 'DATETIME':
@@ -599,7 +599,8 @@ jQuery.extend({
 					{
 						var defaults=[];
 						var values=[];
-						for (var i=0;i<fields[key].defaultValue.length;i++) defaults.push(fields[key].defaultValue[i].code);
+						if (fields[key].defaultValue)
+							for (var i=0;i<fields[key].defaultValue.length;i++) defaults.push(fields[key].defaultValue[i].code);
 						for (var i=0;i<value.length;i++) values.push(value[i].code);
 						defaults.sort(function(a,b){
 							if(a<b) return -1;

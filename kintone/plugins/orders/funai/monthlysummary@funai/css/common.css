@@ -1,0 +1,155 @@
+/* common style */
+button.customview-button{
+	background-color:transparent;
+	background-position:left top;
+	background-repeat:no-repeat;
+	background-size:30px 30px;
+	border:none;
+	box-sizing:border-box;
+	cursor:pointer;
+	font-size:13px;
+	height:auto;
+	margin:0px 3px;
+	min-height:30px;
+	min-width:30px;
+    outline:none;
+    padding:0px;
+    vertical-align:top;
+	width:auto;
+}
+button.calendar-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/calendar.png');
+	padding-left:30px;
+}
+button.close-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/close.png');
+	padding-left:30px;
+}
+button.compass-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/compass.png');
+	padding-left:30px;
+}
+button.download-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/download.png');
+	padding-left:30px;
+}
+button.edit-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/edit.png');
+	padding-left:30px;
+}
+button.next-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/next.png');
+	padding-left:30px;
+}
+button.pdf-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/pdf.png');
+	padding-left:30px;
+}
+button.prev-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/prev.png');
+	padding-left:30px;
+}
+button.search-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/search.png');
+	padding-left:30px;
+}
+button.time-button{
+	background-image:url('https://rawgit.com/TIS2010/jslibs/master/kintone/plugins/images/time.png');
+	padding-left:30px;
+}
+div.customview-container{
+	box-sizing:border-box;
+	font-size:13px;
+	width:100%;
+}
+img.customview-imagebutton{
+	cursor:pointer;
+	display:inline-block;
+	height:48px;
+	margin:0px;
+	vertical-align:top;
+	width:48px;
+}
+p.customview-p{
+	box-sizing:border-box;
+    line-height:30px;
+	margin:0px;
+	padding:0px 3px;
+    vertical-align:top;
+}
+span.customview-span{
+	box-sizing:border-box;
+	display:inline-block;
+	line-height:30px;
+	margin:0px;
+	padding:0px 3px;
+    vertical-align:top;
+}
+table.customview-table{
+	border:none;
+	border-collapse:collapse;
+	border-spacing:0;
+	box-sizing:border-box;
+	margin:0px;
+	min-width:100%;
+	padding:0px;
+}
+table.customview-table thead th{
+	background-color:#EFEFEF;
+	border:1px solid #C9C9C9;
+	font-weight:normal;
+	height:auto;
+	line-height:30px;
+	margin:0px;
+	padding:0px 3px;
+	text-align:center;
+}
+table.customview-table tbody td{
+	border:1px solid #C9C9C9;
+	height:auto;
+	line-height:30px;
+	margin:0px;
+	padding:0px;
+}
+table.customview-table tbody tr:nth-of-type(odd){
+	background-color:#FFFFFF;
+}
+table.customview-table tbody tr:nth-of-type(even){
+	background-color:#FAF9F9;
+}
+table.customview-table input[type=text],
+table.customview-table label,
+table.customview-table select,
+table.customview-table textarea{
+	background-color:transparent;
+	border:none;
+	box-sizing:border-box;
+	font-size:13px;
+	line-height:30px;
+	margin:0px;
+	min-height:30px;
+    outline:none;
+	padding:0px 3px;
+	vertical-align:top;
+	width:100%;
+}
+table.customview-table input[type=text],
+table.customview-table select{
+	height:30px;
+	min-width:100px;
+}
+table.customview-table input[type=text]:focus,
+table.customview-table select:focus,
+table.customview-table textarea:focus{
+	background-color:#F7ECE1;
+    box-shadow:0px 0px 2px 2px #7BDFF2 inset;
+}
+.left{
+    text-align:left;
+}
+.right{
+    text-align:right;
+}
+.center{
+    text-align:center;
+}

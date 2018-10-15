@@ -1,0 +1,47 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone GMail連携プラグイン@プライムクロス【Yahoo純広告版】",
+        "en":"kintone GMail linkage plug-in",
+        "zh":"kintone GMail連携プラグイン@プライムクロス【Yahoo純広告版】"
+    },
+    "description":{
+        "ja":"Gmailの送信を行うプラグインです。",
+        "en":"This plug-in sends Gmail.",
+        "zh":"Gmailの送信を行うプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "https://apis.google.com/js/api.js",
+            "js/sweetalert.min.js",
+            "js/maildialog.js",
+            "js/gmail.js"
+        ],
+        "css":[
+            "css/sweetalert.css"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/jquery-1.11.3.min.js",
+            "https://rawgit.com/TIS2010/jslibs/master/kintone/tis-functions.js",
+            "js/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css",
+            "css/sweetalert.css"
+        ]
+    }
+}
